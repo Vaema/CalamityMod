@@ -294,6 +294,7 @@ namespace CalamityMod
         public static bool InCalamity(this Player player) => player.Calamity().ZoneCalamity;
         public static bool InSunkenSea(this Player player) => player.Calamity().ZoneSunkenSea;
         public static bool InSulphur(this Player player) => player.Calamity().ZoneSulphur;
+        public static bool InFloralParadise(this Player player) => player.Calamity().ZoneFloralParadise;
         public static bool InAstral(this Player player, int biome = 0) //1 is above ground, 2 is underground, 3 is desert
         {
             switch (biome)

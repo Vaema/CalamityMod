@@ -1,10 +1,10 @@
-﻿
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
+using CalamityMod.Tiles.FloralParadise;
 using System;
 
 namespace CalamityMod.Tiles.Ores
@@ -25,6 +25,9 @@ namespace CalamityMod.Tiles.Ores
             Main.tileShine2[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
+            CalamityUtils.SetMerge(Type, ModContent.TileType<FloralGrass>());
+            CalamityUtils.SetMerge(Type, ModContent.TileType<FloralStone>());
+            CalamityUtils.SetMerge(Type, ModContent.TileType<RichDirt>());
 
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;
