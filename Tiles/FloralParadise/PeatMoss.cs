@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FloralParadise
 {
-    public class PeteMoss : ModTile
+    public class PeatMoss : ModTile
     {
         public override void SetDefaults()
         {
@@ -21,7 +21,7 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.MergeWithFloralParadise(Type);
 
             dustType = 78;
-            // drop = ModContent.ItemType<PeteMossItem>();
+            // drop = ModContent.ItemType<PeatMossItem>();
 
             soundType = SoundID.Tink;
 

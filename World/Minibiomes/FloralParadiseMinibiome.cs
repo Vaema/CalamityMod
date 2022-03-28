@@ -227,7 +227,7 @@ namespace CalamityMod.World.Minibiomes
 
         public static void GenerateDirtBehindGrass(Rectangle placementArea, bool[,] grassDirtMap)
         {
-            ushort dirtID = (ushort)ModContent.TileType<PeteMoss>();
+            ushort dirtID = (ushort)ModContent.TileType<PeatMoss>();
             ushort stoneID = (ushort)ModContent.TileType<FloralStone>();
             ushort grassID = (ushort)ModContent.TileType<FloralGrass>();
 

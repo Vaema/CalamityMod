@@ -16,7 +16,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
             TileID.Sets.Grass[Type] = true;
             TileID.Sets.NeedsGrassFraming[Type] = true;
-            TileID.Sets.NeedsGrassFramingDirt[Type] = ModContent.TileType<PeteMoss>();
+            TileID.Sets.NeedsGrassFramingDirt[Type] = ModContent.TileType<PeatMoss>();
             TileID.Sets.Conversion.Grass[Type] = true;
 
             CalamityUtils.SetMerge(Type, TileID.Dirt);
@@ -40,7 +40,7 @@ namespace CalamityMod.Tiles.FloralParadise
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             if (fail && !effectOnly)
-                Main.tile[i, j].type = (ushort)ModContent.TileType<PeteMoss>();
+                Main.tile[i, j].type = (ushort)ModContent.TileType<PeatMoss>();
         }
 
         public override void NearbyEffects(int i, int j, bool closer)

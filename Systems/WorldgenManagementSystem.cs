@@ -74,6 +74,13 @@ namespace CalamityMod.Systems
                 CustomTemple.NewJungleTempleLihzahrdAltar();
             });
 
+            // Floral Paradise
+            tasks.Insert(JungleTempleIndex + 1, new PassLegacy("FloralParadise", progress =>
+            {
+                progress.Message = "Growing a floral paradise underground";
+                FloralParadiseMinibiome.GenerateInstances();
+            }));
+
             //Giant beehive
             int giantHiveIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Hives"));
             if (giantHiveIndex != -1)
