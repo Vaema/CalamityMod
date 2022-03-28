@@ -142,6 +142,9 @@ namespace CalamityMod.CalPlayer
             // Check if schematics are present on the mouse, for the sake of registering their recipes.
             CheckIfMouseItemIsSchematic();
 
+            // Do biome specific effects
+            DrawPollenInFloralParadise();
+
             // Handle Androomba's Right Click function
             AndroombaRightClick();
 
@@ -1814,6 +1817,31 @@ namespace CalamityMod.CalPlayer
             }
         }
         #endregion
+
+        #region Biome Effects
+        public void DrawPollenInFloralParadise()
+        {
+            if (!ZoneFloralParadise || !Main.rand.NextBool(7) || Main.netMode == NetmodeID.Server)
+                return;
+
+            for (int i = 0; i < 15; i++)
+            {
+                Vector2 dustSpawnPosition = player.Center + Main.rand.NextVector2Square(-360f, 360f);
+                dustSpawnPosition.Y += 200f;
+                Tile tile = CalamityUtils.ParanoidTileRetrieval((int)(dustSpawnPosition.X / 16f), (int)(dustSpawnPosition.Y / 16f));
+                if (WorldGen.SolidTile(tile) || tile.liquid > 0)
+                    continue;
+
+                Dust pollen = Dust.NewDustPerfect(dustSpawnPosition, 261);
+                pollen.velocity = Main.rand.NextVector2Circular(0.4f, 0.4f);
+                pollen.scale = Main.rand.NextFloat(0.8f, 1f);
+                pollen.fadeIn = 2f;
+                pollen.color = Color.YellowGreen;
+                pollen.noGravity = true;
+                break;
+            }
+        }
+        #endregion Biome Effects
 
         #region Abyss Effects
         private void AbyssEffects()

@@ -691,6 +691,37 @@ namespace CalamityMod.ILEditing
         }
         #endregion Fire Cursor Effect for the Calamity Accessory
 
+        #region Fog Effect in Floral Paradise
+        private static void DrawFloralParadiseFog(ILContext il)
+        {
+            ILCursor cursor = new ILCursor(il);
+
+            cursor.GotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("DrawInfernoRings"));
+            cursor.EmitDelegate<Action>(() =>
+            {
+                if (Main.netMode != NetmodeID.Server && CalamityWorld.FloralParadiseTiles > 0)
+                    DrawFog(Utils.InverseLerp(0f, 250f, CalamityWorld.FloralParadiseTiles, true));
+            });
+        }
+
+        private static void DrawFog(float intensity)
+        {
+            Texture2D fogTexture = ModContent.GetTexture("Terraria/Misc/Perlin");
+            Vector2 scale = new Vector2(Main.screenWidth, Main.screenHeight) / fogTexture.Size();
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.instance.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            GameShaders.Misc["CalamityMod:Fog"].UseOpacity(intensity * 0.67f);
+            GameShaders.Misc["CalamityMod:Fog"].UseColor(Color.Lerp(Color.Lime, Color.Black, 0.85f));
+            GameShaders.Misc["CalamityMod:Fog"].Apply();
+
+            Main.spriteBatch.Draw(fogTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin();
+        }
+        #endregion Fog Effect in Floral Paradise
+
         #region Custom Draw Layers
         private static void AdditiveDrawing(ILContext il)
         {

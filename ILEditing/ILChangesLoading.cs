@@ -33,6 +33,7 @@ namespace CalamityMod.ILEditing
 
             // Graphics
             IL.Terraria.Main.DoDraw += AdditiveDrawing;
+            IL.Terraria.Main.DoDraw += DrawFloralParadiseFog;
             On.Terraria.Main.DrawGore += DrawForegroundStuff;
             On.Terraria.Main.DrawCursor += UseCoolFireCursorEffect;
             On.Terraria.Main.SetDisplayMode += ResetRenderTargetSizes;
@@ -155,6 +156,7 @@ namespace CalamityMod.ILEditing
 
             // Graphics
             IL.Terraria.Main.DoDraw -= AdditiveDrawing;
+            IL.Terraria.Main.DoDraw -= DrawFloralParadiseFog;
             On.Terraria.Main.DrawGore -= DrawForegroundStuff;
             On.Terraria.Main.DrawCursor -= UseCoolFireCursorEffect;
             On.Terraria.Main.SetDisplayMode -= ResetRenderTargetSizes;
