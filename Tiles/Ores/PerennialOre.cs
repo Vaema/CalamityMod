@@ -25,9 +25,7 @@ namespace CalamityMod.Tiles.Ores
             Main.tileShine2[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
-            CalamityUtils.SetMerge(Type, ModContent.TileType<FloralGrass>());
-            CalamityUtils.SetMerge(Type, ModContent.TileType<FloralStone>());
-            CalamityUtils.SetMerge(Type, ModContent.TileType<RichDirt>());
+            CalamityUtils.MergeWithFloralParadise(Type);
 
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;

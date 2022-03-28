@@ -4,6 +4,7 @@ using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Crags;
+using CalamityMod.Tiles.FloralParadise;
 using CalamityMod.Tiles.FurnitureAbyss;
 using CalamityMod.Tiles.FurnitureAshen;
 using CalamityMod.Tiles.FurnitureEutrophic;
@@ -457,6 +458,17 @@ namespace CalamityMod
             TileType<Voidstone>(),
             TileType<PlantyMush>(),
             TileType<ScoriaOre>(),
+        });
+
+        /// <summary>
+		/// Makes the tile merge with all the tile types that generate within various types of floral paradise tiles.
+		/// </summary>
+		/// <param name="type">The tile whose merging properties will be set.</param>
+		public static void MergeWithFloralParadise(int type) => MergeWithSet(type, new int[] {
+            TileType<FloralGrass>(),
+            TileType<PeteMoss>(),
+            TileType<FloralStone>(),
+            TileType<PerennialOre>(),
         });
 
         /// <summary>

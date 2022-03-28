@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -16,6 +17,7 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
             TileObjectData.addTile(Type);
 
+            soundType = SoundID.Grass;
             dustType = 2;
             AddMapEntry(new Color(28, 216, 94));
 

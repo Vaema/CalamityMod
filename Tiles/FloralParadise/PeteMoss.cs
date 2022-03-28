@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FloralParadise
 {
-    public class FloralStone : ModTile
+    public class PeteMoss : ModTile
     {
         public override void SetDefaults()
         {
@@ -21,11 +21,11 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.MergeWithFloralParadise(Type);
 
             dustType = 78;
-            // drop = ModContent.ItemType<FloralStoneItem>();
+            // drop = ModContent.ItemType<PeteMossItem>();
 
             soundType = SoundID.Tink;
 
-            AddMapEntry(new Color(33, 56, 27));
+            AddMapEntry(new Color(72, 91, 47));
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)

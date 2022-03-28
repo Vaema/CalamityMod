@@ -10,6 +10,8 @@ namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
+        public const int DefaultGenerationLoopLimit = 5000;
+
         /// <summary>
         /// Generates clusters of ore across the world based on various requirements and with various strengths/frequencies.
         /// </summary>
@@ -34,6 +36,57 @@ namespace CalamityMod
                         WorldGen.OreRunner(tilesX, tilesY, WorldGen.genRand.Next(strengthMin, strengthMax), WorldGen.genRand.Next(3, 8), (ushort)type);
                 }
             }
+        }
+
+        /// <summary>
+        /// Counts the amount of "cells" near a given range in a 2D boolean array. This is specifically used in conjunction with the <br></br>
+        /// <see cref="SimulateCelluarAutomata"/> utility.
+        /// </summary>
+        /// <param name="map">The cell states.</param>
+        /// <param name="x">The X position to count cells by.</param>
+        /// <param name="y">The Y position to count cells by.</param>
+        /// <param name="checkForActiveCells">Whether to check for active cells (<see langword="true"/> values) or not (<see langword="false"/> values).</param>
+        public static int CountCellsAtPosition(bool[,] map, int x, int y, bool checkForActiveCells)
+        {
+            int count = 0;
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    // Ignore the center position.
+                    if (dx == 0 && dy == 0)
+                        continue;
+
+                    // Ignore cells outside of the range of the map.
+                    if (x + dx < 0 || x + dx >= map.GetLength(0) || y + dy < 0 || y + dy >= map.GetLength(1))
+                        continue;
+
+                    if ((map[x + dx, y + dy] && checkForActiveCells) || (!map[x + dx, y + dy] && !checkForActiveCells))
+                        count++;
+                }
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Generates a cell map based on a cellular automata algorithm. The primary use-case for this is for creating smooth cave patterns,<br></br>
+        /// with the cell's state representing whether a tile is active or not.
+        /// </summary>
+        /// <param name="originalMap">The original cell states.</param>
+        public static bool[,] SimulateCelluarAutomata(bool[,] originalMap)
+        {
+            bool[,] newMap = (bool[,])originalMap.Clone();
+            for (int x = 0; x < originalMap.GetLength(0); x++)
+            {
+                for (int y = 0; y < originalMap.GetLength(1); y++)
+                {
+                    if (originalMap[x, y] && CountCellsAtPosition(originalMap, x, y, true) <= 3)
+                        newMap[x, y] = false;
+                    else if (!originalMap[x, y] && CountCellsAtPosition(originalMap, x, y, true) >= 5)
+                        newMap[x, y] = true;
+                }
+            }
+            return newMap;
         }
 
         public static void GrowVines(int VineX, int VineY, int numVines, ushort vineType, bool finished = false)

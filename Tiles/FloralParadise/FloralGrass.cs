@@ -16,7 +16,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
             TileID.Sets.Grass[Type] = true;
             TileID.Sets.NeedsGrassFraming[Type] = true;
-            TileID.Sets.NeedsGrassFramingDirt[Type] = ModContent.TileType<RichDirt>();
+            TileID.Sets.NeedsGrassFramingDirt[Type] = ModContent.TileType<PeteMoss>();
             TileID.Sets.Conversion.Grass[Type] = true;
 
             CalamityUtils.SetMerge(Type, TileID.Dirt);
@@ -24,13 +24,12 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.SetMerge(Type, TileID.CorruptGrass);
             CalamityUtils.SetMerge(Type, TileID.HallowedGrass);
             CalamityUtils.SetMerge(Type, TileID.FleshGrass);
-            CalamityUtils.SetMerge(Type, ModContent.TileType<RichDirt>());
-            CalamityUtils.SetMerge(Type, ModContent.TileType<FloralStone>());
+            CalamityUtils.MergeWithFloralParadise(Type);
 
             dustType = 39;
             drop = ItemID.DirtBlock;
 
-            AddMapEntry(new Color(31, 99, 31));
+            AddMapEntry(new Color(65, 142, 101));
         }
 
         public override void NumDust(int i, int j, bool fail, ref int Type)
@@ -41,7 +40,7 @@ namespace CalamityMod.Tiles.FloralParadise
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             if (fail && !effectOnly)
-                Main.tile[i, j].type = (ushort)ModContent.TileType<RichDirt>();
+                Main.tile[i, j].type = (ushort)ModContent.TileType<PeteMoss>();
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
