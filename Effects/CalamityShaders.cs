@@ -126,6 +126,9 @@ namespace CalamityMod.Effects
         // Used to render all-encompassing fog in the Floral Paradise biome.
         internal static Effect FogShader;
 
+        // Used to render background water features in the Floral Paradise biome.
+        internal static Effect WaterfallShader;
+
         // Fusable particles. See the FusableParticleManager for comments on how this system works.
         // These shaders are leveraged to render the results of the fusable particle simulation to the screen.
         // The "Base" shader draws the particles themselves.
@@ -329,6 +332,9 @@ namespace CalamityMod.Effects
 
             FogShader = LoadShader("ScreenShaders/Fog");
             RegisterMiscShader(FogShader, "DyePass", "Fog");
+
+            WaterfallShader = LoadShader("WaterfallShader");
+            RegisterMiscShader(WaterfallShader, "TrailPass", "Waterfall");
 
             // These two shaders are often (but not always) used together.
             BaseFusableParticleEdgeShader = LoadShader("ParticleFusion/BaseFusableParticleEdgeShader");

@@ -14,6 +14,7 @@ using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Systems;
+using CalamityMod.Waterfalls;
 using CalamityMod.Waters;
 using CalamityMod.World;
 using CalamityMod.Projectiles.Typeless;
@@ -706,6 +707,9 @@ namespace CalamityMod.ILEditing
 
         private static void DrawFog(float intensity)
         {
+            Main.spriteBatch.EnterShaderRegion();
+            WaterfallRenderer.DrawWaterfalls();
+
             Texture2D fogTexture = ModContent.GetTexture("Terraria/Misc/Perlin");
             Vector2 scale = new Vector2(Main.screenWidth, Main.screenHeight) / fogTexture.Size();
 

@@ -391,9 +391,26 @@ namespace CalamityMod.World.Minibiomes
                 // Create a predetermined quantity of water via recursion.
                 // This starts at the initial water spawn point and the expands outward in all four cardinal directions repeatedly until either no more locations
                 // are valid or the water limit has been reached.
-                // This water will be settled to create ponds via extraneous code later in the world generation pipeline.
                 int increment = 0;
                 RecursivelyFillAreaWithWater(x, y, waterTileCount, ref increment);
+
+                // Settle water and create waterfalls.
+                Liquid.QuickWater(3);
+                WorldGen.WaterCheck();
+                Liquid.quickSettle = true;
+                Liquid.UpdateLiquid();
+                WorldGen.WaterCheck();
+                Liquid.quickSettle = false;
+
+                for (int dy = 0; dy < 50; dy++)
+                {
+                    if (CalamityUtils.ParanoidTileRetrieval(x, y + dy).liquid > 0)
+                    {
+                        Main.tile[x, y + dy - 8].active(true);
+                        Main.tile[x, y + dy - 8].type = (ushort)ModContent.TileType<WaterfallCreator>();
+                        break;
+                    }
+                }
             }
         }
 
