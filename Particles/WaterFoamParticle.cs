@@ -41,7 +41,7 @@ namespace CalamityMod.Particles
                     // Spawning the particle directly will result in the particle list collection being modified prematurely within the update loop.
                     // Doing it the next frame results in a single-frame buffer, but that shouldn't really be a problem and it ensures that the loop is
                     // not interrupted in unanticipated ways.
-                    GeneralParticleHandler.QueueParticleForNextFrame(new MediumMistParticle(Position, foamVelocity, Color.LightCyan, Color.White, 0.2f, 255f, 0.03f));
+                    GeneralParticleHandler.QueueParticleForNextFrame(new MediumMistParticle(Position, foamVelocity, Color.LightCyan * 0.6f, Color.White * 0.6f, 0.2f, 255f, 0.03f));
                     HasCreatedFoam = true;
                 }
 
@@ -55,7 +55,7 @@ namespace CalamityMod.Particles
         public override void CustomDraw(SpriteBatch spriteBatch)
         {
             float brightness = (float)Math.Pow(Lighting.Brightness((int)(Position.X / 16f), (int)(Position.Y / 16f)), 0.15);
-            Texture2D texture = ModContent.GetTexture(Texture);
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
             spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color * brightness, Rotation, texture.Size() * 0.5f, Scale, 0, 0f);
         }
     }

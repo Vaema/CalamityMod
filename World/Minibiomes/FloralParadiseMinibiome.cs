@@ -1,4 +1,4 @@
-using CalamityMod.Tiles.DraedonStructures;
+﻿using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FloralParadise;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
@@ -102,7 +102,7 @@ namespace CalamityMod.World.Minibiomes
                         if (!needsToTryAgain)
                         {
                             Tile tile = CalamityUtils.ParanoidTileRetrieval(x + dx, y + dy);
-                            needsToTryAgain = tile.active() && BlacklistedNearbyTiles.Contains(tile.type);
+                            needsToTryAgain = tile.HasTile && BlacklistedNearbyTiles.Contains(tile.TileType);
                         }
                         else
                             break;
@@ -146,7 +146,7 @@ namespace CalamityMod.World.Minibiomes
                 int x = placementArea.X + WorldGen.genRand.Next(24, placementArea.Width - 24);
                 int y = placementArea.Y + WorldGen.genRand.Next(18, placementArea.Height - 18);
                 Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-                if (!WorldGen.SolidTile(x, y + 1) || !WorldGen.SolidTile(x + 1, y + 1) || tile.active() || tile.liquid > 0)
+                if (!WorldGen.SolidTile(x, y + 1) || !WorldGen.SolidTile(x + 1, y + 1) || tile.HasTile || tile.LiquidAmount > 0)
                 {
                     i--;
                     continue;
@@ -156,10 +156,10 @@ namespace CalamityMod.World.Minibiomes
                 {
                     for (int dy = 0; dy < 3; dy++)
                     {
-                        Main.tile[x + dx, y + dy].type = (ushort)ModContent.TileType<BloodOrangePlant>();
-                        Main.tile[x + dx, y + dy].frameX = (short)(dx * 18);
-                        Main.tile[x + dx, y + dy].frameY = (short)(dy * 18);
-                        Main.tile[x + dx, y + dy].active(true);
+                        Main.tile[x + dx, y + dy].TileType = (ushort)ModContent.TileType<BloodOrangePlant>();
+                        Main.tile[x + dx, y + dy].TileFrameX = (short)(dx * 18);
+                        Main.tile[x + dx, y + dy].TileFrameY = (short)(dy * 18);
+                        Main.tile[x + dx, y + dy].Get<TileWallWireStateData>().HasTile = true;
                     }
                 }
             }
@@ -205,18 +205,18 @@ namespace CalamityMod.World.Minibiomes
                     if (distanceFromCenter > 1f)
                         distanceFromCenter = 1f;
 
-                    float ditherChance = Utils.InverseLerp(0.97f, 0.72f, distanceFromCenter, true);
+                    float ditherChance = Utils.GetLerpValue(0.97f, 0.72f, distanceFromCenter, true);
 
-                    Main.tile[x, y].wall = WallID.None;
+                    Main.tile[x, y].WallType = WallID.None;
                     if (WorldGen.genRand.NextFloat() < ditherChance)
                     {
                         if (!caveState[arrayRelativeX, arrayRelativeY] && distanceFromCenter < 0.7f)
-                            Main.tile[x, y] = new Tile();
+                            Main.tile[x, y].ClearEverything();
                         else
                         {
                             bool useGrass = CalamityUtils.CountCellsAtPosition(caveState, arrayRelativeX, arrayRelativeY, false) >= 1 && distanceFromCenter < 0.72f;
                             grassDirtMap[arrayRelativeX, arrayRelativeY] = useGrass;
-                            Main.tile[x, y] = new Tile();
+                            Main.tile[x, y].ClearEverything();
                             Main.tile[x, y].ResetToType(useGrass ? grassID : stoneID);
                             WorldGen.SquareTileFrame(x, y);
                         }
@@ -255,8 +255,8 @@ namespace CalamityMod.World.Minibiomes
                         // This makes the dirt feel more natural and connected to the underlying rock.
                         bool canPerformPlacement = i == 0 || WorldGen.genRand.NextFloat() < SecondaryPassDirtCreationChance;
                         Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-                        if (canPerformPlacement && tile.active() && tile.type == stoneID && nearbyGrassOrDirt)
-                            Main.tile[x, y].type = dirtID;
+                        if (canPerformPlacement && tile.HasTile && tile.TileType == stoneID && nearbyGrassOrDirt)
+                            Main.tile[x, y].TileType = dirtID;
                     }
                 }
 
@@ -272,7 +272,7 @@ namespace CalamityMod.World.Minibiomes
                         Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
                         int arrayRelativeX = x - placementArea.X;
                         int arrayRelativeY = y - placementArea.Y;
-                        grassDirtMap[arrayRelativeX, arrayRelativeY] = tile.type == grassID || tile.type == dirtID;
+                        grassDirtMap[arrayRelativeX, arrayRelativeY] = tile.TileType == grassID || tile.TileType == dirtID;
                     }
                 }
             }
@@ -286,7 +286,7 @@ namespace CalamityMod.World.Minibiomes
                 {
                     float noise = CalamityUtils.PerlinNoise2D(x / 160f, y / 160f, 3, seed) * 0.5f + 0.5f;
                     if (MathHelper.Distance(noise, 0.555f) < WallOpennessFactor)
-                        Main.tile[x, y].wall = WorldGen.genRand.NextBool(4) ? WallID.GrassUnsafe : WallID.FlowerUnsafe;
+                        Main.tile[x, y].WallType = WorldGen.genRand.NextBool(4) ? WallID.GrassUnsafe : WallID.FlowerUnsafe;
                 }
             }
         }
@@ -319,7 +319,7 @@ namespace CalamityMod.World.Minibiomes
 
                 // Ensure that the initial tile is empty and that there's a solid tile above for the vine to hang from.
                 // If these conditions are not met, try again.
-                if (CalamityUtils.ParanoidTileRetrieval(x, y).active() || !WorldGen.SolidTile(x, y - 1))
+                if (CalamityUtils.ParanoidTileRetrieval(x, y).HasTile || !WorldGen.SolidTile(x, y - 1))
                 {
                     i--;
                     continue;
@@ -331,7 +331,7 @@ namespace CalamityMod.World.Minibiomes
                 bool neeedsToTryAgain = false;
                 for (int dy = 0; dy < vineLength; dy++)
                 {
-                    if (CalamityUtils.ParanoidTileRetrieval(x, y + dy).active())
+                    if (CalamityUtils.ParanoidTileRetrieval(x, y + dy).HasTile)
                     {
                         neeedsToTryAgain = true;
                         break;
@@ -347,18 +347,18 @@ namespace CalamityMod.World.Minibiomes
                 // Perform placement.
                 for (int dy = 0; dy < vineLength; dy++)
                 {
-                    Main.tile[x, y + dy].type = (ushort)ModContent.TileType<SmallVines>();
+                    Main.tile[x, y + dy].TileType = (ushort)ModContent.TileType<SmallVines>();
                     if (dy == vineLength - 1)
                     {
-                        Main.tile[x, y + dy].frameX = (short)(WorldGen.genRand.Next(8) * 18);
-                        Main.tile[x, y + dy].frameY = 72;
+                        Main.tile[x, y + dy].TileFrameX = (short)(WorldGen.genRand.Next(8) * 18);
+                        Main.tile[x, y + dy].TileFrameY = 72;
                     }
                     else
                     {
-                        Main.tile[x, y + dy].frameX = (short)(WorldGen.genRand.Next(12) * 18);
-                        Main.tile[x, y + dy].frameY = (short)(WorldGen.genRand.Next(4) * 18);
+                        Main.tile[x, y + dy].TileFrameX = (short)(WorldGen.genRand.Next(12) * 18);
+                        Main.tile[x, y + dy].TileFrameY = (short)(WorldGen.genRand.Next(4) * 18);
                     }
-                    Main.tile[x, y + dy].active(true);
+                    Main.tile[x, y + dy].Get<TileWallWireStateData>().HasTile = true;
                     WorldGen.SquareTileFrame(x, y, true);
                 }
             }
@@ -371,7 +371,7 @@ namespace CalamityMod.World.Minibiomes
                 int x = placementArea.X + WorldGen.genRand.Next(24, placementArea.Width - 24);
                 int y = placementArea.Y + WorldGen.genRand.Next(24, placementArea.Height - 24);
                 Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-                if (tile.active() || tile.liquid > 0)
+                if (tile.HasTile || tile.LiquidAmount > 0)
                 {
                     i--;
                     continue;
@@ -381,7 +381,7 @@ namespace CalamityMod.World.Minibiomes
                 Point waterSpawnPoint = new Point(x, y);
                 for (int dy = 0; dy < 100; dy++)
                 {
-                    if (CalamityUtils.ParanoidTileRetrieval(x, y - dy).active())
+                    if (CalamityUtils.ParanoidTileRetrieval(x, y - dy).HasTile)
                     {
                         waterSpawnPoint.Y -= dy - 1;
                         break;
@@ -404,10 +404,10 @@ namespace CalamityMod.World.Minibiomes
 
                 for (int dy = 0; dy < 50; dy++)
                 {
-                    if (CalamityUtils.ParanoidTileRetrieval(x, y + dy).liquid > 0)
+                    if (CalamityUtils.ParanoidTileRetrieval(x, y + dy).LiquidAmount > 0)
                     {
-                        Main.tile[x, y + dy - 8].active(true);
-                        Main.tile[x, y + dy - 8].type = (ushort)ModContent.TileType<WaterfallCreator>();
+                        Main.tile[x, y + dy - 8].Get<TileWallWireStateData>().HasTile = true;
+                        Main.tile[x, y + dy - 8].TileType = (ushort)ModContent.TileType<WaterfallCreator>();
                         break;
                     }
                 }
@@ -421,17 +421,17 @@ namespace CalamityMod.World.Minibiomes
                 int x = placementArea.X + WorldGen.genRand.Next(16, placementArea.Width - 16);
                 int y = placementArea.Y + WorldGen.genRand.Next(12, placementArea.Height - 12);
                 Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-                if (tile.active() || tile.liquid > 0 || !WorldGen.SolidTile(x, y + 1))
+                if (tile.HasTile || tile.LiquidAmount > 0 || !WorldGen.SolidTile(x, y + 1))
                 {
                     i--;
                     continue;
                 }
 
-                Main.tile[x, y].type = (ushort)ModContent.TileType<FloralPlants>();
-                Main.tile[x, y].frameX = (short)(Utils.SelectRandom(WorldGen.genRand, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 27, 28, 29,
+                Main.tile[x, y].TileType = (ushort)ModContent.TileType<FloralPlants>();
+                Main.tile[x, y].TileFrameX = (short)(Utils.SelectRandom(WorldGen.genRand, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 27, 28, 29,
                     30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44) * 18);
-                Main.tile[x, y].frameY = 0;
-                Main.tile[x, y].active(true);
+                Main.tile[x, y].TileFrameY = 0;
+                Main.tile[x, y].Get<TileWallWireStateData>().HasTile = true;
             }
         }
 
@@ -448,7 +448,7 @@ namespace CalamityMod.World.Minibiomes
             {
                 for (int dy = 0; dy < length * 2; dy++)
                 {
-                    if (CalamityUtils.ParanoidTileRetrieval(x + dx, y + dy).active())
+                    if (CalamityUtils.ParanoidTileRetrieval(x + dx, y + dy).HasTile)
                         return false;
                 }
             }
@@ -463,10 +463,10 @@ namespace CalamityMod.World.Minibiomes
                     if (dx == 0 && dy % 2 == 0)
                         xFrame = WorldGen.genRand.NextBool(yFrame > 0 ? 2 : 5) ? 36 : 0;
 
-                    Main.tile[x + dx, y + dy].active(true);
-                    Main.tile[x + dx, y + dy].frameX = (short)(xFrame + dx * 18);
-                    Main.tile[x + dx, y + dy].frameY = (short)(yFrame + dy % 2 * 18);
-                    Main.tile[x + dx, y + dy].type = vineID;
+                    Main.tile[x + dx, y + dy].Get<TileWallWireStateData>().HasTile = true;
+                    Main.tile[x + dx, y + dy].TileFrameX = (short)(xFrame + dx * 18);
+                    Main.tile[x + dx, y + dy].TileFrameY = (short)(yFrame + dy % 2 * 18);
+                    Main.tile[x + dx, y + dy].TileType = vineID;
                 }
             }
             return true;
@@ -475,14 +475,14 @@ namespace CalamityMod.World.Minibiomes
         public static void RecursivelyFillAreaWithWater(int x, int y, int limit, ref int increment)
         {
             Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-            if (tile.active() || tile.liquid > 127)
+            if (tile.HasTile || tile.LiquidAmount > 127)
                 return;
 
             increment++;
             if (increment >= limit)
                 return;
 
-            Main.tile[x, y].liquid = 255;
+            Main.tile[x, y].LiquidAmount = 255;
             RecursivelyFillAreaWithWater(x + 1, y, limit, ref increment);
             RecursivelyFillAreaWithWater(x - 1, y, limit, ref increment);
             RecursivelyFillAreaWithWater(x, y + 1, limit, ref increment);

@@ -1,4 +1,4 @@
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -8,7 +8,7 @@ namespace CalamityMod.Tiles.FloralParadise
 {
     public class WaterfallCreator : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = false;
             Main.tileBlockLight[Type] = true;
@@ -18,7 +18,7 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.MergeWithOres(Type);
             CalamityUtils.MergeWithFloralParadise(Type);
 
-            soundType = SoundID.Tink;
+            SoundType = SoundID.Tink;
 
             AddMapEntry(new Color(33, 56, 27));
         }

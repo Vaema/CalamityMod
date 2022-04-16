@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.World;
+using CalamityMod.World.Minibiomes;
 using CalamityMod.World.Planets;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -55,7 +56,12 @@ namespace CalamityMod.Systems
                 CustomTemple.NewJungleTemple();
             });
 
-            //Improved Golem arena
+            tasks.Insert(JungleTempleIndex + 1, new PassLegacy("FloralParadise", (progress, config) =>
+            {
+                progress.Message = "Growing a floral paradise underground";
+                FloralParadiseMinibiome.GenerateInstances();
+            }));
+
             int JungleTempleIndex2 = tasks.FindIndex(genpass => genpass.Name.Equals("Temple"));
             tasks[JungleTempleIndex2] = new PassLegacy("Temple", (progress, config) =>
             {
@@ -74,12 +80,7 @@ namespace CalamityMod.Systems
                 CustomTemple.NewJungleTempleLihzahrdAltar();
             });
 
-            // Floral Paradise
-            tasks.Insert(JungleTempleIndex + 1, new PassLegacy("FloralParadise", progress =>
-            {
-                progress.Message = "Growing a floral paradise underground";
-                FloralParadiseMinibiome.GenerateInstances();
-            }));
+            // TODO -- Most of the below worldgen should be spaced out at better points of generation instead of all crammed at the end
 
             //Giant beehive
             int giantHiveIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Hives"));

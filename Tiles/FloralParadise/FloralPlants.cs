@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,7 +8,7 @@ namespace CalamityMod.Tiles.FloralParadise
 {
     public class FloralPlants : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileNoFail[Type] = true;
@@ -17,14 +17,12 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
             TileObjectData.addTile(Type);
 
-            soundType = SoundID.Grass;
-            dustType = 2;
+            SoundType = SoundID.Grass;
+            DustType = 2;
             AddMapEntry(new Color(28, 216, 94));
-
-            base.SetDefaults();
         }
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height)
+        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
         {
             offsetY = 2;
         }
@@ -36,7 +34,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            if (CalamityUtils.ParanoidTileRetrieval(i, j).liquid > 64)
+            if (CalamityUtils.ParanoidTileRetrieval(i, j).LiquidAmount > 64)
                 WorldGen.KillTile(i, j);
         }
     }

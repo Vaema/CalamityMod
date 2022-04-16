@@ -1,5 +1,6 @@
-using CalamityMod.Tiles.FloralParadise;
+﻿using CalamityMod.Tiles.FloralParadise;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -30,19 +31,19 @@ namespace CalamityMod.Waterfalls
 
         internal static float PrimitiveWidthFunction(float completionRatio)
         {
-            float baseWidth = MathHelper.Lerp(16f, 6f, Utils.InverseLerp(36f, 216f, currentWaterfallHeight, true));
+            float baseWidth = MathHelper.Lerp(16f, 6f, Utils.GetLerpValue(36f, 216f, currentWaterfallHeight, true));
             float positionOffset = currentWaterfallPosition.X * 0.17f % 300f + currentWaterfallPosition.Y * 0.33f % 300f;
-            float x1Offset = (float)(Math.Sin(-Main.GlobalTime * 3f + completionRatio * 9f + positionOffset) * 0.5f + 0.5f) * baseWidth * 0.2f;
-            float x2Offset = (float)(Math.Sin(-Main.GlobalTime * 6f + completionRatio * 6f + positionOffset) * 0.5f + 0.5f) * baseWidth * 0.25f;
+            float x1Offset = (float)(Math.Sin(-Main.GlobalTimeWrappedHourly * 3f + completionRatio * 9f + positionOffset) * 0.5f + 0.5f) * baseWidth * 0.2f;
+            float x2Offset = (float)(Math.Sin(-Main.GlobalTimeWrappedHourly * 6f + completionRatio * 6f + positionOffset) * 0.5f + 0.5f) * baseWidth * 0.25f;
 
             if (completionRatio < 0.2f)
-                return MathHelper.SmoothStep(1f, baseWidth + x2Offset - x1Offset, Utils.InverseLerp(0f, 0.2f, completionRatio, true));
-            return baseWidth + x2Offset + MathHelper.SmoothStep(0f, baseWidth * 0.85f, Utils.InverseLerp(0.84f, 0.96f, completionRatio, true)) - x1Offset;
+                return MathHelper.SmoothStep(1f, baseWidth + x2Offset - x1Offset, Utils.GetLerpValue(0f, 0.2f, completionRatio, true));
+            return baseWidth + x2Offset + MathHelper.SmoothStep(0f, baseWidth * 0.85f, Utils.GetLerpValue(0.84f, 0.96f, completionRatio, true)) - x1Offset;
         }
 
         internal static Color PrimitiveColorFunction(float completionRatio)
         {
-            Color c = Color.Lerp(Color.Cyan, new Color(1f, 1f, 1f, 0f), (float)Math.Pow(Utils.InverseLerp(0.75f, 1f, completionRatio, true), 0.68));
+            Color c = Color.Lerp(Color.Cyan, new Color(1f, 1f, 1f, 0f), (float)Math.Pow(Utils.GetLerpValue(0.75f, 1f, completionRatio, true), 0.68));
             return c;
         }
 
@@ -55,7 +56,7 @@ namespace CalamityMod.Waterfalls
                 for (int j = -Main.screenHeight / 16 - 10; j < Main.screenHeight / 16 + 10; j++)
                 {
                     Tile tile = CalamityUtils.ParanoidTileRetrieval(center.X + i, center.Y + j);
-                    if (tile.type != waterfallGeneratorID || !tile.active())
+                    if (tile.TileType != waterfallGeneratorID || !tile.HasTile)
                         continue;
 
                     yield return new Vector2(center.X + i, center.Y + j);
@@ -71,13 +72,14 @@ namespace CalamityMod.Waterfalls
                 Vector2 bottom = drawPosition;
                 for (int i = 0; i < 16; i++)
                 {
-                    if (CalamityUtils.ParanoidTileRetrieval((int)drawTilePosition.X, (int)drawTilePosition.Y + i).liquid > 0)
+                    if (CalamityUtils.ParanoidTileRetrieval((int)drawTilePosition.X, (int)drawTilePosition.Y + i).LiquidAmount > 0)
                     {
                         bottom.Y += i * 16f;
                         break;
                     }
                 }
 
+                bottom.Y += 4f;
                 currentWaterfallHeight = MathHelper.Distance(bottom.Y, drawPosition.Y);
                 currentWaterfallBrightness = Lighting.Brightness((int)(drawPosition.X / 16f), (int)(drawPosition.Y / 16f));
                 currentWaterfallPosition = drawPosition + Vector2.One * 8f;
@@ -99,10 +101,10 @@ namespace CalamityMod.Waterfalls
                 {
                     Main.ambientWaterfallX = drawPosition.X + 8f;
                     Main.ambientWaterfallY = drawPosition.Y + 8f;
-                    Main.ambientWaterfallStrength = MathHelper.Max(Main.ambientWaterfallStrength, Utils.InverseLerp(740f, 300f, distanceFromWaterfall, true));
+                    Main.ambientWaterfallStrength = MathHelper.Max(Main.ambientWaterfallStrength, Utils.GetLerpValue(740f, 300f, distanceFromWaterfall, true));
                 }
 
-                GameShaders.Misc["CalamityMod:Waterfall"].SetShaderTexture(ModContent.GetTexture("CalamityMod/ExtraTextures/WorleyNoise"));
+                GameShaders.Misc["CalamityMod:Waterfall"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/WorleyNoise"));
                 GameShaders.Misc["CalamityMod:Waterfall"].UseOpacity((float)Math.Pow(currentWaterfallBrightness, 0.62));
                 Renderer.Draw(drawPoints, Vector2.One * 8f - Main.screenPosition, 80);
             }

@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,7 +7,7 @@ namespace CalamityMod.Tiles.FloralParadise
 {
     public class FloralStone : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
@@ -20,10 +20,10 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.MergeWithOres(Type);
             CalamityUtils.MergeWithFloralParadise(Type);
 
-            dustType = 78;
+            DustType = 78;
             // drop = ModContent.ItemType<FloralStoneItem>();
 
-            soundType = SoundID.Tink;
+            SoundType = SoundID.Tink;
 
             AddMapEntry(new Color(33, 56, 27));
         }

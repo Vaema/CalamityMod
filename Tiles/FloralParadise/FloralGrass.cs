@@ -1,6 +1,7 @@
-using CalamityMod.Projectiles.Environment;
+﻿using CalamityMod.Projectiles.Environment;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,7 +9,7 @@ namespace CalamityMod.Tiles.FloralParadise
 {
     public class FloralGrass : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
@@ -23,11 +24,10 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.SetMerge(Type, TileID.Grass);
             CalamityUtils.SetMerge(Type, TileID.CorruptGrass);
             CalamityUtils.SetMerge(Type, TileID.HallowedGrass);
-            CalamityUtils.SetMerge(Type, TileID.FleshGrass);
+            CalamityUtils.SetMerge(Type, TileID.CrimsonGrass);
             CalamityUtils.MergeWithFloralParadise(Type);
 
-            dustType = 39;
-            drop = ItemID.DirtBlock;
+            DustType = 39;
 
             AddMapEntry(new Color(65, 142, 101));
         }
@@ -40,15 +40,15 @@ namespace CalamityMod.Tiles.FloralParadise
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             if (fail && !effectOnly)
-                Main.tile[i, j].type = (ushort)ModContent.TileType<PeatMoss>();
+                Main.tile[i, j].TileType = (ushort)ModContent.TileType<PeatMoss>();
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            if (WorldGen.genRand.NextBool(60) && !Main.gamePaused && CalamityUtils.ParanoidTileRetrieval(i, j - 1).liquid >= 200)
+            if (WorldGen.genRand.NextBool(60) && !Main.gamePaused && CalamityUtils.ParanoidTileRetrieval(i, j - 1).LiquidAmount >= 200)
             {
                 Vector2 algaeVelocity = -Vector2.UnitY.RotatedByRandom(0.91f) * Main.rand.NextFloat(0.85f, 1.6f);
-                Projectile.NewProjectile(new Vector2(i + 0.5f, j - 0.5f) * 16f, algaeVelocity, ModContent.ProjectileType<WaterAlgae>(), 0, 0f);
+                Projectile.NewProjectile(new EntitySource_WorldEvent(), new Vector2(i + 0.5f, j - 0.5f) * 16f, algaeVelocity, ModContent.ProjectileType<WaterAlgae>(), 0, 0f);
             }
         }
 
@@ -62,8 +62,8 @@ namespace CalamityMod.Tiles.FloralParadise
                 {
                     if (WorldGen.InWorld(x, y))
                     {
-                        if (CalamityUtils.ParanoidTileRetrieval(x, y).active() &&
-                            CalamityUtils.ParanoidTileRetrieval(x, y).type == (ushort)ModContent.TileType<SmallVines>())
+                        if (CalamityUtils.ParanoidTileRetrieval(x, y).HasTile &&
+                            CalamityUtils.ParanoidTileRetrieval(x, y).TileType == (ushort)ModContent.TileType<SmallVines>())
                         {
                             nearbyVineCount++;
                         }
@@ -72,20 +72,20 @@ namespace CalamityMod.Tiles.FloralParadise
             }
             if (Main.tile[i, j + 1] != null && nearbyVineCount < 5)
             {
-                if (!Main.tile[i, j + 1].active() && Main.tile[i, j + 1].type != (ushort)ModContent.TileType<SmallVines>())
+                if (!Main.tile[i, j + 1].HasTile && Main.tile[i, j + 1].TileType != (ushort)ModContent.TileType<SmallVines>())
                 {
-                    if (Main.tile[i, j + 1].liquid == 255 &&
-                        !Main.tile[i, j + 1].lava())
+                    if (Main.tile[i, j + 1].LiquidAmount == 255 &&
+                        Main.tile[i, j + 1].LiquidType == LiquidID.Water)
                     {
                         bool flag13 = false;
                         for (int y = num8; y > num8 - 10; y--)
                         {
-                            if (Main.tile[i, y].bottomSlope())
+                            if (Main.tile[i, y].BottomSlope)
                             {
                                 flag13 = false;
                                 break;
                             }
-                            if (Main.tile[i, y].active() && !Main.tile[i, y].bottomSlope())
+                            if (Main.tile[i, y].HasTile && !Main.tile[i, y].BottomSlope)
                             {
                                 flag13 = true;
                                 break;
@@ -95,16 +95,16 @@ namespace CalamityMod.Tiles.FloralParadise
                         {
                             int num53 = i;
                             int num54 = j + 1;
-                            Main.tile[num53, num54].type = (ushort)ModContent.TileType<SmallVines>();
-                            Main.tile[num53, num54].active(true);
+                            Main.tile[num53, num54].TileType = (ushort)ModContent.TileType<SmallVines>();
+                            Main.tile[num53, num54].Get<TileWallWireStateData>().HasTile = true;
                             WorldGen.SquareTileFrame(num53, num54, true);
                             if (Main.netMode == NetmodeID.Server)
                             {
                                 NetMessage.SendTileSquare(-1, num53, num54, 3, TileChangeType.None);
                             }
                         }
-                        Main.tile[i, j].slope(0);
-                        Main.tile[i, j].halfBrick(false);
+                        Main.tile[i, j].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
+                        Main.tile[i, j].Get<TileWallWireStateData>().IsHalfBlock = false;
                     }
                 }
             }

@@ -1,8 +1,9 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -11,7 +12,7 @@ namespace CalamityMod.Tiles.FloralParadise
 {
     public class VigorousVines : ModTile
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
             Main.tileCut[Type] = true;
             Main.tileLavaDeath[Type] = true;
@@ -35,8 +36,8 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.newTile.RandomStyleRange = 2;
             TileObjectData.addTile(Type);
 
-            soundType = SoundID.Grass;
-            dustType = 2;
+            SoundType = SoundID.Grass;
+            DustType = 2;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -47,33 +48,33 @@ namespace CalamityMod.Tiles.FloralParadise
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             Tile tile = CalamityUtils.ParanoidTileRetrieval(i, j);
-            if (tile.frameX % 36 != 0 || tile.frameY % 36 != 0)
+            if (tile.TileFrameX % 36 != 0 || tile.TileFrameY % 36 != 0)
             {
-                WorldGen.KillTile(i - tile.frameX % 36 / 18, j - tile.frameY % 36 / 18);
+                WorldGen.KillTile(i - tile.TileFrameX % 36 / 18, j - tile.TileFrameY % 36 / 18);
 
-                if (CalamityUtils.ParanoidTileRetrieval(i - tile.frameX % 36 / 18, j - tile.frameY % 36 / 18 - 1).type == Type)
-                    WorldGen.KillTile(i - tile.frameX % 36 / 18, j - tile.frameY % 36 / 18 - 1);
+                if (CalamityUtils.ParanoidTileRetrieval(i - tile.TileFrameX % 36 / 18, j - tile.TileFrameY % 36 / 18 - 1).TileType == Type)
+                    WorldGen.KillTile(i - tile.TileFrameX % 36 / 18, j - tile.TileFrameY % 36 / 18 - 1);
                 return;
             }
 
             else if (WorldGen.genRand.NextBool(2) && Main.player[Player.FindClosest(new Vector2(i, j) * 16f, 16, 16)].cordage)
             {
-                Item.NewItem(new Vector2(i * 16 + 24f, j * 16 + 24f), ItemID.VineRope);
+                Item.NewItem(new EntitySource_TileBreak(i, j), new Vector2(i * 16 + 24f, j * 16 + 24f), ItemID.VineRope);
             }
         }
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile t = Main.tile[i, j];
-            int frameX = t.frameX;
-            int frameY = t.frameY;
-            Texture2D tex = Main.tileTexture[Type];
+            int frameX = t.TileFrameX;
+            int frameY = t.TileFrameY;
+            Texture2D tex = TextureAssets.Tile[Type].Value;
             Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset;
             Color drawColor = Lighting.GetColor(i, j);
-            if (!t.halfBrick() && t.slope() == 0)
+            if (!t.IsHalfBlock && t.Slope == SlopeType.Solid)
                 spriteBatch.Draw(tex, drawPosition, new Rectangle(frameX, frameY, 18, 18), drawColor, 0f, Vector2.Zero, 1f, 0, 0f);
-            else if (t.halfBrick())
+            else if (t.IsHalfBlock)
                 spriteBatch.Draw(tex, drawPosition + new Vector2(0f, 8f), new Rectangle(frameX, frameY, 18, 8), drawColor, 0f, Vector2.Zero, 1f, 0, 0f);
 
             return false;

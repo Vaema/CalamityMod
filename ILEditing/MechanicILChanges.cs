@@ -700,8 +700,8 @@ namespace CalamityMod.ILEditing
             cursor.GotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("DrawInfernoRings"));
             cursor.EmitDelegate<Action>(() =>
             {
-                if (Main.netMode != NetmodeID.Server && CalamityWorld.FloralParadiseTiles > 0)
-                    DrawFog(Utils.InverseLerp(0f, 250f, CalamityWorld.FloralParadiseTiles, true));
+                if (Main.netMode != NetmodeID.Server && BiomeTileCounterSystem.FloralParadiseTiles > 0)
+                    DrawFog(Utils.GetLerpValue(0f, 250f, BiomeTileCounterSystem.FloralParadiseTiles, true));
             });
         }
 
@@ -710,11 +710,11 @@ namespace CalamityMod.ILEditing
             Main.spriteBatch.EnterShaderRegion();
             WaterfallRenderer.DrawWaterfalls();
 
-            Texture2D fogTexture = ModContent.GetTexture("Terraria/Misc/Perlin");
+            Texture2D fogTexture = ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value;
             Vector2 scale = new Vector2(Main.screenWidth, Main.screenHeight) / fogTexture.Size();
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.instance.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             GameShaders.Misc["CalamityMod:Fog"].UseOpacity(intensity * 0.67f);
             GameShaders.Misc["CalamityMod:Fog"].UseColor(Color.Lerp(Color.Lime, Color.Black, 0.85f));
             GameShaders.Misc["CalamityMod:Fog"].Apply();
