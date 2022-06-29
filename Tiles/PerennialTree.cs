@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.DataStructures;
 using CalamityMod.Tiles.BaseTiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles
@@ -13,25 +12,33 @@ namespace CalamityMod.Tiles
     public class PerennialTree : DynamicallyGrownTree
     {
         // The max amount that branches can travel. Once the distance of the branches reaches or exceeds this threshold, the tree is done growing.
-        public override float MaxDistanceBeforeCutoff => 4000f;
+        public override float MaxDistanceBeforeCutoff => 4200f;
 
         public override float DistanceUsedForTrunk => 225f;
 
         public override float BranchMaxBendFactor => 0.75f;
 
-        public override float BranchTurnAngleVariance => 0.6f;
+        public override float BranchTurnAngleVariance => 0.48f;
 
-        public override float MinBranchLength => 8f;
+        public override float MinBranchLength => 30f;
 
         public override float TrunkWidth => 16f;
 
-        public override float ChanceToCreateNewBranches => 0.9f;
+        public override float ChanceToCreateNewBranches => 0.8f;
 
         public override float VerticalStretchFactor => 10f;
 
         public override float DownwardBiasFactor => 0.75f;
 
-        public override int MaxCutoffBranchesPerBranch => 11;
+        public override int MaxCutoffBranchesPerBranch => 6;
+
+        public override void SetStaticDefaults()
+        {
+            DustType = 214;
+            ItemDrop = ItemID.Wood;
+
+            AddMapEntry(new Color(83, 91, 102));
+        }
 
         public void DrawVine(Vector2 vineTop, Vector2 downwardBottom, int totalVinesToDraw, float swayFactor)
         {
@@ -76,7 +83,7 @@ namespace CalamityMod.Tiles
             float swayFactor = Main.windSpeedCurrent + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 1.87f + RNG.NextFloat(0.94f)) * 0.4f;
             Vector2 top = branch.EndOfCurve + Vector2.UnitY * 12f;
             Vector2 bottom = top + Vector2.UnitY * totalVinesToDraw * 30f;
-            DrawVine(top, bottom, totalVinesToDraw, swayFactor * 40f);
+            DrawVine(top, bottom, totalVinesToDraw, swayFactor * 35f);
         }
     }
 }

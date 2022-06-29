@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using System;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.ID;
+using Terraria.DataStructures;
 
 namespace CalamityMod.Tiles.BaseTiles
 {
@@ -134,7 +135,7 @@ namespace CalamityMod.Tiles.BaseTiles
                 // Sometimes simply extend an existing branch instead of creating new ones.
                 if (RNG.NextFloat() > ChanceToCreateNewBranches)
                 {
-                    List<Branch> potentialBranchesToExtend = existingBranches.Where(b => b.Key.CurveLength < trunkSize * 0.7f).Select(b => b.Key).ToList();
+                    List<Branch> potentialBranchesToExtend = existingBranches.Where(b => b.Key.CurveLength < trunkSize * 0.7f && b.Key.CurveLength > MinBranchLength).Select(b => b.Key).ToList();
                     if (potentialBranchesToExtend.Count <= 0)
                         continue;
 
@@ -147,19 +148,19 @@ namespace CalamityMod.Tiles.BaseTiles
                 }
 
                 // Pick a random branch to attach to and determine the properties of the potential next one.
-                List<Branch> validBranches = existingBranches.Where(b => b.Value.Count < MaxCutoffBranchesPerBranch && b.Key.EndingWidth >= 4f).Select(b => b.Key).ToList();
+                List<Branch> validBranches = existingBranches.Where(b => b.Value.Count < MaxCutoffBranchesPerBranch && b.Key.EndingWidth >= 6f).Select(b => b.Key).ToList();
                 if (validBranches.Count <= 0)
                     continue;
 
                 Branch branchToAttachTo = RNG.Next(validBranches);
                 float maxBranchAngleVariance = BranchTurnAngleVariance * (branchToAttachTo == trunk ? 1.8f : 1f);
                 float directionOfNextBranch = branchToAttachTo.Direction + RNG.NextFloatDirection() * maxBranchAngleVariance;
-                if (DownwardBiasFactor > 0f)
-                    directionOfNextBranch = directionOfNextBranch.AngleLerp(MathHelper.PiOver2, RNG.NextFloat(DownwardBiasFactor) * 0.5f);
+                if (DownwardBiasFactor > 0f && branchToAttachTo != trunk)
+                    directionOfNextBranch = directionOfNextBranch.AngleLerp(MathHelper.PiOver2, RNG.NextFloat(0.67f, 1f) * DownwardBiasFactor * 0.5f);
 
                 // Try not to create a branch with a direction very similar to other branches attached to the one that this one will attach to.
                 if (existingBranches[branchToAttachTo].Count >= 1 && 
-                    existingBranches[branchToAttachTo].Any(b => b.Direction.ToRotationVector2().AngleBetween(directionOfNextBranch.ToRotationVector2()) < 0.32f))
+                    existingBranches[branchToAttachTo].Any(b => b.Direction.ToRotationVector2().AngleBetween(directionOfNextBranch.ToRotationVector2()) < 0.12f))
                 {
                     continue;
                 }
@@ -306,6 +307,25 @@ namespace CalamityMod.Tiles.BaseTiles
             // Draw things at the end of branches.
             foreach (Branch outwardmostBranch in outwardmostBranches)
                 DrawThingAtEndOfBranch(outwardmostBranch);
+        }
+        
+        public override bool Drop(int x, int y)
+        {
+            var branchData = GenerateBranches(new(x, y));
+            var branches = branchData.Select(b => b.Key);
+            foreach (var branch in branches)
+            {
+                int totalWood = (int)Math.Ceiling(branch.CurveLength / 30f);
+                int stack = Main.rand.Next(1, 3);
+                for (int i = 0; i < totalWood; i++)
+                {
+                    Vector2 woodPosition = branch.Curve.Evaluate(i / (float)(totalWood - 1f));
+                    woodPosition += new Vector2(x, y).ToWorldCoordinates() + Main.rand.NextVector2Circular(10f, 10f);
+                    Item.NewItem(new EntitySource_TileBreak(x, y), woodPosition, ItemDrop);
+                }
+            }
+
+            return false;
         }
 
         public Branch GenerateBranchCurve(Vector2 start, Vector2 end, float startWidth, float endWidth, Branch previousBranch = null)
