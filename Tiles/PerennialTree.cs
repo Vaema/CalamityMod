@@ -6,36 +6,43 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles
 {
     public class PerennialTree : DynamicallyGrownTree
     {
         // The max amount that branches can travel. Once the distance of the branches reaches or exceeds this threshold, the tree is done growing.
-        public override float MaxDistanceBeforeCutoff => 4200f;
+        public override float MaxDistanceBeforeCutoff => 5400f;
 
         public override float DistanceUsedForTrunk => 225f;
 
-        public override float BranchMaxBendFactor => 0.75f;
+        public override float BranchMaxBendFactor => 0.5f;
 
-        public override float BranchTurnAngleVariance => 0.48f;
+        public override float BranchTurnAngleVariance => 0.4f;
 
         public override float MinBranchLength => 30f;
 
         public override float TrunkWidth => 16f;
 
-        public override float ChanceToCreateNewBranches => 0.8f;
+        public override float ChanceToCreateNewBranches => 0.9f;
 
-        public override float VerticalStretchFactor => 10f;
+        public override float VerticalStretchFactor => 8f;
 
-        public override float DownwardBiasFactor => 0.75f;
+        public override float DownwardBiasFactor => 0.3f;
+
+        public override float BranchGrowthWidthDecay => 0.61f;
 
         public override int MaxCutoffBranchesPerBranch => 6;
 
         public override void SetStaticDefaults()
         {
-            DustType = 214;
+            Main.tileAxe[Type] = true;
+            Main.tileFrameImportant[Type] = true;
+            DustType = 7;
             ItemDrop = ItemID.Wood;
+            UseDefaultSize();
+            TileObjectData.addTile(Type);
 
             AddMapEntry(new Color(83, 91, 102));
         }
