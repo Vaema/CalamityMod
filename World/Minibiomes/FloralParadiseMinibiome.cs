@@ -15,6 +15,7 @@ namespace CalamityMod.World.Minibiomes
         // Constants pertaining to the more important details of the world-gen, to allow for ease-of-change.
         // Certain numbers are hardcoded and not present here, but they tend to be in regards to things that either really shouldn't need changing or 
         // are extremely subtle details.
+        public const int TotalCavesInMediumWorld = 3;
 
         public const int MaxHorizontalDistanceFromWorldCenter = 1250;
 
@@ -32,9 +33,9 @@ namespace CalamityMod.World.Minibiomes
 
         public const float SecondaryPassDirtCreationChance = 0.5f;
 
-        public const int MinVigorousVineLength = 4;
+        public const int MinVigorousVineLength = 6;
 
-        public const int MaxVigorousVineLength = 12;
+        public const int MaxVigorousVineLength = 16;
 
         public const int MinSmallVineLength = 9;
 
@@ -73,7 +74,7 @@ namespace CalamityMod.World.Minibiomes
         public static void GenerateInstances()
         {
             float worldSize = Main.maxTilesX / 4200f;
-            int totalCaves = (int)(worldSize * 5f);
+            int totalCaves = (int)(worldSize * TotalCavesInMediumWorld);
             int infiniteLoopPreventerIncrement = 0;
             List<Rectangle> existingCaveAreas = new List<Rectangle>();
             for (int i = 0; i < totalCaves; i++)

@@ -142,8 +142,8 @@ namespace CalamityMod.CalPlayer
             // Check if schematics are present on the mouse, for the sake of registering their recipes.
             CheckIfMouseItemIsSchematic();
 
-            // Do biome specific effects
-            DrawPollenInFloralParadise();
+            // Do environmental effects.
+            DoEnvironmentalEffects();
 
             // Handle Androomba's Right Click function
             AndroombaRightClick();

@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.FloralParadise
             DustType = 78;
             // drop = ModContent.ItemType<FloralStoneItem>();
 
-            SoundType = SoundID.Tink;
+            HitSound = SoundID.Tink;
 
             AddMapEntry(new Color(33, 56, 27));
         }

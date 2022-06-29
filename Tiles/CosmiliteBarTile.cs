@@ -1,6 +1,7 @@
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles
@@ -18,6 +19,11 @@ namespace CalamityMod.Tiles
         {
             type = ModContent.DustType<CosmiliteBarDust>();
             return true;
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            return false;
         }
     }
 }

@@ -18,6 +18,7 @@ namespace CalamityMod.Tiles.FloralParadise
             Main.tileLavaDeath[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
+            Main.tileLighted[Type] = true;
             ModTranslation name = CreateMapEntryName();
             name.SetDefault("Vigorous Vines");
             AddMapEntry(new Color(145, 203, 102), name);
@@ -36,13 +37,20 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.newTile.RandomStyleRange = 2;
             TileObjectData.addTile(Type);
 
-            SoundType = SoundID.Grass;
+            HitSound = SoundID.Grass;
             DustType = 2;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
+        }
+
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            r = 0.11f;
+            g = 0.46f;
+            b = 0.17f;
         }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)

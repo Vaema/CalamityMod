@@ -17,7 +17,7 @@ namespace CalamityMod.Tiles.FloralParadise
             ModTranslation name = CreateMapEntryName();
             name.SetDefault("Vines");
             AddMapEntry(new Color(100, 151, 31), name);
-            SoundType = SoundID.Grass;
+            HitSound = SoundID.Grass;
             DustType = 2;
         }
 

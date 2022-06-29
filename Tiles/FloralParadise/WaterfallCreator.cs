@@ -18,7 +18,7 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.MergeWithOres(Type);
             CalamityUtils.MergeWithFloralParadise(Type);
 
-            SoundType = SoundID.Tink;
+            HitSound = SoundID.Tink;
 
             AddMapEntry(new Color(33, 56, 27));
         }
