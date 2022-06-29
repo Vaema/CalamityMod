@@ -72,7 +72,7 @@ namespace CalamityMod.Tiles.BaseTiles
         // The max amount that branches can travel. Once the distance of the branches reaches or exceeds this threshold, the tree is done growing.
         public abstract float MaxDistanceBeforeCutoff { get; }
 
-        public abstract float PercentageOfDistanceUsedForTrunk { get; }
+        public abstract float DistanceUsedForTrunk { get; }
 
         public abstract float BranchMaxBendFactor { get; }
 
@@ -87,6 +87,8 @@ namespace CalamityMod.Tiles.BaseTiles
         // Chance to create new branches instead of extending existing ones.
         public abstract float ChanceToCreateNewBranches { get; }
 
+        public abstract float VerticalStretchFactor { get; }
+
         public const int ControlPointCountPerBranch = 8;
 
         public IEnumerable<Branch> GenerateBranches(Point p)
@@ -95,8 +97,8 @@ namespace CalamityMod.Tiles.BaseTiles
 
             float maxBranchAngleVariance = BranchTurnAngleVariance;
             float cutoffDistance = MaxDistanceBeforeCutoff;
-            float trunkDirection = rng.NextFloatDirection() * 0.12f - MathHelper.PiOver2;
-            float trunkSize = rng.NextFloat(0.8f, 1.15f) * MaxDistanceBeforeCutoff * PercentageOfDistanceUsedForTrunk;
+            float trunkDirection = rng.NextFloatDirection() * BranchTurnAngleVariance * 0.3f - MathHelper.PiOver2;
+            float trunkSize = rng.NextFloat(0.8f, 1.15f) * DistanceUsedForTrunk;
             float distanceTraversed = trunkSize;
             Vector2 endOfTrunk = trunkDirection.ToRotationVector2() * trunkSize;
             Branch trunk = GenerateBranchCurve(rng, Vector2.Zero, endOfTrunk, TrunkWidth, TrunkWidth);
@@ -131,15 +133,21 @@ namespace CalamityMod.Tiles.BaseTiles
                         continue;
 
                     Branch branchToExtend = rng.Next(potentialBranchesToExtend);
-                    //extendLengthOfBranch(branchToExtend, branchToExtend.CurveLength * 0.4f);
+
+                    float lengthToAdd = branchToExtend.CurveLength * 0.12f;
+                    extendLengthOfBranch(branchToExtend, lengthToAdd);
+                    distanceTraversed += lengthToAdd;
                     continue;
                 }
 
                 // Pick a random branch to attach to and determine the properties of the potential next one.
                 List<Branch> validBranches = existingBranches.Where(b => b.Value.Count < 3 && b.Key.EndingWidth >= 4f).Select(b => b.Key).ToList();
+                if (validBranches.Count <= 0)
+                    continue;
+
                 Branch branchToAttachTo = rng.Next(validBranches);
                 float directionOfNextBranch = branchToAttachTo.Direction + rng.NextFloatDirection() * maxBranchAngleVariance;
-                float lengthOfNextBranch = MathHelper.Max(MinBranchLength, branchToAttachTo.CurveLength * rng.NextFloat(0.475f, 0.65f));
+                float lengthOfNextBranch = MathHelper.Max(MinBranchLength, branchToAttachTo.CurveLength * rng.NextFloat(0.55f, 0.75f));
 
                 Vector2 start = branchToAttachTo.EndOfCurve;
                 Vector2 end = start + directionOfNextBranch.ToRotationVector2() * lengthOfNextBranch;
@@ -171,11 +179,12 @@ namespace CalamityMod.Tiles.BaseTiles
             IEnumerable<Branch> branches = GenerateBranches(p);
 
             // Generate vertex data.
-            Texture2D barkTexture = BarkTexture;
             int batchIndex = 0;
-            foreach (Branch branch in branches)
+            Vector2 screenOffset = p.ToWorldCoordinates() - Main.screenPosition;
+            Texture2D barkTexture = BarkTexture;
+            foreach (Branch branch in branches.OrderByDescending(b => b.EndOfCurve.Y))
             {
-                int pointCount = 32;
+                int pointCount = 50;
                 List<Vector2> smoothenedPoints = branch.Curve.GetPoints(pointCount + 1);
                 Vector2? prevBottomLeft = null;
                 Vector2? prevBottomRight = null;
@@ -190,33 +199,57 @@ namespace CalamityMod.Tiles.BaseTiles
                 {
                     Vector2 top = smoothenedPoints[i];
                     Vector2 bottom = smoothenedPoints[i + 1];
-                    float bottomCompletionRatio = (i + 1) / (float)pointCount;
                     float topCompletionRatio = i / (float)pointCount;
+                    float bottomCompletionRatio = (i + 1) / (float)pointCount;
                     if (i == pointCount - 1f)
                     {
-                        bottomCompletionRatio = 1f;
                         topCompletionRatio = 1f;
+                        bottomCompletionRatio = 1f;
                         bottom = branch.EndOfCurve;
                     }
 
-                    Vector2 topLeftTexCoord = new(0f, topCompletionRatio);
-                    Vector2 topRightTexCoord = new(1f, topCompletionRatio);
-                    Vector2 bottomLeftTexCoord = new(0f, bottomCompletionRatio);
-                    Vector2 bottomRightTexCoord = new(1f, bottomCompletionRatio);
-
+                    // Calculate frame coordinates.
+                    // This sucked to make.
                     float topWidth = MathHelper.Lerp(branch.StartingWidth, branch.EndingWidth, topCompletionRatio);
                     float bottomWidth = MathHelper.Lerp(branch.StartingWidth, branch.EndingWidth, bottomCompletionRatio);
-                    Vector2 screenOffset = p.ToWorldCoordinates() - Main.screenPosition;
+                    float topTexCoord = branch.CurveLength * topCompletionRatio / VerticalStretchFactor / barkTexture.Height % 1f;
+                    float bottomTexCoord = branch.CurveLength * bottomCompletionRatio / VerticalStretchFactor / barkTexture.Height % 1f;
+                    if (VerticalStretchFactor <= 0f)
+                    {
+                        topTexCoord = topWidth;
+                        bottomTexCoord = bottomWidth;
+                    }
+                    float stretchedHorizontalCoordTop = topWidth / barkTexture.Width;
+                    float stretchedHorizontalCoordBottom = bottomWidth / barkTexture.Width;
+                    if (topWidth > barkTexture.Width * 0.5f)
+                        stretchedHorizontalCoordTop = 1f;
+                    if (bottomWidth > barkTexture.Width * 0.5f)
+                        stretchedHorizontalCoordBottom = 1f;
+
+                    // Calculate texture coordinates.
+                    Vector2 topLeftTexCoord = new(stretchedHorizontalCoordTop, topTexCoord);
+                    Vector2 topRightTexCoord = new(0f, topTexCoord);
+                    Vector2 bottomLeftTexCoord = new(stretchedHorizontalCoordBottom, bottomTexCoord);
+                    Vector2 bottomRightTexCoord = new(0f, bottomTexCoord);
+
+                    // Calculate draw coordinates.
                     Vector2 orthogonalDirection = (bottom - top).SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.PiOver2);
                     Vector2 topLeft = prevBottomLeft ?? top + orthogonalDirection * topWidth * 0.5f;
                     Vector2 topRight = prevBottomRight ?? top - orthogonalDirection * topWidth * 0.5f;
                     Vector2 bottomLeft = bottom + orthogonalDirection * bottomWidth * 0.5f;
                     Vector2 bottomRight = bottom - orthogonalDirection * bottomWidth * 0.5f;
 
-                    vertices.Add(new VertexPositionColorTexture(new Vector3(topLeft.Floor() + screenOffset, 0f), Color.White, topLeftTexCoord));
-                    vertices.Add(new VertexPositionColorTexture(new Vector3(topRight.Floor() + screenOffset, 0f), Color.White, topRightTexCoord));
-                    vertices.Add(new VertexPositionColorTexture(new Vector3(bottomRight.Floor() + screenOffset, 0f), Color.White, bottomRightTexCoord));
-                    vertices.Add(new VertexPositionColorTexture(new Vector3(bottomLeft.Floor() + screenOffset, 0f), Color.White, bottomLeftTexCoord));
+                    // Calculate lighting colors.
+                    Vector2 lightOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(-Main.offScreenRange);
+                    Color topLeftColor = Lighting.GetColor((topLeft + p.ToWorldCoordinates() + lightOffset).ToTileCoordinates());
+                    Color topRightColor = Lighting.GetColor((topRight + p.ToWorldCoordinates() + lightOffset).ToTileCoordinates());
+                    Color bottomLeftColor = Lighting.GetColor((bottomLeft + p.ToWorldCoordinates() + lightOffset).ToTileCoordinates());
+                    Color bottomRightColor = Lighting.GetColor((bottomRight + p.ToWorldCoordinates() + lightOffset).ToTileCoordinates());
+
+                    vertices.Add(new VertexPositionColorTexture(new Vector3(topLeft.Floor() + screenOffset, 0f), topLeftColor, topLeftTexCoord));
+                    vertices.Add(new VertexPositionColorTexture(new Vector3(topRight.Floor() + screenOffset, 0f), topRightColor, topRightTexCoord));
+                    vertices.Add(new VertexPositionColorTexture(new Vector3(bottomRight.Floor() + screenOffset, 0f), bottomRightColor, bottomRightTexCoord));
+                    vertices.Add(new VertexPositionColorTexture(new Vector3(bottomLeft.Floor() + screenOffset, 0f), bottomLeftColor, bottomLeftTexCoord));
 
                     indices.Add((short)(batchIndex * 4));
                     indices.Add((short)(batchIndex * 4 + 1));
@@ -236,13 +269,10 @@ namespace CalamityMod.Tiles.BaseTiles
         public void Draw(Point p)
         {
             // Declare the vertex cache.
-            if (p != PreviousPoint || true)
-            {
-                GetVertexData(p, out var vertices, out var indices);
-                vertexCache = vertices.ToArray();
-                indexCache = indices.ToArray();
-                PreviousPoint = p;
-            }
+            GetVertexData(p, out var vertices, out var indices);
+            vertexCache = vertices.ToArray();
+            indexCache = indices.ToArray();
+            PreviousPoint = p;
 
             // Redefine the perspective matrices of the shader.
             CalamityUtils.CalculatePerspectiveMatricies(out Matrix effectView, out Matrix effectProjection);

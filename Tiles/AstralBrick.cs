@@ -66,7 +66,7 @@ namespace CalamityMod.Tiles
             {
                 Main.spriteBatch.Draw(glowmask, drawOffset + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
             }
-            TestThing.Draw(new(i, j));
+            TestThing.Draw(new(i + (int)zero.X / 16, j + (int)zero.Y / 16));
         }
 
         private Color GetDrawColour(int i, int j, Color colour)
