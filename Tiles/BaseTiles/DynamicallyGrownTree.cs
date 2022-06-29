@@ -49,6 +49,8 @@ namespace CalamityMod.Tiles.BaseTiles
 
         internal short[] indexCache = Array.Empty<short>();
 
+        protected UnifiedRandom RNG = new(0);
+
         public BasicEffect BasicShader
         {
             get
@@ -89,19 +91,23 @@ namespace CalamityMod.Tiles.BaseTiles
 
         public abstract float VerticalStretchFactor { get; }
 
+        public abstract float DownwardBiasFactor { get; }
+
+        public abstract int MaxCutoffBranchesPerBranch { get; }
+
         public const int ControlPointCountPerBranch = 8;
 
-        public IEnumerable<Branch> GenerateBranches(Point p)
-        {
-            UnifiedRandom rng = new(GetSeed(p.X, p.Y));
+        public virtual void DrawThingAtEndOfBranch(Branch branch) { }
 
-            float maxBranchAngleVariance = BranchTurnAngleVariance;
+        public Dictionary<Branch, List<Branch>> GenerateBranches(Point p)
+        {
+            RNG = new(GetSeed(p.X, p.Y));
             float cutoffDistance = MaxDistanceBeforeCutoff;
-            float trunkDirection = rng.NextFloatDirection() * BranchTurnAngleVariance * 0.3f - MathHelper.PiOver2;
-            float trunkSize = rng.NextFloat(0.8f, 1.15f) * DistanceUsedForTrunk;
+            float trunkDirection = RNG.NextFloatDirection() * BranchTurnAngleVariance * 0.3f - MathHelper.PiOver2;
+            float trunkSize = RNG.NextFloat(0.8f, 1.15f) * DistanceUsedForTrunk;
             float distanceTraversed = trunkSize;
             Vector2 endOfTrunk = trunkDirection.ToRotationVector2() * trunkSize;
-            Branch trunk = GenerateBranchCurve(rng, Vector2.Zero, endOfTrunk, TrunkWidth, TrunkWidth);
+            Branch trunk = GenerateBranchCurve(Vector2.Zero, endOfTrunk, TrunkWidth, TrunkWidth);
             Dictionary<Branch, List<Branch>> existingBranches = new()
             {
                 [trunk] = new()
@@ -126,13 +132,13 @@ namespace CalamityMod.Tiles.BaseTiles
                     break;
 
                 // Sometimes simply extend an existing branch instead of creating new ones.
-                if (rng.NextFloat() > ChanceToCreateNewBranches)
+                if (RNG.NextFloat() > ChanceToCreateNewBranches)
                 {
                     List<Branch> potentialBranchesToExtend = existingBranches.Where(b => b.Key.CurveLength < trunkSize * 0.7f).Select(b => b.Key).ToList();
                     if (potentialBranchesToExtend.Count <= 0)
                         continue;
 
-                    Branch branchToExtend = rng.Next(potentialBranchesToExtend);
+                    Branch branchToExtend = RNG.Next(potentialBranchesToExtend);
 
                     float lengthToAdd = branchToExtend.CurveLength * 0.12f;
                     extendLengthOfBranch(branchToExtend, lengthToAdd);
@@ -141,18 +147,29 @@ namespace CalamityMod.Tiles.BaseTiles
                 }
 
                 // Pick a random branch to attach to and determine the properties of the potential next one.
-                List<Branch> validBranches = existingBranches.Where(b => b.Value.Count < 3 && b.Key.EndingWidth >= 4f).Select(b => b.Key).ToList();
+                List<Branch> validBranches = existingBranches.Where(b => b.Value.Count < MaxCutoffBranchesPerBranch && b.Key.EndingWidth >= 4f).Select(b => b.Key).ToList();
                 if (validBranches.Count <= 0)
                     continue;
 
-                Branch branchToAttachTo = rng.Next(validBranches);
-                float directionOfNextBranch = branchToAttachTo.Direction + rng.NextFloatDirection() * maxBranchAngleVariance;
-                float lengthOfNextBranch = MathHelper.Max(MinBranchLength, branchToAttachTo.CurveLength * rng.NextFloat(0.55f, 0.75f));
+                Branch branchToAttachTo = RNG.Next(validBranches);
+                float maxBranchAngleVariance = BranchTurnAngleVariance * (branchToAttachTo == trunk ? 1.8f : 1f);
+                float directionOfNextBranch = branchToAttachTo.Direction + RNG.NextFloatDirection() * maxBranchAngleVariance;
+                if (DownwardBiasFactor > 0f)
+                    directionOfNextBranch = directionOfNextBranch.AngleLerp(MathHelper.PiOver2, RNG.NextFloat(DownwardBiasFactor) * 0.5f);
+
+                // Try not to create a branch with a direction very similar to other branches attached to the one that this one will attach to.
+                if (existingBranches[branchToAttachTo].Count >= 1 && 
+                    existingBranches[branchToAttachTo].Any(b => b.Direction.ToRotationVector2().AngleBetween(directionOfNextBranch.ToRotationVector2()) < 0.32f))
+                {
+                    continue;
+                }
+
+                float lengthOfNextBranch = MathHelper.Max(MinBranchLength, branchToAttachTo.CurveLength * RNG.NextFloat(0.55f, 0.75f));
 
                 Vector2 start = branchToAttachTo.EndOfCurve;
                 Vector2 end = start + directionOfNextBranch.ToRotationVector2() * lengthOfNextBranch;
                     
-                Branch newBranch = GenerateBranchCurve(rng, start, end, branchToAttachTo.EndingWidth, branchToAttachTo.EndingWidth * 0.5f, branchToAttachTo);
+                Branch newBranch = GenerateBranchCurve(start, end, branchToAttachTo.EndingWidth, branchToAttachTo.EndingWidth * 0.5f, branchToAttachTo);
 
                 // Create the new branch in the dictionary and make the old branch count count as having one extra branch attached.
                 existingBranches[branchToAttachTo].Add(newBranch);
@@ -166,17 +183,19 @@ namespace CalamityMod.Tiles.BaseTiles
             foreach (Branch branch in existingBranches.Where(b => b.Value.Count <= 0).Select(b => b.Key))
                 branch.EndingWidth = MathHelper.Min(3f, branch.EndingWidth);
 
-            return existingBranches.Select(b => b.Key);
+            return existingBranches;
         }
 
-        public void GetVertexData(Point p, out List<VertexPositionColorTexture> vertices, out List<short> indices)
+        public void GetVertexData(Point p, out List<VertexPositionColorTexture> vertices, out List<short> indices, out IEnumerable<Branch> outwardmostBranches)
         {
             // Initialize vertex and index data.
             vertices = new();
             indices = new();
 
             // Determine branch data.
-            IEnumerable<Branch> branches = GenerateBranches(p);
+            var branchData = GenerateBranches(p);
+            var branches = branchData.Select(b => b.Key);
+            outwardmostBranches = branchData.Where(b => b.Value.Count <= 0f).Select(b => b.Key);
 
             // Generate vertex data.
             int batchIndex = 0;
@@ -269,7 +288,7 @@ namespace CalamityMod.Tiles.BaseTiles
         public void Draw(Point p)
         {
             // Declare the vertex cache.
-            GetVertexData(p, out var vertices, out var indices);
+            GetVertexData(p, out var vertices, out var indices, out IEnumerable<Branch> outwardmostBranches);
             vertexCache = vertices.ToArray();
             indexCache = indices.ToArray();
             PreviousPoint = p;
@@ -280,11 +299,16 @@ namespace CalamityMod.Tiles.BaseTiles
             BasicShader.View = effectView;
             BasicShader.Projection = effectProjection;
 
+            // Draw the tree itself.
             Main.instance.GraphicsDevice.Textures[0] = BarkTexture;
             Main.instance.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, vertexCache, 0, vertexCache.Length, indexCache, 0, indexCache.Length / 3);
+
+            // Draw things at the end of branches.
+            foreach (Branch outwardmostBranch in outwardmostBranches)
+                DrawThingAtEndOfBranch(outwardmostBranch);
         }
 
-        public Branch GenerateBranchCurve(UnifiedRandom rng, Vector2 start, Vector2 end, float startWidth, float endWidth, Branch previousBranch = null)
+        public Branch GenerateBranchCurve(Vector2 start, Vector2 end, float startWidth, float endWidth, Branch previousBranch = null)
         {
             float distanceBetweenPoints = Vector2.Distance(start, end);
             Vector2[] initialPoints = new Vector2[ControlPointCountPerBranch];
@@ -293,8 +317,8 @@ namespace CalamityMod.Tiles.BaseTiles
                 initialPoints[i] = Vector2.Lerp(start, end, i / (float)(ControlPointCountPerBranch - 1f));
 
             // Create a bend midway.
-            float bendFactor = (float)Math.Pow(rng.NextFloat(), 1.5) * rng.NextBool().ToDirectionInt() * BranchMaxBendFactor;
-            initialPoints[ControlPointCountPerBranch / 2] += orthogonalDirection * rng.NextFloatDirection() * distanceBetweenPoints * bendFactor;
+            float bendFactor = (float)Math.Pow(RNG.NextFloat(), 1.5) * RNG.NextBool().ToDirectionInt() * BranchMaxBendFactor;
+            initialPoints[ControlPointCountPerBranch / 2] += orthogonalDirection * RNG.NextFloatDirection() * distanceBetweenPoints * bendFactor;
             
             return new(new(initialPoints), end, distanceBetweenPoints, (end - start).ToRotation(), startWidth, endWidth, previousBranch);
         }
