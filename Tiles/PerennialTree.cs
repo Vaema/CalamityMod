@@ -13,9 +13,9 @@ namespace CalamityMod.Tiles
     public class PerennialTree : DynamicallyGrownTree
     {
         // The max amount that branches can travel. Once the distance of the branches reaches or exceeds this threshold, the tree is done growing.
-        public override float MaxDistanceBeforeCutoff => 5400f;
+        public override float MaxDistanceBeforeCutoff => 2000f;
 
-        public override float DistanceUsedForTrunk => 225f;
+        public override float DistanceUsedForTrunk => 140f;
 
         public override float BranchMaxBendFactor => 0.5f;
 
@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles
 
         public override float ChanceToCreateNewBranches => 0.9f;
 
-        public override float VerticalStretchFactor => 8f;
+        public override float VerticalStretchFactor => 12f;
 
         public override float DownwardBiasFactor => 0.3f;
 

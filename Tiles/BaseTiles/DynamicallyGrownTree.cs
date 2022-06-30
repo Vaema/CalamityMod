@@ -229,11 +229,11 @@ namespace CalamityMod.Tiles.BaseTiles
 
             // Generate vertex data.
             int batchIndex = 0;
-            Vector2 screenOffset = p.ToWorldCoordinates() - Main.screenPosition;
+            Vector2 screenOffset = (p.ToWorldCoordinates() - Main.screenPosition).Floor();
             Texture2D barkTexture = BarkTexture;
             foreach (Branch branch in branches.OrderBy(b => b.EndOfCurve.Y))
             {
-                int pointCount = 50;
+                int pointCount = 12;
                 List<Vector2> smoothenedPoints = branch.Curve.GetPoints(pointCount + 1);
                 Vector2? prevBottomLeft = null;
                 Vector2? prevBottomRight = null;
@@ -261,8 +261,8 @@ namespace CalamityMod.Tiles.BaseTiles
                     // This sucked to make.
                     float topWidth = MathHelper.Lerp(branch.StartingWidth, branch.EndingWidth, topCompletionRatio);
                     float bottomWidth = MathHelper.Lerp(branch.StartingWidth, branch.EndingWidth, bottomCompletionRatio);
-                    float topTexCoord = branch.CurveLength * topCompletionRatio / VerticalStretchFactor / barkTexture.Height % 1f;
-                    float bottomTexCoord = branch.CurveLength * bottomCompletionRatio / VerticalStretchFactor / barkTexture.Height % 1f;
+                    float topTexCoord = branch.CurveLength * topCompletionRatio / VerticalStretchFactor / barkTexture.Height;
+                    float bottomTexCoord = branch.CurveLength * bottomCompletionRatio / VerticalStretchFactor / barkTexture.Height;
                     if (VerticalStretchFactor <= 0f)
                     {
                         topTexCoord = topWidth;
@@ -334,6 +334,7 @@ namespace CalamityMod.Tiles.BaseTiles
 
             // Draw the tree itself.
             Main.instance.GraphicsDevice.Textures[0] = BarkTexture;
+            Main.instance.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
             Main.instance.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, vertexCache, 0, vertexCache.Length, indexCache, 0, indexCache.Length / 3);
 
             // Draw things at the end of branches.
