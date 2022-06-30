@@ -177,11 +177,14 @@ namespace CalamityMod.Tiles.BaseTiles
                 float maxBranchAngleVariance = BranchTurnAngleVariance * (branchToAttachTo == trunk ? 2.1f : 1f);
                 float directionOfNextBranch = branchToAttachTo.Direction + RNG.NextFloatDirection() * maxBranchAngleVariance;
                 float downwardBiasFactor = DownwardBiasFactor;
-                float downwardBiasFromGeneration = Utils.Remap(branchToAttachTo.Generation, 1f, 3f, 0f, 0.75f);
-                downwardBiasFactor = MathHelper.Clamp(downwardBiasFactor + downwardBiasFromGeneration, 0f, 0.9f);
+                float downwardBiasFromGeneration = Utils.Remap(branchToAttachTo.Generation, 0f, 5f, 0f, 0.8f);
+                downwardBiasFactor = MathHelper.Clamp(downwardBiasFactor + downwardBiasFromGeneration, 0f, 0.95f);
 
                 if (downwardBiasFactor > 0f && branchToAttachTo != trunk)
-                    directionOfNextBranch = directionOfNextBranch.AngleLerp(MathHelper.PiOver2, RNG.NextFloat(0.67f, 1f) * downwardBiasFactor);
+                {
+                    float randomBias = RNG.NextFloat(0.67f, 1f) * downwardBiasFactor;
+                    directionOfNextBranch = Vector2.Lerp(directionOfNextBranch.ToRotationVector2(), Vector2.UnitY, randomBias).ToRotation();
+                }
 
                 // Try not to create a branch with a direction very similar to other branches attached to the one that this one will attach to.
                 if (existingBranches[branchToAttachTo].Count >= 1 && 
@@ -404,7 +407,7 @@ namespace CalamityMod.Tiles.BaseTiles
                 initialPoints[i] = Vector2.Lerp(start, end, i / (float)(ControlPointCountPerBranch - 1f));
 
             // Create a bend midway.
-            float bendFactor = (float)Math.Pow(RNG.NextFloat(), 1.2) * RNG.NextBool().ToDirectionInt() * BranchMaxBendFactor;
+            float bendFactor = (float)Math.Pow(RNG.NextFloat(), 0.66) * RNG.NextBool().ToDirectionInt() * BranchMaxBendFactor;
             bendFactor = MathHelper.Lerp(bendFactor, Math.Sign(bendFactor) * BranchMaxBendFactor, Utils.GetLerpValue(DistanceUsedForTrunk * 0.4f, DistanceUsedForTrunk * 0.75f, distanceBetweenPoints, true));
 
             initialPoints[ControlPointCountPerBranch / 2] += orthogonalDirection * RNG.NextFloatDirection() * distanceBetweenPoints * bendFactor;

@@ -717,6 +717,7 @@ namespace CalamityMod.ILEditing
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             GameShaders.Misc["CalamityMod:Fog"].UseOpacity(intensity * 0.67f);
             GameShaders.Misc["CalamityMod:Fog"].UseColor(Color.Lerp(Color.Lime, Color.Black, 0.85f));
+            GameShaders.Misc["CalamityMod:Fog"].UseSaturation(1.3f);
             GameShaders.Misc["CalamityMod:Fog"].Apply();
 
             Main.spriteBatch.Draw(fogTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);

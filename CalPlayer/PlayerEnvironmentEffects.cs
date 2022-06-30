@@ -19,7 +19,7 @@ namespace CalamityMod.CalPlayer
             if (!ZoneFloralParadise || Main.myPlayer != Player.whoAmI)
                 return;
 
-            if (!Main.rand.NextBool(24))
+            if (!Main.rand.NextBool(18))
                 return;
 
             for (int tries = 0; tries < 50; tries++)

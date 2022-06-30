@@ -13,11 +13,11 @@ namespace CalamityMod.Tiles
     public class PerennialTree : DynamicallyGrownTree
     {
         // The max amount that branches can travel. Once the distance of the branches reaches or exceeds this threshold, the tree is done growing.
-        public override float MaxDistanceBeforeCutoff => 2000f;
+        public override float MaxDistanceBeforeCutoff => 2100f;
 
         public override float DistanceUsedForTrunk => 140f;
 
-        public override float BranchMaxBendFactor => 0.5f;
+        public override float BranchMaxBendFactor => 0.7f;
 
         public override float BranchTurnAngleVariance => 0.4f;
 
@@ -29,11 +29,11 @@ namespace CalamityMod.Tiles
 
         public override float VerticalStretchFactor => 12f;
 
-        public override float DownwardBiasFactor => 0.3f;
+        public override float DownwardBiasFactor => 0.4f;
 
         public override float BranchGrowthWidthDecay => 0.61f;
 
-        public override int MaxCutoffBranchesPerBranch => 6;
+        public override int MaxCutoffBranchesPerBranch => 5;
 
         public override void SetStaticDefaults()
         {
@@ -44,7 +44,7 @@ namespace CalamityMod.Tiles
             UseDefaultSize();
             TileObjectData.addTile(Type);
 
-            AddMapEntry(new Color(83, 91, 102));
+            AddMapEntry(Color.SaddleBrown);
         }
 
         public void DrawVine(Vector2 vineTop, Vector2 downwardBottom, int totalVinesToDraw, float swayFactor)
@@ -53,6 +53,7 @@ namespace CalamityMod.Tiles
 
             // Determine the initial points for the vines.
             Vector2[] controlPoints = new Vector2[8];
+            Vector2 lightOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(-Main.offScreenRange);
             for (int i = 0; i < controlPoints.Length; i++)
             {
                 controlPoints[i] = Vector2.Lerp(vineTop, downwardBottom, i / (float)(controlPoints.Length - 1f));
@@ -70,7 +71,6 @@ namespace CalamityMod.Tiles
                 vineCenter += PreviousPoint.ToWorldCoordinates() - Main.screenPosition;
 
                 // Calculate light values.
-                Vector2 lightOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(-Main.offScreenRange);
                 Vector2 lightPosition = vineCenter + lightOffset + Main.screenPosition;
 
                 Rectangle frame = vineTexture.Frame(2, 2, useFruitFrame.ToInt(), i == drawCount - 1 ? 1 : 0, -2, -2);
