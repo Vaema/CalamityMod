@@ -192,8 +192,8 @@ namespace CalamityMod.World.Minibiomes
                 caveState = CalamityUtils.SimulateCelluarAutomata(caveState);
 
             // Reset tile states based on the above results.
-            ushort grassID = (ushort)ModContent.TileType<FloralGrass>();
-            ushort stoneID = (ushort)ModContent.TileType<FloralStone>();
+            ushort grassID = (ushort)ModContent.TileType<PeatMoss>();
+            ushort stoneID = (ushort)ModContent.TileType<AlgalSlate>();
             grassDirtMap = new bool[placementArea.Width, placementArea.Height];
             for (int x = placementArea.X; x < placementArea.X + placementArea.Width; x++)
             {
@@ -232,9 +232,9 @@ namespace CalamityMod.World.Minibiomes
 
         public static void GenerateDirtBehindGrass(Rectangle placementArea, bool[,] grassDirtMap)
         {
-            ushort dirtID = (ushort)ModContent.TileType<PeatMoss>();
-            ushort stoneID = (ushort)ModContent.TileType<FloralStone>();
-            ushort grassID = (ushort)ModContent.TileType<FloralGrass>();
+            ushort dirtID = (ushort)ModContent.TileType<Peat>();
+            ushort stoneID = (ushort)ModContent.TileType<AlgalSlate>();
+            ushort grassID = (ushort)ModContent.TileType<PeatMoss>();
 
             // Perform secondary passes that overlay dirt behind grass.
             for (int i = 0; i < TotalSecondaryDirtCreationPasses + 1; i++)

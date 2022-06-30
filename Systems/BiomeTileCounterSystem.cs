@@ -51,7 +51,7 @@ namespace CalamityMod.Systems
             AbyssTiles = tileCounts[ModContent.TileType<AbyssGravel>()] + tileCounts[ModContent.TileType<Voidstone>()];
             SulphurTiles = tileCounts[ModContent.TileType<SulphurousSand>()] + tileCounts[ModContent.TileType<SulphurousSandstone>()] + tileCounts[ModContent.TileType<HardenedSulphurousSandstone>()];
             ArsenalLabTiles =  tileCounts[ModContent.TileType<LaboratoryPanels>()] + tileCounts[ModContent.TileType<LaboratoryPlating>()] + tileCounts[ModContent.TileType<HazardChevronPanels>()];
-            FloralParadiseTiles = tileCounts[ModContent.TileType<FloralStone>()] + tileCounts[ModContent.TileType<FloralGrass>()] + tileCounts[ModContent.TileType<PeatMoss>()];
+            FloralParadiseTiles = tileCounts[ModContent.TileType<AlgalSlate>()] + tileCounts[ModContent.TileType<PeatMoss>()] + tileCounts[ModContent.TileType<Peat>()];
 
             Layer1Tiles = tileCounts[ModContent.TileType<SulphurousShale>()];
             Layer2Tiles = tileCounts[ModContent.TileType<AbyssGravel>()] + tileCounts[ModContent.TileType<PlantyMush>()];

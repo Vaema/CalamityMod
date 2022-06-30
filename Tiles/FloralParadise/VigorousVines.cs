@@ -31,7 +31,7 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.newTile.CoordinateHeights = new[] { 16, 16 };
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
-            TileObjectData.newTile.AnchorValidTiles = new[] { ModContent.TileType<FloralGrass>() };
+            TileObjectData.newTile.AnchorValidTiles = new[] { ModContent.TileType<PeatMoss>() };
             TileObjectData.newTile.LavaDeath = true;
             TileObjectData.newTile.StyleHorizontal = true;
             TileObjectData.newTile.RandomStyleRange = 2;

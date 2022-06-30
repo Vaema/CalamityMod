@@ -465,9 +465,9 @@ namespace CalamityMod
         /// </summary>
         /// <param name="type">The tile whose merging properties will be set.</param>
         public static void MergeWithFloralParadise(int type) => MergeWithSet(type, new int[] {
-            TileType<FloralGrass>(),
             TileType<PeatMoss>(),
-            TileType<FloralStone>(),
+            TileType<Peat>(),
+            TileType<AlgalSlate>(),
             TileType<PerennialOre>(),
         });
 
