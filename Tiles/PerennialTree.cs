@@ -25,7 +25,7 @@ namespace CalamityMod.Tiles
 
         public override float TrunkWidth => 16f;
 
-        public override float ChanceToCreateNewBranches => 0.9f;
+        public override float ChanceToCreateNewBranches => 0.8f;
 
         public override float VerticalStretchFactor => 12f;
 
@@ -86,7 +86,7 @@ namespace CalamityMod.Tiles
 
         public override void DrawThingAtEndOfBranch(Branch branch)
         {
-            int totalVinesToDraw = RNG.Next(5, 9);
+            int totalVinesToDraw = RNG.Next(4, 7);
             float swayFactor = Main.windSpeedCurrent + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 1.87f + RNG.NextFloat(0.94f)) * 0.4f;
             Vector2 top = branch.EndOfCurve + Vector2.UnitY * 12f;
             Vector2 bottom = top + Vector2.UnitY * totalVinesToDraw * 30f;

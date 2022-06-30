@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.DraedonStructures;
+﻿using CalamityMod.Tiles;
+using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FloralParadise;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
@@ -7,6 +8,7 @@ using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ObjectData;
 
 namespace CalamityMod.World.Minibiomes
 {
@@ -84,13 +86,13 @@ namespace CalamityMod.World.Minibiomes
                 // This exists primarily due to potential issues in small worlds.
                 // This will likely never be hit in typical circumstances, but it's better to be safe than sorry.
                 infiniteLoopPreventerIncrement++;
-                if (infiniteLoopPreventerIncrement >= 1000)
+                if (infiniteLoopPreventerIncrement >= 3000)
                     break;
 
                 int x = Main.maxTilesX / 2 + WorldGen.genRand.Next(-MaxHorizontalDistanceFromWorldCenter, MaxHorizontalDistanceFromWorldCenter);
                 int y = (int)WorldGen.worldSurface + WorldGen.genRand.Next(MinSurfaceDepth, MaxSurfaceDepth);
-                int width = (int)(WorldGen.genRand.Next(80, 100) * worldSize);
-                int height = (int)(WorldGen.genRand.Next(70, 95) * worldSize);
+                int width = (int)(WorldGen.genRand.Next(95, 110) * worldSize);
+                int height = (int)(WorldGen.genRand.Next(80, 104) * worldSize);
                 Rectangle caveArea = Utils.CenteredRectangle(new Vector2(x, y), new Vector2(width, height));
 
                 // Try again if this selected location is near blacklisted tiles.
@@ -133,6 +135,7 @@ namespace CalamityMod.World.Minibiomes
             int smallVineCount = WorldGen.genRand.Next(MinSmallVineCount, MaxSmallVineCount);
             int waterTileCount = WorldGen.genRand.Next(MinPondWaterTileCount, MaxPondWaterTileCount);
             int smallFlowerCount = WorldGen.genRand.Next(150, 200);
+            int bigTreeCount = WorldGen.genRand.Next(2, 5);
 
             CutOutCave(placementArea, seed, out bool[,] grassDirtMap);
             GenerateDirtBehindGrass(placementArea, grassDirtMap);
@@ -140,6 +143,7 @@ namespace CalamityMod.World.Minibiomes
             GenerateVines(placementArea, vigorousVineCount, smallVineCount);
             GeneratePonds(placementArea, waterTileCount, pondCount);
             CreateScenicPlants(placementArea, smallFlowerCount);
+            CreateTrees(placementArea, bigTreeCount);
 
             // Place a blood orange. THIS IS FOR TESTING PURPOSES.
             for (int i = 0; i < 1; i++)
@@ -433,6 +437,36 @@ namespace CalamityMod.World.Minibiomes
                     30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44) * 18);
                 Main.tile[x, y].TileFrameY = 0;
                 Main.tile[x, y].Get<TileWallWireStateData>().HasTile = true;
+            }
+        }
+
+        public static void CreateTrees(Rectangle placementArea, int treeCount)
+        {
+            int tries = 0;
+            int treeID = ModContent.TileType<PerennialTree>();
+
+            for (int i = 0; i < treeCount; i++)
+            {
+                tries++;
+
+                int x = placementArea.X + WorldGen.genRand.Next(16, placementArea.Width - 16);
+                int y = placementArea.Y + WorldGen.genRand.Next(12, placementArea.Height - 12);
+                Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
+                Vector2 checkTopLeft = new Vector2(x, y).ToWorldCoordinates() - new Vector2(120f, 300f);
+                Vector2 checkArea = new Vector2(240f, 200f);
+
+                if (tries >= 2500)
+                    break;
+
+                if (tile.HasTile || tile.LiquidAmount > 0 || !WorldGen.SolidTile(x, y + 1) || 
+                    !TileObject.CanPlace(x, y, treeID, 0, 0, out _, true, true) ||
+                    Collision.SolidCollision(checkTopLeft, (int)checkArea.X, (int)checkArea.Y))
+                {
+                    i--;
+                    continue;
+                }
+
+                WorldGen.PlaceTile(x, y, treeID);
             }
         }
 
