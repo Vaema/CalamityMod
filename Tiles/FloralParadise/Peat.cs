@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
             DustType = 78;
             ItemDrop = ModContent.ItemType<PeatItem>();
-
+            
             AddMapEntry(new Color(72, 91, 47));
         }
 

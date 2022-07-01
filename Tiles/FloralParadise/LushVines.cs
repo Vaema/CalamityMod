@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FloralParadise
 {
-    public class SmallVines : ModTile
+    public class LushVines : ModTile
     {
         public override void SetStaticDefaults()
         {
@@ -17,7 +17,7 @@ namespace CalamityMod.Tiles.FloralParadise
             Main.tileFrameImportant[Type] = true;
             ModTranslation name = CreateMapEntryName();
             name.SetDefault("Vines");
-            AddMapEntry(new Color(100, 151, 31), name);
+            AddMapEntry(new Color(47, 75, 32), name);
             HitSound = SoundID.Grass;
             DustType = 2;
         }

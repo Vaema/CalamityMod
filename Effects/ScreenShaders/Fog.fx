@@ -12,11 +12,12 @@ float uDirection;
 float3 uLightSource;
 float2 uImageSize0;
 float2 uImageSize1;
+float fogMovementSpeed;
 float4 uShaderSpecificData;
 
 float Random(float2 coords)
 {
-    return frac(sin(dot(coords, float2(49, 81)) * 1000) * 1000);
+    return frac(sin(dot(coords, float2(49, 81)) * 100) * 100);
 }
 float PerlinNoise(float2 coords)
 {
@@ -46,9 +47,9 @@ float ScaledNoise(float2 coords)
 
 float4 PixelShaderFunction(float4 sampleColor : TEXCOORD, float2 coords : TEXCOORD0) : COLOR0
 {
-    float motion = ScaledNoise(coords * uSaturation * 12 + float2(uTime * -0.1, uTime * 0.54));
+    float motion = ScaledNoise(coords * uSaturation * 12 + float2(uTime * fogMovementSpeed * -0.23, uTime * fogMovementSpeed * 0.64));
     float2 motion2D = motion;
-    float3 noise = ScaledNoise(coords * uSaturation * 15 + motion2D);
+    float3 noise = ScaledNoise(coords * uSaturation * 15 + motion2D + float2(0, uTime * 0.78));
     return lerp(float4(noise, 1), float4(uColor, 1), 0.67) * uOpacity * 0.2;
 }
 technique Technique1

@@ -43,13 +43,9 @@ namespace CalamityMod.World.Minibiomes
 
         public const int MaxSmallVineLength = 17;
 
-        public const int MinVigorousVineCount = 20;
+        public const int MinSmallVineCount = 45;
 
-        public const int MaxVigorousVineCount = 30;
-
-        public const int MinSmallVineCount = 35;
-
-        public const int MaxSmallVineCount = 50;
+        public const int MaxSmallVineCount = 64;
 
         public const int MinPondWaterTileCount = 180;
 
@@ -79,7 +75,7 @@ namespace CalamityMod.World.Minibiomes
             int totalCaves = (int)(worldSize * TotalCavesInMediumWorld);
             int infiniteLoopPreventerIncrement = 0;
             List<Rectangle> existingCaveAreas = new List<Rectangle>();
-            for (int i = 0; i < totalCaves; i++)
+            for (int i = 0; i < totalCaves - 1; i++)
             {
                 // Use an emergency infinite loop increment.
                 // The placement loop is left if it exceeds an extremely large quantity.
@@ -125,13 +121,22 @@ namespace CalamityMod.World.Minibiomes
                 Place(caveArea);
                 existingCaveAreas.Add(caveArea);
             }
+
+            // Generate a single, special living tree on the surface with a floral paradise biome underneath.
+            for (int i = 0; i < 2000; i++)
+            {
+                int x = Main.maxTilesX / 2 + WorldGen.genRand.Next(330, MaxHorizontalDistanceFromWorldCenter) * WorldGen.genRand.NextBool().ToDirectionInt();
+                int y = (int)WorldGen.worldSurface - 120;
+                if (!FloralParadiseTree.Create(new(x, y)))
+                    continue;
+                break;
+            }
         }
 
         public static void Place(Rectangle placementArea)
         {
             int seed = WorldGen.genRand.Next();
             int pondCount = WorldGen.genRand.Next(3);
-            int vigorousVineCount = WorldGen.genRand.Next(MinVigorousVineCount, MaxVigorousVineCount);
             int smallVineCount = WorldGen.genRand.Next(MinSmallVineCount, MaxSmallVineCount);
             int waterTileCount = WorldGen.genRand.Next(MinPondWaterTileCount, MaxPondWaterTileCount);
             int smallFlowerCount = WorldGen.genRand.Next(150, 200);
@@ -140,7 +145,7 @@ namespace CalamityMod.World.Minibiomes
             CutOutCave(placementArea, seed, out bool[,] grassDirtMap);
             GenerateDirtBehindGrass(placementArea, grassDirtMap);
             GenerateWalls(placementArea, unchecked(seed - 8));
-            GenerateVines(placementArea, vigorousVineCount, smallVineCount);
+            GenerateVines(placementArea, smallVineCount);
             GeneratePonds(placementArea, waterTileCount, pondCount);
             CreateScenicPlants(placementArea, smallFlowerCount);
             CreateTrees(placementArea, bigTreeCount);
@@ -156,6 +161,7 @@ namespace CalamityMod.World.Minibiomes
                     i--;
                     continue;
                 }
+                x--;
 
                 for (int dx = 0; dx < 3; dx++)
                 {
@@ -296,25 +302,13 @@ namespace CalamityMod.World.Minibiomes
             }
         }
 
-        public static void GenerateVines(Rectangle placementArea, int vigorousVineCount, int smallVineCount)
+        public static void GenerateVines(Rectangle placementArea, int smallVineCount)
         {
-            // Place big vines.
-            int infiniteLoopPreventerIncrement = 0;
-            for (int i = 0; i < vigorousVineCount; i++)
+            ushort[] vineIDs = new ushort[]
             {
-                infiniteLoopPreventerIncrement++;
-                if (infiniteLoopPreventerIncrement >= 500)
-                    break;
-
-                int x = placementArea.X + WorldGen.genRand.Next(24, placementArea.Width - 24);
-                int y = placementArea.Y + WorldGen.genRand.Next(18, placementArea.Height - 18);
-                if (!GenerateVigorousVine(x, y, WorldGen.genRand.Next(MinVigorousVineLength, MaxVigorousVineLength + 1)))
-                {
-                    i--;
-                    continue;
-                }
-                infiniteLoopPreventerIncrement = 0;
-            }
+                (ushort)ModContent.TileType<SmallVines>(),
+                (ushort)ModContent.TileType<LushVines>(),
+            };
 
             // Place small vines.
             for (int i = 0; i < smallVineCount; i++)
@@ -350,18 +344,19 @@ namespace CalamityMod.World.Minibiomes
                 }
 
                 // Perform placement.
+                ushort vineID = WorldGen.genRand.Next(vineIDs);
                 for (int dy = 0; dy < vineLength; dy++)
                 {
-                    Main.tile[x, y + dy].TileType = (ushort)ModContent.TileType<SmallVines>();
+                    Main.tile[x, y + dy].TileType = vineID;
                     if (dy == vineLength - 1)
                     {
-                        Main.tile[x, y + dy].TileFrameX = (short)(WorldGen.genRand.Next(8) * 18);
-                        Main.tile[x, y + dy].TileFrameY = 72;
+                        Main.tile[x, y + dy].TileFrameX = (short)(WorldGen.genRand.Next(3) * 18);
+                        Main.tile[x, y + dy].TileFrameY = 54;
                     }
                     else
                     {
-                        Main.tile[x, y + dy].TileFrameX = (short)(WorldGen.genRand.Next(12) * 18);
-                        Main.tile[x, y + dy].TileFrameY = (short)(WorldGen.genRand.Next(4) * 18);
+                        Main.tile[x, y + dy].TileFrameX = (short)(WorldGen.genRand.Next(3) * 18);
+                        Main.tile[x, y + dy].TileFrameY = (short)(WorldGen.genRand.Next(3) * 18);
                     }
                     Main.tile[x, y + dy].Get<TileWallWireStateData>().HasTile = true;
                     WorldGen.SquareTileFrame(x, y, true);
@@ -438,6 +433,21 @@ namespace CalamityMod.World.Minibiomes
                 Main.tile[x, y].TileFrameY = 0;
                 Main.tile[x, y].Get<TileWallWireStateData>().HasTile = true;
             }
+
+            // TODO -- Move this to another method.
+            for (int i = 0; i < smallFlowerCount / 2; i++)
+            {
+                int x = placementArea.X + WorldGen.genRand.Next(16, placementArea.Width - 16);
+                int y = placementArea.Y + WorldGen.genRand.Next(12, placementArea.Height - 12);
+                Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
+                if (tile.HasTile || tile.LiquidAmount > 0 || !WorldGen.SolidTile(x, y + 1))
+                {
+                    i--;
+                    continue;
+                }
+
+                WorldGen.PlaceTile(x, y, ModContent.TileType<LargeMossPile>());
+            }
         }
 
         public static void CreateTrees(Rectangle placementArea, int treeCount)
@@ -471,41 +481,6 @@ namespace CalamityMod.World.Minibiomes
         }
 
         #region Biome-Specific Utilities
-
-        public static bool GenerateVigorousVine(int x, int y, int length)
-        {
-            // Don't bother placing vines if there's no solid ground above for them to hang from.
-            if (!WorldGen.SolidTile(x, y - 1) || !WorldGen.SolidTile(x + 1, y - 1))
-                return false;
-
-            // Don't bother placing vines if there's anything obstructing their placement.
-            for (int dx = 0; dx < 2; dx++)
-            {
-                for (int dy = 0; dy < length * 2; dy++)
-                {
-                    if (CalamityUtils.ParanoidTileRetrieval(x + dx, y + dy).HasTile)
-                        return false;
-                }
-            }
-
-            int xFrame = 0;
-            ushort vineID = (ushort)ModContent.TileType<VigorousVines>();
-            for (int dx = 0; dx < 2; dx++)
-            {
-                for (int dy = 0; dy < length * 2; dy++)
-                {
-                    int yFrame = dy >= length * 2 - 2 ? 36 : 0;
-                    if (dx == 0 && dy % 2 == 0)
-                        xFrame = WorldGen.genRand.NextBool(yFrame > 0 ? 2 : 5) ? 36 : 0;
-
-                    Main.tile[x + dx, y + dy].Get<TileWallWireStateData>().HasTile = true;
-                    Main.tile[x + dx, y + dy].TileFrameX = (short)(xFrame + dx * 18);
-                    Main.tile[x + dx, y + dy].TileFrameY = (short)(yFrame + dy % 2 * 18);
-                    Main.tile[x + dx, y + dy].TileType = vineID;
-                }
-            }
-            return true;
-        }
 
         public static void RecursivelyFillAreaWithWater(int x, int y, int limit, ref int increment)
         {
