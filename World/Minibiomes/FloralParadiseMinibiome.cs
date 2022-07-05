@@ -427,26 +427,50 @@ namespace CalamityMod.World.Minibiomes
                     continue;
                 }
 
-                Main.tile[x, y].TileType = (ushort)ModContent.TileType<FloralPlants>();
-                Main.tile[x, y].TileFrameX = (short)(Utils.SelectRandom(WorldGen.genRand, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 27, 28, 29,
-                    30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44) * 18);
+                Main.tile[x, y].TileType = (ushort)ModContent.TileType<SmallFloralPlants>();
+                Main.tile[x, y].TileFrameX = (short)(WorldGen.genRand.Next(8) * 18);
                 Main.tile[x, y].TileFrameY = 0;
                 Main.tile[x, y].Get<TileWallWireStateData>().HasTile = true;
             }
 
             // TODO -- Move this to another method.
-            for (int i = 0; i < smallFlowerCount / 2; i++)
+            int tries = 0;
+            Dictionary<int, int> possibleScenicTiles = new()
             {
+                [ModContent.TileType<LargeLogPiles>()] = LargeLogPiles.Variants,
+                [ModContent.TileType<LargeMossPiles>()] = LargeMossPiles.Variants,
+                [ModContent.TileType<LargeSubterraneanGrass>()] = LargeSubterraneanGrass.Variants,
+                [ModContent.TileType<LargeWallFungi>()] = LargeWallFungi.Variants,
+                [ModContent.TileType<LargeWallFungiLeft>()] = LargeWallFungiLeft.Variants,
+                [ModContent.TileType<MediumFloralPlants>()] = MediumFloralPlants.Variants,
+                [ModContent.TileType<MediumLargeMossPiles>()] = MediumLargeMossPiles.Variants,
+                [ModContent.TileType<MediumMossPiles>()] = MediumMossPiles.Variants,
+                [ModContent.TileType<SmallMossPiles>()] = SmallMossPiles.Variants,
+                [ModContent.TileType<SmallWallFungi>()] = SmallWallFungi.Variants,
+                [ModContent.TileType<SmallWallFungiLeft>()] = SmallWallFungiLeft.Variants,
+                [ModContent.TileType<TallFloralPlants>()] = TallFloralPlants.Variants,
+                [ModContent.TileType<VineLoops>()] = VineLoops.Variants,
+                [ModContent.TileType<WallLeaves>()] = WallLeaves.Variants,
+                [ModContent.TileType<WallLeavesLeft>()] = WallLeavesLeft.Variants,
+            };
+            for (int i = 0; i < 960; i++)
+            {
+                tries++;
+                if (tries >= 10000)
+                    break;
+
                 int x = placementArea.X + WorldGen.genRand.Next(16, placementArea.Width - 16);
                 int y = placementArea.Y + WorldGen.genRand.Next(12, placementArea.Height - 12);
                 Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-                if (tile.HasTile || tile.LiquidAmount > 0 || !WorldGen.SolidTile(x, y + 1))
+                if (tile.HasTile || tile.LiquidAmount > 0)
                 {
                     i--;
                     continue;
                 }
 
-                WorldGen.PlaceTile(x, y, ModContent.TileType<LargeMossPile>());
+                var tileRegistryIndex = WorldGen.genRand.Next(possibleScenicTiles.Count);
+                int tileID = possibleScenicTiles.Keys.ElementAt(tileRegistryIndex);
+                WorldGen.PlaceTile(x, y, tileID, style: WorldGen.genRand.Next(possibleScenicTiles[tileID]));
             }
         }
 
