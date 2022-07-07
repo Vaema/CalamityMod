@@ -61,23 +61,30 @@ namespace CalamityMod.Tiles
             }
             BezierCurve vineCurve = new(controlPoints);
 
-            int drawCount = (int)(totalVinesToDraw * 1.25f);
+            int drawCount = (int)(totalVinesToDraw * 2.4f);
             for (int i = 0; i < drawCount - 1; i++)
             {
-                bool useFruitFrame = RNG.NextBool(25);
                 Vector2 vineCenter = vineCurve.Evaluate(i / (float)(drawCount - 1f));
                 Vector2 ahead = vineCurve.Evaluate((i + 1f) / (float)(drawCount - 1f));
-                float rotation = (ahead - vineCenter).ToRotation() + MathHelper.PiOver2;
+                float rotation = (ahead - vineCenter).ToRotation() - MathHelper.PiOver2;
                 vineCenter += PreviousPoint.ToWorldCoordinates() - Main.screenPosition;
 
                 // Calculate light values.
                 Vector2 lightPosition = vineCenter + lightOffset + Main.screenPosition;
 
-                Rectangle frame = vineTexture.Frame(2, 2, useFruitFrame.ToInt(), i == drawCount - 1 ? 1 : 0, -2, -2);
+                int frameX = 0;
+                int frameY = 0;
+                if (i > 0)
+                    frameY = RNG.Next(1, 3);
+                if (i >= drawCount - 3)
+                {
+                    frameY = 3;
+                    frameX = RNG.Next(3);
+                }
+                if (i == drawCount - 2)
+                    frameY = 4;
 
-                // Make fruit emit small quantities of light.
-                if (useFruitFrame)
-                    Lighting.AddLight(lightPosition, Color.Pink.ToVector3() * 0.5f);
+                Rectangle frame = vineTexture.Frame(3, 5, frameX, frameY, -2, -2);
                 Color color = Lighting.GetColor(lightPosition.ToTileCoordinates());
 
                 Main.spriteBatch.Draw(vineTexture, vineCenter, frame, color, rotation, frame.Size() * 0.5f, 1f, 0f, 0);
