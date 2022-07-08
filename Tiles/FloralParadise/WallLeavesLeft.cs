@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -18,7 +19,10 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x1);
             TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
             TileObjectData.newTile.AnchorLeft = new AnchorData(AnchorType.SolidTile, 2, 0);
+            TileObjectData.newTile.RandomStyleRange = Variants;
             TileObjectData.addTile(Type);
+
+            HitSound = SoundID.Grass;
             DustType = 0;
 
             AddMapEntry(new Color(145, 170, 61));

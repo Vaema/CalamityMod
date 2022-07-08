@@ -1,14 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Placeables;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.FloralParadise
 {
-    public class MediumLargeMossPiles : ModTile
+    public class PinkFlower : ModTile
     {
-        public const int Variants = 4;
+        public const int Variants = 2;
 
         public override void SetStaticDefaults()
         {
@@ -18,10 +20,11 @@ namespace CalamityMod.Tiles.FloralParadise
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x1);
             TileObjectData.newTile.Width = 2;
-            TileObjectData.newTile.Height = 2;
-            TileObjectData.newTile.Origin = new Point16(1, 1);
+            TileObjectData.newTile.Height = 3;
+            TileObjectData.newTile.Origin = new Point16(1, 2);
             TileObjectData.newTile.CoordinateHeights = new int[]
             {
+                16,
                 16,
                 16
             };
@@ -31,9 +34,14 @@ namespace CalamityMod.Tiles.FloralParadise
 
             TileObjectData.addTile(Type);
 
-            DustType = 38;
+            HitSound = SoundID.Grass;
+            DustType = 44;
+            AddMapEntry(new Color(255, 155, 202));
+        }
 
-            AddMapEntry(new Color(56, 56, 56));
+        public override void KillMultiTile(int i, int j, int frameX, int frameY)
+        {
+            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<PinkFlowerItem>());
         }
 
         public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)

@@ -23,6 +23,7 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
             TileObjectData.newTile.AnchorTop = new(AnchorType.SolidTile, 2, 0);
+            TileObjectData.newTile.RandomStyleRange = Variants;
             TileObjectData.addTile(Type);
 
             ModTranslation name = CreateMapEntryName();

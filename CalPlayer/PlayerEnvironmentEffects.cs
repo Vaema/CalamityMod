@@ -19,12 +19,12 @@ namespace CalamityMod.CalPlayer
             if (!ZoneFloralParadise || Main.myPlayer != Player.whoAmI)
                 return;
 
-            if (!Main.rand.NextBool(18))
+            if (!Main.rand.NextBool(12))
                 return;
 
             for (int tries = 0; tries < 50; tries++)
             {
-                Vector2 potentialSpawnPosition = Player.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(300f, 800f);
+                Vector2 potentialSpawnPosition = Player.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(200f, 800f);
                 if (Collision.SolidCollision(potentialSpawnPosition, 1, 1))
                     continue;
 

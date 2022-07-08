@@ -26,6 +26,7 @@ namespace CalamityMod.Tiles.FloralParadise
             };
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
+            TileObjectData.newTile.RandomStyleRange = Variants;
 
             TileObjectData.addTile(Type);
 

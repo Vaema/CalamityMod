@@ -1,14 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.FloralParadise
 {
-    public class SmallFloralPlants : ModTile
+    public class PinkFlowerBig : ModTile
     {
-        public const int Variants = 8;
+        public const int Variants = 2;
 
         public override void SetStaticDefaults()
         {
@@ -16,13 +17,25 @@ namespace CalamityMod.Tiles.FloralParadise
             Main.tileNoFail[Type] = true;
             Main.tileObsidianKill[Type] = true;
 
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style2x1);
+            TileObjectData.newTile.Width = 4;
+            TileObjectData.newTile.Height = 3;
+            TileObjectData.newTile.Origin = new Point16(2, 2);
+            TileObjectData.newTile.CoordinateHeights = new int[]
+            {
+                16,
+                16,
+                16
+            };
+            TileObjectData.newTile.CoordinateWidth = 16;
+            TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.RandomStyleRange = Variants;
-            TileObjectData.addTile(Type);
 
             HitSound = SoundID.Grass;
-            DustType = 2;
-            AddMapEntry(new Color(28, 216, 94));
+            TileObjectData.addTile(Type);
+
+            DustType = 44;
+            AddMapEntry(new Color(255, 155, 202));
         }
 
         public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
@@ -33,12 +46,6 @@ namespace CalamityMod.Tiles.FloralParadise
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 4;
-        }
-
-        public override void NearbyEffects(int i, int j, bool closer)
-        {
-            if (CalamityUtils.ParanoidTileRetrieval(i, j).LiquidAmount > 64)
-                WorldGen.KillTile(i, j);
         }
     }
 }

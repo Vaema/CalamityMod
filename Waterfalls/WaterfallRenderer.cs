@@ -81,6 +81,9 @@ namespace CalamityMod.Waterfalls
 
                 bottom.Y += 4f;
                 currentWaterfallHeight = MathHelper.Distance(bottom.Y, drawPosition.Y);
+                if (currentWaterfallHeight <= 20f)
+                    continue;
+
                 currentWaterfallBrightness = Lighting.Brightness((int)(drawPosition.X / 16f), (int)(drawPosition.Y / 16f));
                 currentWaterfallPosition = drawPosition + Vector2.One * 8f;
 

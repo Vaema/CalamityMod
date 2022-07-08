@@ -27,6 +27,7 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.SolidTile, 1, 0);
+            TileObjectData.newTile.RandomStyleRange = Variants;
             TileObjectData.addTile(Type);
             DustType = 0;
 

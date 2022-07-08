@@ -16,6 +16,7 @@ namespace CalamityMod.Tiles.FloralParadise
             Main.tileObsidianKill[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x1);
+            TileObjectData.newTile.RandomStyleRange = Variants;
             TileObjectData.addTile(Type);
 
             DustType = 38;
