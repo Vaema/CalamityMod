@@ -66,8 +66,18 @@ namespace CalamityMod.Tiles.FloralParadise
             Rectangle stamenFrame = stamenTexture.Frame(2, 1, frameX > 72 ? 1 : 0, 0);
             Vector2 stamenOrigin = stamenFrame.Size() * new Vector2(0.5f, 1f);
             Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 drawPos = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset;
-            Main.spriteBatch.Draw(stamenTexture, drawPos + new Vector2(31f, 38f), stamenFrame, drawColor, windRotation, stamenOrigin, 1f, SpriteEffects.None, 0f);
+            Vector2 drawPos = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset + new Vector2(31f, 38f);
+
+            // Create some pollen dust.
+            if (!Main.gamePaused && windTimeLeft >= 2 && Main.rand.NextBool(4))
+            {
+                Vector2 pollenVelocity = -Vector2.UnitY.RotatedByRandom(windRotation * 2.3f) * 3f;
+                Dust pollen = Dust.NewDustPerfect(drawPos + Main.screenPosition - drawOffset - Vector2.UnitY * 16f, 44);
+                pollen.velocity = pollenVelocity;
+                pollen.scale = 1.6f;
+            }
+
+            Main.spriteBatch.Draw(stamenTexture, drawPos, stamenFrame, drawColor, windRotation, stamenOrigin, 1f, SpriteEffects.None, 0f);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
