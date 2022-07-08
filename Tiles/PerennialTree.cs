@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.DataStructures;
+using CalamityMod.ILEditing;
 using CalamityMod.Tiles.BaseTiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -56,8 +57,15 @@ namespace CalamityMod.Tiles
             Vector2 lightOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(-Main.offScreenRange);
             for (int i = 0; i < controlPoints.Length; i++)
             {
+                float swayOffset = swayFactor;
                 controlPoints[i] = Vector2.Lerp(vineTop, downwardBottom, i / (float)(controlPoints.Length - 1f));
-                controlPoints[i].X += swayFactor * Utils.GetLerpValue(0f, controlPoints.Length - 1f, i, true);
+
+                Point p = (controlPoints[i] + lightOffset + PreviousPoint.ToWorldCoordinates()).ToTileCoordinates();
+                ILChanges.Windgrid.GetWindTime(p.X, p.Y, 40, out int windTimeLeft, out int direction);
+                float windInterpolant = windTimeLeft / 40f;
+                swayOffset += Utils.GetLerpValue(0f, 0.45f, windInterpolant, true) * Utils.GetLerpValue(1f, 0.55f, windInterpolant, true) * direction * 28f;
+                controlPoints[i].X += swayOffset * Utils.GetLerpValue(0f, controlPoints.Length - 1f, i, true);
+                controlPoints[i].Y -= 4f;
             }
             BezierCurve vineCurve = new(controlPoints);
 
