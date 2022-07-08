@@ -662,7 +662,7 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Store The Stupid Fucking Private Wind Map In Public Field
+        #region Store The Stupid Fucking Private Wind Map In Public Property
         private static void StoreWindGrid(On.Terraria.GameContent.Drawing.TileDrawing.orig_Update orig, TileDrawing self)
         {
             orig(self);
@@ -671,6 +671,6 @@ namespace CalamityMod.ILEditing
             if (Windgrid is null)
                 Windgrid = typeof(TileDrawing).GetField("_windGrid", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(self) as WindGrid;
         }
-        #endregion Store The Stupid Fucking Private Wind Map In Public Field
+        #endregion Store The Stupid Fucking Private Wind Map In Public Property
     }
 }
