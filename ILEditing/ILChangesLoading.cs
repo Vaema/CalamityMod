@@ -48,6 +48,7 @@ namespace CalamityMod.ILEditing
             On.Terraria.GameContent.Drawing.TileDrawing.PreDrawTiles += ClearForegroundStuff;
             On.Terraria.GameContent.Drawing.TileDrawing.Draw += ClearTilePings;
             On.Terraria.GameContent.ItemDropRules.CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
+            On.Terraria.GameContent.Drawing.TileDrawing.Update += StoreWindGrid;
 
             // NPC behavior
             IL.Terraria.Main.UpdateTime += PermitNighttimeTownNPCSpawning;
@@ -171,6 +172,7 @@ namespace CalamityMod.ILEditing
             On.Terraria.GameContent.Drawing.TileDrawing.PreDrawTiles -= ClearForegroundStuff;
             On.Terraria.GameContent.Drawing.TileDrawing.Draw -= ClearTilePings;
             On.Terraria.GameContent.ItemDropRules.CommonCode.ModifyItemDropFromNPC -= ColorBlightedGel;
+            On.Terraria.GameContent.Drawing.TileDrawing.Update -= StoreWindGrid;
 
             // NPC behavior
             IL.Terraria.Main.UpdateTime -= PermitNighttimeTownNPCSpawning;

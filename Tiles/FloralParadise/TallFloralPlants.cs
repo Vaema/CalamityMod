@@ -15,6 +15,7 @@ namespace CalamityMod.Tiles.FloralParadise
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileNoFail[Type] = true;
+            Main.tileCut[Type] = true;
             Main.tileObsidianKill[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x1);

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Terraria;
+using Terraria.GameContent.Drawing;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,6 +18,12 @@ namespace CalamityMod.ILEditing
 {
     public partial class ILChanges
     {
+        public static WindGrid Windgrid
+        {
+            get;
+            internal set;
+        }
+
         #region Decrease Sandstorm Wind Speed Requirement
         private static void DecreaseSandstormWindSpeedRequirement(ILContext il)
         {
@@ -654,5 +661,16 @@ namespace CalamityMod.ILEditing
             }
         }
         #endregion
+
+        #region Store The Stupid Fucking Private Wind Map In Public Field
+        private static void StoreWindGrid(On.Terraria.GameContent.Drawing.TileDrawing.orig_Update orig, TileDrawing self)
+        {
+            orig(self);
+
+            // FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK
+            if (Windgrid is null)
+                Windgrid = typeof(TileDrawing).GetField("_windGrid", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(self) as WindGrid;
+        }
+        #endregion Store The Stupid Fucking Private Wind Map In Public Field
     }
 }

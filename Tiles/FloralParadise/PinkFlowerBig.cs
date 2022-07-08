@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.ILEditing;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -10,6 +13,8 @@ namespace CalamityMod.Tiles.FloralParadise
     public class PinkFlowerBig : ModTile
     {
         public const int Variants = 2;
+
+        public const int WindPushLifetime = 48;
 
         public override void SetStaticDefaults()
         {
@@ -41,6 +46,28 @@ namespace CalamityMod.Tiles.FloralParadise
         public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
         {
             offsetY = 2;
+        }
+        
+        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
+        {
+            if (drawData.tileFrameX % 72 == 0 && drawData.tileFrameY == 0)
+                Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
+        }
+
+        public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            ILChanges.Windgrid.GetWindTime(i, j, WindPushLifetime, out int windTimeLeft, out int direction);
+            float windInterpolant = windTimeLeft / (float)WindPushLifetime;
+            float windRotation = Utils.GetLerpValue(0f, 0.5f, windInterpolant, true) * Utils.GetLerpValue(1f, 0.5f, windInterpolant, true) * direction * 0.34f;
+
+            int frameX = Main.tile[i, j].TileFrameX;
+            Color drawColor = Lighting.GetColor(i, j);
+            Texture2D stamenTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FloralParadise/PinkFlowerBigStamen").Value;
+            Rectangle stamenFrame = stamenTexture.Frame(2, 1, frameX > 72 ? 1 : 0, 0);
+            Vector2 stamenOrigin = stamenFrame.Size() * new Vector2(0.5f, 1f);
+            Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            Vector2 drawPos = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset;
+            Main.spriteBatch.Draw(stamenTexture, drawPos + new Vector2(31f, 38f), stamenFrame, drawColor, windRotation, stamenOrigin, 1f, SpriteEffects.None, 0f);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

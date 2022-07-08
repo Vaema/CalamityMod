@@ -13,6 +13,7 @@ namespace CalamityMod.Tiles.FloralParadise
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
+            Main.tileCut[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileObsidianKill[Type] = true;
 
