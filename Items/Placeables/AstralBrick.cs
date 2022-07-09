@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Placeables.Walls;
-using CalamityMod.Tiles;
 using Terraria.ID;
 using Terraria.ModLoader; // If you are using c# 6, you can use: "using static Terraria.Localization.GameCulture;" which would mean you could just write "DisplayName.AddTranslation(German, "");"
 
@@ -24,7 +23,7 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
-            Item.createTile = ModContent.TileType<PerennialTree>();
+            Item.createTile = ModContent.TileType<Tiles.AstralBrick>();
         }
 
         public override void AddRecipes()

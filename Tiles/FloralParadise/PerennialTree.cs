@@ -4,12 +4,13 @@ using CalamityMod.ILEditing;
 using CalamityMod.Tiles.BaseTiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles
+namespace CalamityMod.Tiles.FloralParadise
 {
     public class PerennialTree : DynamicallyGrownTree
     {
@@ -60,7 +61,7 @@ namespace CalamityMod.Tiles
                 float swayOffset = swayFactor;
                 controlPoints[i] = Vector2.Lerp(vineTop, downwardBottom, i / (float)(controlPoints.Length - 1f));
 
-                Point p = (controlPoints[i] + lightOffset + PreviousPoint.ToWorldCoordinates()).ToTileCoordinates();
+                Point p = (controlPoints[i] + lightOffset + BranchDrawer.PreviousPoint.ToWorldCoordinates()).ToTileCoordinates();
                 ILChanges.Windgrid.GetWindTime(p.X, p.Y, 40, out int windTimeLeft, out int direction);
                 float windInterpolant = windTimeLeft / 40f;
                 swayOffset += Utils.GetLerpValue(0f, 0.45f, windInterpolant, true) * Utils.GetLerpValue(1f, 0.55f, windInterpolant, true) * direction * 28f;
@@ -75,7 +76,7 @@ namespace CalamityMod.Tiles
                 Vector2 vineCenter = vineCurve.Evaluate(i / (float)(drawCount - 1f));
                 Vector2 ahead = vineCurve.Evaluate((i + 1f) / (float)(drawCount - 1f));
                 float rotation = (ahead - vineCenter).ToRotation() - MathHelper.PiOver2;
-                vineCenter += PreviousPoint.ToWorldCoordinates() - Main.screenPosition;
+                vineCenter += BranchDrawer.PreviousPoint.ToWorldCoordinates() - Main.screenPosition;
 
                 // Calculate light values.
                 Vector2 lightPosition = vineCenter + lightOffset + Main.screenPosition;
@@ -99,7 +100,7 @@ namespace CalamityMod.Tiles
             }
         }
 
-        public override void DrawThingAtEndOfBranch(Branch branch)
+        public override void DrawThingAtEndOfBranch(BranchDrawer.Branch branch)
         {
             int totalVinesToDraw = RNG.Next(4, 7);
             float swayFactor = Main.windSpeedCurrent + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 1.87f + RNG.NextFloat(0.94f)) * 0.4f;

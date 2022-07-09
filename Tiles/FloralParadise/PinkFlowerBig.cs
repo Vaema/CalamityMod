@@ -21,6 +21,7 @@ namespace CalamityMod.Tiles.FloralParadise
             Main.tileFrameImportant[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileObsidianKill[Type] = true;
+            Main.tileLighted[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x1);
             TileObjectData.newTile.Width = 4;
@@ -43,11 +44,13 @@ namespace CalamityMod.Tiles.FloralParadise
             AddMapEntry(new Color(255, 155, 202));
         }
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            offsetY = 2;
+            r = 0.5f;
+            g = 0.4f;
+            b = 0.16f;
         }
-        
+
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
         {
             if (drawData.tileFrameX % 72 == 0 && drawData.tileFrameY == 0)
@@ -67,6 +70,8 @@ namespace CalamityMod.Tiles.FloralParadise
             Vector2 stamenOrigin = stamenFrame.Size() * new Vector2(0.5f, 1f);
             Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawPos = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset + new Vector2(31f, 38f);
+            if (frameX < 72)
+                drawPos.X += 4f;
 
             // Create some pollen dust.
             if (!Main.gamePaused && windTimeLeft >= 2 && Main.rand.NextBool(4))
