@@ -2,6 +2,7 @@
 using CalamityMod.Projectiles.Environment;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,6 +11,8 @@ namespace CalamityMod.Tiles.FloralParadise
 {
     public class PeatMoss : ModTile
     {
+        public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/MossMine");
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -29,7 +32,8 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.MergeWithFloralParadise(Type);
 
             DustType = 39;
-            ItemDrop = ModContent.ItemType<PeatItem>();
+            ItemDrop = ModContent.ItemType<PeatMossItem>();
+            HitSound = MineSound;
 
             AddMapEntry(new Color(65, 142, 101));
         }
@@ -56,7 +60,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public override void RandomUpdate(int i, int j)
         {
-            int num8 = WorldGen.genRand.Next((int)Main.rockLayer, (int)(Main.rockLayer + (double)Main.maxTilesY * 0.143));
+            int num8 = WorldGen.genRand.Next((int)Main.rockLayer, (int)(Main.rockLayer + Main.maxTilesY * 0.143));
             int nearbyVineCount = 0;
             for (int x = i - 15; x <= i + 15; x++)
             {
@@ -79,30 +83,29 @@ namespace CalamityMod.Tiles.FloralParadise
                     if (Main.tile[i, j + 1].LiquidAmount == 255 &&
                         Main.tile[i, j + 1].LiquidType == LiquidID.Water)
                     {
-                        bool flag13 = false;
+                        bool growMoss = false;
                         for (int y = num8; y > num8 - 10; y--)
                         {
                             if (Main.tile[i, y].BottomSlope)
                             {
-                                flag13 = false;
+                                growMoss = false;
                                 break;
                             }
                             if (Main.tile[i, y].HasTile && !Main.tile[i, y].BottomSlope)
                             {
-                                flag13 = true;
+                                growMoss = true;
                                 break;
                             }
                         }
-                        if (flag13)
+                        if (growMoss)
                         {
-                            int num53 = i;
-                            int num54 = j + 1;
-                            Main.tile[num53, num54].TileType = (ushort)ModContent.TileType<SmallVines>();
-                            Main.tile[num53, num54].Get<TileWallWireStateData>().HasTile = true;
-                            WorldGen.SquareTileFrame(num53, num54, true);
+                            int belowY = j + 1;
+                            Main.tile[i, belowY].TileType = (ushort)ModContent.TileType<SmallVines>();
+                            Main.tile[i, belowY].Get<TileWallWireStateData>().HasTile = true;
+                            WorldGen.SquareTileFrame(i, belowY, true);
                             if (Main.netMode == NetmodeID.Server)
                             {
-                                NetMessage.SendTileSquare(-1, num53, num54, 3, TileChangeType.None);
+                                NetMessage.SendTileSquare(-1, i, belowY, 3, TileChangeType.None);
                             }
                         }
                         Main.tile[i, j].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
