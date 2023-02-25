@@ -1826,10 +1826,10 @@ namespace CalamityMod.CalPlayer
 
             for (int i = 0; i < 15; i++)
             {
-                Vector2 dustSpawnPosition = player.Center + Main.rand.NextVector2Square(-360f, 360f);
+                Vector2 dustSpawnPosition = Player.Center + Main.rand.NextVector2Square(-360f, 360f);
                 dustSpawnPosition.Y += 200f;
                 Tile tile = CalamityUtils.ParanoidTileRetrieval((int)(dustSpawnPosition.X / 16f), (int)(dustSpawnPosition.Y / 16f));
-                if (WorldGen.SolidTile(tile) || tile.liquid > 0)
+                if (WorldGen.SolidTile(tile) || tile.LiquidAmount > 0)
                     continue;
 
                 Dust pollen = Dust.NewDustPerfect(dustSpawnPosition, 261);

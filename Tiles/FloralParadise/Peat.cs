@@ -29,7 +29,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.CustomMergeFrame(i, j, Type, TileID.Dirt);
+            TileFraming.CustomMergeFrame(i, j, Type, TileID.Dirt, false, false, false, true);
             return false;
         }
 
