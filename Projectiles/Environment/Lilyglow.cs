@@ -9,7 +9,7 @@ namespace CalamityMod.Projectiles.Environment
     {
         public ref float Direction => ref Projectile.ai[0];
 
-        public override string Texture => "CalamityMod/ExtraTextures/FusableParticleBase";
+        public override string Texture => "CalamityMod/Particles/Metaballs/FusableParticleBase";
 
         public override void SetStaticDefaults() => DisplayName.SetDefault("Lilyglow");
 
