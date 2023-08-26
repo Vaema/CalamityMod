@@ -175,6 +175,7 @@ namespace CalamityMod.Effects
 
         #region Aqua's Shaders
         internal static Effect CircularGradientWithEdge;
+        internal static Effect GaleforceArrowTrailShader;
         #endregion
         // Shorthand to register a loaded shader in Terraria's graphics engine
         // All shaders registered this way are accessible under GameShaders.Misc
@@ -372,6 +373,9 @@ namespace CalamityMod.Effects
             #region Loading Aqua's Shaders
             CircularGradientWithEdge = LoadShader("CircularGradientWithEdge");
             RegisterMiscShader(CircularGradientWithEdge, "CircularGradientWithEdgePass", "CircularGradientWithEdge");
+
+            GaleforceArrowTrailShader = LoadShader("GaleforceArrowTrail");
+            RegisterMiscShader(ArtAttackTrailShader, "TrailPass", "GaleforceArrowTrail");
             #endregion
         }
     }
