@@ -91,8 +91,8 @@ namespace CalamityMod.Projectiles.Ranged
             for (int i = -1; i <= 1; i += 2)
             {
                 //sin wave function used to generate a wiggle that will later travel down the trail.
-                //the first peak amplitude happens after 2 updates, and loops back to peak amplitude every 6 updates.
-                float wiggleSeed = (float)Math.Sin((-MathHelper.Pi / 6) + (Projectile.localAI[0] * MathHelper.Pi / 3)); 
+                //the first peak amplitude happens after 7 updates, and loops back to peak amplitude every 20 updates.
+                float wiggleSeed = (float)Math.Sin((-MathHelper.Pi / 5) + (Projectile.localAI[0] * MathHelper.Pi / 10)); 
 
                 for (int oldPositions = 0; oldPositions < 10; oldPositions++)
                 {
