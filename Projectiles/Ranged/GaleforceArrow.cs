@@ -124,7 +124,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     if (Projectile.oldPos[oldPositions] != Vector2.Zero) //remove positions that are invalid due to the projectile not being alive long eonugh
                     {
-                        //Building a better line of trail positions rather than just simply using oldPos. Angled to the side slightly with a log to smooth it out. i is the direction the trail will go, as this is 2 trails rendered at once. the final float is to further exxagerate the gap between the trails.
+                        //Building a better line of trail positions rather than just simply using oldPos. Angled to the side slightly with a log to smooth it out. i is the direction the trail will go, as this is 2 trails rendered at once. the final float is to further exaggerate the gap between the trails.
                         TrailPositions[oldPositions] = Projectile.oldPos[oldPositions] + ((Projectile.oldRot[oldPositions] + MathHelper.PiOver2 + (MathHelper.Pi/2.5f * i)).ToRotationVector2() * (float)Math.Log(2 * oldPositions + 1, 1.36d) * 2.5f);
                     }
                 }
