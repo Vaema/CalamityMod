@@ -80,40 +80,43 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 20f;
             }
+
+            if (Main.rand.NextBool(5))
+            {
+                Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 133, Scale: 0.4f);
+                dust.noGravity = true;
+            }   
         }
-
-        public override void Kill(int timeLeft)
-        {
-
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitY) * 10f, ModContent.ProjectileType<GaleforceWind>(), (int)(Projectile.damage / 2f), Projectile.knockBack, Projectile.owner, target.whoAmI);
         }
         public Color TrailColor(float completionRatio)
         {
             float opacity = Utils.GetLerpValue(0.7f, 0.0f, completionRatio, true) * Projectile.Opacity;
-            Color color = Color.White;
+            Color color = Color.Lerp(Color.Cyan, Color.LightCyan, completionRatio);
+            color = Color.Lerp(color, Color.White, completionRatio);
             color.A = (byte)(int)(Utils.GetLerpValue(0.7f, 0f, completionRatio) * 255);
             return color;
         }
 
         public float TrailWidth(float completionRatio)
         {
-            float widthInterpolant = Utils.GetLerpValue(0f, 0.25f, completionRatio, true) * Utils.GetLerpValue(0.8f, 0.9f, completionRatio, true);
-            return MathHelper.SmoothStep(3f, 5f, widthInterpolant);
+            //float widthInterpolant = Utils.GetLerpValue(0f, 0.25f, completionRatio, true) * Utils.GetLerpValue(0.8f, 0.9f, completionRatio, true);
+            //return MathHelper.SmoothStep(3f, 5f, widthInterpolant);
+            //return MathHelper.SmoothStep(5f, 0f, completionRatio);
+            return MathHelper.Lerp(5f, 0f, completionRatio);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) - MathHelper.ToRadians(90);
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
 
             if (TrailDrawer is null)
                 TrailDrawer = new PrimitiveTrail(TrailWidth, TrailColor, null, GameShaders.Misc["CalamityMod:GaleforceArrowTrail"]);
 
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY + ((Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * Projectile.height * 1.5f);
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY + ((Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * Projectile.height * 2.2f);
             Vector2 origin = texture.Size() * 0.5f;
 
             for (int i = -1; i <= 1; i += 2)
@@ -123,7 +126,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     if (Projectile.oldPos[oldPositions] != Vector2.Zero)
                     {
-                        TrailPositions[oldPositions] = Projectile.oldPos[oldPositions] + ((Projectile.oldRot[oldPositions] + MathHelper.PiOver2 + (MathHelper.Pi/2.5f * i)).ToRotationVector2() * 2f * oldPositions);
+                        TrailPositions[oldPositions] = Projectile.oldPos[oldPositions] + ((Projectile.oldRot[oldPositions] + MathHelper.PiOver2 + (MathHelper.Pi/2.5f * i)).ToRotationVector2() * 2.5f * (float)Math.Log(2 * oldPositions + 1, 1.36d));
                     }
                 }
                 Main.spriteBatch.EnterShaderRegion();
@@ -133,7 +136,7 @@ namespace CalamityMod.Projectiles.Ranged
                 TrailDrawer.Draw(TrailPositions, Projectile.Size * 0.5f - Main.screenPosition, 6);
                 Main.spriteBatch.ExitShaderRegion();
 
-                Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), Projectile.rotation, origin, Projectile.scale, 0, 0);
+                Main.EntitySpriteDraw(texture, drawPosition, null, Color.White, Projectile.rotation, origin, Projectile.scale, 0, 0);
             }
             
             return false;

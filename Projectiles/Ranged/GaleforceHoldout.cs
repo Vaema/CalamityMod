@@ -56,8 +56,8 @@ namespace CalamityMod.Projectiles.Ranged
             if (Owner.channel)
             {
                 Projectile.timeLeft = 2;
-                Owner.itemTime = 25;
-                Owner.itemAnimation = 25;
+                Owner.itemTime = 48;
+                Owner.itemAnimation = 48;
                 Owner.heldProj = Projectile.whoAmI;
             }
 
@@ -81,13 +81,13 @@ namespace CalamityMod.Projectiles.Ranged
             effect.Parameters["centerOpacity"].SetValue(0.7f);
             effect.Parameters["mainOpacity"].SetValue((float)Math.Sqrt(ChargeProgress));
             effect.Parameters["halfSpreadAngle"].SetValue(Spread / 2f);
-            effect.Parameters["edgeColor"].SetValue(Color.Lerp(Color.LightGray, Color.Coral, 0).ToVector3());
-            effect.Parameters["centerColor"].SetValue(Color.Lerp(Color.Gray, Color.Coral, 0).ToVector3());
+            effect.Parameters["edgeColor"].SetValue(Color.Lerp(Color.Cyan, Color.Coral, 0).ToVector3());
+            effect.Parameters["centerColor"].SetValue(Color.Lerp(Color.DarkCyan, Color.Coral, 0).ToVector3());
             effect.Parameters["edgeBlendLength"].SetValue(0.07f);
             effect.Parameters["edgeBlendStrength"].SetValue(8f);
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, effect, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, effect, Main.GameViewMatrix.TransformationMatrix);
             
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj").Value;
 
@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.MountedCenter + direction * 30f, direction * speed, ModContent.ProjectileType<GaleforceArrow>(), realDamage, Projectile.knockBack, Owner.whoAmI, ChargeProgress);
                 }
 
-                Color pulseColor = Main.rand.NextBool() ? Color.Gray : Color.LightGray;
+                Color pulseColor = Color.Cyan;
                 Particle pulse = new DirectionalPulseRing(Owner.MountedCenter + direction * 44f, Vector2.Zero, pulseColor, new Vector2(0.5f, 1f), direction.ToRotation(), 0.04f, 0.2f, 30);
                 GeneralParticleHandler.SpawnParticle(pulse);
             }
