@@ -60,6 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (!Main.npc[i].CanBeChasedBy(Projectile, false) || !Projectile.WithinRange(Main.npc[i].Center, 340f + extraDistance))
                     continue;
 
+                //Adds two normalized vectors together to determine how close the angle is between them
                 Vector2 coneHomeCheck = (Main.npc[i].Center - Projectile.Center).SafeNormalize(Vector2.Zero) + Projectile.velocity.SafeNormalize(Vector2.Zero);
                 if (Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1) && (Math.Abs(coneHomeCheck.X) > 1.15f || Math.Abs(coneHomeCheck.Y) > 1.15f)) 
                 {
@@ -76,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.velocity = (Projectile.velocity * 12f + homeDirection * 20f) / (12f + 1f);
             }
 
-            if (Projectile.velocity.Length() < 20f)
+            if (Projectile.velocity.Length() < 20f) // NO SLOWING DOWN
             {
                 Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 20f;
             }
@@ -93,7 +94,6 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public Color TrailColor(float completionRatio)
         {
-            float opacity = Utils.GetLerpValue(0.7f, 0.0f, completionRatio, true) * Projectile.Opacity;
             Color color = Color.Lerp(Color.Cyan, Color.LightCyan, completionRatio);
             color = Color.Lerp(color, Color.White, completionRatio);
             color.A = (byte)(int)(Utils.GetLerpValue(0.7f, 0f, completionRatio) * 255);
@@ -102,9 +102,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public float TrailWidth(float completionRatio)
         {
-            //float widthInterpolant = Utils.GetLerpValue(0f, 0.25f, completionRatio, true) * Utils.GetLerpValue(0.8f, 0.9f, completionRatio, true);
-            //return MathHelper.SmoothStep(3f, 5f, widthInterpolant);
-            //return MathHelper.SmoothStep(5f, 0f, completionRatio);
             return MathHelper.Lerp(5f, 0f, completionRatio);
         }
 
@@ -116,6 +113,7 @@ namespace CalamityMod.Projectiles.Ranged
                 TrailDrawer = new PrimitiveTrail(TrailWidth, TrailColor, null, GameShaders.Misc["CalamityMod:GaleforceArrowTrail"]);
 
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            //regular draw position BUT the start point is displaced an extra amount towards the tip of the arrow. The final float is to further multiply this displacement
             Vector2 drawPosition = Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY + ((Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * Projectile.height * 2.2f);
             Vector2 origin = texture.Size() * 0.5f;
 
@@ -124,9 +122,10 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int oldPositions = 0; oldPositions < 10; oldPositions++)
                 {
 
-                    if (Projectile.oldPos[oldPositions] != Vector2.Zero)
+                    if (Projectile.oldPos[oldPositions] != Vector2.Zero) //remove positions that are invalid due to the projectile not being alive long eonugh
                     {
-                        TrailPositions[oldPositions] = Projectile.oldPos[oldPositions] + ((Projectile.oldRot[oldPositions] + MathHelper.PiOver2 + (MathHelper.Pi/2.5f * i)).ToRotationVector2() * 2.5f * (float)Math.Log(2 * oldPositions + 1, 1.36d));
+                        //Building a better line of trail positions rather than just simply using oldPos. Angled to the side slightly with a log to smooth it out. i is the direction the trail will go, as this is 2 trails rendered at once. the final float is to further exxagerate the gap between the trails.
+                        TrailPositions[oldPositions] = Projectile.oldPos[oldPositions] + ((Projectile.oldRot[oldPositions] + MathHelper.PiOver2 + (MathHelper.Pi/2.5f * i)).ToRotationVector2() * (float)Math.Log(2 * oldPositions + 1, 1.36d) * 2.5f);
                     }
                 }
                 Main.spriteBatch.EnterShaderRegion();

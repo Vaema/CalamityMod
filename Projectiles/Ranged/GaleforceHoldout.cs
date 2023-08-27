@@ -64,12 +64,6 @@ namespace CalamityMod.Projectiles.Ranged
             float pointingRotation = (Owner.Calamity().mouseWorld - Owner.MountedCenter).ToRotation();
             Projectile.Center = Owner.MountedCenter + pointingRotation.ToRotationVector2() * 40f;
 
-            if (Projectile.soundDelay <= 0)
-            {
-                //SoundEngine.PlaySound(CoralSpout.ChargeSound with { Pitch = 0.5f * ChargeProgress}, Owner.MountedCenter);
-                Projectile.soundDelay = 10;
-            }
-
             Charge++;
         }
 
@@ -81,8 +75,8 @@ namespace CalamityMod.Projectiles.Ranged
             effect.Parameters["centerOpacity"].SetValue(0.7f);
             effect.Parameters["mainOpacity"].SetValue((float)Math.Sqrt(ChargeProgress));
             effect.Parameters["halfSpreadAngle"].SetValue(Spread / 2f);
-            effect.Parameters["edgeColor"].SetValue(Color.Lerp(Color.Cyan, Color.Coral, 0).ToVector3());
-            effect.Parameters["centerColor"].SetValue(Color.Lerp(Color.DarkCyan, Color.Coral, 0).ToVector3());
+            effect.Parameters["edgeColor"].SetValue(Color.Cyan.ToVector3());
+            effect.Parameters["centerColor"].SetValue(Color.DarkCyan.ToVector3());
             effect.Parameters["edgeBlendLength"].SetValue(0.07f);
             effect.Parameters["edgeBlendStrength"].SetValue(8f);
 
@@ -103,8 +97,8 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 float angleOffset = MathHelper.Lerp(Spread * -0.5f, Spread * 0.5f, i / ((float)ShotProjectiles - 1));
                 float direction = mainAngle + angleOffset;
-                Vector2 displacement = (direction + MathHelper.Pi / 12f).ToRotationVector2();
-                Main.EntitySpriteDraw(arrowTexture, Owner.MountedCenter - Main.screenPosition + (displacement * 26f), null, Color.White, direction - MathHelper.Pi/2, new Vector2(texture.Width / 2f, texture.Height / 2f), 1f, 0, 0);
+                Vector2 displacement = (direction + MathHelper.Pi / 12f).ToRotationVector2(); //Fixes some rotational offset with positions for the arrows
+                Main.EntitySpriteDraw(arrowTexture, Owner.MountedCenter - Main.screenPosition + (displacement * 26f), null, Color.White, direction - MathHelper.PiOver2, new Vector2(texture.Width / 2f, texture.Height / 2f), 1f, 0, 0);
 
             }
 
@@ -122,16 +116,12 @@ namespace CalamityMod.Projectiles.Ranged
                 float angleOffset = MathHelper.Lerp(Spread * -0.5f, Spread * 0.5f, i / ((float)ShotProjectiles - 1));
                 Vector2 direction = (mainAngle + angleOffset).ToRotationVector2();
 
-                int realDamage = Projectile.damage;
-
                 if (Owner.whoAmI == Main.myPlayer)
                 {
-                    float speed = 20f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.MountedCenter + direction * 30f, direction * speed, ModContent.ProjectileType<GaleforceArrow>(), realDamage, Projectile.knockBack, Owner.whoAmI, ChargeProgress);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.MountedCenter + direction * 30f, direction * 20f, ModContent.ProjectileType<GaleforceArrow>(), Projectile.damage, Projectile.knockBack, Owner.whoAmI, ChargeProgress);
                 }
 
-                Color pulseColor = Color.Cyan;
-                Particle pulse = new DirectionalPulseRing(Owner.MountedCenter + direction * 44f, Vector2.Zero, pulseColor, new Vector2(0.5f, 1f), direction.ToRotation(), 0.04f, 0.2f, 30);
+                Particle pulse = new DirectionalPulseRing(Owner.MountedCenter + direction * 44f, Vector2.Zero, Color.Cyan, new Vector2(0.5f, 1f), direction.ToRotation(), 0.04f, 0.2f, 30);
                 GeneralParticleHandler.SpawnParticle(pulse);
             }
 

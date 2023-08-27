@@ -31,7 +31,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<GaleforceHoldout>();
             Item.shootSpeed = 20f;
-            //Item.useAmmo = AmmoID.Arrow;
             Item.Calamity().canFirePointBlankShots = true;
         }
         public override void HoldItem(Player player)
