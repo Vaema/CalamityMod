@@ -515,7 +515,12 @@ Fungicide: {
 
 Galeforce: {
 	DisplayName: Galeforce
-	Tooltip: Fires a spread of low-damage feathers
+	Tooltip:
+		'''
+		Draws a volley of 5 aerialite arrows that lightly home in on foes
+		Keep the attack button held down to narrow the spread
+		Aerialite arrows turn into swirling gusts of piercing wind upon striking enemies
+		'''
 }
 
 GodsBellows: {
