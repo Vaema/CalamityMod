@@ -40,6 +40,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
+            if (Projectile.Calamity().LocketClone)
+                AbleToHealOwner = false; // No healing you too much of your hp
+
             if (ReturningToOwner)
             {
                 Projectile.timeLeft = 15;
@@ -99,7 +102,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 5; i++)
             {

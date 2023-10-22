@@ -14,7 +14,6 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
 
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Exo Platform");
             Item.width = 8;
             Item.height = 10;
             Item.maxStack = 9999;
@@ -29,7 +28,9 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
 
         public override void AddRecipes()
         {
-            CreateRecipe(2).AddIngredient(ModContent.ItemType<ExoPlating>()).Register();
+            CreateRecipe(2).
+                AddIngredient<ExoPlating>().
+                Register();
         }
     }
 }

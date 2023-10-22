@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Melee
         public ref float OverCharge => ref Projectile.localAI[1];
 
         private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
-        const float MaxCharge = 500;
+        const float MaxCharge = 360;
 
         public Vector2 lastDisplacement;
         public float dashDuration;
@@ -298,7 +298,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             //Cut the velocity short if dashing
             if (State == 1f)

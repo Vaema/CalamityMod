@@ -99,6 +99,26 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             }
 
             itemLoot.AddIf(getsRedBow, ModContent.ItemType<RedBow>());
+            
+            // Mishiro dev vanity
+            // Name specific: "Amber" or "Mishiro"
+            static bool getsOracleHeadphones(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName is "Amber" or "Mishiro";
+            }
+
+            itemLoot.AddIf(getsOracleHeadphones, ModContent.ItemType<OracleHeadphones>());
+
+            // Bird dev item
+            // Name specific: "bird"
+            static bool getsSakuraFeather(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "bird";
+            }
+
+            itemLoot.AddIf(getsSakuraFeather, ModContent.ItemType<CocosFeather>());
         }
     }
 }

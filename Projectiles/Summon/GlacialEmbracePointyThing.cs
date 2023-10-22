@@ -149,6 +149,12 @@ namespace CalamityMod.Projectiles.Summon
             {
                 modPlayer.GlacialEmbrace = false;
             }
+
+            if (!modPlayer.GlacialEmbrace)
+            {
+                Projectile.active = false;
+                return;
+            }
             if (circlingPlayer)
             {
                 Projectile.minionSlots = 1f;
@@ -286,7 +292,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCHit5, Projectile.position);
             dust(20);

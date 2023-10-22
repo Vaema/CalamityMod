@@ -12,16 +12,16 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-                       Item.staff[Item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 24;
+            Item.damage = 17;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
-            Item.width = 50;
-            Item.height = 50;
+            Item.width = 58;
+            Item.height = 54;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -34,12 +34,19 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<NightsRayBeam>();
             Item.shootSpeed = 6f;
         }
-
         
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.Vilethorn).
+                AddIngredient(ItemID.MagicMissile).
+                AddIngredient(ItemID.WandofSparking).
+                AddIngredient(ItemID.AmberStaff).
+                AddIngredient<PurifiedGel>(10).
+                AddTile(TileID.DemonAltar).
+                Register();
+            CreateRecipe().
+                AddIngredient(ItemID.CrimsonRod).
                 AddIngredient(ItemID.MagicMissile).
                 AddIngredient(ItemID.WandofSparking).
                 AddIngredient(ItemID.AmberStaff).

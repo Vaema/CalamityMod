@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ExpandHitboxBy(32);
             SoundEngine.PlaySound(SoundID.Item60, Projectile.Center);
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 int terra = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 100, default, 2f);
                 Main.dust[terra].velocity *= 1.2f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[terra].scale = 0.5f;
                     Main.dust[terra].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;

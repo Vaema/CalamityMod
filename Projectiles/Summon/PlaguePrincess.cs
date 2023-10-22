@@ -323,7 +323,7 @@ namespace CalamityMod.Projectiles.Summon
                     int smallBee = ModContent.ProjectileType<PlagueBeeSmall>();
                     int bigBee = ModContent.ProjectileType<BabyPlaguebringer>();
                     int projType = smallBee;
-                    if (Owner.ownedProjectileCounts[bigBee] <= 0 && Main.rand.NextBool(2))
+                    if (Owner.ownedProjectileCounts[bigBee] <= 0 && Main.rand.NextBool())
                         projType = bigBee;
 
                     if (Main.myPlayer == Projectile.owner && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, target.Center, 0, 0))
@@ -337,7 +337,6 @@ namespace CalamityMod.Projectiles.Summon
                             {
                                 if (projType == bigBee)
                                     Main.projectile[bee].frame = 2;
-                                Main.projectile[bee].originalDamage = (int)(Projectile.originalDamage * InfectedRemote.BeeDamageFactor);
                             }
                             Projectile.netUpdate = true;
                         }

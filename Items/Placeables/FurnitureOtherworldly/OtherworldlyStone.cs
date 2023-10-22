@@ -16,7 +16,6 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
 
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Otherworldly Stone");
             Item.width = 12;
             Item.height = 12;
             Item.maxStack = 9999;
@@ -45,7 +44,6 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
                 Register();
             CreateRecipe().
                 AddIngredient<OtherworldlyPlatform>(2).
-                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

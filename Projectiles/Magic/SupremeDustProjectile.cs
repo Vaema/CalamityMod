@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 4;
+            Projectile.penetrate = 3;
             Projectile.MaxUpdates = 4;
             Projectile.timeLeft = 50 * Projectile.MaxUpdates; // 50 effective, 200 total
             Projectile.usesLocalNPCImmunity = true;
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
                 int num297 = 32;
                 int num299 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, num297, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100, default, 1f);
                 Dust dust = Main.dust[num299];
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     dust.noGravity = true;
                     dust.scale *= 4f;

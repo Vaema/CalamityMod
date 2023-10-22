@@ -36,7 +36,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Utilities;
-using CalamityMod.Projectiles.Typless;
 
 namespace CalamityMod.Items
 {
@@ -423,8 +422,8 @@ namespace CalamityMod.Items
                     modPlayer.canFireAtaxiaRogueProjectile = false;
                     int flareID = ModContent.ProjectileType<HydrothermicFlareRogue>();
 
-                    // Ataxia Rogue Flares: 8 x 50%, soft cap starts at 200 base damage
-                    int flareDamage = CalamityUtils.DamageSoftCap(damage * 0.5, 100);
+                    // Ataxia Rogue Flares: 8 x 50%, soft cap starts at 120 base damage
+                    int flareDamage = CalamityUtils.DamageSoftCap(damage * 0.5, 120);
                     if (player.whoAmI == Main.myPlayer)
                     {
                         SoundEngine.PlaySound(SoundID.Item20, player.Center);
@@ -449,7 +448,7 @@ namespace CalamityMod.Items
                 {
                     if (player.whoAmI == Main.myPlayer)
                     {
-                        // Victide All-class Seashells: 200%, soft cap starts at 23 base damage
+                        // Victide All-class Seashells: 200%, soft cap starts at 46 base damage
                         int seashellDamage = CalamityUtils.DamageSoftCap(damage * 2, 46);
                         Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
                     }
@@ -625,7 +624,7 @@ namespace CalamityMod.Items
 
             if (player.HasBuff(BuffID.ParryDamageBuff))
             {
-                if (item.type != ItemID.DD2SquireDemonSword)
+                if (item.type != ItemID.DD2SquireDemonSword && item.type != ItemID.BouncingShield)
                 {
                     player.parryDamageBuff = false;
                     player.ClearBuff(BuffID.ParryDamageBuff);
@@ -648,14 +647,8 @@ namespace CalamityMod.Items
 
         public override bool AltFunctionUse(Item item, Player player)
         {
-            if (player.Calamity().profanedCrystalBuffs && item.pick == 0 && item.axe == 0 && item.hammer == 0 && item.autoReuse && (item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<MagicDamageClass>() || item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>()))
+            if (player.Calamity().profanedCrystalBuffs && item.pick == 0 && item.axe == 0 && item.hammer == 0 && item.autoReuse && (item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<MagicDamageClass>() || item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()))
             {
-                NPC closest = Main.MouseWorld.ClosestNPCAt(1000f, true);
-                if (closest != null)
-                {
-                    player.MinionAttackTargetNPC = closest.whoAmI;
-                    player.UpdateMinionTarget();
-                }
                 return false;
             }
             if (player.ActiveItem().type == ModContent.ItemType<IgneousExaltation>())
@@ -749,7 +742,7 @@ namespace CalamityMod.Items
                             for (int j = 0; j < 22; j++)
                             {
                                 Dust dust = Dust.NewDustDirect(Main.projectile[projj].position, Main.projectile[projj].width, Main.projectile[projj].height, DustID.Ice);
-                                dust.velocity = Vector2.UnitY * Main.rand.NextFloat(3f, 5.5f) * Main.rand.NextBool(2).ToDirectionInt();
+                                dust.velocity = Vector2.UnitY * Main.rand.NextFloat(3f, 5.5f) * Main.rand.NextBool().ToDirectionInt();
                                 dust.noGravity = true;
                             }
                         }
@@ -788,8 +781,8 @@ namespace CalamityMod.Items
             }
 
             // Conversion for Profaned Soul Crystal
-            ProfanedSoulCrystal.DetermineTransformationEligibility(player);
-            if (modPlayer.profanedCrystalBuffs && item.pick == 0 && item.axe == 0 && item.hammer == 0 && item.autoReuse && (item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<MagicDamageClass>() || item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>()))
+            bool autoreuse = item.autoReuse || item.CountsAsClass<SummonMeleeSpeedDamageClass>();
+            if (modPlayer.profanedCrystalBuffs && item.pick == 0 && item.axe == 0 && item.hammer == 0 && autoreuse && (item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<MagicDamageClass>() || item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()))
                 return player.altFunctionUse == 0 ? ProfanedSoulCrystal.TransformItemUsage(item, player) : AltFunctionUse(item, player);
 
 
@@ -1123,15 +1116,15 @@ namespace CalamityMod.Items
                 player.buffImmune[BuffID.OnFire] = true;
             }
 
-            // Nightwither immunity pre-Moon Lord and Holy Flames immunity pre-Profaned Guardians.
+            // Reduced Nightwither and Holy Flames damage.
             if (item.type == ItemID.MoonStone)
-                player.buffImmune[ModContent.BuffType<Nightwither>()] = true;
+                modPlayer.reducedNightwitherDamage = true;
             if (item.type == ItemID.SunStone)
-                player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
+                modPlayer.reducedHolyFlamesDamage = true;
             if (item.type == ItemID.CelestialStone || item.type == ItemID.CelestialShell)
             {
-                player.buffImmune[ModContent.BuffType<Nightwither>()] = true;
-                player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
+                modPlayer.reducedHolyFlamesDamage = true;
+                modPlayer.reducedNightwitherDamage = true;
             }
 
             if (item.type == ItemID.FairyBoots)
@@ -1367,7 +1360,7 @@ namespace CalamityMod.Items
                 if (modPlayer.icicleCooldown <= 0)
                 {
                     var source = player.GetSource_Accessory(item);
-                    if (player.controlJump && !player.canJumpAgain_Cloud && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
+                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
                     {
                         int ornamentDamage = (int)player.GetBestClassDamage().ApplyTo(100);
                         int p = Projectile.NewProjectile(source, player.Center, Vector2.UnitY * 2f, ProjectileID.OrnamentFriendly, ornamentDamage, 5f, player.whoAmI);

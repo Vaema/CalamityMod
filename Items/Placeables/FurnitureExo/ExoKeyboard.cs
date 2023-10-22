@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Exo Keyboard");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -24,7 +23,12 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ItemID.Bone, 4).AddIngredient(ModContent.ItemType<ExoPlating>(), 15).AddIngredient(ItemID.Book).AddTile(ModContent.TileType<DraedonsForge>()).Register();
+            CreateRecipe().
+                AddIngredient<ExoPlating>(15).
+                AddIngredient(ItemID.Bone, 4).
+                AddIngredient(ItemID.Book).
+                AddTile<DraedonsForge>().
+                Register();
         }
     }
 }

@@ -2,15 +2,16 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class UltimaBowProjectile : ModProjectile, ILocalizedModType
+    public class UltimaBowProjectile : ModProjectile
     {
-        public new string LocalizationCategory => "Projectiles.Ranged";
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Ultima>();
         public override string Texture => "CalamityMod/Items/Weapons/Ranged/Ultima";
 
         public float Time
@@ -79,7 +80,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Time >= Ultima.FullChargeTime * 0.7f && Main.rand.NextBool(6))
                 {
                     // To ensure that the sparks don't spawn on top of the laser itself.
-                    float offsetAngle = Main.rand.NextFloat(0.2f, 0.5f) * Main.rand.NextBool(2).ToDirectionInt();
+                    float offsetAngle = Main.rand.NextFloat(0.2f, 0.5f) * Main.rand.NextBool().ToDirectionInt();
                     Vector2 sparkVelocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY).RotatedByRandom(0.5f) * 13f;
                     sparkVelocity = sparkVelocity.RotatedBy(offsetAngle);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), shotPosition, sparkVelocity, ModContent.ProjectileType<UltimaSpark>(), damage / 3, knockBack, Projectile.owner);

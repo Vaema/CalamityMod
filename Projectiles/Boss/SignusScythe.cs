@@ -92,14 +92,14 @@ namespace CalamityMod.Projectiles.Boss
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
             for (int num621 = 0; num621 < 5; num621++)
             {
                 int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
                 Main.dust[num622].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[num622].scale = 0.5f;
                     Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;

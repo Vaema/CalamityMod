@@ -8,7 +8,6 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Otherworldly Piano");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -23,7 +22,12 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<OtherworldlyStone>(), 15).AddIngredient(ItemID.Bone, 4).AddIngredient(ItemID.Book).AddTile(TileID.LunarCraftingStation).Register();
+            CreateRecipe().
+                AddIngredient<OtherworldlyStone>(15).
+                AddIngredient(ItemID.Bone, 4).
+                AddIngredient(ItemID.Book).
+                AddTile(TileID.LunarCraftingStation).
+                Register();
         }
     }
 }

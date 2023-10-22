@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Accessories.Wings
     public class TarragonWings : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories.Wings";
+
         public override void SetStaticDefaults()
         {
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(250, 9.5f, 2.5f);
@@ -40,7 +41,7 @@ namespace CalamityMod.Items.Accessories.Wings
                 player.lifeRegen += 2;
             }
 
-            if (player.controlJump && player.wingTime > 0f && !player.canJumpAgain_Cloud && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
+            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 int num59 = 4;
                 if (player.direction == 1)

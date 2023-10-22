@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
             Projectile.position = Projectile.Center;
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 int num622 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
                 Main.dust[num622].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[num622].scale = 0.5f;
                     Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
         }
     }
 }

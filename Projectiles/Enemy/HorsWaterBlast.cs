@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Enemy
                 {
                     int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Enemy
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item21, Projectile.position);
             for (int dust = 0; dust <= 40; dust++)

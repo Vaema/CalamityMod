@@ -13,6 +13,7 @@ namespace CalamityMod.Items.Accessories.Wings
     public class ExodusWings : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories.Wings";
+
         public override void SetStaticDefaults()
         {
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(180, 9f, 2.5f);
@@ -35,7 +36,7 @@ namespace CalamityMod.Items.Accessories.Wings
                 player.GetCritChance<ThrowingDamageClass>() += 5;
             }
 
-            if (player.controlJump && player.wingTime > 0f && !player.canJumpAgain_Cloud && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
+            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 float xOffset = 4f;
                 if (player.direction == 1)

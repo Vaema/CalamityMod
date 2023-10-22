@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Enemy
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCDeath14, Projectile.position);
             Projectile.ExpandHitboxBy(60);
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Enemy
                 int dustID = Main.rand.NextBool(3) ? ModContent.DustType<AstralOrange>() : ModContent.DustType<AstralBlue>();
                 Dust astralParticle = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, dustID, 0f, 0f, 100, default, 1.2f);
                 astralParticle.velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     astralParticle.scale = 0.5f;
                     astralParticle.fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Enemy
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 60);
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45);
 		}
     }
 }

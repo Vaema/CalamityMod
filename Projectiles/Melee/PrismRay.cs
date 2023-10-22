@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Melee
             Utils.PlotTileLine(StartingPosition, Projectile.Center, 8f, DelegateMethods.CastLight);
             if (Projectile.localAI[0] == 0f)
             {
-                Projectile.direction = Main.rand.NextBool(2).ToDirectionInt();
+                Projectile.direction = Main.rand.NextBool().ToDirectionInt();
                 Projectile.localAI[0] = 1f;
             }
             Projectile.rotation = Time / 20f * MathHelper.TwoPi * Projectile.direction;
@@ -144,7 +144,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             CreateKillExplosionBurstDust(Main.rand.Next(7, 13));
 

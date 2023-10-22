@@ -18,12 +18,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = 6;
-            Projectile.height = 6;
+            Projectile.width = Projectile.height = 6;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.penetrate = 2;
             Projectile.extraUpdates = 3;
             Projectile.timeLeft = 50;
@@ -52,7 +49,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 Projectile.ai[0] += 1f;
                 int dustType = (int)CalamityDusts.Brimstone;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     int brim = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100, default, 1f);
                     Dust dust = Main.dust[brim];

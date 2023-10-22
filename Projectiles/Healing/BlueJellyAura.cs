@@ -12,13 +12,12 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using System.Collections.Generic;
 
-namespace CalamityMod.Projectiles.Typless
+namespace CalamityMod.Projectiles.Healing
 {
     public class BlueJellyAura : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Healing";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        private static float Radius = 160f;
         public int ShinkGrow = 0;
         public int Framecounter = 0;
         public int CleanseOnce = 1;
@@ -50,7 +49,7 @@ namespace CalamityMod.Projectiles.Typless
                 float targetDist = Vector2.Distance(player.Center, Projectile.Center);
 
                 //Remove the players debuffs and defense damage, but only once per aura
-                if (targetDist < 155f && cleanseList[playerIndex] == false)
+                if (targetDist < 165f && cleanseList[playerIndex] == false)
                 {
                     cleanseList[playerIndex] = true;
                     CleansingEffect = 1;

@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Accessories.Wings
     public class TracersCelestial : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories.Wings";
+
         public override void SetStaticDefaults()
         {
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(140, 9f, 2.6f);
@@ -31,7 +32,7 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if (player.controlJump && player.wingTime > 0f && !player.canJumpAgain_Cloud && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
+            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 int num59 = 4;
                 if (player.direction == 1)
@@ -48,8 +49,8 @@ namespace CalamityMod.Items.Accessories.Wings
                 Main.dust[num60].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
             }
             CalamityPlayer modPlayer = player.Calamity();
-            player.accRunSpeed = 8.5f;
-            player.moveSpeed += 0.16f;
+            player.accRunSpeed = 8f;
+            player.moveSpeed += 0.14f;
             player.iceSkate = true;
             player.waterWalk = true;
             player.fireWalk = true;

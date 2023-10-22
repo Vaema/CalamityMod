@@ -138,9 +138,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Projectile.WithinRange(target.Center, 200f))
                     acornShootVelocity = (target.Center - acornSpawnPosition).SafeNormalize(-Vector2.UnitY) * acornShootSpeed;
 
-                int acorn = Projectile.NewProjectile(Projectile.GetSource_FromThis(), acornSpawnPosition, acornShootVelocity, ModContent.ProjectileType<SquirrelSquireAcorn>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                if (Main.projectile.IndexInRange(acorn))
-                    Main.projectile[acorn].originalDamage = Projectile.originalDamage;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), acornSpawnPosition, acornShootVelocity, ModContent.ProjectileType<SquirrelSquireAcorn>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
         }
 
@@ -148,7 +146,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Main.netMode != NetmodeID.Server)
             {

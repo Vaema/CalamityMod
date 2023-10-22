@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int tileX = (int)(Projectile.Center.X / 16f);
             int tileY = (int)(Projectile.Center.Y / 16f);
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 int i = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 108, 0f, Projectile.velocity.Y * 0.5f);
                 Main.dust[i].velocity.X *= 0.2f;

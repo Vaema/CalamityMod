@@ -1,29 +1,33 @@
-﻿using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using System;
-using CalamityMod.Projectiles.BaseProjectiles;
+using Terraria;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
     public class LucreciaProj: BaseShortswordProjectile
     {
         public const int OnHitIFrames = 5;
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Lucrecia>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Lucrecia";
 
         public override void SetDefaults()
         {
-            Projectile.Size = new Vector2(31);
+            Projectile.width = Projectile.height = 28;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
-            Projectile.scale = 1f;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.ownerHitCheck = true;
             Projectile.timeLeft = 360;
             Projectile.hide = true;
             Projectile.ownerHitCheck = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 8;
         }
 
         public override Action<Projectile> EffectBeforePullback => (proj) =>

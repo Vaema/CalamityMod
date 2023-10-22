@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 18;
-            Item.damage = 207;
+            Item.damage = 230;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Melee
             num78 *= num80;
             num79 *= num80;
             int num146 = 4;
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 num146++;
             }

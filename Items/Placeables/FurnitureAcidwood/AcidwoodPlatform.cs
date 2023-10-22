@@ -14,7 +14,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAcidwood
 
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Acidwood Platform");
             Item.width = 8;
             Item.height = 10;
             Item.maxStack = 9999;
@@ -29,7 +28,9 @@ namespace CalamityMod.Items.Placeables.FurnitureAcidwood
 
         public override void AddRecipes()
         {
-            CreateRecipe(2).AddIngredient(ModContent.ItemType<Acidwood>()).Register();
+            CreateRecipe(2).
+                AddIngredient<Acidwood>().
+                Register();
         }
     }
 }

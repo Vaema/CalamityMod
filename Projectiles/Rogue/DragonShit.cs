@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Rogue
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 120);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.ExpandHitboxBy(80);
@@ -102,7 +102,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1f);
                 Main.dust[idx].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[idx].scale = 0.5f;
                     Main.dust[idx].fadeIn = 1f + Main.rand.Next(10) * 0.1f;

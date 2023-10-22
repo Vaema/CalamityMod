@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 2f);
                     Main.dust[fire].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[fire].scale = 0.5f;
                         Main.dust[fire].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Ranged
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 200f, 12f, 20f);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ExpandHitboxBy(192);
             Projectile.maxPenetrate = -1;
@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 int smoke = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
                 Main.dust[smoke].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[smoke].scale = 0.5f;
                     Main.dust[smoke].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;

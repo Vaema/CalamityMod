@@ -4,14 +4,18 @@ using System.Linq;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Events;
+using CalamityMod.ExtraJumps;
 using CalamityMod.Items;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Particles.Metaballs;
+using CalamityMod.Systems;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.UI.DraedonSummoning;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -404,6 +408,18 @@ namespace CalamityMod
                 case "layer_1":
                 case "abysslayer1":
                 case "abyss layer 1":
+                case "sulfur depths":
+                case "sulfurdepths":
+                case "sulphur depths":
+                case "sulphurdepths":
+                case "sulfurous depths":
+                case "sulfurousdepths":
+                case "sulphurous depths":
+                case "sulphurousdepths":
+                case "sulfuric depths":
+                case "sulfuricdepths":
+                case "sulphuric depths":
+                case "sulphuricdepths":
                     return mp.ZoneAbyssLayer1;
 
                 case "abyss2":
@@ -414,6 +430,10 @@ namespace CalamityMod
                 case "layer_2":
                 case "abysslayer2":
                 case "abyss layer 2":
+                case "murky water":
+                case "murkywater":
+                case "murky waters":
+                case "murkywaters":
                     return mp.ZoneAbyssLayer2;
 
                 case "abyss3":
@@ -424,6 +444,9 @@ namespace CalamityMod
                 case "layer_3":
                 case "abysslayer3":
                 case "abyss layer 3":
+                case "thermalvents":
+                case "thermal vents":
+                case "vents":
                     return mp.ZoneAbyssLayer3;
 
                 case "abyss4":
@@ -434,6 +457,9 @@ namespace CalamityMod
                 case "layer_4":
                 case "abysslayer4":
                 case "abyss layer 4":
+                case "void":
+                case "the void":
+                case "thevoid":
                     return mp.ZoneAbyssLayer4;
             }
         }
@@ -521,6 +547,13 @@ namespace CalamityMod
                     return CalamityWorld.armageddon = enabled;
             }
         }
+
+        public static void AddCustomDifficulty(DifficultyMode newMode)
+        {
+            //Add the new difficulty and recalculate
+            DifficultyModeSystem.Difficulties.Add(newMode);
+            DifficultyModeSystem.CalculateDifficultyData();
+        }
         #endregion
 
         #region Rogue Class
@@ -546,6 +579,14 @@ namespace CalamityMod
         public static float AddMaxStealth(Player p, float add) => p is null ? 0f : (p.Calamity().rogueStealthMax += add);
 
         public static bool CanStealthStrike(Player p) => p?.Calamity()?.StealthStrikeAvailable() ?? false;
+        
+        public static void SetStealthProjectile(Projectile projectile, bool enabled)
+        {
+            if (projectile != null)
+                projectile.Calamity().stealthStrike = enabled;
+        }
+        
+        public static bool GetStealthProjectile(Projectile projectile) => projectile?.Calamity()?.stealthStrike ?? false;
         #endregion
 
         #region Rippers
@@ -602,844 +643,6 @@ namespace CalamityMod
         {
             if (p != null)
                 p.Calamity().mouseWorldListener = active;
-        }
-        #endregion
-
-        #region Player Armor Set Bonuses
-        /// <summary>
-        /// Returns whether the specified player has the set bonus corresponding to the given string.
-        /// </summary>
-        /// <param name="p">The player whose set bonuses are being questioned.</param>
-        /// <param name="setBonus">The set bonus to check for.</param>
-        /// <returns>Whether the player currently has the set bonus.</returns>
-        public static bool GetSetBonus(Player p, string setBonus)
-        {
-            CalamityPlayer mp = p.Calamity();
-
-            setBonus = setBonus.ToLower();
-
-            // LATER -- no summon set bonuses are written well. all use two bools, neither of which actually controls the function
-
-            // Desert Prowler
-            if (setBonus == "desertprowler" || setBonus == "desert prowler")
-                return mp.desertProwler;
-
-            // Snow Ruffian
-            if (setBonus == "snowruffian" || setBonus == "snow ruffian")
-                return mp.snowRuffianSet;
-
-            // Sulphurous
-            if (setBonus == "sulfur" || setBonus == "sulphur" || setBonus == "sulfurous" || setBonus == "sulphurous")
-                return mp.sulfurSet;
-
-            // Victide
-            if (setBonus == "victide_summon" || setBonus == "victide summon")
-                return mp.victideSummoner; // the bool set directly by VictideHelmet.UpdateArmorSet
-            else if (setBonus == "victide" || setBonus.StartsWith("victide_") || setBonus.StartsWith("victide "))
-                return mp.victideSet;
-
-            // Aerospec
-            if (setBonus == "aerospec_summon" || setBonus == "aerospec summon")
-                return mp.valkyrie; // the bool set directly by AerospecHelmet.UpdateArmorSet
-            else if (setBonus == "aerospec" || setBonus.StartsWith("aerospec_") || setBonus.StartsWith("aerospec "))
-                return mp.aeroSet;
-
-            // Statigel
-            if (setBonus == "statigel_summon" || setBonus == "statigel summon")
-                return mp.slimeGod; // the bool set directly by StatigelHood.UpdateArmorSet
-            if (setBonus == "statigel" || setBonus.StartsWith("statigel_") || setBonus.StartsWith("statigel "))
-                return mp.statigelSet;
-
-            // Mollusk
-            if (setBonus == "mollusk")
-                return mp.molluskSet;
-
-            // Titan Heart
-            if (setBonus == "titanheart" || setBonus == "titan heart")
-                return mp.titanHeartSet;
-
-            // Forbidden Circlet
-            if (setBonus == "forbidden_circlet" || setBonus == "forbidden circlet")
-                return mp.forbiddenCirclet;
-
-            // Daedalus
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "daedalus":
-                    return mp.daedalusReflect || mp.daedalusShard || mp.daedalusAbsorb || mp.daedalusCrystal || mp.daedalusSplit;
-                case "daedalus_melee":
-                case "daedalus melee":
-                    return mp.daedalusReflect;
-                case "daedalus_ranged":
-                case "daedalus ranged":
-                    return mp.daedalusShard;
-                case "daedalus_magic":
-                case "daedalus magic":
-                    return mp.daedalusAbsorb;
-                case "daedalus_summon":
-                case "daedalus summon":
-                    return mp.daedalusCrystal;
-                case "daedalus_rogue":
-                case "daedalus rogue":
-                    return mp.daedalusSplit;
-            }
-
-            // Reaver
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "reaver":
-                    return mp.reaverSpeed || mp.reaverExplore || mp.reaverDefense;
-                case "reaver_speed":
-                case "reaver speed":
-                    return mp.reaverSpeed;
-                case "reaver_explore":
-                case "reaver explore":
-                case "reaver_exploration":
-                case "reaver exploration":
-                    return mp.reaverExplore;
-                case "reaver_defense":
-                case "reaver defense":
-                case "reaver_tank":
-                case "reaver tank":
-                    return mp.reaverDefense;
-            }
-
-            // Fathom Swarmer
-            if (setBonus == "fathomswarmer" || setBonus == "fathom swarmer")
-                return mp.fathomSwarmer;
-
-            // Brimflame
-            if (setBonus == "brimflame")
-                return mp.brimflameSet;
-
-            // Umbraphile
-            if (setBonus == "umbraphile")
-                return mp.umbraphileSet;
-
-            // Hydrothermic (Ataxia is legacy name)
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "ataxia":
-                case "hydrothermic":
-                case "hydrothermal":
-                    return mp.ataxiaBlaze;
-                case "ataxia_melee":
-                case "ataxia melee":
-                case "hydrothermic_melee":
-                case "hydrothermic melee":
-                case "hydrothermal_melee":
-                case "hydrothermal melee":
-                    return mp.ataxiaGeyser;
-                case "ataxia_ranged":
-                case "ataxia ranged":
-                case "hydrothermic_ranged":
-                case "hydrothermic ranged":
-                case "hydrothermal_ranged":
-                case "hydrothermal ranged":
-                    return mp.ataxiaBolt;
-                case "ataxia_magic":
-                case "ataxia magic":
-                case "hydrothermic_magic":
-                case "hydrothermic magic":
-                case "hydrothermal_magic":
-                case "hydrothermal magic":
-                    return mp.ataxiaMage;
-                case "ataxia_summon":
-                case "ataxia summon":
-                case "hydrothermic_summon":
-                case "hydrothermic summon":
-                case "hydrothermal_summon":
-                case "hydrothermal summon":
-                    return mp.chaosSpirit;
-                case "ataxia_rogue":
-                case "ataxia rogue":
-                case "hydrothermic_rogue":
-                case "hydrothermic rogue":
-                case "hydrothermal_rogue":
-                case "hydrothermal rogue":
-                    return mp.ataxiaVolley;
-            }
-
-            // Plague Reaper
-            if (setBonus == "plaguereaper" || setBonus == "plague reaper")
-                return mp.plagueReaper;
-
-            // Plaguebringer
-            if (setBonus == "plaguebringer" || setBonus == "plaguebringerpatron" || setBonus == "plaguebringer patron")
-                return mp.plaguebringerPatronSet;
-
-            // Astral
-            if (setBonus == "astral")
-                return mp.astralStarRain;
-
-            // Empyrean (formerly Xeroc)
-            if (setBonus == "empyrean" || setBonus == "xeroc")
-                return mp.xerocSet;
-
-            // Tarragon
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "tarragon":
-                    return mp.tarraSet;
-                case "tarragon_melee":
-                case "tarragon melee":
-                    return mp.tarraMelee;
-                case "tarragon_ranged":
-                case "tarragon ranged":
-                    return mp.tarraRanged;
-                case "tarragon_magic":
-                case "tarragon magic":
-                    return mp.tarraMage;
-                case "tarragon_summon":
-                case "tarragon summon":
-                    return mp.tarraSummon;
-                case "tarragon_rogue":
-                case "tarragon rogue":
-                    return mp.tarraThrowing;
-            }
-
-            // Prismatic
-            if (setBonus == "prismatic" || setBonus == "prism")
-                return mp.prismaticSet;
-
-            // Bloodflare
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "bloodflare":
-                    return mp.bloodflareSet;
-                case "bloodflare_melee":
-                case "bloodflare melee":
-                    return mp.bloodflareMelee;
-                case "bloodflare_ranged":
-                case "bloodflare ranged":
-                    return mp.bloodflareRanged;
-                case "bloodflare_magic":
-                case "bloodflare magic":
-                    return mp.bloodflareMage;
-                case "bloodflare_summon":
-                case "bloodflare summon":
-                    return mp.bloodflareSummon;
-                case "bloodflare_rogue":
-                case "bloodflare rogue":
-                    return mp.bloodflareThrowing;
-            }
-
-            // Omega Blue
-            if (setBonus == "omegablue" || setBonus == "omega blue")
-                return mp.omegaBlueSet;
-
-            // God Slayer
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "godslayer":
-                case "god slayer":
-                    return mp.godSlayer;
-                case "godslayer_melee":
-                case "godslayer melee":
-                case "god slayer melee":
-                    return mp.godSlayerDamage; // melee helm
-                case "godslayer_ranged":
-                case "godslayer ranged":
-                case "god slayer ranged":
-                    return mp.godSlayerRanged;
-                // God Slayer Mage was removed in the Draedon Update
-                case "godslayer_magic":
-                case "godslayer magic":
-                case "god slayer magic":
-                    return false; // mp.godSlayerMage;
-                // God Slayer Summon was removed in the Draedon Update
-                case "godslayer_summon":
-                case "godslayer summon":
-                case "god slayer summon":
-                    return false; // mp.godSlayerSummon;
-
-                case "godslayer_rogue":
-                case "godslayer rogue":
-                case "god slayer rogue":
-                    return mp.godSlayerThrowing;
-            }
-
-            // Fearmonger
-            if (setBonus == "fearmonger")
-                return mp.fearmongerSet;
-
-            // Silva
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "silva":
-                    return mp.silvaSet;
-
-                // Silva Melee was removed in the Draedon Update
-                case "silva_melee":
-                case "silva melee":
-                    return false; // mp.silvaMelee;
-                // Silva Ranged was removed in the Draedon Update
-                case "silva_ranged":
-                case "silva ranged":
-                    return false; // mp.silvaRanged;
-                case "silva_magic":
-                case "silva magic":
-                    return mp.silvaMage;
-                case "silva_summon":
-                case "silva summon":
-                    return mp.silvaSummon;
-                // Silva Rogue was removed in the Draedon Update
-                case "silva_rogue":
-                case "silva rogue":
-                    return false; // mp.silvaThrowing;
-            }
-
-            // Auric Tesla
-            if (setBonus == "auric" || setBonus == "aurictesla" || setBonus == "auric tesla")
-                return mp.auricSet;
-
-            // Demonshade
-            if (setBonus == "demonshade")
-                return mp.dsSetBonus;
-
-            return false;
-        }
-
-        /// <summary>
-        /// Turns the set bonus corresponding to the given string on or off for the specified player.
-        /// </summary>
-        /// <param name="p">The player whose set bonuses are being toggled.</param>
-        /// <param name="setBonus">The set bonus to check for.</param>
-        /// <param name="enabled">Whether the set bonus should be enabled (true) or disabled (false).</param>
-        /// <returns>Whether any set bonus was adjusted.</returns>
-        public static bool SetSetBonus(Player p, string setBonus, bool enabled)
-        {
-            CalamityPlayer mp = p.Calamity();
-            setBonus = setBonus.ToLower();
-
-            // Desert Prowler
-            if (setBonus == "desertprowler" || setBonus == "desert prowler")
-            {
-                mp.desertProwler = enabled;
-                return true;
-            }
-
-            // Snow Ruffian
-            if (setBonus == "snowruffian" || setBonus == "snow ruffian")
-            {
-                mp.snowRuffianSet = enabled;
-                return true;
-            }
-
-            // Sulphurous
-            if (setBonus == "sulfur" || setBonus == "sulphur" || setBonus == "sulfurous" || setBonus == "sulphurous")
-            {
-                mp.sulfurSet = enabled;
-                mp.sulfurJump = enabled;
-                return true;
-            }
-
-            // Victide
-            if (setBonus == "victide_summon" || setBonus == "victide summon")
-            {
-                mp.victideSet = enabled;
-                mp.victideSummoner = enabled; 
-                return true;
-            }
-            else if (setBonus == "victide" || setBonus.StartsWith("victide_") || setBonus.StartsWith("victide "))
-            {
-                mp.victideSet = true;
-                return true;
-            }
-
-            // Aerospec
-            if (setBonus == "aerospec_summon" || setBonus == "aerospec summon")
-            {
-                mp.aeroSet = enabled;
-                mp.valkyrie = enabled; // LATER -- remove this when player.valkyrie actually controls aerospec summoner
-                return true;
-            }
-            else if (setBonus == "aerospec" || setBonus.StartsWith("aerospec_") || setBonus.StartsWith("aerospec "))
-            {
-                mp.aeroSet = enabled;
-                return true;
-            }
-
-            // Statigel
-            if (setBonus == "statigel_summon" || setBonus == "statigel summon")
-            {
-                mp.statigelSet = enabled;
-                mp.slimeGod = enabled; // LATER -- remove this when player.slimeGod actually controls statigel summoner
-                return true;
-            }
-            else if (setBonus == "statigel" || setBonus.StartsWith("statigel_") || setBonus.StartsWith("statigel "))
-            {
-                mp.statigelSet = enabled;
-                return true;
-            }
-
-            // Mollusk
-            if (setBonus == "mollusk")
-            {
-                mp.molluskSet = enabled;
-                return true;
-            }
-
-            // Titan Heart
-            if (setBonus == "titanheart" || setBonus == "titan heart")
-            {
-                mp.titanHeartMask = enabled;
-                mp.titanHeartMantle = enabled;
-                mp.titanHeartBoots = enabled;
-                mp.titanHeartSet = enabled;
-                return true;
-            }
-
-            // Forbidden Circlet
-            if (setBonus == "forbidden_circlet" || setBonus == "forbidden circlet")
-            {
-                mp.forbiddenCirclet = enabled;
-                return true;
-            }
-
-            // Daedalus
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "daedalus_melee":
-                case "daedalus melee":
-                    mp.daedalusReflect = enabled;
-                    return true;
-                case "daedalus_ranged":
-                case "daedalus ranged":
-                    mp.daedalusShard = enabled;
-                    return true;
-                case "daedalus_magic":
-                case "daedalus magic":
-                    mp.daedalusAbsorb = enabled;
-                    return true;
-                case "daedalus_summon":
-                case "daedalus summon":
-                    mp.daedalusCrystal = enabled; // LATER -- remove this when player.daedalusCrystal actually controls daedalus summoner
-                    return true;
-                case "daedalus_rogue":
-                case "daedalus rogue":
-                    mp.daedalusSplit = enabled;
-                    return true;
-            }
-
-            // Reaver
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "reaver_speed":
-                case "reaver speed":
-                    mp.reaverSpeed = enabled;
-                    return true;
-                case "reaver_explore":
-                case "reaver explore":
-                case "reaver_exploration":
-                case "reaver exploration":
-                    mp.reaverExplore = enabled;
-                    return true;
-                case "reaver_defense":
-                case "reaver defense":
-                case "reaver_tank":
-                case "reaver tank":
-                    mp.reaverDefense = enabled;
-                    return true;
-            }
-
-            // Fathom Swarmer
-            if (setBonus == "fathomswarmer" || setBonus == "fathom swarmer")
-            {
-                mp.fathomSwarmer = enabled;
-                return true;
-            }
-
-            // Brimflame
-            if (setBonus == "brimflame")
-            {
-                mp.brimflameSet = enabled;
-                return true;
-            }
-
-            // Umbraphile
-            if (setBonus == "umbraphile")
-            {
-                mp.umbraphileSet = enabled;
-                return true;
-            }
-
-            // Hydrothermic (Ataxia as legacy name)
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "ataxia":
-                case "hydrothermic":
-                case "hydrothermal":
-                    mp.ataxiaBlaze = enabled;
-                    return true;
-                case "ataxia_melee":
-                case "ataxia melee":
-                case "hydrothermic_melee":
-                case "hydrothermic melee":
-                case "hydrothermal_melee":
-                case "hydrothermal melee":
-                    mp.ataxiaBlaze = enabled;
-                    mp.ataxiaGeyser = enabled;
-                    return true;
-                case "ataxia_ranged":
-                case "ataxia ranged":
-                case "hydrothermic_ranged":
-                case "hydrothermic ranged":
-                case "hydrothermal_ranged":
-                case "hydrothermal ranged":
-                    mp.ataxiaBlaze = enabled;
-                    mp.ataxiaBolt = enabled;
-                    return true;
-                case "ataxia_magic":
-                case "ataxia magic":
-                case "hydrothermic_magic":
-                case "hydrothermic magic":
-                case "hydrothermal_magic":
-                case "hydrothermal magic":
-                    mp.ataxiaBlaze = enabled;
-                    mp.ataxiaMage = enabled;
-                    return true;
-                case "ataxia_summon":
-                case "ataxia summon":
-                case "hydrothermic_summon":
-                case "hydrothermic summon":
-                case "hydrothermal_summon":
-                case "hydrothermal summon":
-                    mp.ataxiaBlaze = enabled;
-                    mp.chaosSpirit = enabled; // LATER -- remove this when player.chaosSpirit actually controls ataxia summoner
-                    return true;
-                case "ataxia_rogue":
-                case "ataxia rogue":
-                case "hydrothermic_rogue":
-                case "hydrothermic rogue":
-                case "hydrothermal_rogue":
-                case "hydrothermal rogue":
-                    mp.ataxiaBlaze = enabled;
-                    mp.ataxiaVolley = enabled;
-                    return true;
-            }
-
-            // Plague Reaper
-            if (setBonus == "plaguereaper" || setBonus == "plague reaper")
-            {
-                mp.plagueReaper = enabled;
-                return true;
-            }
-
-            // Plaguebringer
-            if (setBonus == "plaguebringer" || setBonus == "plaguebringerpatron" || setBonus == "plaguebringer patron")
-            {
-                mp.plaguebringerPatronSet = enabled;
-                return true;
-            }
-
-            // Astral
-            if (setBonus == "astral")
-            {
-                mp.astralStarRain = enabled;
-                return true;
-            }
-
-            // Xeroc
-            if (setBonus == "empyrean" || setBonus == "xeroc")
-            {
-                mp.xerocSet = enabled;
-                return true;
-            }
-
-            // Tarragon
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "tarragon":
-                    mp.tarraSet = enabled;
-                    return true;
-                case "tarragon_melee":
-                case "tarragon melee":
-                    mp.tarraSet = enabled;
-                    mp.tarraMelee = enabled;
-                    return true;
-                case "tarragon_ranged":
-                case "tarragon ranged":
-                    mp.tarraSet = enabled;
-                    mp.tarraRanged = enabled;
-                    return true;
-                case "tarragon_magic":
-                case "tarragon magic":
-                    mp.tarraSet = enabled;
-                    mp.tarraMage = enabled;
-                    return true;
-                case "tarragon_summon":
-                case "tarragon summon":
-                    mp.tarraSet = enabled;
-                    mp.tarraSummon = enabled; // LATER -- remove this when player.tarraSummon actually controls life aura
-                    return true;
-                case "tarragon_rogue":
-                case "tarragon rogue":
-                    mp.tarraSet = enabled;
-                    mp.tarraThrowing = enabled;
-                    return true;
-            }
-
-            // Prismatic
-            if (setBonus == "prismatic" || setBonus == "prism")
-            {
-                mp.prismaticSet = enabled;
-                return true;
-            }
-
-            // Bloodflare
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "bloodflare":
-                    mp.bloodflareSet = enabled;
-                    return true;
-                case "bloodflare_melee":
-                case "bloodflare melee":
-                    mp.bloodflareSet = enabled;
-                    mp.bloodflareMelee = enabled;
-                    return true;
-                case "bloodflare_ranged":
-                case "bloodflare ranged":
-                    mp.bloodflareSet = enabled;
-                    mp.bloodflareRanged = enabled;
-                    return true;
-                case "bloodflare_magic":
-                case "bloodflare magic":
-                    mp.bloodflareSet = enabled;
-                    mp.bloodflareMage = enabled;
-                    return true;
-                case "bloodflare_summon":
-                case "bloodflare summon":
-                    mp.bloodflareSet = enabled;
-                    mp.bloodflareSummon = enabled; // LATER -- remove this when player.bloodflareSummon actually controls bloodflare orbs
-                    return true;
-                case "bloodflare_rogue":
-                case "bloodflare rogue":
-                    mp.bloodflareSet = enabled;
-                    mp.bloodflareThrowing = enabled;
-                    return true;
-            }
-
-            // Omega Blue
-            if (setBonus == "omegablue" || setBonus == "omega blue")
-            {
-                mp.omegaBlueSet = enabled;
-                return true;
-            }
-
-            // God Slayer
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "godslayer":
-                case "god slayer":
-                    mp.godSlayer = enabled;
-                    return true;
-                case "godslayer_melee":
-                case "godslayer melee":
-                case "god slayer melee":
-                    mp.godSlayer = enabled;
-                    mp.godSlayerDamage = enabled; // melee helm
-                    return true;
-                case "godslayer_ranged":
-                case "godslayer ranged":
-                case "god slayer ranged":
-                    mp.godSlayer = enabled;
-                    mp.godSlayerRanged = enabled;
-                    return true;
-                // God Slayer Mage and Summon were removed in the Draedon Update
-                /*
-                case "godslayer_magic":
-                case "godslayer magic":
-                case "god slayer magic":
-                    mp.godSlayer = enabled;
-                    mp.godSlayerMage = enabled;
-                    return true;
-                case "godslayer_summon":
-                case "godslayer summon":
-                case "god slayer summon":
-                    mp.godSlayer = enabled;
-                    mp.godSlayerSummon = enabled;
-                    return true;
-                */
-                case "godslayer_rogue":
-                case "godslayer rogue":
-                case "god slayer rogue":
-                    mp.godSlayer = enabled;
-                    mp.godSlayerThrowing = enabled;
-                    return true;
-            }
-
-            // Fearmonger
-            if (setBonus == "fearmonger")
-            {
-                mp.fearmongerSet = enabled;
-                return true;
-            }
-
-            // Silva
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "silva":
-                    mp.silvaSet = enabled;
-                    return true;
-                case "silva_magic":
-                case "silva magic":
-                    mp.silvaSet = enabled;
-                    mp.silvaMage = enabled;
-                    return true;
-                case "silva_summon":
-                case "silva summon":
-                    mp.silvaSet = enabled;
-                    mp.silvaSummon = enabled; // LATER -- remove this when player.silvaSummon actually controls silva crystal
-                    return true;
-                // Silva Melee, Ranged and Rogue were removed in the Draedon Update
-                /*
-                case "silva_melee":
-                case "silva melee":
-                    mp.silvaSet = enabled;
-                    mp.silvaMelee = enabled;
-                    return true;
-                case "silva_ranged":
-                case "silva ranged":
-                    mp.silvaSet = enabled;
-                    mp.silvaRanged = enabled;
-                    return true;
-                case "silva_rogue":
-                case "silva rogue":
-                    mp.silvaSet = enabled;
-                    mp.silvaThrowing = enabled;
-                    return true;
-                */
-            }
-
-            // Auric Tesla (includes all components)
-            switch (setBonus)
-            {
-                default:
-                    break;
-                case "auric":
-                case "aurictesla":
-                case "auric tesla":
-                    mp.tarraSet = enabled;
-                    mp.bloodflareSet = enabled;
-                    mp.godSlayer = enabled;
-                    mp.silvaSet = enabled;
-                    mp.auricSet = enabled;
-                    return true;
-                case "auric_melee":
-                case "auric melee":
-                case "aurictesla_melee":
-                case "aurictesla melee":
-                case "auric tesla melee":
-                    mp.tarraSet = enabled;
-                    mp.tarraMelee = enabled;
-                    mp.bloodflareSet = enabled;
-                    mp.bloodflareMelee = enabled;
-                    mp.godSlayer = enabled;
-                    mp.godSlayerDamage = enabled;
-                    mp.silvaSet = enabled;
-                    // mp.silvaMelee = enabled;
-                    mp.auricSet = enabled;
-                    return true;
-                case "auric_ranged":
-                case "auric ranged":
-                case "aurictesla_ranged":
-                case "aurictesla ranged":
-                case "auric tesla ranged":
-                    mp.tarraSet = enabled;
-                    mp.tarraRanged = enabled;
-                    mp.bloodflareSet = enabled;
-                    mp.bloodflareRanged = enabled;
-                    mp.godSlayer = enabled;
-                    mp.godSlayerRanged = enabled;
-                    mp.silvaSet = enabled;
-                    // mp.silvaRanged = enabled;
-                    mp.auricSet = enabled;
-                    return true;
-                case "auric_magic":
-                case "auric magic":
-                case "aurictesla_magic":
-                case "aurictesla magic":
-                case "auric tesla magic":
-                    mp.tarraSet = enabled;
-                    mp.tarraMage = enabled;
-                    mp.bloodflareSet = enabled;
-                    mp.bloodflareMage = enabled;
-                    mp.godSlayer = enabled;
-                    // mp.godSlayerMage = enabled;
-                    mp.silvaSet = enabled;
-                    mp.silvaMage = enabled;
-                    mp.auricSet = enabled;
-                    return true;
-                case "auric_summon":
-                case "auric summon":
-                case "aurictesla_summon":
-                case "aurictesla summon":
-                case "auric tesla summon":
-                    mp.tarraSet = enabled;
-                    mp.tarraSummon = enabled;
-                    mp.bloodflareSet = enabled;
-                    mp.bloodflareSummon = enabled;
-                    mp.godSlayer = enabled;
-                    // mp.godSlayerSummon = enabled;
-                    mp.silvaSet = enabled;
-                    mp.silvaSummon = enabled;
-                    mp.auricSet = enabled;
-                    return true;
-                case "auric_rogue":
-                case "auric rogue":
-                case "aurictesla_rogue":
-                case "aurictesla rogue":
-                case "auric tesla rogue":
-                    mp.tarraSet = enabled;
-                    mp.tarraThrowing = enabled;
-                    mp.bloodflareSet = enabled;
-                    mp.bloodflareThrowing = enabled;
-                    mp.godSlayer = enabled;
-                    mp.godSlayerThrowing = enabled;
-                    mp.silvaSet = enabled;
-                    // mp.silvaThrowing = enabled;
-                    mp.auricSet = enabled;
-                    return true;
-            }
-
-            // Demonshade
-            if (setBonus == "demonshade")
-            {
-                mp.dsSetBonus = enabled;
-                mp.rDevil = enabled; // LATER -- remove this when player.rDevil controls demonshade summoned minion
-                return true;
-            }
-
-            return false;
         }
         #endregion
 
@@ -1606,6 +809,8 @@ namespace CalamityMod
         }
         #endregion
 
+        #region Calamity AI
+
         public static float[] GetCalamityAI(NPC npc) => npc?.Calamity()?.newAI ?? new float[0];
 
         public static void SetCalamityAI(NPC npc, int aiSlot, float value)
@@ -1615,11 +820,15 @@ namespace CalamityMod
                 npc.Calamity().newAI[aiSlot] = value;
             }
         }
+        #endregion
 
         #region Boss Health Bars
         public static bool BossHealthBarVisible() => Main.LocalPlayer.Calamity().drawBossHPBar;
 
         public static bool SetBossHealthBarVisible(bool visible) => Main.LocalPlayer.Calamity().drawBossHPBar = visible;
+
+        public static bool GetShouldCloseBossHealthBar(NPC npc) => npc?.Calamity()?.ShouldCloseHPBar ?? false;
+        public static void SetShouldCloseBossHealthBar(NPC npc, bool enabled) => npc.Calamity().ShouldCloseHPBar = enabled;
         #endregion
 
         #region Dodge Disabling
@@ -1702,8 +911,20 @@ namespace CalamityMod
         public static bool IsOnPersistentBuffList(int type) => CalamityLists.persistentBuffList.Contains(type);
         #endregion
 
+        #region Venerated Locket Bans
+        public static bool AddToVeneratedLocketBanlist(int type)
+        {
+            if (!CalamityLists.VeneratedLocketBanlist.Contains(type))
+            {
+                CalamityLists.VeneratedLocketBanlist.Add(type);
+                return true;
+            }
+            return false;
+        }
+        #endregion
+
         #region Summoner Cross Class Nerf Disabling
-        public static bool SetSummonerNerfDisabledByMinion(int type, bool disableNerf)
+            public static bool SetSummonerNerfDisabledByMinion(int type, bool disableNerf)
         {
             if (disableNerf && !CalamityLists.DisabledSummonerNerfMinions.Contains(type))
             {
@@ -1734,6 +955,26 @@ namespace CalamityMod
 
         public static bool GetSummonerNerfDisabledByMinion(int type) => CalamityLists.DisabledSummonerNerfMinions.Contains(type);
         public static bool GetSummonerNerfDisabledByItem(int type) => CalamityLists.DisabledSummonerNerfItems.Contains(type);
+        #endregion
+
+        #region Debuff Display support
+        public static void RegisterDebuff(Texture2D texture, Predicate<NPC> debuffCheck)
+        {
+            if (!CalamityGlobalNPC.debuffTextureList.Contains((texture, debuffCheck)))
+            {
+                CalamityGlobalNPC.debuffTextureList.Add((texture, debuffCheck));
+            }
+        }
+        #endregion
+
+        #region Town NPC Alert support
+        public static void RegisterTownNPCShop(int id, Predicate<Player> getShop, Action<Player, bool> setShop)
+        {
+            if (!CalamityGlobalNPC.npcAlertList.Contains((id, getShop, setShop)))
+            {
+                CalamityGlobalNPC.npcAlertList.Add((id, getShop, setShop));
+            }
+        }
         #endregion
 
         #region Call
@@ -1852,6 +1093,16 @@ namespace CalamityMod
                     if (!(args[1] is string))
                         return new ArgumentException("ERROR: The first argument to \"SetDifficulty\" must be a string.");
                     return SetDifficultyActive(args[1].ToString(), enabled);
+
+
+                case "AddDifficultyToUI":
+                    if (args.Length < 2)
+                        return new ArgumentException("ERROR: Not enough arguements provided");
+  
+                    if (args[1] is not DifficultyMode mode)
+                        return new ArgumentException("ERROR: A class inheriting from 'DifficultyMode' must be provided.");
+                    AddCustomDifficulty(mode);
+                    return null;
 
                 case "GetLight":
                 case "GetLightLevel":
@@ -2009,6 +1260,37 @@ namespace CalamityMod
                     if (!isValidPlayerArg(args[1]))
                         return new ArgumentException("ERROR: The first argument to \"CanStealthStrike\" must be a Player or an int.");
                     return CanStealthStrike(castPlayer(args[1]));
+
+                case "SetStealthProjectile":
+                case "SetStealthStrikeProjectile":
+                case "SetProjectileStealth":
+                case "SetProjectileStealthStrike":
+                    {
+                        if (args.Length < 2)
+                            return new ArgumentNullException("ERROR: Must specify both a Projectile and if the Projectile should be counted as a stealth strike as a bool.");
+                        if (args.Length < 3)
+                            return new ArgumentNullException("ERROR: Must specify whether or not the projectile was created from a stealth strike as a bool.");
+                        if (!(args[2] is bool))
+                            return new ArgumentException("ERROR: The second argument to \"SetStealthProjectile\" must be a bool.");
+                        if (!isValidProjectileArg(args[1]))
+                            return new ArgumentException("ERROR: The first argument to \"SetStealthProjectile\" must be a Projectile.");
+
+                        bool ssEnabled = (bool)args[2];
+                        SetStealthProjectile(castProjectile(args[1]), ssEnabled);
+                        return null;
+                    }
+
+                case "GetStealthProjectile":
+                case "GetStealthStrikeProjectile":
+                case "GetProjectileStealth":
+                case "GetProjectileStealthStrike":
+                    {
+                        if (args.Length < 2)
+                            return new ArgumentNullException("ERROR: Must specify a Projectile.");
+                        if (!isValidProjectileArg(args[1]))
+                            return new ArgumentException("ERROR: The first argument to \"GetStealthProjectile\" must be a Projectile.");
+                        return GetStealthProjectile(castProjectile(args[1]));
+                    }
 
                 case "GetRage":
                 case "GetRageCurrent":
@@ -2407,6 +1689,30 @@ namespace CalamityMod
                         return new ArgumentNullException("ERROR: Must specify a bool.");
                     return SetBossHealthBarVisible(bossBarEnabled);
 
+                case "SetShouldCloseBossHealthBar":
+                    {
+                        if (args.Length < 2)
+                            return new ArgumentNullException("ERROR: Must specify both an NPC and whether or not the NPC's health bar should be closed as a bool.");
+                        if (args.Length < 3)
+                            return new ArgumentNullException("ERROR: Must specify whether or not the NPC's health bar should be closed as a bool.");
+                        if (!(args[2] is float) && !(args[2] is bool))
+                            return new ArgumentException("ERROR: The second argument to \"SetShouldCloseBossHealthBar\" must be a bool.");
+                        if (!isValidNPCArg(args[1]))
+                            return new ArgumentException("ERROR: The first argument to \"SetShouldCloseBossHealthBar\" must be an NPC.");
+
+                        SetShouldCloseBossHealthBar(castNPC(args[1]), (bool)args[2]);
+                        return null;
+                    }
+
+                case "GetShouldCloseBossHealthbar":
+                    {
+                        if (args.Length < 2)
+                            return new ArgumentNullException("ERROR: Must specify an NPC.");
+                        if (!isValidNPCArg(args[1]))
+                            return new ArgumentException("ERROR: The first argument to \"GetShouldCloseBossHealthBar\" must be an NPC.");
+                        return GetShouldCloseBossHealthBar(castNPC(args[1]));
+                    }
+
                 case "CanFirePointBlank":
                 case "CanFirePointBlankShots":
                     if (args.Length < 2)
@@ -2683,6 +1989,62 @@ namespace CalamityMod
                         throw new ArgumentException("ERROR: Must specify a string that determines the inquiry, a string that determines the response, and a Func<bool> that determines the condition.");
                     DraedonDialogRegistry.DialogOptions.Add(new(inquiry, response, condition));
                     return null;
+
+                case "AddToVeneratedLocketBanlist":
+                    if (args.Length < 2)
+                        return new ArgumentException("ERROR: Not enough arguments!");
+                    if (args[1] is not int itemType)
+                        return new ArgumentException("ERROR: Must specify a valid item type as an int index of the item.");
+                    return AddToVeneratedLocketBanlist(itemType);
+
+                case "RegisterDebuff":
+                case "AddToDebuffDisplay":
+                case "AddDebuffDisplay":
+                case "DisplayDebuff":
+                case "DebuffIcon":
+                    {
+                        if (args.Length < 2 || args[1] is not Texture2D texture)
+                            return new ArgumentException("ERROR: The first argument to \"RegisterDebuff\" must be the texture of a debuff as a Texture2D");
+                        if (args.Length != 3 || args[2] is not Predicate<NPC> debuffCheck)
+                            return new ArgumentException("ERROR: The second argument to \"RegisterDebuff\" Must be a Predicate<NPC> that checks if an NPC meets the conditions for the debuff.");
+                        RegisterDebuff(texture, debuffCheck);
+                        return null;
+                    }
+
+                case "RegisterNPCShop":
+                case "RegisterShop":
+                case "RegisterTownNPCShop":
+                case "AddNPCShop":
+                case "AddShop":
+                case "AddTownNPCShop":
+                    {
+                        if (args.Length < 2 || args[1] is not int npc)
+                            return new ArgumentException("ERROR: The first argument to \"RegisterTownNPCShop\" must be the id of the NPC");
+                        if (args.Length < 3 || args[2] is not Predicate<Player> shopCheck)
+                            return new ArgumentException("ERROR: The second argument to \"RegisterTownNPCShop\" Must be a Predicate<Player> that checks if the new shop variable bool is true or not.");
+                        if (args.Length != 4 || args[3] is not Action<Player, bool> shopSet)
+                            return new ArgumentException("ERROR: The third argument to \"RegisterTownNPCShop\" Must be a Action<Player, bool> that is able to get and set the player's shop variable bool.");
+                        RegisterTownNPCShop(npc, shopCheck, shopSet);
+                        return null;
+                    }
+
+                case "SetNewShopVariable":
+                case "SendNPCShopAlert":
+                case "SendNPCAlert":
+                    {
+                        if (args.Length < 2 || args[1] is not int[] npcs)
+                            return new ArgumentException("ERROR: The first argument to \"SetNewShopVariable\" must be an integer array of npc ids that should be alerted.");
+                        if (args.Length != 3 || args[2] is not bool alreadySet)
+                            return new ArgumentException("ERROR: The third argument to \"SetNewShopVariable\" Must be a bool that determines if the shop alert should show.");
+                        CalamityGlobalNPC.SetNewShopVariable(npcs, alreadySet);
+                        return null;
+                    }
+
+                case "BossHealthBoost":
+                case "GetBossHealthBoost":
+                case "BossHealthMultiplier":
+                case "GetBossHealthMultiplier":
+                    return CalamityConfig.Instance.BossHealthBoost;
 
                 default:
                     return new ArgumentException("ERROR: Invalid method name.");

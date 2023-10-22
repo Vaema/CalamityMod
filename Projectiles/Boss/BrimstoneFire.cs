@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
                 Projectile.ai[0] += 1f;
                 int dustType = (int)CalamityDusts.Brimstone;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 100, default, 1f);
                     Dust dust = Main.dust[fire];
@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 150);
         }
     }
 }

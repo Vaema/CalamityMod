@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Walls;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurniturePlagued
@@ -34,14 +35,14 @@ namespace CalamityMod.Items.Placeables.FurniturePlagued
                 AddRecipeGroup("AnyStoneBlock", 50).
                 AddIngredient<PlagueCellCanister>().
                 AddTile<PlagueInfuser>().
+                AddDecraftCondition(Condition.DownedGolem).
                 Register();
             CreateRecipe().
                 AddIngredient<PlaguedPlateWall>(4).
-                AddTile<PlagueInfuser>().
+                AddTile(TileID.WorkBenches).
                 Register();
             CreateRecipe().
                 AddIngredient<PlaguedPlatePlatform>(2).
-                AddTile<PlagueInfuser>().
                 Register();
         }
     }

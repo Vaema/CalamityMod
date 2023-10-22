@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
@@ -148,7 +148,7 @@ namespace CalamityMod.Projectiles.Boss
             if ((info.Damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red) || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 240, 20);
+            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 160, 20);
         }
     }
 }

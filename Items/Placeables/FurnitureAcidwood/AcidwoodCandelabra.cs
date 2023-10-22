@@ -8,7 +8,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAcidwood
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Acidwood Candelabra");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -23,7 +22,11 @@ namespace CalamityMod.Items.Placeables.FurnitureAcidwood
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<Acidwood>(), 5).AddIngredient(ItemID.Torch, 3).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe().
+                AddIngredient<Acidwood>(5).
+                AddIngredient(ItemID.Torch, 3).
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

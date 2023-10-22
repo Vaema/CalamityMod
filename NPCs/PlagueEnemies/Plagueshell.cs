@@ -17,7 +17,6 @@ namespace CalamityMod.NPCs.PlagueEnemies
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 8;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
         }
 
         public override void SetDefaults()
@@ -85,7 +84,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Plague>(), 180, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 90, true);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ModContent.ItemType<PlagueCellCanister>(), 1, 3, 4);

@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             OnHitEffects(target.Center, hit.Crit);
 
-            target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 600);
+            target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 300);
 
             target.Calamity().miscDefenseLoss = 25;
         }
@@ -66,21 +66,36 @@ namespace CalamityMod.Projectiles.Ranged
         {
             OnHitEffects(target.Center, true);
 
-            target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 600);
+            target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 300);
         }
 
         private void OnHitEffects(Vector2 targetPos, bool crit)
         {
+            int extraProjectileAmt;
+            bool fromRight;
             if (crit)
             {
                 var source = Projectile.GetSource_FromThis();
-                int extraProjectileAmt = 8;
+                extraProjectileAmt = 5;
                 for (int x = 0; x < extraProjectileAmt; x++)
                 {
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        bool fromRight = x > 3;
-                        CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, fromRight, 500f, 500f, 0f, 500f, 10f, ModContent.ProjectileType<AMR2>(), (int)(Projectile.damage * 0.1), Projectile.knockBack * 0.1f, Projectile.owner);
+                        fromRight = x > 3;
+                        CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, fromRight, 500f, 500f, 0f, 500f, 10f, ModContent.ProjectileType<AMR2>(), (int)(Projectile.damage * 0.15), Projectile.knockBack * 0.1f, Projectile.owner);
+                    }
+                }
+            }
+            else
+            {
+                var source = Projectile.GetSource_FromThis();
+                extraProjectileAmt = 2;
+                for (int x = 0; x < extraProjectileAmt; x++)
+                {
+                    if (Projectile.owner == Main.myPlayer)
+                    {
+                        fromRight = x > 0;
+                        CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, fromRight, 500f, 500f, 0f, 500f, 10f, ModContent.ProjectileType<AMR2>(), (int)(Projectile.damage * 0.15), Projectile.knockBack * 0.1f, Projectile.owner);
                     }
                 }
             }

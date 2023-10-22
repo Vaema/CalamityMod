@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Magic
             return new Color(255, 255, 200, Projectile.alpha);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1.2f);
                 Main.dust[num622].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[num622].scale = 0.5f;
                     Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;

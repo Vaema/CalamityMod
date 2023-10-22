@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 2; k++)
             {
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
 
             Player player = Main.player[Projectile.owner];
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 player.statLife += 1;
                 player.HealEffect(1);

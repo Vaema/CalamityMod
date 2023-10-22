@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.penetrate = 8;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
 
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Enemy
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 60);
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45);
         }
 
         public override bool PreDraw(ref Color lightColor)

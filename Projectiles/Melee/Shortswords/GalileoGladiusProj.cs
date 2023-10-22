@@ -1,16 +1,18 @@
-﻿using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using CalamityMod.Buffs.DamageOverTime;
-using System;
-
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
+using Microsoft.Xna.Framework;
+using System;
+using Terraria;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
     public class GalileoGladiusProj : BaseShortswordProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<GalileoGladius>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/GalileoGladius";
 
         public override void SetDefaults()
@@ -26,11 +28,13 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
             Projectile.extraUpdates = 1;
             Projectile.hide = true;
             Projectile.ownerHitCheck = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 8;
         }
 
         public override Action<Projectile> EffectBeforePullback => (proj) =>
         {
-            int moonDamage = (int)(Projectile.damage * 0.3333f);
+            int moonDamage = (int)(Projectile.damage * 0.6f);
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 10f, ModContent.ProjectileType<GalileosMoon>(), moonDamage, Projectile.knockBack, Projectile.owner, 0f, 0f);
         };
 
@@ -51,7 +55,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         {
             if (Main.rand.NextBool(5))
             {
-                int num250 = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (Main.rand.NextBool(2) ? 20 : 176), (float)(Main.player[Projectile.owner].direction * 2), 0f, 150, default, 1.3f);
+                int num250 = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (Main.rand.NextBool() ? 20 : 176), (float)(Main.player[Projectile.owner].direction * 2), 0f, 150, default, 1.3f);
                 Main.dust[num250].velocity *= 0.2f;
                 Main.dust[num250].noGravity = true;
             }

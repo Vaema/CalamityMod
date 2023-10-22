@@ -912,7 +912,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                                     baseVelocity *= 0.75f;
                                     gaussMode = true;
                                 }
-                                else if (Main.rand.NextBool(2) && Main.zenithWorld)
+                                else if (Main.rand.NextBool() && Main.zenithWorld)
                                 {
                                     type = ModContent.ProjectileType<PeanutRocket>();
                                     baseVelocity *= 0.4f;
@@ -1156,7 +1156,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 {
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Plague, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -1329,7 +1329,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<PlaguebringerGoliathRelic>());
 
             // GFB Honey Bucket drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ItemID.BottomlessHoneyBucket);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ItemID.BottomlessHoneyBucket, hideLootReport: true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedPlaguebringer, ModContent.ItemType<LorePlaguebringerGoliath>(), desc: DropHelper.FirstKillText);
@@ -1351,7 +1351,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     target.AddBuff(BuffID.Poisoned, 480, true);
                     target.AddBuff(BuffID.Venom, 480, true);
                 }
-                target.AddBuff(ModContent.BuffType<Plague>(), 480, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 240, true);
             }
         }
     }

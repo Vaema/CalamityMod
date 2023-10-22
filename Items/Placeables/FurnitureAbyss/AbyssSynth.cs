@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAbyss
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Abyss Synth");
             Item.width = 26;
             Item.height = 26;
             Item.maxStack = 9999;
@@ -25,7 +24,12 @@ namespace CalamityMod.Items.Placeables.FurnitureAbyss
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ItemID.Bone, 4).AddIngredient(ModContent.ItemType<SmoothAbyssGravel>(), 15).AddIngredient(ItemID.Book).AddTile(ModContent.TileType<VoidCondenser>()).Register();
+            CreateRecipe().
+                AddIngredient<SmoothAbyssGravel>(15).
+                AddIngredient(ItemID.Bone, 4).
+                AddIngredient(ItemID.Book).
+                AddTile<VoidCondenser>().
+                Register();
         }
     }
 }

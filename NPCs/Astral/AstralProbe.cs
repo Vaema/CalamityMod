@@ -260,7 +260,7 @@ namespace CalamityMod.NPCs.Astral
                 {
                     int purple = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[purple].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[purple].scale = 0.5f;
                         Main.dust[purple].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -342,7 +342,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 90, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
         }
     }
 }

@@ -24,9 +24,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
-            Projectile.penetrate = 1;
             Projectile.timeLeft = 120;
             Projectile.Opacity = 0.5f;
             Projectile.DamageType = DamageClass.Summon;
@@ -53,7 +50,7 @@ namespace CalamityMod.Projectiles.Summon
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Main.dedServ)
                 return;

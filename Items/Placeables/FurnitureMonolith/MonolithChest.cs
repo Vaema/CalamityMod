@@ -8,7 +8,6 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Monolith Chest");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -23,10 +22,10 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).
-                AddIngredient(ModContent.ItemType<AstralMonolith>(), 8).
+            CreateRecipe().
+                AddIngredient<AstralMonolith>(8).
                 AddRecipeGroup("IronBar", 2).
-                AddTile(ModContent.TileType<MonolithAmalgam>()).
+                AddTile<MonolithAmalgam>().
                 Register();
         }
     }

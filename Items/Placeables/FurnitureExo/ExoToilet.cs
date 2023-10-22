@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Exo Toilet");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -24,7 +23,10 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<ExoPlating>(), 6).AddTile(ModContent.TileType<DraedonsForge>()).Register();
+            CreateRecipe().
+                AddIngredient<ExoPlating>(6).
+                AddTile<DraedonsForge>().
+                Register();
         }
     }
 }

@@ -720,7 +720,7 @@ namespace CalamityMod.NPCs
                                 int dustIdx = Dust.NewDust(spawnPosiion, 1, 1, 27, 0f, 0f, 0, default, 1f);
                                 Main.dust[dustIdx].velocity = -dustVelocity * 0.3f;
                                 Main.dust[dustIdx].alpha = 100;
-                                if (Main.rand.NextBool(2))
+                                if (Main.rand.NextBool())
                                 {
                                     Main.dust[dustIdx].noGravity = true;
                                     Main.dust[dustIdx].scale += 0.3f;
@@ -3896,31 +3896,29 @@ namespace CalamityMod.NPCs
                 dust.velocity.X *= 0.5f;
                 dust.velocity.Y *= 0.1f;
             }
+
             if ((npc.type == NPCID.EaterofSouls || npc.type == NPCID.Corruptor || npc.type == NPCID.Crimera || npc.type == NPCID.BloodSquid) && npc.wet)
             {
                 if (npc.velocity.Y > 0f)
-                {
                     npc.velocity.Y = npc.velocity.Y * 0.95f;
-                }
+
                 npc.velocity.Y = npc.velocity.Y - 0.4f;
                 if (npc.velocity.Y < -3f)
-                {
                     npc.velocity.Y = -3f;
-                }
             }
+
             if (npc.type == NPCID.Moth && npc.wet)
             {
                 if (npc.velocity.Y > 0f)
-                {
                     npc.velocity.Y = npc.velocity.Y * 0.95f;
-                }
+
                 npc.velocity.Y = npc.velocity.Y - 0.7f;
                 if (npc.velocity.Y < -6f)
-                {
                     npc.velocity.Y = -6f;
-                }
+
                 npc.TargetClosest(true);
             }
+
             if (npc.type == NPCID.Hornet || npc.type == NPCID.MossHornet || (npc.type >= NPCID.HornetFatty && npc.type <= NPCID.HornetStingy))
             {
                 if (npc.wet)
@@ -3935,7 +3933,7 @@ namespace CalamityMod.NPCs
                     npc.TargetClosest();
                 }
 
-                if (npc.ai[1] == 101f)
+                if (npc.ai[1] == 301f)
                 {
                     SoundEngine.PlaySound(SoundID.Item17, npc.position);
                     npc.ai[1] = 0f;
@@ -3943,16 +3941,9 @@ namespace CalamityMod.NPCs
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    npc.ai[1] += (npc.type == NPCID.MossHornet ? 2f : 1f) * 0.1f * npc.scale;
+                    npc.ai[1] += (npc.type == NPCID.MossHornet ? 2f : 1f);
                     if (npc.justHit)
                         npc.ai[1] = 0f;
-
-                    if (targetData.Type == NPCTargetType.Player)
-                    {
-                        Player player = Main.player[npc.target];
-                        if (player != null && player.stealth == 0f && player.itemAnimation == 0)
-                            npc.ai[1] = 0f;
-                    }
 
                     if (npc.ai[1] >= 240f)
                     {
@@ -3976,7 +3967,7 @@ namespace CalamityMod.NPCs
                                 int num23 = Projectile.NewProjectile(npc.GetSource_FromAI(), vector2.X, vector2.Y, num18, num19, num22, num21, 0f, Main.myPlayer);
                                 Main.projectile[num23].timeLeft = (CalamityWorld.death || Main.hardMode) ? 600 : 300;
                                 Main.projectile[num23].extraUpdates += (CalamityWorld.death || Main.hardMode) ? 1 : 0;
-                                npc.ai[1] = 101f;
+                                npc.ai[1] = 301f;
                                 npc.netUpdate = true;
                             }
                             else
@@ -3987,20 +3978,18 @@ namespace CalamityMod.NPCs
                     }
                 }
             }
+
             if (npc.type == NPCID.Probe & flag)
             {
                 if ((npc.velocity.X > 0f && num4 > 0f) || (npc.velocity.X < 0f && num4 < 0f))
                 {
                     if (Math.Abs(npc.velocity.X) < 12f)
-                    {
                         npc.velocity.X = npc.velocity.X * 1.05f;
-                    }
                 }
                 else
-                {
                     npc.velocity.X = npc.velocity.X * 0.9f;
-                }
             }
+
             if (Main.netMode != NetmodeID.MultiplayerClient && !targetDead)
             {
                 if (Main.getGoodWorld && npc.type == NPCID.EaterofSouls)
@@ -4030,9 +4019,8 @@ namespace CalamityMod.NPCs
                     if (npc.localAI[0] == 180f)
                     {
                         if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                        {
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.position.X + (float)(npc.width / 2) + npc.velocity.X), (int)(npc.position.Y + (float)(npc.height / 2) + npc.velocity.Y), 112, 0, 0f, 0f, 0f, 0f, 255);
-                        }
+
                         npc.localAI[0] = 0f;
                     }
                 }
@@ -4062,29 +4050,24 @@ namespace CalamityMod.NPCs
                                 }
                             }
                             else
-                            {
                                 npc.localAI[0] = 50f;
-                            }
                         }
                         else
-                        {
                             npc.localAI[0] = 50f;
-                        }
                     }
                 }
             }
+
             if ((Main.dayTime && npc.type != NPCID.Crimera && npc.type != NPCID.EaterofSouls && npc.type != NPCID.MeteorHead && npc.type != NPCID.Bee && npc.type != NPCID.BeeSmall && npc.type != NPCID.Corruptor && npc.type != NPCID.Moth && npc.type != NPCID.Parrot && npc.type != NPCID.BloodSquid) || Main.player[npc.target].dead)
             {
                 npc.velocity.Y = npc.velocity.Y - num2 * 2f;
                 if (npc.timeLeft > 10)
-                {
                     npc.timeLeft = 10;
-                }
             }
+
             if (((npc.velocity.X > 0f && npc.oldVelocity.X < 0f) || (npc.velocity.X < 0f && npc.oldVelocity.X > 0f) || (npc.velocity.Y > 0f && npc.oldVelocity.Y < 0f) || (npc.velocity.Y < 0f && npc.oldVelocity.Y > 0f)) && !npc.justHit)
-            {
                 npc.netUpdate = true;
-            }
+
             return false;
         }
         #endregion
@@ -5514,7 +5497,7 @@ namespace CalamityMod.NPCs
                 }
                 if (npc.type == NPCID.Necromancer || npc.type == NPCID.NecromancerArmored)
                 {
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         int num121 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, 173, 0f, 0f, 0, default(Color), 1f);
                         Dust dust = Main.dust[num121];
@@ -5524,7 +5507,7 @@ namespace CalamityMod.NPCs
                 }
                 else if (npc.type == NPCID.DiabolistRed || npc.type == NPCID.DiabolistWhite)
                 {
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         int num122 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, 174, npc.velocity.X * 0.2f, npc.velocity.Y * 0.2f, 100, default(Color), 1f);
                         Dust dust = Main.dust[num122];
@@ -5536,7 +5519,7 @@ namespace CalamityMod.NPCs
                 }
                 else if (npc.type == NPCID.RaggedCaster || npc.type == NPCID.RaggedCasterOpenCoat)
                 {
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         int num123 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, 175, npc.velocity.X * 0.2f, npc.velocity.Y * 0.2f, 100, default(Color), 0.1f);
                         Dust dust = Main.dust[num123];
@@ -5552,7 +5535,7 @@ namespace CalamityMod.NPCs
                         Lighting.AddLight(npc.Top, 0.6f, 0.6f, 0.3f);
                         return false;
                     }
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         int num124 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, 6, npc.velocity.X * 0.2f, npc.velocity.Y * 0.2f, 100, default(Color), 2f);
                         Dust dust = Main.dust[num124];
@@ -6644,13 +6627,13 @@ namespace CalamityMod.NPCs
                 {
                     npc.noGravity = false;
                     npc.noTileCollide = false;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         int sand = Dust.NewDust(new Vector2(npc.position.X - 4f, npc.position.Y + (float)npc.height - 8f), npc.width + 8, 24, 32, 0f, npc.velocity.Y / 2f, 0, default(Color), 1f);
                         Dust dust = Main.dust[sand];
                         dust.velocity.X *= 0.4f;
                         dust.velocity.Y *= -1f;
-                        if (Main.rand.NextBool(2))
+                        if (Main.rand.NextBool())
                         {
                             dust.noGravity = true;
                             dust.scale += 0.2f;

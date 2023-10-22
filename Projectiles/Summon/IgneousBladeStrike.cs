@@ -20,8 +20,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.width = 86;
             Projectile.height = 36;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
@@ -35,7 +33,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2 + MathHelper.PiOver4;
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < Main.rand.Next(28, 41); i++)
             {

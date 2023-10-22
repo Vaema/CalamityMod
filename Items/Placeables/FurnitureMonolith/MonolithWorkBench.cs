@@ -8,7 +8,6 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Monolith Work Bench");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -23,7 +22,10 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<AstralMonolith>(), 10).AddTile(ModContent.TileType<MonolithAmalgam>()).Register();
+            CreateRecipe().
+                AddIngredient<AstralMonolith>(10).
+                AddTile<MonolithAmalgam>().
+                Register();
         }
     }
 }

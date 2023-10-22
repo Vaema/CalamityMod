@@ -39,7 +39,6 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.localAI[0] += 1f;
                 return;
             }
-            Projectile.velocity.Y += 0.075f;
             for (int i = 0; i < 3; i++)
             {
                 Vector2 positionDelta = Projectile.velocity / 3f * i;
@@ -58,10 +57,13 @@ namespace CalamityMod.Projectiles.Magic
                 Main.dust[dustIdx].velocity *= 0.25f;
                 Main.dust[dustIdx].velocity += Projectile.velocity * 0.5f;
             }
+
+            if (Projectile.localAI[1] >= 10f)
+                Projectile.velocity.Y += 0.075f;
         }
 
         // If any of the streams are destroyed, kill the accompanying acid streams
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.penetrate > 1)
                 return;

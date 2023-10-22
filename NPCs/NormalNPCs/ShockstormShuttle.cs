@@ -4,6 +4,7 @@ using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
 using System;
+using CalamityMod.Items.Accessories.Vanity;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -17,7 +18,6 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
         }
 
         public override void SetDefaults()
@@ -417,6 +417,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             npcLoot.AddIf(() => NPC.downedGolemBoss, ItemID.MartianConduitPlating, 1, 10, 30);
             npcLoot.Add(ModContent.ItemType<EssenceofSunlight>(), 2);
             npcLoot.Add(ModContent.ItemType<TheTransformer>(), 10);
+            npcLoot.Add(ModContent.ItemType<OracleHeadphones>(), (DateTime.Now.Day == 25 && DateTime.Now.Month == 5) ? 9 : 20);
             var postML = npcLoot.DefineConditionalDropSet(() => NPC.downedMoonlord);
             postML.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<ExodiumCluster>(), 1, 8, 12, 11, 16));
         }

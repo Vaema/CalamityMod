@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Boss
             return new Color(50, 250, 50, Projectile.alpha);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 64;
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 int num622 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 100, default, 2f);
                 Main.dust[num622].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[num622].scale = 0.5f;
                     Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -197,7 +197,7 @@ namespace CalamityMod.Projectiles.Boss
                 target.AddBuff(BuffID.Poisoned, 240, true);
                 target.AddBuff(BuffID.Venom, 240, true);
             }
-            target.AddBuff(ModContent.BuffType<Plague>(), 240, true);
+            target.AddBuff(ModContent.BuffType<Plague>(), 120, true);
         }
     }
 }

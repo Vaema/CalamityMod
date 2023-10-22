@@ -10,7 +10,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Ashen Work Bench");
             Item.width = 28;
             Item.height = 14;
             Item.maxStack = 9999;
@@ -26,7 +25,10 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<SmoothBrimstoneSlag>(), 10).AddTile(ModContent.TileType<AshenAltar>()).Register();
+            CreateRecipe().
+                AddIngredient<SmoothBrimstoneSlag>(10).
+                AddTile<AshenAltar>().
+                Register();
         }
     }
 }

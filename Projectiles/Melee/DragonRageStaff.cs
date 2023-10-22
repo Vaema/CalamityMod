@@ -1,4 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -6,14 +7,15 @@ using System;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class DragonRageStaff : ModProjectile, ILocalizedModType
+    public class DragonRageStaff : ModProjectile
     {
-        public new string LocalizationCategory => "Projectiles.Melee";
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<DragonRage>();
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 408;
@@ -77,7 +79,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 vector2 = num12.ToRotationVector2();
             Vector2 value4 = vector2.RotatedBy(MathHelper.PiOver2 * Projectile.spriteDirection);
 
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 Dust dust = Dust.NewDustDirect(value3 - new Vector2(5f), 10, 10, 244, player.velocity.X, player.velocity.Y, 150, default, 1f);
                 dust.velocity = Projectile.SafeDirectionTo(dust.position) * 0.1f + dust.velocity * 0.1f;

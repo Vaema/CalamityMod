@@ -1,15 +1,17 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
 using Terraria.Enums;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class TyphonsGreedStaff : ModProjectile, ILocalizedModType
+    public class TyphonsGreedStaff : ModProjectile
     {
-        public new string LocalizationCategory => "Projectiles.Melee";
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<TyphonsGreed>();
         public override void SetDefaults()
         {
             Projectile.width = 110;
@@ -36,6 +38,7 @@ namespace CalamityMod.Projectiles.Melee
             float num3 = -0.7853982f;
             Vector2 value = player.RotatedRelativePoint(player.MountedCenter, true);
             Vector2 value2 = Vector2.Zero;
+
             if (player.dead)
             {
                 Projectile.Kill();
@@ -83,7 +86,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 value3 = Projectile.Center + (num12 + ((num9 == -1) ? 3.14159274f : 0f)).ToRotationVector2() * 30f;
             Vector2 vector2 = num12.ToRotationVector2();
             Vector2 value4 = vector2.RotatedBy((double)(1.57079637f * (float)Projectile.spriteDirection), default);
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 Dust dust3 = Dust.NewDustDirect(value3 - new Vector2(5f), 10, 10, 33, player.velocity.X, player.velocity.Y, 150, default, 1f);
                 dust3.velocity = Projectile.SafeDirectionTo(dust3.position) * 0.1f + dust3.velocity * 0.1f;

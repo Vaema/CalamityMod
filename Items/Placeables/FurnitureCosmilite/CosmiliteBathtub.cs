@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureCosmilite
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Cosmilite Bathtub");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -24,7 +23,10 @@ namespace CalamityMod.Items.Placeables.FurnitureCosmilite
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<CosmiliteBrick>(), 14).AddTile(ModContent.TileType<CosmicAnvil>()).Register();
+            CreateRecipe().
+                AddIngredient<CosmiliteBrick>(14).
+                AddTile<CosmicAnvil>().
+                Register();
         }
     }
 }

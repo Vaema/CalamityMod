@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Slimed, 300);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ExpandHitboxBy(100);
             Projectile.maxPenetrate = -1;
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     Vector2 spawnOffset = Main.rand.NextVector2Unit() * Main.rand.NextFloat(4f, 36f);
                     Dust slime = Dust.NewDustPerfect(Projectile.Center + spawnOffset, 243);
-                    slime.velocity = spawnOffset.RotatedBy(MathHelper.PiOver2 * Main.rand.NextBool(2).ToDirectionInt()) * 0.16f;
+                    slime.velocity = spawnOffset.RotatedBy(MathHelper.PiOver2 * Main.rand.NextBool().ToDirectionInt()) * 0.16f;
                     slime.scale = 1.2f;
                 }
             }

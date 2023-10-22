@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Placeables.FurnitureCosmilite;
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 using Terraria.ID;
 namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
 {
@@ -9,7 +8,6 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Otherworldly Candelabra");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -24,7 +22,11 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<OtherworldlyStone>(), 15).AddIngredient(ModContent.ItemType<CosmiliteBrick>(), 3).AddTile(TileID.LunarCraftingStation).Register();
+            CreateRecipe().
+                AddIngredient<OtherworldlyStone>(5).
+                AddIngredient(ItemID.Torch, 3).
+                AddTile(TileID.LunarCraftingStation).
+                Register();
         }
     }
 }

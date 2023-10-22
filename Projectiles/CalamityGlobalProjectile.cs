@@ -74,6 +74,9 @@ namespace CalamityMod.Projectiles
         // If true, this projectile creates impact sparks upon hitting enemies
         public bool deepcoreBullet = false;
 
+        // If true, causes all projectiles fired by this weapon to have homing. Currently used for Arterial Assault.
+        public bool allProjectilesHome = false;
+
         // Amount of extra updates that are set in SetDefaults.
         public int defExtraUpdates = -1;
 
@@ -105,13 +108,11 @@ namespace CalamityMod.Projectiles
         public bool stealthStrike = false;
         public int stealthStrikeHitCount = 0;
         public bool extorterBoost = false;
+        public bool LocketClone = false;
 
         // Note: Although this was intended for fishing line colors, I use this as an AI variable a lot because vanilla only has 4 that sometimes are already in use.  ~Ben
         // TODO -- uses of this variable are undocumented and unstable. Remove it from the API surface.
         public int lineColor = 0;
-
-        // Dogshit, hacky workarounds for the summon respawning system
-        public bool RequiresManualResurrection = false;
 
         // This flag is set to true on summon-classed attacks that are NOT minions, and thus should ALWAYS be able to hit enemies ALL the time.
         // There are several enemies/NPCs in Calamity which do not take damage from minions in certain circumstances.
@@ -159,7 +160,7 @@ namespace CalamityMod.Projectiles
         }
         #endregion On Spawn
 
-        #region SetDefaults
+        #region Set Defaults
         public override void SetDefaults(Projectile projectile)
         {
             // OLD 1.3 CODE: Disable Lunatic Cultist's homing resistance globally
@@ -170,7 +171,7 @@ namespace CalamityMod.Projectiles
         }
         #endregion
 
-        #region PreAI
+        #region Pre AI
         public override bool PreAI(Projectile projectile)
         {
             #region Vanilla Summons AI Changes
@@ -186,6 +187,10 @@ namespace CalamityMod.Projectiles
             // Imp Staff's minion changes.
             if (projectile.type == ProjectileID.FlyingImp)
                 return ImpMinionAI.DoImpMinionAI(projectile);
+
+            // Raven Staff's minion changes.
+            if (projectile.type == ProjectileID.Raven)
+                return RavenMinionAI.DoRavenMinionAI(projectile);
 
             //
             // SENTRY AI CHANGES:
@@ -276,15 +281,6 @@ namespace CalamityMod.Projectiles
                         projectile.Kill();
                     }
                 }
-            }
-
-            if (RequiresManualResurrection)
-            {
-                // Reactivate the projectile the instant it's created. This is dirty as fuck, but
-                // I can't find the offending Kill call in the frankly enormous codebase that causes this unusual instant-death behavior.
-                projectile.active = true;
-                projectile.timeLeft = 90000;
-                RequiresManualResurrection = false;
             }
 
             if (projectile.type == ProjectileID.Skull && (projectile.ai[0] == 0f || projectile.ai[0] == -2f))
@@ -1018,7 +1014,52 @@ namespace CalamityMod.Projectiles
 
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
-                if (projectile.type == ProjectileID.DemonSickle)
+                // Override Deerclops rubble behavior to create a wave of rubble instead of it all flying up at the same time
+                // Rubble doesn't deal damage if it's not moving
+                if (projectile.type == ProjectileID.DeerclopsRangedProjectile)
+                {
+                    projectile.frame = (int)projectile.ai[1];
+                    if (projectile.localAI[0] == 0f)
+                    {
+                        projectile.localAI[0] = 1f;
+                        projectile.rotation = projectile.velocity.ToRotation();
+                        for (int dustIndex = 0; dustIndex < 5; dustIndex++)
+                        {
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), 16, projectile.velocity * MathHelper.Lerp(0.2f, 0.7f, Main.rand.NextFloat()));
+                            dust.velocity += Main.rand.NextVector2Circular(0.5f, 0.5f);
+                            dust.scale = 0.8f + Main.rand.NextFloat() * 0.5f;
+                        }
+
+                        for (int dustIndex = 0; dustIndex < 5; dustIndex++)
+                        {
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), 16, Main.rand.NextVector2Circular(2f, 2f) + projectile.velocity * MathHelper.Lerp(0.2f, 0.5f, Main.rand.NextFloat()));
+                            dust.velocity += Main.rand.NextVector2Circular(0.5f, 0.5f);
+                            dust.scale = 0.8f + Main.rand.NextFloat() * 0.5f;
+                            dust.fadeIn = 1f;
+                        }
+                    }
+
+                    if (projectile.ai[0] >= 5f + projectile.ai[2])
+                        projectile.velocity.Y += 0.15f;
+
+                    // Create a wave of rubble
+                    // Make sure the projectile doesn't despawn before it starts going up
+                    if (projectile.ai[0] <= projectile.ai[2])
+                    {
+                        projectile.timeLeft += 1;
+
+                        // Use the expected velocity when the time is right
+                        if (projectile.ai[0] == projectile.ai[2])
+                        {
+                            projectile.velocity *= 100f;
+                            projectile.velocity *= 12f + Main.rand.NextFloat() * 2f;
+                        }
+                    }
+
+                    return false;
+                }
+
+                else if (projectile.type == ProjectileID.DemonSickle)
                 {
                     if (Main.wofNPCIndex < 0 || !Main.npc[Main.wofNPCIndex].active || Main.npc[Main.wofNPCIndex].life <= 0)
                         return true;
@@ -1343,10 +1384,10 @@ namespace CalamityMod.Projectiles
 
                             for (int i = 0; i < 8; i++)
                             {
-                                int randomDustType = Main.rand.NextBool(2) ? 125 : 148;
+                                int randomDustType = Main.rand.NextBool() ? 125 : 148;
                                 Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, randomDustType, 0f, 0f, 0, default, 2f);
                                 dust.velocity *= 3f;
-                                if (Main.rand.NextBool(2))
+                                if (Main.rand.NextBool())
                                 {
                                     dust.scale = 0.5f;
                                     dust.fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -1354,7 +1395,7 @@ namespace CalamityMod.Projectiles
                             }
                             for (int i = 0; i < 10; i++)
                             {
-                                int randomDustType = Main.rand.NextBool(2) ? 125 : 148;
+                                int randomDustType = Main.rand.NextBool() ? 125 : 148;
                                 Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, randomDustType, 0f, 0f, 0, default, 3f);
                                 dust.noGravity = true;
                                 dust.velocity *= 5f;
@@ -2122,6 +2163,10 @@ namespace CalamityMod.Projectiles
                     {
                         if (projectile.type != ProjectileType<RicoshotCoin>())
                             projectile.extraUpdates += 1;
+                        if (projectile.type == ProjectileID.MechanicalPiranha) {
+                            projectile.localNPCHitCooldown *= 2;
+                            projectile.timeLeft *= 2;
+                        }
                     }
 
                     if (modPlayer.camper && !player.StandingStill())
@@ -2214,6 +2259,18 @@ namespace CalamityMod.Projectiles
                 case ProjectileID.Bat:
                     projectile.extraUpdates = 1;
                     break;
+            }
+
+            // Jack O Lantern Launcher projectile tweak
+            if (projectile.type == ProjectileID.JackOLantern)
+            {
+                if (projectile.ai[0] >= 20f)
+                {
+                    // Offset the gravity until 30 frames later
+                    projectile.ai[2]++;
+                    if (projectile.ai[2] < 30f)
+                        projectile.velocity.Y -= 0.5f;
+                }
             }
 
             // Random velocities for Bouncy Boulders in GFB
@@ -2369,7 +2426,7 @@ namespace CalamityMod.Projectiles
                                 }
                                 break;
                             case 2:
-                                if (Main.rand.NextBool(2))
+                                if (Main.rand.NextBool())
                                 {
                                     Dust cflame = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, 75, projectile.velocity.X * 0.2f + (projectile.direction * 3), projectile.velocity.Y * 0.2f, 100, new Color(), 2.5f);
                                     cflame.noGravity = true;
@@ -2378,7 +2435,7 @@ namespace CalamityMod.Projectiles
                                 }
                                 break;
                             case 3:
-                                if (Main.rand.NextBool(2))
+                                if (Main.rand.NextBool())
                                 {
                                     Dust fire = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, 6, projectile.velocity.X * 0.2f + (projectile.direction * 3), projectile.velocity.Y * 0.2f, 100, new Color(), 2.5f);
                                     fire.noGravity = true;
@@ -2387,7 +2444,7 @@ namespace CalamityMod.Projectiles
                                 }
                                 break;
                             case 4:
-                                if (Main.rand.NextBool(2))
+                                if (Main.rand.NextBool())
                                 {
                                     Dust gold = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, 57, projectile.velocity.X * 0.2f + (projectile.direction * 3), projectile.velocity.Y * 0.2f, 100, new Color(), 1.1f);
                                     gold.noGravity = true;
@@ -2395,7 +2452,7 @@ namespace CalamityMod.Projectiles
                                 }
                                 break;
                             case 5:
-                                if (Main.rand.NextBool(2))
+                                if (Main.rand.NextBool())
                                 {
                                     Dust ichor = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, 169, 0f, 0f, 100);
                                     ichor.velocity.X += projectile.direction;
@@ -2404,7 +2461,7 @@ namespace CalamityMod.Projectiles
                                 }
                                 break;
                             case 6:
-                                if (Main.rand.NextBool(2))
+                                if (Main.rand.NextBool())
                                 {
                                     Dust nanite = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, 135, 0f, 0f, 100);
                                     nanite.velocity.X += projectile.direction;
@@ -2422,13 +2479,14 @@ namespace CalamityMod.Projectiles
                                 }
                                 break;
                             case CalamityGlobalBuff.ModdedFlaskEnchant:
-                                int dustType = player.Calamity().flaskHoly ? (int)CalamityDusts.ProfanedFire : player.Calamity().flaskBrimstone ? ModContent.DustType<BrimstoneFlame>() : DustID.Stone;
+                                int dustType = player.Calamity().flaskHoly ? (Main.rand.NextBool() ? 87 : (int)CalamityDusts.ProfanedFire) : player.Calamity().flaskBrimstone ? (Main.rand.NextBool() ? 114 : ModContent.DustType<BrimstoneFlame>()) : (Main.rand.NextBool() ? 121 : DustID.Stone);
                                 if (Main.rand.NextBool(4))
                                 {
-                                    Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, dustType, 0f, 0f, 100);
-                                    dust.noGravity = true;
-                                    dust.fadeIn = 1.5f;
-                                    dust.velocity *= 0.25f;
+                                    Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, dustType, 0f, 0f, 100, default, Main.rand.NextFloat(0.6f, 0.9f));
+                                    dust.noGravity = dust.type == 121 ? false : true;
+                                    if (!player.Calamity().flaskHoly)
+                                        dust.fadeIn = 1f;
+                                    dust.velocity = player.Calamity().flaskHoly && Main.rand.NextBool(3) ? new Vector2(Main.rand.NextFloat(-0.9f, 0.9f), Main.rand.NextFloat(-6.6f, -9.8f)) : dust.type == 121 ? new Vector2(Main.rand.NextFloat(-0.7f, 0.7f), Main.rand.NextFloat(0.6f, 1.8f)) : -projectile.velocity * 0.2f;
                                 }
                                 break;
                             default:
@@ -2441,13 +2499,14 @@ namespace CalamityMod.Projectiles
                 {
                     if ((player.Calamity().flaskBrimstone || player.Calamity().flaskCrumbling || player.Calamity().flaskHoly) && !projectile.noEnchantments && !projectile.noEnchantmentVisuals)
                     {
-                        int dustType = player.Calamity().flaskHoly ? (int)CalamityDusts.ProfanedFire : player.Calamity().flaskBrimstone ? ModContent.DustType<BrimstoneFlame>() : DustID.Stone;
+                        int dustType = player.Calamity().flaskHoly ? (Main.rand.NextBool() ? 87 : (int)CalamityDusts.ProfanedFire) : player.Calamity().flaskBrimstone ? (Main.rand.NextBool() ? 114 : ModContent.DustType<BrimstoneFlame>()) : (Main.rand.NextBool() ? 121 : DustID.Stone);
                         if (Main.rand.NextBool(4))
                         {
-                            Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, dustType, 0f, 0f, 100);
-                            dust.noGravity = true;
-                            dust.fadeIn = 1.5f;
-                            dust.velocity *= 0.25f;
+                            Dust dust = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, dustType, 0f, 0f, 100, default, Main.rand.NextFloat(0.6f, 0.9f));
+                            dust.noGravity = dust.type == 121 ? false : true;
+                            if (!player.Calamity().flaskHoly)
+                                dust.fadeIn = 1f;
+                            dust.velocity = player.Calamity().flaskHoly && Main.rand.NextBool(3) ? new Vector2(Main.rand.NextFloat(-0.9f, 0.9f), Main.rand.NextFloat(-6.6f, -9.8f)) : dust.type == 121 ? new Vector2 (Main.rand.NextFloat(-0.7f, 0.7f), Main.rand.NextFloat(0.6f, 1.8f)) : -projectile.velocity * 0.2f;
                         }
                     }
                 }
@@ -2486,6 +2545,11 @@ namespace CalamityMod.Projectiles
                         confetti.velocity.X += Main.rand.Next(-50, 51) * 0.05f;
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                     }
+                }
+
+                if (allProjectilesHome)
+                {
+                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, 300f, 12f, 20f);
                 }
             }
         }
@@ -2645,6 +2709,12 @@ namespace CalamityMod.Projectiles
 
             switch (projectile.type)
             {
+                // Rev+ Deerclops rubble doesn't deal damage while it's not flying upwards
+                case ProjectileID.DeerclopsRangedProjectile:
+                    if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
+                        return projectile.ai[0] > projectile.ai[2];
+                    break;
+
                 // Storm Weaver frost waves don't deal damage unless they're at their max velocity
                 case ProjectileID.FrostWave:
                     if (projectile.ai[1] > 0f)
@@ -2757,6 +2827,17 @@ namespace CalamityMod.Projectiles
 
         public override bool PreDraw(Projectile projectile, ref Color lightColor)
         {
+            #region Vanilla Summons Drawing Changes
+
+            //
+            // MINION AI CHANGES:
+            //
+
+            if (projectile.type == ProjectileID.Raven)
+                return RavenMinionAI.DoRavenMinionDrawing(projectile, ref lightColor);
+
+            #endregion
+
             // Chlorophyte Crystal AI rework.
             if (projectile.type == ProjectileID.CrystalLeaf)
                 return ChlorophyteCrystalAI.DoChlorophyteCrystalDrawing(projectile);
@@ -2819,7 +2900,7 @@ namespace CalamityMod.Projectiles
         #endregion
 
         #region Kill
-        public override void Kill(Projectile projectile, int timeLeft)
+        public override void OnKill(Projectile projectile, int timeLeft)
         {
             Player player = Main.player[projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
@@ -2863,7 +2944,7 @@ namespace CalamityMod.Projectiles
         }
         #endregion
 
-        #region LifeSteal
+        #region Life Steal
         public static bool CanSpawnLifeStealProjectile(float healMultiplier, float healAmount)
         {
             if (healMultiplier <= 0f || (int)healAmount <= 0)

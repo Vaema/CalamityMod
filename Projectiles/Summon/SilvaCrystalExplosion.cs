@@ -17,14 +17,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = 14;
-            Projectile.height = 14;
+            Projectile.width = Projectile.height = 14;
             Projectile.alpha = 255;
-            Projectile.penetrate = 1;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 900;
-            Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -163,7 +160,7 @@ namespace CalamityMod.Projectiles.Summon
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Vector2 spinningpoint = new Vector2(0f, -3f).RotatedByRandom(3.1415927410125732);
             float num69 = (float)Main.rand.Next(7, 13);

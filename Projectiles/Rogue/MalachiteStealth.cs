@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override Color? GetAlpha(Color lightColor) => new Color(Main.DiscoR, 203, 103, Projectile.alpha);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ai[0] = 2f;
             Projectile.ExpandHitboxBy(112);
@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
                 Main.dust[dusty].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[dusty].scale = 0.5f;
                     Main.dust[dusty].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;

@@ -853,7 +853,7 @@ namespace CalamityMod.NPCs.Crabulon
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<CrabulonRelic>());
 
             // GFB Odd Mushroom drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<OddMushroom>(), 1, 1, 9999);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<OddMushroom>(), 1, 1, 9999, true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedCrabulon, ModContent.ItemType<LoreCrabulon>(), desc: DropHelper.FirstKillText);
@@ -898,7 +898,7 @@ namespace CalamityMod.NPCs.Crabulon
                 {
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 56, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;

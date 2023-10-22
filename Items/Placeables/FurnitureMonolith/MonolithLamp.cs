@@ -1,4 +1,3 @@
-using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,7 +8,6 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Monolith Lamp");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -24,7 +22,11 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<AstralMonolith>(), 9).AddIngredient(ModContent.ItemType<Stardust>(), 1).AddTile(ModContent.TileType<MonolithAmalgam>()).Register();
+            CreateRecipe().
+                AddIngredient<AstralMonolith>(3).
+                AddIngredient(ItemID.Torch).
+                AddTile<MonolithAmalgam>().
+                Register();
         }
     }
 }

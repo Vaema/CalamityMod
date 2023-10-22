@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item21, Projectile.position);
             Projectile.position = Projectile.Center;
@@ -167,7 +167,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
                 Main.dust[water].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[water].scale = 0.5f;
                     Main.dust[water].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;

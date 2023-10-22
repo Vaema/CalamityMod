@@ -9,13 +9,14 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class WulfrumScaffoldKitHoldout : ModProjectile, ILocalizedModType
+    public class WulfrumScaffoldKitHoldout : ModProjectile
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<WulfrumScaffoldKit>();
         public override void Load()
         {
             PipeCleanupManager = new WulfrumPipeManager();
@@ -187,7 +188,7 @@ namespace CalamityMod.Projectiles.Typeless
         public bool Connected(Point pos, int displaceX, int displaceY) => SelectedTiles.ContainsKey(new Point(pos.X + displaceX, pos.Y + displaceY));
 
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (SelectedTiles.Keys.Count > 0)
                 SoundEngine.PlaySound(SoundID.Item101 with { Volume = SoundID.Item101.Volume * 0.6f}, Owner.Center);

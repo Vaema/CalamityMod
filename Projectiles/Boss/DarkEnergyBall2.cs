@@ -99,14 +99,14 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int num621 = 0; num621 < 3; num621++)
             {
                 int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 1.2f);
                 Main.dust[num622].velocity *= 3f;
                 Main.dust[num622].noGravity = true;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[num622].scale = 0.5f;
                     Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;

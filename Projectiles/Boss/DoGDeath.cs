@@ -21,10 +21,10 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         public Vector2 OldVelocity;
-        public const float TelegraphTotalTime = 210f;
-        public const float TelegraphFadeTime = 30f;
-        public const float TelegraphWidth = 3150f;
-        public const float FadeTime = 100f;
+        public const float TelegraphTotalTime = 35f;
+        public const float TelegraphFadeTime = 5f;
+        public const float TelegraphWidth = 2400f;
+        public const float FadeTime = 20f;
 
         public override void SetStaticDefaults()
         {
@@ -41,8 +41,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.Opacity = 0f;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 3;
-            Projectile.timeLeft = 940;
+            Projectile.timeLeft = 600;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
@@ -112,7 +111,7 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (TelegraphDelay > TelegraphTotalTime && Projectile.Opacity == 1f)
-                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
         }
 
         public override Color? GetAlpha(Color lightColor) => new Color(255, 255, 255, 0) * Projectile.Opacity;

@@ -1,15 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.BaseProjectiles;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.BaseProjectiles;
+
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class SlickCaneProjectile : BaseSpearProjectile, ILocalizedModType
+    public class SlickCaneProjectile : BaseSpearProjectile
     {
-        public new string LocalizationCategory => "Projectiles.Rogue"; // Would be melee otherwise
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<SlickCane>();
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SlickCane";
 
         private bool initialized = false;
@@ -72,7 +75,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
-            if ((target.damage > 5 || target.boss) && player.whoAmI == Main.myPlayer && !target.SpawnedFromStatue)
+            if (Projectile.owner == Main.myPlayer && target.IsAnEnemy(false))
             {
                 float moneyValueToDrop = target.value / Main.rand.NextFloat(15f, 35f);
                 // Maximum of 50 silver, not counting steath strikes

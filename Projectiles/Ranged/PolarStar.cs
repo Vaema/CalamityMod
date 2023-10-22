@@ -129,7 +129,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
-            if ((target.damage > 5 || target.boss) && Projectile.owner == Main.myPlayer && !target.SpawnedFromStatue)
+            if (Projectile.owner == Main.myPlayer && target.IsAnEnemy(false))
             {
                 player.AddBuff(ModContent.BuffType<PolarisBuff>(), 480);
             }
@@ -142,7 +142,7 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item62 with { Volume = SoundID.Item62.Volume * 0.5f}, Projectile.position);
             if (Projectile.ai[1] == 1f) //Boost two
@@ -174,13 +174,13 @@ namespace CalamityMod.Projectiles.Ranged
                     source = source.RotatedBy((double)((float)(d - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
                     Vector2 dustVel = source - Projectile.Center;
 
-                    int i = Dust.NewDust(source + dustVel, 0, 0, Main.rand.NextBool(2) ? dust1 : dust2, dustVel.X * 0.3f, dustVel.Y * 0.3f, 100, default, 2f);
+                    int i = Dust.NewDust(source + dustVel, 0, 0, Main.rand.NextBool() ? dust1 : dust2, dustVel.X * 0.3f, dustVel.Y * 0.3f, 100, default, 2f);
                     Main.dust[i].noGravity = true;
 
-                    int j = Dust.NewDust(source + dustVel, 0, 0, Main.rand.NextBool(2) ? dust1 : dust2, dustVel.X * 0.2f, dustVel.Y * 0.2f, 100, default, 2f);
+                    int j = Dust.NewDust(source + dustVel, 0, 0, Main.rand.NextBool() ? dust1 : dust2, dustVel.X * 0.2f, dustVel.Y * 0.2f, 100, default, 2f);
                     Main.dust[j].noGravity = true;
 
-                    int k = Dust.NewDust(source + dustVel, 0, 0, Main.rand.NextBool(2) ? dust1 : dust2, dustVel.X * 0.1f, dustVel.Y * 0.1f, 100, default, 2f);
+                    int k = Dust.NewDust(source + dustVel, 0, 0, Main.rand.NextBool() ? dust1 : dust2, dustVel.X * 0.1f, dustVel.Y * 0.1f, 100, default, 2f);
                     Main.dust[k].noGravity = true;
                 }
 

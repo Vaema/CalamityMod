@@ -26,13 +26,13 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = 40;
             Projectile.height = 40;
             Projectile.friendly = true;
-            Projectile.penetrate = 5;
+            Projectile.penetrate = 2;
             Projectile.extraUpdates = 2;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             //make dust shape
             bool blue = Main.rand.NextBool();

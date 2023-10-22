@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Ranged
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.5f / 255f, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0f / 255f);
             Projectile.rotation -= (MathHelper.ToRadians(90) * Projectile.direction);
             Projectile.spriteDirection = Projectile.direction;
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 int num137 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), 1, 1, 30, 0f, 0f, 0, default, 0.5f);
                 Main.dust[num137].velocity *= 0f;
@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = -8; i <= 8; i += 8)
             {

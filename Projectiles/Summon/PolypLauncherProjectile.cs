@@ -18,15 +18,12 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = 18;
-            Projectile.height = 18;
+            Projectile.width = Projectile.height = 18;
             Projectile.friendly = true;
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 300;
             Projectile.alpha = 255;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -44,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.1f * Projectile.direction;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             //Dust on impact
@@ -73,9 +70,7 @@ namespace CalamityMod.Projectiles.Summon
                 Vector2 shardSpeed = new Vector2(shardspeedX, shardspeedY);
 
                 //Spawn the projectile
-                int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + shardSpeed, shardSpeed, ModContent.ProjectileType<PolypLauncherShrapnel>(), (int)(Projectile.damage * 0.5), Projectile.knockBack / 2f, Projectile.owner, Main.rand.Next(3));
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Projectile.originalDamage;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + shardSpeed, shardSpeed, ModContent.ProjectileType<PolypLauncherShrapnel>(), (int)(Projectile.damage * 0.5), Projectile.knockBack / 2f, Projectile.owner, Main.rand.Next(3));
                 split += 1;
             }
         }

@@ -387,8 +387,8 @@ namespace CalamityMod.NPCs.AstrumAureus
             // GFB Crab Banner and Asteroid Staff drop
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.CrabBanner, 1, 1, 9999);
-                GFBOnly.Add(ModContent.ItemType<AsteroidStaff>());
+                GFBOnly.Add(ItemID.CrabBanner, 1, 1, 9999, true);
+                GFBOnly.Add(ModContent.ItemType<AsteroidStaff>(), hideLootReport: true);
             }
 
             // Lore
@@ -444,7 +444,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                 {
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -534,7 +534,7 @@ namespace CalamityMod.NPCs.AstrumAureus
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 200, true);
         }
     }
 }

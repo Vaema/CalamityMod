@@ -8,7 +8,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAcidwood
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Acidwood Piano");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -23,7 +22,12 @@ namespace CalamityMod.Items.Placeables.FurnitureAcidwood
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ItemID.Bone, 4).AddIngredient(ModContent.ItemType<Acidwood>(), 15).AddIngredient(ItemID.Book).AddTile(TileID.Sawmill).Register();
+            CreateRecipe().
+                AddIngredient<Acidwood>(15).
+                AddIngredient(ItemID.Bone, 4).
+                AddIngredient(ItemID.Book).
+                AddTile(TileID.Sawmill).
+                Register();
         }
     }
 }

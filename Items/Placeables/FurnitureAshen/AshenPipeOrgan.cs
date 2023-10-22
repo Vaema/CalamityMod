@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Ashen Pipe Organ");
             Item.width = 26;
             Item.height = 26;
             Item.maxStack = 9999;
@@ -25,7 +24,12 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ItemID.Bone, 4).AddIngredient(ModContent.ItemType<SmoothBrimstoneSlag>(), 15).AddIngredient(ItemID.Book).AddTile(ModContent.TileType<AshenAltar>()).Register();
+            CreateRecipe().
+                AddIngredient<SmoothBrimstoneSlag>(15).
+                AddIngredient(ItemID.Bone, 4).
+                AddIngredient(ItemID.Book).
+                AddTile<AshenAltar>().
+                Register();
         }
     }
 }

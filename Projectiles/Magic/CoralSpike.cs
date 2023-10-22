@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public ref float ChargeCompletion => ref Projectile.ai[0];
 
-        public static int DustPick => Main.rand.NextBool(2) ? 255 : Main.rand.NextBool() ? 282 : Main.rand.NextBool() ? 281 : 280;
+        public static int DustPick => Main.rand.NextBool() ? 255 : Main.rand.NextBool() ? 282 : Main.rand.NextBool() ? 281 : 280;
 
         public override void SetDefaults()
         {
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
             dust.noGravity = true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (timeLeft != 0)
                 SoundEngine.PlaySound(SoundID.Dig with { Volume = SoundID.Dig.Volume * 0.4f}, Projectile.Center);

@@ -158,7 +158,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.height = (int)(70 * NPC.scale);
                     NPC.frame = new Rectangle(0, 0, 114, 88);
                     NPC.position -= NPC.Size * 0.5f;
+
                     NPC.netUpdate = true;
+
+                    // Prevent netUpdate from being blocked by the spam counter.
+                    if (NPC.netSpam >= 10)
+                        NPC.netSpam = 9;
                 }
             }
 
@@ -227,14 +232,13 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 {
                                     NPC.TargetClosest();
                                     SoundEngine.PlaySound(SoundID.Item12, player.Center);
-                                    float maxProjectileVelocity = bossRush ? 8f : death ? 7.5f : revenge ? 7.25f : expertMode ? 7f : 6.5f;
+                                    float maxProjectileVelocity = bossRush ? 20f : death ? 16f : revenge ? 14.25f : expertMode ? 13.5f : 12f;
                                     float minProjectileVelocity = maxProjectileVelocity * 0.25f;
                                     float projectileVelocity = MathHelper.Clamp(Vector2.Distance(player.Center, NPC.Center) * 0.01f, minProjectileVelocity, maxProjectileVelocity);
                                     Vector2 velocityVector = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
                                     int type = ModContent.ProjectileType<DoGDeath>();
                                     int damage = NPC.GetProjectileDamage(type);
-                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocityVector, type, damage, 0f, Main.myPlayer);
-                                    Main.projectile[proj].timeLeft = 1800;
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocityVector, type, damage, 0f, Main.myPlayer);
                                 }
                             }
                         }
@@ -253,14 +257,13 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 NPC.TargetClosest();
                                 SoundEngine.PlaySound(SoundID.Item12, player.Center);
                                 NPC.localAI[0] = 0f;
-                                float maxProjectileVelocity = bossRush ? 7.5f : death ? 7f : revenge ? 6.75f : expertMode ? 6.5f : 6f;
+                                float maxProjectileVelocity = bossRush ? 18f : death ? 14f : revenge ? 12.25f : expertMode ? 11.5f : 10f;
                                 float minProjectileVelocity = maxProjectileVelocity * 0.25f;
                                 float projectileVelocity = MathHelper.Clamp(Vector2.Distance(player.Center, NPC.Center) * 0.01f, minProjectileVelocity, maxProjectileVelocity);
                                 Vector2 velocityVector = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
                                 int type = ModContent.ProjectileType<DoGDeath>();
                                 int damage = NPC.GetProjectileDamage(type);
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocityVector, type, damage, 0f, Main.myPlayer);
-                                Main.projectile[proj].timeLeft = 1800;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocityVector, type, damage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -304,6 +307,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 NPC.Opacity = 0f;
 
                             NPC.netUpdate = true;
+
+                            // Prevent netUpdate from being blocked by the spam counter.
+                            if (NPC.netSpam >= 10)
+                                NPC.netSpam = 9;
                         }
                     }
                 }
@@ -431,7 +438,12 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.life = 1;
             NPC.dontTakeDamage = true;
             NPC.active = true;
+
             NPC.netUpdate = true;
+
+            // Prevent netUpdate from being blocked by the spam counter.
+            if (NPC.netSpam >= 10)
+                NPC.netSpam = 9;
 
             if (NPC.realLife >= 0)
             {
@@ -441,7 +453,12 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                 Head.ModNPC<DevourerofGodsHead>().Dying = true;
                 Head.dontTakeDamage = true;
+
                 Head.netUpdate = true;
+
+                // Prevent netUpdate from being blocked by the spam counter.
+                if (Head.netSpam >= 10)
+                    Head.netSpam = 9;
             }
             return false;
         }
@@ -465,7 +482,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -492,7 +509,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 240, true);
+                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 160, true);
                 target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 480, true);
             }
         }

@@ -14,13 +14,12 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         // Weapon attribute constants
-        public static readonly int BaseDamage = 650;
+        public static readonly int BaseDamage = 670;
         public static readonly float GiantSkullDamageMultiplier = 1.5f;
 
         // Weapon projectile attribute constants
         public static readonly int SearchDistance = 1450;
         public static readonly int ImmunityFrames = 10;
-        public static readonly int SkullsplosionCooldownSeconds = 30;
 
         // Skull ring attribute constants
         public static readonly float SkullsplosionDamageMultiplier = 1.5f;
@@ -36,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 102;
             Item.damage = BaseDamage;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = Item.useTime = 12;
+            Item.useAnimation = Item.useTime = 13;
             Item.useTurn = true;
             Item.knockBack = 9;
             Item.UseSound = SoundID.Item1;
@@ -126,8 +125,8 @@ namespace CalamityMod.Items.Weapons.Melee
                     break;
                 //Giant, slow, fading skull
                 case 1:
-                    int largeSkullDmg = (int)(damage * 1.5f);
-                    int projectileIndex = Projectile.NewProjectile(source, position, velocity * 0.5f, type, largeSkullDmg, knockback, player.whoAmI, ai1:1f);
+                    int largeSkullDmg = (int)(damage * GiantSkullDamageMultiplier);
+                    int projectileIndex = Projectile.NewProjectile(source, position, velocity * 0.6f, type, largeSkullDmg, knockback, player.whoAmI, ai1:1f);
                     Main.projectile[projectileIndex].scale = 1.75f;
                     break;
             }

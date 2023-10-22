@@ -66,7 +66,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
 
         public override void UpdateArmorSet(Player player)
         {
-            var hotkey = CalamityKeybinds.SetBonusHotKey.TooltipHotkeyString();
+            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
             player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
 
             var mp = player.Calamity();
@@ -92,7 +92,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
             CreateRecipe().
                 AddIngredient<ReaperTooth>(8).
                 AddIngredient<DepthCells>(12).
-                AddIngredient<RuinousSoul>(1).
+                AddIngredient<RuinousSoul>().
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

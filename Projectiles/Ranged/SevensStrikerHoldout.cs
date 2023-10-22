@@ -1,19 +1,20 @@
-﻿using CalamityMod.Sounds;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Utilities;
 using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Ranged;
-using ReLogic.Utilities;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class SevensStrikerHoldout : ModProjectile, ILocalizedModType
+    public class SevensStrikerHoldout : ModProjectile
     {
-        public new string LocalizationCategory => "Projectiles.Ranged";
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheSevensStriker>();
         public bool rolling = true; // If the slot machine is currently rolling
         public bool shotonce = false; // So that the first shot doesn't consume two ammo
         public int shottimer = 0; // Solely exists so that the Platinum shots aren't instantaneous
@@ -136,15 +137,15 @@ namespace CalamityMod.Projectiles.Ranged
                                 SoundEngine.PlaySound(TheSevensStriker.JackpotSound, Projectile.Center);
                                 CombatText.NewText(player.getRect(), Color.Gold, CalamityUtils.GetTextValue("Misc.SevensJackpot"), true);
                             }
-                            // Every 5 frames, shoot 7 coins. The first 5 frames are excluded for timing purposes
-                            if (shottimer % 5 == 0 && shottimer > 5)
+                            // Every 7 frames, shoot 7 coins. The first 7 frames are excluded for timing purposes
+                            if (shottimer % 7 == 0 && shottimer > 7)
                             {
                                 int jackpotDamage = (int)(weaponDamage * TheSevensStriker.JackpotMultiplier);
                                 Shoot(7, ModContent.ProjectileType<SevensStrikerPlatinumCoin>(), jackpotDamage, weaponKnockback, (int)scaleFactor * 2f, 0.2f);
                                 SoundEngine.PlaySound(TheSevensStriker.CoinSound, Projectile.Center);
                             }
                             // After 7 waves have been shot, reset the gun and roll again
-                            if (shottimer > 40)
+                            if (shottimer > 56)
                             {
                                 soundtimer = 0;
                                 rolling = true;
@@ -167,7 +168,7 @@ namespace CalamityMod.Projectiles.Ranged
                                         CombatText.NewText(player.getRect(), Color.Gray, CalamityUtils.GetTextValue("Misc.SevensBust"), true);
                                         SoundEngine.PlaySound(TheSevensStriker.BustSound, Projectile.Center);
                                         break;
-                                    // 7 exploding oranges with 200% damage
+                                    // 7 exploding oranges with 100% damage
                                     case 2:
                                         int doublesDamage = (int)(weaponDamage * TheSevensStriker.DoublesMultiplier);
                                         Shoot(7, ModContent.ProjectileType<SevensStrikerOrange>(), doublesDamage, weaponKnockback, 2f, 0.1f);
@@ -336,7 +337,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
 
         // When the gun disappears, stop any in-progress slots sounds and set a cooldown of 12 frames.
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (SoundEngine.TryGetActiveSound(RouletteSoundSlot, out var dringdring))
                 dringdring.Stop();

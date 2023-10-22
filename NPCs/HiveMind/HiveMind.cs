@@ -573,7 +573,7 @@ namespace CalamityMod.NPCs.HiveMind
 
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.Center.Y), NPC.width, NPC.height / 2, 14, 0f, -3f, 100, default, 2.5f * NPC.scale);
                     Main.dust[num622].velocity *= 2f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -605,6 +605,7 @@ namespace CalamityMod.NPCs.HiveMind
                         }
                     }
                     NPC.netUpdate = true;
+                    NPC.netSpam = 0;
                 }
                 else if (burrowTimer < 0)
                 {
@@ -613,7 +614,7 @@ namespace CalamityMod.NPCs.HiveMind
 
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.Center.Y), NPC.width, NPC.height / 2, 14, 0f, -3f, 100, default, 2.5f * NPC.scale);
                     Main.dust[num622].velocity *= 2f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -714,6 +715,7 @@ namespace CalamityMod.NPCs.HiveMind
                             rotation = MathHelper.ToRadians(Main.rand.Next(360));
 
                         NPC.netUpdate = true;
+                        NPC.netSpam = 0;
                     }
 
                     if (!player.active || player.dead || Vector2.Distance(NPC.Center, player.Center) > 5000f)
@@ -751,6 +753,7 @@ namespace CalamityMod.NPCs.HiveMind
                         NPC.velocity *= 2f / 255f * (reelbackFade + 2 * (int)enrageScale);
                         ReelBack();
                         NPC.netUpdate = true;
+                        NPC.netSpam = 0;
                     }
                     else
                     {
@@ -782,18 +785,20 @@ namespace CalamityMod.NPCs.HiveMind
 
                         phase2timer = minimumDriftTime + Main.rand.Next(121);
                         NPC.netUpdate = true;
+                        NPC.netSpam = 0;
                     }
                     else if (NPC.ai[1] == 0f && NPC.ai[2] == 0f)
                     {
                         for (int i = 0; i < 10; i++)
                         {
-                            int posX = (int)player.Center.X / 16 + Main.rand.Next(15, 46) * (Main.rand.NextBool(2) ? -1 : 1);
-                            int posY = (int)player.Center.Y / 16 + Main.rand.Next(15, 46) * (Main.rand.NextBool(2) ? -1 : 1);
+                            int posX = (int)player.Center.X / 16 + Main.rand.Next(15, 46) * (Main.rand.NextBool() ? -1 : 1);
+                            int posY = (int)player.Center.Y / 16 + Main.rand.Next(15, 46) * (Main.rand.NextBool() ? -1 : 1);
                             if (!WorldGen.SolidTile(posX, posY) && Collision.CanHit(new Vector2(posX * 16, posY * 16), 1, 1, player.position, player.width, player.height))
                             {
                                 NPC.ai[1] = posX;
                                 NPC.ai[2] = posY;
                                 NPC.netUpdate = true;
+                                NPC.netSpam = 0;
                                 break;
                             }
                         }
@@ -834,6 +839,7 @@ namespace CalamityMod.NPCs.HiveMind
                 case 3: // Lunge
 
                     NPC.netUpdate = true;
+                    NPC.netSpam = 0;
                     if (NPC.alpha > 0)
                     {
                         NPC.alpha -= lungeFade;
@@ -890,6 +896,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.position.Y += teleportRadius;
                         }
                         NPC.netUpdate = true;
+                        NPC.netSpam = 0;
                     }
                     else
                     {
@@ -900,6 +907,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.velocity.X = MathHelper.Pi * teleportRadius / arcTime;
                             NPC.velocity *= rotationDirection;
                             NPC.netUpdate = true;
+                            NPC.netSpam = 0;
                         }
                         else
                         {
@@ -947,6 +955,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.position.X += teleportRadius * rotationDirection;
                         }
                         NPC.netUpdate = true;
+                        NPC.netSpam = 0;
                     }
                     else
                     {
@@ -957,6 +966,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.velocity.X = teleportRadius / arcTime * 3;
                             NPC.velocity *= -rotationDirection;
                             NPC.netUpdate = true;
+                            NPC.netSpam = 0;
                         }
                         else
                         {
@@ -995,6 +1005,7 @@ namespace CalamityMod.NPCs.HiveMind
                         phase2timer = minimumDriftTime + Main.rand.Next(121);
                         state = 0;
                         NPC.netUpdate = true;
+                        NPC.netSpam = 0;
                     }
 
                     break;
@@ -1033,6 +1044,7 @@ namespace CalamityMod.NPCs.HiveMind
                 NPC.velocity *= -4f;
                 ReelBack();
                 NPC.netUpdate = true;
+                NPC.netSpam = 0;
             }
         }
 
@@ -1095,7 +1107,7 @@ namespace CalamityMod.NPCs.HiveMind
                 {
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 14, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -1178,11 +1190,11 @@ namespace CalamityMod.NPCs.HiveMind
             // GFB class emblem drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.WarriorEmblem);
-                GFBOnly.Add(ItemID.RangerEmblem);
-                GFBOnly.Add(ItemID.SorcererEmblem);
-                GFBOnly.Add(ItemID.SummonerEmblem);
-                GFBOnly.Add(ModContent.ItemType<RogueEmblem>());
+                GFBOnly.Add(ItemID.WarriorEmblem, hideLootReport: true);
+                GFBOnly.Add(ItemID.RangerEmblem, hideLootReport: true);
+                GFBOnly.Add(ItemID.SorcererEmblem, hideLootReport: true);
+                GFBOnly.Add(ItemID.SummonerEmblem, hideLootReport: true);
+                GFBOnly.Add(ModContent.ItemType<RogueEmblem>(), hideLootReport: true);
             }
 
             // Lore

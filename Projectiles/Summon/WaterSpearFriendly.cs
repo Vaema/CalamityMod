@@ -16,13 +16,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = 14;
-            Projectile.height = 14;
+            Projectile.width = Projectile.height = 14;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
-            Projectile.penetrate = 1;
             Projectile.timeLeft = 300;
             Projectile.alpha = 255;
             Projectile.DamageType = DamageClass.Summon;
@@ -38,7 +34,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -83,7 +79,7 @@ namespace CalamityMod.Projectiles.Summon
             return new Color(200, 200, 200, Projectile.alpha);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 3; k++)
             {

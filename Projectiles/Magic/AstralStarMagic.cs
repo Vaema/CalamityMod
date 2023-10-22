@@ -105,14 +105,14 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
 			Projectile.ExpandHitboxBy(50);
             for (int i = 0; i < 5; i++)
             {
                 int idx = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.2f);
                 Main.dust[idx].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[idx].scale = 0.5f;
                     Main.dust[idx].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;

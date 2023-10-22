@@ -71,7 +71,6 @@ CalamityConfig: {
 			'''
 			Gives the player a very weak dash by default that requires no equipment or items to use.
 			This dash will be replaced by any other available dash, including those from other mods.
-			Calamity is balanced around this setting being enabled.
 			'''
 	}
 
@@ -236,6 +235,15 @@ CalamityConfig: {
 			'''
 	}
 
+	MusicModReminderMessage: {
+		Label: "[i:MusicBoxMartians] Music Mod Reminder Message"
+		Tooltip:
+			'''
+			Enable or disable the status message which reminds users to install the Calamity Music Mod.
+			This message plays on world entry.
+			'''
+	}
+
 	NerfExpertDebuffs: {
 		Label: "[i:AnkhCharm] Remove Increased Debuff Duration"
 		Tooltip:
@@ -252,6 +260,7 @@ CalamityConfig: {
 			Sets the maximum of particle effects that can exist at once.
 			Particles are separate from dust and gores.
 			Turn down to improve performance.
+			[c/F05A5A:Turning this below 300 may cause some things to not display correctly.]
 			'''
 	}
 

@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Ancient Pipe Organ");
             Item.width = 26;
             Item.height = 26;
             Item.maxStack = 9999;
@@ -25,7 +24,12 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ItemID.Bone, 4).AddIngredient(ModContent.ItemType<BrimstoneSlag>(), 15).AddIngredient(ItemID.Book).AddTile(ModContent.TileType<AncientAltar>()).Register();
+            CreateRecipe().
+                AddIngredient<BrimstoneSlag>(15).
+                AddIngredient(ItemID.Bone, 4).
+                AddIngredient(ItemID.Book).
+                AddTile<AncientAltar>().
+                Register();
         }
     }
 }

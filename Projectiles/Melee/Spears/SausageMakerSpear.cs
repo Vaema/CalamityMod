@@ -1,11 +1,16 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee.Spears
 {
     public class SausageMakerSpear : BaseSpearProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<SausageMaker>();
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 44;
@@ -29,6 +34,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<BurningBlood>(), 240);
             if (Projectile.owner == Main.myPlayer)
             {
                 for (int i = 0; i < 2; i++)

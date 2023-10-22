@@ -18,7 +18,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = 10;
             Projectile.height = 16;
             Projectile.friendly = true;
-            Projectile.minion = true;
             Projectile.penetrate = 2;
             Projectile.timeLeft = 180;
             Projectile.MaxUpdates = 2;
@@ -31,7 +30,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation += (Projectile.velocity.X > 0f).ToDirectionInt() * 0.3f;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 5; k++)
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 7, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);

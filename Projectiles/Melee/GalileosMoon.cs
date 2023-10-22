@@ -26,12 +26,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
-            Projectile.penetrate = 12;
-            Projectile.extraUpdates = 1;
+            Projectile.penetrate = -1;
+            Projectile.extraUpdates = 2;
             Projectile.timeLeft = 135 * Projectile.MaxUpdates;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 10;
+            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 13;
         }
 
         public override void AI()

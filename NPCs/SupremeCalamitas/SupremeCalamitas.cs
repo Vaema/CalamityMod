@@ -227,7 +227,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Main.npcFrameCount[NPC.type] = 21;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
             };
@@ -752,7 +752,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 {
                     Vector2 dustSpawnPosition = NPC.Bottom;
                     float horizontalSpawnOffset = bodyWidth * Main.rand.NextFloat(0.42f, 0.5f);
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                         horizontalSpawnOffset *= -1f;
                     dustSpawnPosition.X += horizontalSpawnOffset;
 
@@ -872,7 +872,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         if (bulletHellCounter2 % 90 == 0)
                         {
                             float bottleSpeed = 12f;
-                            Vector2 bottleVelocity = Vector2.Normalize(player.Center + player.velocity * 20f - NPC.Center) * bottleSpeed;
+                            Vector2 bottleVelocity = (player.Center + player.velocity * 20f - NPC.Center).SafeNormalize(Vector2.UnitY) * bottleSpeed;
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, bottleVelocity * uDieLul, ModContent.ProjectileType<CirrusVolatileVodkaBottle>(), 350, 0f, Main.myPlayer);
                         }
                     }
@@ -967,7 +967,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 {
                     Vector2 destination = player.Center;
                     Vector2 distanceFromDestination = destination - NPC.Center;
-                    Vector2 desiredVelocity = Vector2.Normalize(distanceFromDestination - NPC.velocity) * CirrusPhotonRipperDashVelocity;
+                    Vector2 desiredVelocity = (distanceFromDestination - NPC.velocity).SafeNormalize(Vector2.UnitY) * CirrusPhotonRipperDashVelocity;
 
                     if (Vector2.Distance(NPC.Center, destination) > CirrusPhotonRipperMinDistanceFromTarget)
                         NPC.SimpleFlyMovement(desiredVelocity * uDieLul, CirrusPhotonRipperDashAcceleration * uDieLul);
@@ -1070,7 +1070,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         if (bulletHellCounter2 % 90 == 0)
                         {
                             float bottleSpeed = 12f;
-                            Vector2 bottleVelocity = Vector2.Normalize(player.Center + player.velocity * 20f - NPC.Center) * bottleSpeed;
+                            Vector2 bottleVelocity = (player.Center + player.velocity * 20f - NPC.Center).SafeNormalize(Vector2.UnitY) * bottleSpeed;
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, bottleVelocity * uDieLul, ModContent.ProjectileType<CirrusVolatileVodkaBottle>(), 125, 0f, Main.myPlayer);
                         }
                     }
@@ -1164,7 +1164,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 {
                     Vector2 destination = player.Center;
                     Vector2 distanceFromDestination = destination - NPC.Center;
-                    Vector2 desiredVelocity = Vector2.Normalize(distanceFromDestination - NPC.velocity) * CirrusPhotonRipperDashVelocity;
+                    Vector2 desiredVelocity = (distanceFromDestination - NPC.velocity).SafeNormalize(Vector2.UnitY) * CirrusPhotonRipperDashVelocity;
 
                     if (Vector2.Distance(NPC.Center, destination) > CirrusPhotonRipperMinDistanceFromTarget)
                         NPC.SimpleFlyMovement(desiredVelocity * uDieLul, CirrusPhotonRipperDashAcceleration * uDieLul);
@@ -1186,7 +1186,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         if (bulletHellCounter2 % 90 == 0)
                         {
                             float bottleSpeed = 12f;
-                            Vector2 bottleVelocity = Vector2.Normalize(player.Center + player.velocity * 20f - NPC.Center) * bottleSpeed;
+                            Vector2 bottleVelocity = (player.Center + player.velocity * 20f - NPC.Center).SafeNormalize(Vector2.UnitY) * bottleSpeed;
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, bottleVelocity * uDieLul, ModContent.ProjectileType<CirrusVolatileVodkaBottle>(), 125, 0f, Main.myPlayer);
                         }
                     }
@@ -1303,7 +1303,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     for (int k = 0; k < totalProjectiles; k++)
                                     {
                                         Vector2 rayVelocity = spinningPoint.RotatedBy(radians * k);
-                                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(rayVelocity) * 16f, rayVelocity, ModContent.ProjectileType<Projectiles.Magic.FabRay>(), 250, 0f, Main.myPlayer);
+                                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + (rayVelocity).SafeNormalize(Vector2.UnitY) * 16f, rayVelocity, ModContent.ProjectileType<Projectiles.Magic.FabRay>(), 250, 0f, Main.myPlayer);
                                         if (proj.WithinBounds(Main.maxProjectiles))
                                         {
                                             Main.projectile[proj].DamageType = DamageClass.Default;
@@ -1829,8 +1829,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             NPC.netUpdate = true;
                         }
 
-                        Vector2 projectileVelocity = player.Center - NPC.Center;
-                        projectileVelocity.Normalize();
+                        Vector2 projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY);
                         Vector2 projectileSpawn = NPC.Center + projectileVelocity * 8f;
                         projectileVelocity *= 10f * uDieLul;
 
@@ -1930,7 +1929,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                         if (!canDespawn)
                         {
-                            Vector2 vector = Vector2.Normalize(player.Center - NPC.Center);
+                            Vector2 vector = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY);
                             NPC.velocity = vector * chargeVelocity;
 
                             shieldRotation = NPC.velocity.ToRotation();
@@ -1945,13 +1944,13 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     float velocity = 8;
                                     int type = ModContent.ProjectileType<Projectiles.Magic.FabRay>();
                                     int damage = (int)(NPC.damage / 3);
-                                    Vector2 projectileVelocity = Vector2.Normalize(player.Center - NPC.Center) * velocity;
+                                    Vector2 projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * velocity;
                                     float rotation = MathHelper.ToRadians(22);
                                     for (int i = 0; i < 3; i++)
                                     {
                                         Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(2)));
 
-                                        int p = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(perturbedSpeed) * 3f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                        int p = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + (perturbedSpeed).SafeNormalize(Vector2.UnitY) * 3f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
                                         if (p.WithinBounds(Main.maxProjectiles))
                                         {
                                              Main.projectile[p].DamageType = DamageClass.Default;
@@ -2074,8 +2073,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Vector2 projectileVelocity = player.Center - NPC.Center;
-                                    projectileVelocity.Normalize();
+                                    Vector2 projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY);
                                     Vector2 projectileSpawn = NPC.Center + projectileVelocity * 4f;
                                     projectileVelocity *= 10f * uDieLul;
                                     int projectileType = hellblast;
@@ -2084,7 +2082,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             }
                         }
 
-                        if (Main.rand.NextBool(2))
+                        if (Main.rand.NextBool())
                         {
                             Dust brimstoneMagic = Dust.NewDustPerfect(handPosition, 264);
                             brimstoneMagic.velocity = Vector2.UnitY.RotatedByRandom(0.14f) * Main.rand.NextFloat(-3.5f, -3f) + NPC.velocity;
@@ -2153,8 +2151,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 SoundEngine.PlaySound(BrimstoneBigShotSound, NPC.Center);
-                                Vector2 projectileVelocity = player.Center - NPC.Center;
-                                projectileVelocity.Normalize();
+                                Vector2 projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY);
                                 Vector2 projectileSpawn = NPC.Center + projectileVelocity * 8f;
                                 projectileVelocity *= 5f * uDieLul;
                                 int projectileType = gigablast;
@@ -2395,8 +2392,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             NPC.netUpdate = true;
                         }
 
-                        Vector2 projectileVelocity = player.Center - NPC.Center;
-                        projectileVelocity.Normalize();
+                        Vector2 projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY);
                         Vector2 projectileSpawn = NPC.Center + projectileVelocity * 8f;
                         projectileVelocity *= 10f * uDieLul;
 
@@ -2494,7 +2490,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                         if (!canDespawn)
                         {
-                            Vector2 vector = Vector2.Normalize(player.Center - NPC.Center);
+                            Vector2 vector = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY);
                             NPC.velocity = vector * chargeVelocity;
 
                             shieldRotation = NPC.velocity.ToRotation();
@@ -2611,8 +2607,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Vector2 projectileVelocity = player.Center - NPC.Center;
-                                    projectileVelocity.Normalize();
+                                    Vector2 projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY);
                                     Vector2 projectileSpawn = NPC.Center + projectileVelocity * 4f;
                                     projectileVelocity *= 10f * uDieLul;
                                     int projectileType = hellblast;
@@ -2621,7 +2616,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             }
                         }
 
-                        if (Main.rand.NextBool(2))
+                        if (Main.rand.NextBool())
                         {
                             Dust brimstoneMagic = Dust.NewDustPerfect(handPosition, 264);
                             brimstoneMagic.velocity = Vector2.UnitY.RotatedByRandom(0.14f) * Main.rand.NextFloat(-3.5f, -3f) + NPC.velocity;
@@ -2694,8 +2689,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 SoundEngine.PlaySound(BrimstoneBigShotSound, NPC.Center);
-                                Vector2 projectileVelocity = player.Center - NPC.Center;
-                                projectileVelocity.Normalize();
+                                Vector2 projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY);
                                 Vector2 projectileSpawn = NPC.Center + projectileVelocity * 8f;
                                 projectileVelocity *= 5f * uDieLul;
                                 int projectileType = gigablast;
@@ -2965,9 +2959,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     heart.ModNPC<BrimstoneHeart>().ChainEndpoints.Add(endpoint);
                 }
 
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
-                    endpoint.X = heart.Center.X + Main.rand.NextBool(2).ToDirectionInt() * Main.rand.NextFloat(45f, 360f);
+                    endpoint.X = heart.Center.X + Main.rand.NextBool().ToDirectionInt() * Main.rand.NextFloat(45f, 360f);
                     endpoint.X = MathHelper.Clamp(endpoint.X, safeBox.Left, safeBox.Right);
                     heart.ModNPC<BrimstoneHeart>().ChainEndpoints.Add(endpoint);
                 }
@@ -3067,7 +3061,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             // GFB Slurper Pole drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<SlurperPole>());
+                GFBOnly.Add(ModContent.ItemType<SlurperPole>(), hideLootReport: true);
             }
 
             // Legendary seed pony on a stick upgrade          
@@ -3373,7 +3367,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 {
                     int num622 = Dust.NewDust(NPC.position, NPC.width, NPC.height, cirrus ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;

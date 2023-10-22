@@ -203,7 +203,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                                 float velocity = bossRush ? 6f : death ? 5.333f : 5f;
                                 int type = ProjectileID.DeathLaser;
                                 int damage = npc.GetProjectileDamage(type);
-                                Vector2 projectileVelocity = Vector2.Normalize(player.Center - npc.Center) * velocity;
+                                Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                                 int numProj = calamityGlobalNPC.newAI[0] % 60f == 0f ? 7 : 4;
                                 int spread = 54;
                                 float rotation = MathHelper.ToRadians(spread);
@@ -267,22 +267,22 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                                 laserSpawnDistance = 20f;
                             }
 
-                            bool scrap = false;
-                            if (probeLaunched && Main.rand.NextBool())
+                            bool weakLaser = false;
+                            if (probeLaunched)
                             {
-                                scrap = true;
-                                projectileType = ProjectileID.SaucerScrap;
+                                weakLaser = true;
+                                projectileType = ProjectileID.EyeLaser;
                                 laserSpawnDistance = 0f;
                             }
 
                             // Get target vector
-                            Vector2 projectileVelocity = Vector2.Normalize(player.Center - npc.Center) * projectileSpeed;
+                            Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
                             Vector2 projectileSpawn = npc.Center + projectileVelocity * laserSpawnDistance;
 
-                            // Shoot projectile and set timeLeft if not a homing laser/metal scrap so lasers don't last for too long
-                            int damage = scrap ? 0 : npc.GetProjectileDamage(projectileType);
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, scrap ? 0f : 1f, 0f);
-                            Main.projectile[proj].timeLeft = scrap ? 150 : 900;
+                            // Shoot projectile
+                            int damage = npc.GetProjectileDamage(projectileType);
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, weakLaser ? 0f : 1f, 0f);
+                            Main.projectile[proj].timeLeft = weakLaser ? 600 : 900;
 
                             npc.netUpdate = true;
                         }
@@ -706,7 +706,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     Vector2 value42 = Main.npc[i].Center - npc.Center;
                     if (value42.Length() < (npc.width + npc.height))
                     {
-                        value42.Normalize();
+                        value42 = value42.SafeNormalize(Vector2.UnitY);
                         value42 *= -0.1f;
                         npc.velocity += value42;
                         Main.npc[i].velocity -= value42;

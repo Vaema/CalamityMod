@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Rogue
                     {
                         int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, 2f);
                         Main.dust[num622].velocity *= 3f;
-                        if (Main.rand.NextBool(2))
+                        if (Main.rand.NextBool())
                         {
                             Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                         }
@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles.Rogue
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
             for (int k = 0; k < 5; k++)

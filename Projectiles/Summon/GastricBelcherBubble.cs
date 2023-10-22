@@ -17,13 +17,12 @@ namespace CalamityMod.Projectiles.Summon
         {
             Projectile.friendly = true;
             Projectile.width = Projectile.height = 18;
-            Projectile.minion = true;
             Projectile.timeLeft = 180;
             Projectile.aiStyle = ProjAIStyleID.Bubble;
             Projectile.DamageType = DamageClass.Summon;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item54, Projectile.position);
             Vector2 center = Projectile.Center;

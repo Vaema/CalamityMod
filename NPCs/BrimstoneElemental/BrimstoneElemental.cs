@@ -127,7 +127,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240, true);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120, true);
         }
 
         public override void FindFrame(int frameHeight) // 9 total frames
@@ -207,12 +207,10 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 // Equipment
                 int[] accs = new int[]
                 {
-                    ModContent.ItemType<Gehenna>(),
                     ModContent.ItemType<RoseStone>(),
-                    ModContent.ItemType<Abaddon>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, accs));
-                normalOnly.Add(ModContent.ItemType<FlameLickedShell>(), 10);
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<FlameLickedShell>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<BrimstoneWaifuMask>(), 7);
@@ -227,7 +225,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<BrimstoneElementalRelic>());
 
             // GFB Heart of the Elements drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<HeartoftheElements>());
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<HeartoftheElements>(), hideLootReport: true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedBrimstoneElemental, ModContent.ItemType<LoreAzafure>(), desc: DropHelper.FirstKillText);
@@ -269,7 +267,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 {
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;

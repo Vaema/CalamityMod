@@ -1,15 +1,18 @@
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using System;
-
-using CalamityMod.Projectiles.BaseProjectiles;
+using Terraria;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
     public class ElementalShivProj: BaseShortswordProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<ElementalShiv>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/ElementalShiv";
 
         public override void SetDefaults()
@@ -25,6 +28,8 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
             Projectile.extraUpdates = 1;
             Projectile.hide = true;
             Projectile.ownerHitCheck = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 8;
         }
 
         public override Action<Projectile> EffectBeforePullback => (proj) =>
@@ -53,6 +58,10 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 Main.dust[num250].velocity *= 0.2f;
                 Main.dust[num250].noGravity = true;
             }
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 60);
         }
     }
 }

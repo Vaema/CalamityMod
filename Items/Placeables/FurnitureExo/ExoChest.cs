@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Exo Chest");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -24,10 +23,10 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).
-                AddIngredient(ModContent.ItemType<ExoPlating>(), 8).
+            CreateRecipe().
+                AddIngredient<ExoPlating>(8).
                 AddRecipeGroup("IronBar", 2).
-                AddTile(ModContent.TileType<DraedonsForge>()).
+                AddTile<DraedonsForge>().
                 Register();
         }
     }

@@ -456,8 +456,14 @@ namespace CalamityMod.ILEditing
         private static string IncorporateEnchantmentInAffix(Terraria.On_Item.orig_AffixName orig, Item self)
         {
             string result = orig(self);
-            if (!self.IsAir && self.Calamity().AppliedEnchantment.HasValue)
-                result = $"{self.Calamity().AppliedEnchantment.Value.Name} {result}";
+
+            // This hook could occur before CalamityGlobalItem is loaded and throw an error.
+            try
+            {
+                if (!self.IsAir && self.Calamity().AppliedEnchantment.HasValue)
+                    result = $"{self.Calamity().AppliedEnchantment.Value.Name} {result}";
+            }
+            catch { }
             return result;
         }
         #endregion
@@ -473,6 +479,11 @@ namespace CalamityMod.ILEditing
             {
                 Player player = Main.player[projectile.owner];
                 if (Main.gameMenu || !player.active)
+                    return proj;
+
+                // Do not apply Hellbound effects to minions not spawned by the item itself, if it came out of an item
+                // This prevent minions like Luxor's Gift getting it, but minions spawned out of minions such as Temporal Umbrella will work fine
+                if (spawnSource is EntitySource_ItemUse && player.ActiveItem().shoot != projectile.type)
                     return proj;
 
                 CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.ActiveItem());

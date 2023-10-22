@@ -8,7 +8,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAcidwood
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Acidwood Clock");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -23,10 +22,10 @@ namespace CalamityMod.Items.Placeables.FurnitureAcidwood
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).
+            CreateRecipe().
+                AddIngredient<Acidwood>(10).
                 AddRecipeGroup("IronBar", 3).
                 AddIngredient(ItemID.Glass, 6).
-                AddIngredient(ModContent.ItemType<Acidwood>(), 10).
                 AddTile(TileID.Sawmill).
                 Register();
         }

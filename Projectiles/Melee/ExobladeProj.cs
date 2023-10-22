@@ -14,6 +14,7 @@ using Terraria.Audio;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 
@@ -21,7 +22,7 @@ namespace CalamityMod.Projectiles.Melee
 {
     public class ExobladeProj : ModProjectile, ILocalizedModType
     {
-        public new string LocalizationCategory => "Projectiles.Melee";
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Exoblade>();
         public Player Owner => Main.player[Projectile.owner];
 
         public PrimitiveTrail SlashDrawer = null;
@@ -624,7 +625,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Owner.fullRotation = 0f;
             Owner.Calamity().LungingDown = false;

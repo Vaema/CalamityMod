@@ -15,11 +15,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = Projectile.height = 10;
             Projectile.friendly = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.ignoreWater = true;
             Projectile.penetrate = 3;
             Projectile.timeLeft = 360;
@@ -42,7 +39,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.velocity.Y < 9f)
                 Projectile.velocity.Y += 0.085f;
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 5; i++)
             {

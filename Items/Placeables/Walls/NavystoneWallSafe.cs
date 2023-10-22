@@ -9,6 +9,7 @@ namespace CalamityMod.Items.Placeables.Walls
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 400;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<NavystoneWall>();
         }
 
         public override void SetDefaults()
@@ -27,7 +28,10 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void AddRecipes()
         {
-            CreateRecipe(4).AddIngredient(ModContent.ItemType<Navystone>()).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe(4).
+                AddIngredient<Navystone>().
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

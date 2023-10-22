@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 192;
@@ -68,10 +68,10 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Dust flame = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 56 : 242, 0f, 0f, 100, default, 2f);
                 flame.velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                     flame.scale = 0.5f;
 
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     flame.scale *= 0.5f;
                     flame.fadeIn = Main.rand.NextFloat(1f, 2f);

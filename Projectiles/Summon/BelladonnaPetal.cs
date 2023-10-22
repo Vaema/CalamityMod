@@ -30,13 +30,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.penetrate = 1;
             Projectile.timeLeft = 130;
 
             Projectile.width = Projectile.height = 14;
 
             Projectile.friendly = true;
-            Projectile.minion = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Summon;
@@ -133,7 +131,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int dustIndex = 0; dustIndex < 5; dustIndex++)
                 Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Grass);

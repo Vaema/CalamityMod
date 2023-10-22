@@ -61,7 +61,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         }
 
         // Laser velocity
-        private const float laserVelocity = 5f;
+        private const float laserVelocity = 14f;
 
         // Phase 1 variables
 
@@ -365,7 +365,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Phase 1 phases
             bool phase2 = lifeRatio < 0.9f;
             bool phase3 = lifeRatio < 0.75f;
-            bool summonSentinels = lifeRatio < 0.6f;
+            bool bigDaddyPhase2 = lifeRatio < 0.6f;
 
             // Phase 2 phases
             bool phase4 = lifeRatio < 0.5f;
@@ -381,7 +381,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (NPC.localAI[3] < SkyColorTransitionTime)
                         NPC.localAI[3] += 1f;
                 }
-                else if (summonSentinels)
+                else if (bigDaddyPhase2)
                 {
                     if (NPC.localAI[3] > 0f)
                         NPC.localAI[3] -= 1f;
@@ -461,6 +461,10 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                         Main.npc[a].active = false;
                         Main.npc[a].netUpdate = true;
+
+                        // Prevent netUpdate from being blocked by the spam counter.
+                        if (Main.npc[a].netSpam >= 10)
+                            Main.npc[a].netSpam = 9;
                     }
                 }
             }
@@ -478,7 +482,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             else
                 NPC.takenDamageMultiplier = 1.1f;
 
-            // Close DoG's HP bar if busy with sentinels or a P2 transition and decrement the countdown.
+            // Close DoG's HP bar during P2 transition and decrement the countdown.
             if (NPC.localAI[2] > 0f)
             {
                 NPC.localAI[2] -= 1f;
@@ -505,8 +509,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.dontTakeDamage = true;
             }
 
-            // Start sentinel phases, only run things that have to happen once in here
-            if (summonSentinels)
+            // Start phase 2, only run things that have to happen once in here
+            if (bigDaddyPhase2)
             {
                 if (!Phase2Started)
                 {
@@ -538,7 +542,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.height = (int)(186 * NPC.scale);
                     NPC.position -= NPC.Size * 0.5f;
                     NPC.frame = new Rectangle(0, 0, 134, 196);
+
                     NPC.netUpdate = true;
+
+                    // Prevent netUpdate from being blocked by the spam counter.
+                    if (NPC.netSpam >= 10)
+                        NPC.netSpam = 9;
                 }
 
                 // Dialogue the moment the second phase starts
@@ -550,7 +559,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
             }
 
-            // Begin phase 2 once all sentinels are down
+            // Begin phase 2
             if (Phase2Started)
             {
                 // Go immune and invisible
@@ -577,7 +586,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (Main.netMode != NetmodeID.MultiplayerClient && newOpacity > 0f && NPC.Opacity > newOpacity)
                         {
                             NPC.Opacity = newOpacity;
+
                             NPC.netUpdate = true;
+
+                            // Prevent netUpdate from being blocked by the spam counter.
+                            if (NPC.netSpam >= 10)
+                                NPC.netSpam = 9;
                         }
 
                         if (NPC.Opacity < 0.2f)
@@ -594,7 +608,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                         PortalIndex = Projectile.NewProjectile(NPC.GetSource_FromAI(), portalSpawnPosition, Vector2.Zero, ModContent.ProjectileType<DoGP1EndPortal>(), 0, 0f);
 
                         hasCreatedPhase1Portal = true;
+
                         NPC.netUpdate = true;
+
+                        // Prevent netUpdate from being blocked by the spam counter.
+                        if (NPC.netSpam >= 10)
+                            NPC.netSpam = 9;
                     }
 
                     AttemptingToEnterPortal = true;
@@ -628,7 +647,13 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         Dying = true;
                         NPC.dontTakeDamage = true;
+
                         NPC.netUpdate = true;
+
+                        // Prevent netUpdate from being blocked by the spam counter.
+                        if (NPC.netSpam >= 10)
+                            NPC.netSpam = 9;
+
                         return;
                     }
 
@@ -797,7 +822,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     // Laser walls
                     if (!spawnedGuardians3 && laserWallPhase == (int)LaserWallPhase.FireLaserWalls)
                     {
-                        float spawnOffset = 2100f;
+                        float spawnOffset = 1200f;
                         float divisor = bossRush ? 100f : 150f;
 
                         if (calamityGlobalNPC.newAI[1] % divisor == 0f)
@@ -908,7 +933,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                             Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, targetPosY + shotSpacing_Phase2[3], laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
                                         }
 
-                                        shotSpacing_Phase2[3] -= Main.rand.NextBool(2) ? 180 : 200;
+                                        shotSpacing_Phase2[3] -= Main.rand.NextBool() ? 180 : 200;
                                     }
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -1225,7 +1250,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                             NPC.ai[3] = 1f;
                             calamityGlobalNPC.newAI[2] = 0f;
                             NPC.TargetClosest();
+
                             NPC.netUpdate = true;
+
+                            // Prevent netUpdate from being blocked by the spam counter.
+                            if (NPC.netSpam >= 10)
+                                NPC.netSpam = 9;
                         }
                     }
 
@@ -1467,20 +1497,38 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (flies)
                         {
                             if (NPC.localAI[0] != 1f)
+                            {
                                 NPC.netUpdate = true;
+
+                                // Prevent netUpdate from being blocked by the spam counter.
+                                if (NPC.netSpam >= 10)
+                                    NPC.netSpam = 9;
+                            }
 
                             NPC.localAI[0] = 1f;
                         }
                         else
                         {
                             if (NPC.localAI[0] != 0f)
+                            {
                                 NPC.netUpdate = true;
+
+                                // Prevent netUpdate from being blocked by the spam counter.
+                                if (NPC.netSpam >= 10)
+                                    NPC.netSpam = 9;
+                            }
 
                             NPC.localAI[0] = 0f;
                         }
 
                         if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
+                        {
                             NPC.netUpdate = true;
+
+                            // Prevent netUpdate from being blocked by the spam counter.
+                            if (NPC.netSpam >= 10)
+                                NPC.netSpam = 9;
+                        }
 
                         if (calamityGlobalNPC.newAI[2] > phaseLimit)
                         {
@@ -1488,7 +1536,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                             NPC.ai[3] = 0f;
                             calamityGlobalNPC.newAI[2] = 0f;
                             NPC.TargetClosest();
+
                             NPC.netUpdate = true;
+
+                            // Prevent netUpdate from being blocked by the spam counter.
+                            if (NPC.netSpam >= 10)
+                                NPC.netSpam = 9;
                         }
                     }
                 }
@@ -1594,7 +1647,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                 if (phase2)
                 {
-                    float spawnOffset = 2100f;
+                    float spawnOffset = 1200f;
 
                     calamityGlobalNPC.newAI[1] += 1f;
                     if (calamityGlobalNPC.newAI[1] >= laserBarragePhaseGateValue)
@@ -1973,7 +2026,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                         NPC.ai[3] = 1f;
                         calamityGlobalNPC.newAI[2] = 0f;
                         NPC.TargetClosest();
+
                         NPC.netUpdate = true;
+
+                        // Prevent netUpdate from being blocked by the spam counter.
+                        if (NPC.netSpam >= 10)
+                            NPC.netSpam = 9;
                     }
                 }
 
@@ -2203,20 +2261,38 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (flies)
                     {
                         if (NPC.localAI[0] != 1f)
+                        {
                             NPC.netUpdate = true;
+
+                            // Prevent netUpdate from being blocked by the spam counter.
+                            if (NPC.netSpam >= 10)
+                                NPC.netSpam = 9;
+                        }
 
                         NPC.localAI[0] = 1f;
                     }
                     else
                     {
                         if (NPC.localAI[0] != 0f)
+                        {
                             NPC.netUpdate = true;
+
+                            // Prevent netUpdate from being blocked by the spam counter.
+                            if (NPC.netSpam >= 10)
+                                NPC.netSpam = 9;
+                        }
 
                         NPC.localAI[0] = 0f;
                     }
 
                     if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
+                    {
                         NPC.netUpdate = true;
+
+                        // Prevent netUpdate from being blocked by the spam counter.
+                        if (NPC.netSpam >= 10)
+                            NPC.netSpam = 9;
+                    }
 
                     if (calamityGlobalNPC.newAI[2] > phaseLimit)
                     {
@@ -2309,7 +2385,12 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Prediction is Death Mode only for now because it's weird without the line telegraph that Shayy spoke about
             Vector2 predictionVector = death ? player.velocity * 40f : Vector2.Zero;
             NPC.velocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * chargeVelocity;
+
             NPC.netUpdate = true;
+
+            // Prevent netUpdate from being blocked by the spam counter.
+            if (NPC.netSpam >= 10)
+                NPC.netSpam = 9;
 
             for (int i = 0; i < Main.maxNPCs; i++)
             {
@@ -2321,6 +2402,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                         ((DevourerofGodsTail)Main.npc[i].ModNPC).setInvulTime(720);
 
                     Main.npc[i].netUpdate = true;
+
+                    // Prevent netUpdate from being blocked by the spam counter.
+                    if (Main.npc[i].netSpam >= 10)
+                        Main.npc[i].netSpam = 9;
                 }
             }
 
@@ -2367,7 +2452,13 @@ namespace CalamityMod.NPCs.DevourerofGods
                         Main.npc[i].life = 0;
                         Main.npc[i].HitEffect();
                         Main.npc[i].active = false;
+
                         Main.npc[i].netUpdate = true;
+
+                        // Prevent netUpdate from being blocked by the spam counter.
+                        if (Main.npc[i].netSpam >= 10)
+                            Main.npc[i].netSpam = 9;
+
                         destroyedSegments++;
                         break;
                     }
@@ -2422,7 +2513,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.HitEffect();
                 NPC.NPCLoot();
                 NPC.active = false;
+
                 NPC.netUpdate = true;
+
+                // Prevent netUpdate from being blocked by the spam counter.
+                if (NPC.netSpam >= 10)
+                    NPC.netSpam = 9;
             }
             DeathAnimationTimer++;
         }
@@ -2584,42 +2680,42 @@ namespace CalamityMod.NPCs.DevourerofGods
             // GFB torch and Wand drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<TheWand>());
+                GFBOnly.Add(ModContent.ItemType<TheWand>(), hideLootReport: true);
 
                 // this will be disastrous for the torch economy
                 int dropRate = 10;
                 int dropMin = 1;
                 int dropMax = 9999;
-                GFBOnly.Add(ItemID.Torch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.PurpleTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.YellowTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.GreenTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.RedTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.WhiteTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.OrangeTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.PinkTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.RainbowTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.IceTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.BoneTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.UltrabrightTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.DemonTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.CursedTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.IchorTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.DesertTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.CoralTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.CorruptTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.CrimsonTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.HallowedTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.JungleTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.MushroomTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ItemID.ShimmerTorch, dropRate, dropMin, dropMax);
-                GFBOnly.Add(ModContent.ItemType<AbyssTorch>(), dropRate, dropMin, dropMax);
-                GFBOnly.Add(ModContent.ItemType<AlgalPrismTorch>(), dropRate, dropMin, dropMax);
-                GFBOnly.Add(ModContent.ItemType<AstralTorch>(), dropRate, dropMin, dropMax);
-                GFBOnly.Add(ModContent.ItemType<GloomTorch>(), dropRate, dropMin, dropMax);
-                GFBOnly.Add(ModContent.ItemType<NavyPrismTorch>(), dropRate, dropMin, dropMax);
-                GFBOnly.Add(ModContent.ItemType<RefractivePrismTorch>(), dropRate, dropMin, dropMax);
-                GFBOnly.Add(ModContent.ItemType<SulphurousTorch>(), dropRate, dropMin, dropMax);
+                GFBOnly.Add(ItemID.Torch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.PurpleTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.YellowTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.GreenTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.RedTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.WhiteTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.OrangeTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.PinkTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.RainbowTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.IceTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.BoneTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.UltrabrightTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.DemonTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.CursedTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.IchorTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.DesertTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.CoralTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.CorruptTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.CrimsonTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.HallowedTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.JungleTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.MushroomTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ItemID.ShimmerTorch, dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<AbyssTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<AlgalPrismTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<AstralTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<GloomTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<NavyPrismTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<RefractivePrismTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<SulphurousTorch>(), dropRate, dropMin, dropMax, true);
             }
 
             // Trophy (always directly from boss, never in bag)
@@ -2682,7 +2778,13 @@ namespace CalamityMod.NPCs.DevourerofGods
             Dying = true;
             NPC.dontTakeDamage = true;
             NPC.active = true;
+
             NPC.netUpdate = true;
+
+            // Prevent netUpdate from being blocked by the spam counter.
+            if (NPC.netSpam >= 10)
+                NPC.netSpam = 9;
+
             return false;
         }
 
@@ -2711,7 +2813,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -2738,7 +2840,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (hurtInfo.Damage <= 0)
 				return;
 
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 300, true);
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 200, true);
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 600, true);
 
             if (target.Calamity().dogTextCooldown <= 0)

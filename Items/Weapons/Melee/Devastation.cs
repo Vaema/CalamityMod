@@ -1,5 +1,5 @@
 ﻿using Terraria.DataStructures;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using System;
@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-                       Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 11));
-                       ItemID.Sets.AnimatesAsSoul[Type] = true;
+            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 11));
+            ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
 
         public override void SetDefaults()

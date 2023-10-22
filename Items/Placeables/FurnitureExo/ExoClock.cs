@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Exo Clock");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -24,11 +23,11 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).
+            CreateRecipe().
+                AddIngredient<ExoPlating>(10).
                 AddRecipeGroup("IronBar", 3).
                 AddIngredient(ItemID.Glass, 6).
-                AddIngredient(ModContent.ItemType<ExoPlating>(), 10).
-                AddTile(ModContent.TileType<DraedonsForge>()).
+                AddTile<DraedonsForge>().
                 Register();
         }
     }

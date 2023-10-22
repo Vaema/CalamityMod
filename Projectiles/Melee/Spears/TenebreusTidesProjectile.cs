@@ -1,15 +1,18 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {
     public class TenebreusTidesProjectile : BaseSpearProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<TenebreusTides>();
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 46;
@@ -31,7 +34,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
         public override Action<Projectile> EffectBeforeReelback => (proj) =>
         {
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X + Projectile.velocity.X, Projectile.Center.Y + Projectile.velocity.Y, Projectile.velocity.X * 2.4f, Projectile.velocity.Y * 2.4f, 
-                ModContent.ProjectileType<TenebreusTidesWaterProjectile>(), (int)(Projectile.damage * 0.65), Projectile.knockBack * 0.85f, Projectile.owner, 0f, 0f);
+                ModContent.ProjectileType<TenebreusTidesWaterProjectile>(), (int)(Projectile.damage * 0.75), Projectile.knockBack * 0.85f, Projectile.owner, 0f, 0f);
         };
         public override void ExtraBehavior()
         {

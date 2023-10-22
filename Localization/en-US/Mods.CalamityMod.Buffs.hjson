@@ -133,6 +133,16 @@ BurningBlood: {
 	Description: Your blood is on fire
 }
 
+BrainRot: {
+	DisplayName: Brain Rot
+	Description: Your neurons are popping like corn kernels
+}
+
+ElementalMix: {
+	DisplayName: Elemental Mix
+	Description: A beautiful elemental symphony is flaying you alive
+}
+
 CrushDepth: {
 	DisplayName: Crush Depth
 	Description: Crushed by aquatic pressure
@@ -754,7 +764,7 @@ KamiBuff: {
 
 Mushy: {
 	DisplayName: Mushy
-	Description: Increased defense by 6 and life regen by 2
+	Description: Increased defense by 6 and life regen by 1HP/s
 }
 
 PhantomicEmpowerment: {
@@ -786,17 +796,31 @@ ProfanedCrystalBuff: {
 	Description: You are an emissary of the profaned goddess now!
 	Offense: The {0} empowers your offensive capabilities
 	Lava: heat of the lava
-	Day: light of the sun
+	Day: light of day
 	Defense: The {0} your flames, empowering your defensive capabilities
 	Water: water douses
 	Honey: honey cools
 	Night: darkness of night cools
-	Enrage: Your weakened life force fuels your desperate attacks
-	NerfedEndo: An ascended ice construct is suppressing your true potential...
-	NerfedHat: A magical hat overwhelms your senses, squandering your true potential...
+	Enrage: In the absence of the day's warmth, your flames burn brighter
+	Empowered:
+		'''
+		By forgoing any additional minion support, your full potential has been unleashed
+		[c/F05A5A:You are the last ace, in the lost hand of this campaign.]
+		'''
 	LockedSlots: Your profaned soul is constrained by your insufficient summoning powers
 	LockedExos: The soul within this crystal has been defiled by overwhelming energy waves from dangerous mechanations
 	LockedSCal: The profaned soul within has been defiled by the powerful magic of a supreme witch
+}
+
+ProfanedCrystalWhipDebuff: {
+	DisplayName: Profaned Crystal Whip Debuff
+	Description: Your flesh has been torn asunder by a profaned crystalline whip!
+}
+
+ProfanedCrystalWhipBuff: {
+	DisplayName: Profaned Crystal Whip Empowerment
+	Description: The guardians have been empowered by the profaned crystal whip!
+	Empowered: Their full potential has been unleashed, and nobody is safe from their wrath
 }
 
 RageMode: {
@@ -807,11 +831,6 @@ RageMode: {
 ReaverRage: {
 	DisplayName: Reaver Rage
 	Description: You are angry
-}
-
-ShellBoost: {
-	DisplayName: Shell Speed Boost
-	Description: Speed is boosted
 }
 
 SilvaRevival: {
@@ -988,12 +1007,12 @@ WitherDebuff: {
 
 AbandonedSlimeBuff: {
 	DisplayName: Astral Jelly
-	Description: The mini astrageldon slime will protect you
+	Description: Back from the heavens just to protect you!
 }
 
 AncientMineralSharkBuff: {
 	DisplayName: Ancient Mineral Shark
-	Description: Ancient yet so dangerous
+	Description: So ancient yet just as powerful
 }
 
 AquaticStar: {
@@ -1051,9 +1070,9 @@ BrittleStar: {
 	Description: The brittle star will protect you
 }
 
-Calamari: {
+CalamarisLamentBuff: {
 	DisplayName: Calamari
-	Description: The squid will protect you
+	Description: Time to transport all of your foes to stupid squid jail!
 }
 
 CausticStaffBuff: {
@@ -1273,12 +1292,12 @@ MidnightSunBuff: {
 
 MiniatureEyeofCthulhu: {
 	DisplayName: Miniature Eye of Cthulhu
-	Description: It's watching you
+	Description: It's giving you the death stare
 }
 
-MiniOldDukeBuff: {
-	DisplayName: Mini Old Duke
-	Description: The young duke will protect you
+MutatedTruffleBuff: {
+	DisplayName: Baby Boomer
+	Description: The mutated fishron will intoxicate your foes
 }
 
 MiniPlaguebringerBuff: {
@@ -1311,7 +1330,7 @@ Phantom: {
 	Description: The phantom will protect you
 }
 
-PlantationBuff: {
+PlantationStaffBuff: {
 	DisplayName: Plantation
 	Description: The miniature Plantera will protect you
 }
@@ -1321,10 +1340,10 @@ PoleWarperBuff: {
 	Description: Sentient magnets are attracted to you
 }
 
-ProfanedBabs: {
+ProfanedSoulGuardians: {
 	DisplayName: The Profaned Soul
-	Description: The Profaned Babs will fight for and defend you!
-	VanityDescription: The Profaned Babs will accompany you!
+	Description: The Profaned Soul Guardians will fight for and defend you!
+	VanityDescription: The Profaned Soul Guardians will accompany you!
 }
 
 PuffWarriorBuff: {
@@ -1403,8 +1422,8 @@ SnakeEyesBuff: {
 }
 
 SolarGodSpiritBuff: {
-	DisplayName: Solar God Spirit
-	Description: The solar god spirit will protect you
+	DisplayName: Vengeful Solar Spirit
+	Description: A furious Sun spirit is ready to protect you
 }
 
 SolarSpirit: {
@@ -1479,12 +1498,12 @@ WulfrumDroidBuff: {
 
 PinkJellyRegen: {
 	DisplayName: Pink Jelly Regen
-	Description: The power of goo refreshes you, life regen increased by 4
+	Description: The power of goo refreshes you, life regen increased by 2HP/s
 }
 
 GreenJellyRegen: {
 	DisplayName: Green Jelly Regen
-	Description: The regenerative goo empowers you, life regen increased by 5
+	Description: The regenerative goo empowers you, life regen increased by 2.5HP/s
 }
 
 AbsorberRegen: {
@@ -1492,11 +1511,16 @@ AbsorberRegen: {
 	Description:
 		'''
 		You are blessed by the culmimation of nature's powers
-		Life regen increased by 6, damage increased by 10%, damage reduction increased by 7%
+		Life regen increased by 3HP/s, damage increased by 8%, damage reduction increased by 5%
 		'''
 }
 
 AbsorberAffliction: {
 	DisplayName: Absorber Affliction
 	Description: Damn nature, you scary!
+}
+
+YoungDukeBuff: {
+	DisplayName: Young Duke Buff
+	Description: Mods.CalamityMod.Buffs.YoungDukeBuff.Description
 }

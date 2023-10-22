@@ -53,12 +53,12 @@ namespace CalamityMod.Projectiles.Rogue
                     ModContent.DustType<AstralOrange>(),
                     ModContent.DustType<AstralBlue>()
                 });
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, CalamityUtils.ColorSwap(LeonidProgenitor.blueColor, LeonidProgenitor.purpleColor, 1f), 1.6f);
                     Main.dust[index].noGravity = true;
                 }
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, 0f, 0f, 100, CalamityUtils.ColorSwap(LeonidProgenitor.blueColor, LeonidProgenitor.purpleColor, 1f), 1.6f);
                     Main.dust[index].noGravity = true;
@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.rotation += Projectile.velocity.X * 0.1f;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.owner != Main.myPlayer)
                 return;

@@ -120,11 +120,7 @@ ArkoftheElements: {
 		You can parry projectiles to make them deal 100 less damage for a short period
 		Parrying will empower the next 10 swings of the sword, letting you use both blades at once
 		'''
-	BlastInfo:
-		'''
-		Pressing <right> while holding UP with empowered charges will provoke a Big Rip in spacetime and use all charges
-		If more than 5 charges were used, you can dash across the rip by holding UP
-		'''
+	BlastInfo: Pressing <right> while holding UP with empowered charges will provoke a Big Rip in spacetime and use all charges
 }
 
 AstralBlade: {
@@ -553,6 +549,7 @@ GaelsGreatsword: {
 		Swings leave behind exploding blood trails when below 50% health
 		Occasionally summons a barrage of lightning bolts when below 50% health
 		Replaces Rage Mode with an enormous barrage of skulls
+		This attack has a 30 second cooldown
 		'Hand it over, that thing. Your dark soul'
 		'''
 }
@@ -1289,7 +1286,7 @@ TrueCausticEdge: {
 	Tooltip:
 		'''
 		Fires a bouncing caustic beam
-		Inflicts poison and venom
+		Inflicts venom on enemy hits
 		'''
 }
 

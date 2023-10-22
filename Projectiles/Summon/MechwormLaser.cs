@@ -19,18 +19,15 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = 5;
-            Projectile.height = 5;
+            Projectile.width = Projectile.height = 5;
             Projectile.friendly = true;
             Projectile.alpha = 255;
             Projectile.penetrate = 4;
-            Projectile.extraUpdates = 2;
+            Projectile.MaxUpdates = 3;
             Projectile.timeLeft = 600;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 30;
+            Projectile.localNPCHitCooldown = 10 * Projectile.MaxUpdates;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -62,7 +59,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor) => Projectile.DrawBeam(100f, 3f, lightColor);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int dustAmt = Main.rand.Next(3, 7);
             for (int d = 0; d < dustAmt; d++)

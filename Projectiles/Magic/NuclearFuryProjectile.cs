@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.alpha = 255;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 3;
             Projectile.timeLeft = 600;
             Projectile.tileCollide = false;
             Projectile.extraUpdates = 2;
@@ -124,7 +124,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.velocity = Projectile.velocity * (num4 + 1f / 400f);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
             for (int k = 0; k < 5; k++)

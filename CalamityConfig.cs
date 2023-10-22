@@ -1,24 +1,11 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Reflection;
+﻿using System.ComponentModel;
 using System.Runtime.Serialization;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.DifficultyItems;
-using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Dyes.HairDye;
-using CalamityMod.Items.Potions;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.UI;
-using Terraria;
-using Terraria.ID;
-using Terraria.Localization;
-using Terraria.ModLoader;
-using Terraria.ModLoader.Config;
-using CalamityMod.Items.PermanentBoosters;
-using CalamityMod.UI.Rippers;
 using CalamityMod.UI.DraedonsArsenal;
+using CalamityMod.UI.Rippers;
 using CalamityMod.UI.SulphurousWaterMeter;
-using CalamityMod.Items.Tools.ClimateChange;
+using Terraria;
+using Terraria.ModLoader.Config;
 
 namespace CalamityMod
 {
@@ -38,6 +25,7 @@ namespace CalamityMod
         {
             BossHealthBoost = Utils.Clamp(BossHealthBoost, MinBossHealthBoost, MaxBossHealthBoost);
             RipperMeterShake = Utils.Clamp(RipperMeterShake, MinMeterShake, MaxMeterShake);
+            ParticleLimit = (int)Utils.Clamp(ParticleLimit, MinParticleLimit, MaxParticleLimit);
         }
 
         #region Graphics Changes
@@ -47,9 +35,12 @@ namespace CalamityMod
         [DefaultValue(true)]
         public bool Afterimages { get; set; }
 
+        private const int MinParticleLimit = 100;
+        private const float MaxParticleLimit = 1000;
+        
         [BackgroundColor(192, 54, 64, 192)]
         [SliderColor(224, 165, 56, 128)]
-        [Range(0, 1000)]
+        [Range(MinParticleLimit, MaxParticleLimit)]
         [DefaultValue(500)]
         public int ParticleLimit { get; set; }
 
@@ -64,18 +55,22 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool StealthInvisibility { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool ShopNewAlert { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool WikiStatusMessage { get; set; }
         #endregion
 
         #region UI Changes
         [Header("UI")]
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool MusicModReminderMessage { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool WikiStatusMessage { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool ShopNewAlert { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]

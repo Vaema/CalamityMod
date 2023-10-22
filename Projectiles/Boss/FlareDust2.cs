@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.ExpandHitboxBy(48);
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1f);
                 Main.dust[idx].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[idx].scale = 0.5f;
                     Main.dust[idx].fadeIn = 1f + Main.rand.NextFloat(0.1f, 1f);
@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Dragonfire>(), 120);
+            target.AddBuff(ModContent.BuffType<Dragonfire>(), 60);
         }
     }
 }

@@ -74,6 +74,7 @@ ExtensionName: {
 // Cooldowns
 Cooldowns: {
 	AquaticHeartIceShield: Ice Shield Cooldown
+	AscendEffect: Ascension Cooldown
 	BloodflareFrenzy: Blood Frenzy Cooldown
 	BloodflareRangedSet: Bloodflare Soul Cooldown
 	BrimflameFrenzy: Brimflame Frenzy Cooldown
@@ -82,9 +83,10 @@ Cooldowns: {
 	DivineBless: Divine Bless Cooldown
 	DivingPlatesBreaking: Abyssal Diving Suit Plates Durability
 	DivingPlatesBroken: Abyssal Diving Suit Broken Plates
-	ElysianGuard: Elysian Guard Cooldown
+	ParryCooldown: Parry Ability Cooldown
 	EvasionScarf: Scarf Cooldown
 	FleshTotem: Contact Damage Halving Cooldown
+	GaelsRage: Gael's Greatsword Rage Cooldown
 	GlobalDodge: Dodge Cooldown
 	GodSlayerDash: God Slayer Dash Cooldown
 	InkBomb: Ink Bomb Cooldown
@@ -100,7 +102,8 @@ Cooldowns: {
 	PlagueBlackout: Plague Blackout Cooldown
 	PotionSickness: Healing Cooldown
 	PrismaticLaser: Prismatic Laser Barrage Cooldown
-	ProfanedSoulArtifact: Profaned Soul Artifact Burnout
+	ProfanedSoulShieldDurability: Profaned Soul Shield Durability
+	ProfanedSoulShieldRecharge: Profaned Soul Shield Recharge
 	RelicOfResilience: Relic of Resilience Cooldown
 	RogueBooster: Rogue Booster Cooldown
 	SandCloak: Sand Cloak Cooldown

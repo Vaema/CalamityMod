@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
-            Item.damage = 50;
+            Item.damage = 60;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
             Item.width = 54;
@@ -48,12 +48,6 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<NightsRay>().
-                AddIngredient<ValkyrieRay>().
-                AddIngredient<LivingShard>(12).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-            CreateRecipe().
-                AddIngredient<CarnageRay>().
                 AddIngredient<ValkyrieRay>().
                 AddIngredient<LivingShard>(12).
                 AddTile(TileID.MythrilAnvil).

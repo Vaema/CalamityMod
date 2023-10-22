@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureProfaned
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Profaned Bathtub");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -24,7 +23,10 @@ namespace CalamityMod.Items.Placeables.FurnitureProfaned
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<ProfanedRock>(), 14).AddTile(ModContent.TileType<ProfanedCrucible>()).Register();
+            CreateRecipe().
+                AddIngredient<ProfanedRock>(14).
+                AddTile<ProfanedCrucible>().
+                Register();
         }
     }
 }

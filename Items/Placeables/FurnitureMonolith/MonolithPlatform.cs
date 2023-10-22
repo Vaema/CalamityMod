@@ -13,7 +13,6 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
 
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Monolith Platform");
             Item.width = 8;
             Item.height = 10;
             Item.maxStack = 9999;
@@ -28,7 +27,9 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
 
         public override void AddRecipes()
         {
-            CreateRecipe(2).AddIngredient(ModContent.ItemType<AstralMonolith>()).Register();
+            CreateRecipe(2).
+                AddIngredient<AstralMonolith>().
+                Register();
         }
     }
 }

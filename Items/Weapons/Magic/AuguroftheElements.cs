@@ -13,9 +13,9 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 147;
+            Item.damage = 131;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 11;
+            Item.mana = 14;
             Item.width = 28;
             Item.height = 30;
             Item.useTime = 2;
@@ -46,12 +46,12 @@ namespace CalamityMod.Items.Weapons.Magic
             value2.Normalize();
             value2 *= Item.shootSpeed;
             float num91 = (float)Main.rand.Next(10, 50) * 0.001f;
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 num91 *= -1f;
             }
             float num92 = (float)Main.rand.Next(10, 50) * 0.001f;
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 num92 *= -1f;
             }

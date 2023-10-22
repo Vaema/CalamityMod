@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Summon
             AttackTimer++;
 
             int totalSageSpirits = Owner.ownedProjectileCounts[Projectile.type];
-            Vector2 destinationOffsetFactor = Vector2.Max(target.Size, new Vector2(160f)) * new Vector2(0.6f, 0.37f);
+            Vector2 destinationOffsetFactor = Vector2.Max(target.Size, new Vector2(160f)) * new Vector2(0.3f, 0.2f);
             Vector2 destination = target.Center + (AttackTimer / 12f).ToRotationVector2() * destinationOffsetFactor;
             destination += (SageSpiritIndex * MathHelper.TwoPi / totalSageSpirits).ToRotationVector2() * 130f;
             Projectile.Center = Vector2.Lerp(Projectile.Center, destination, 0.1f);
@@ -187,9 +187,7 @@ namespace CalamityMod.Projectiles.Summon
                 for (int i = 0; i < 3; i++)
                 {
                     Vector2 spikeVelocity = -Vector2.UnitY.RotatedBy(MathHelper.Lerp(-0.43f, 0.43f, i / 3f)) * 6f;
-                    int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Top, spikeVelocity, ModContent.ProjectileType<SageNeedle>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = Projectile.originalDamage;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Top, spikeVelocity, ModContent.ProjectileType<SageNeedle>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                 }
             }
         }

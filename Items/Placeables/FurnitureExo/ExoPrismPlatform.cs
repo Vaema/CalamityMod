@@ -16,7 +16,6 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
 
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Exo Prism Platform");
             Item.width = 8;
             Item.height = 10;
             Item.maxStack = 9999;
@@ -36,7 +35,9 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
 
         public override void AddRecipes()
         {
-            CreateRecipe(2).AddIngredient(ModContent.ItemType<ExoPrismPanel>()).Register();
+            CreateRecipe(2).
+                AddIngredient<ExoPrismPanel>().
+                Register();
         }
     }
 }

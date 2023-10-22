@@ -1,3 +1,4 @@
+AbaddonCrit.DisplayName: Brimstone Blast
 AeroExplosive.DisplayName: Aeroboom
 AllianceTriangle.DisplayName: Alliance Triangle
 ArcZap.DisplayName: Arc Zap
@@ -13,6 +14,8 @@ AstralSandBallGun.DisplayName: Astral Sand
 AstralSpray.DisplayName: Astral Spray
 AstralStar.DisplayName: Star
 BallisticPoisonCloud.DisplayName: Ballistic Cloud
+BlazingStarHeal.DisplayName: Blazing Star Heal
+BlazingStarThatDoesNotHeal.DisplayName: Blazing Star That Does Not Heal
 BlazingSun.DisplayName: Blazing Sun
 BlazingSun2.DisplayName: Blazing Sun
 BlissfulBombardierDustProjectile.DisplayName: Dust
@@ -48,6 +51,8 @@ EmpyreanStellarDetritus.DisplayName: Empyrean Stellar Detritus
 EnergyShell.DisplayName: Energy Shell
 EutrophicSandBallGun.DisplayName: Eutrophic Sand
 FeralDoubleBobber.DisplayName: Feral Bobber
+FlameLickedBarrage.DisplayName: Flame Licked Barrage
+FlameLickedHellblast.DisplayName: Flame Licked Hellblast
 FuckYou.DisplayName: Explosion
 FungalClumpMinion.DisplayName: Fungal Clump
 GemTechArmorGem.DisplayName: Trireme's Gem
@@ -68,6 +73,7 @@ HydrothermicFlareRogue.DisplayName: Hydrothermic Flare
 HydrothermicSphere.DisplayName: Hydrothermic Sphere
 JewelSpike.DisplayName: Spike
 KelvinCatalystStar.DisplayName: Kelvin Catalyst Star
+LeviAmberDash.DisplayName: Riptide Slam
 LunicBeam.DisplayName: Beam
 MageHammerBoom.DisplayName: Explosion
 MagnusBeam.DisplayName: Beam
@@ -80,16 +86,17 @@ NebulaStar.DisplayName: Star
 NobodyKnows.DisplayName: Nope
 OmegaBlueTentacle.DisplayName: Omega Blue Tentacle
 OnyxLabSeeker.DisplayName: Seeking Mechanism
+PauldronDash.DisplayName: Pauldron Dash
+PauldronExplosion.DisplayName: Pauldron Explosion
 PendantProjectile1.DisplayName: Prism Shard
 PendantProjectile2.DisplayName: Prism Shard
 PendantProjectile3.DisplayName: Prism Shard
 PoisonousSeawater.DisplayName: Seawater
+PscTransformAnimation.DisplayName: Psc Transform Animation
+PscTransformRocks.DisplayName: Psc Transform Rocks
 ReaverOrb.DisplayName: Reaver Orb
 ReaverThornBase.DisplayName: Thorn
-ReaverThornTip.DisplayName: Thorn
 RedLabSeeker.DisplayName: Seeking Mechanism
-RelicOfConvergenceCrystal.DisplayName: Relic of Convergence
-RelicOfDeliveranceSpear.DisplayName: Relic of Deliverance
 RiftReelerBobber.DisplayName: Chaotic Bobber
 SabatonBoom.DisplayName: Sabaton Boom
 SabatonSlam.DisplayName: Sabaton Slam
@@ -101,7 +108,7 @@ SerpentsBiteHook.DisplayName: Serpent's Bite
 ShadowflameExplosion.DisplayName: Shadowflame Explosion
 ShadowflameExplosionBig.DisplayName: Shadowflame Explosion
 SkyFlareFriendly.DisplayName: Flare
-SlimeStream.DisplayName: Silme Stream
+SlimeStream.DisplayName: Slime Stream
 SlurperBobber.DisplayName: Slurper Bobber
 SpiritOriginBullseye.DisplayName: Spirit Origin Bullseye
 StandingFire.DisplayName: Flame
@@ -111,7 +118,7 @@ SuicideBomberDemon.DisplayName: Demon
 SulphuricAcidBubbleFriendly.DisplayName: Acid Bubble
 SulphurousSandBallGun.DisplayName: Sulphurous Sand
 TarraEnergy.DisplayName: Tarra Energy
-TerminusHoldout.DisplayName: Terminus Holdout
+TarragonAura.DisplayName: Tarragon Aura
 TeslaAura.DisplayName: Tesla's Electricity
 VanquisherArrowSplit.DisplayName: Arrow
 VerstaltiteBobber.DisplayName: Verstaltite Bobber
@@ -120,12 +127,8 @@ WaterConvertor.DisplayName: Water Convertor
 WhiteLabSeeker.DisplayName: Seeking Mechanism
 WulfrumBobber.DisplayName: Wulfrum Bobber
 WulfrumDiggingTurtleProjectile.DisplayName: Digging Turtle
-WulfrumDrillProj.DisplayName: Drill
 WulfrumHook.DisplayName: Wulfrum Slingshot
 WulfrumLureSignal.DisplayName: Signal
-WulfrumScaffoldKitHoldout.DisplayName: Wulfrum Scaffold Kit
 YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
-TarragonAura.DisplayName: Tarragon Aura
-BlazingStarHeal.DisplayName: Blazing Star Heal
-BlazingStarThatDoesNotHeal.DisplayName: Blazing Star That Does Not Heal
+AscendantAura.DisplayName: Ascendant Aura

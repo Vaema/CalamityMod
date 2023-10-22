@@ -157,7 +157,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.height = (int)(140 * NPC.scale);
                     NPC.frame = new Rectangle(0, 0, 86, 148);
                     NPC.position -= NPC.Size * 0.5f;
+
                     NPC.netUpdate = true;
+
+                    // Prevent netUpdate from being blocked by the spam counter.
+                    if (NPC.netSpam >= 10)
+                        NPC.netSpam = 9;
                 }
             }
 
@@ -250,6 +255,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 NPC.Opacity = 0f;
 
                             NPC.netUpdate = true;
+
+                            // Prevent netUpdate from being blocked by the spam counter.
+                            if (NPC.netSpam >= 10)
+                                NPC.netSpam = 9;
                         }
                     }
                 }
@@ -390,7 +399,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -429,7 +438,12 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.life = 1;
             NPC.dontTakeDamage = true;
             NPC.active = true;
+
             NPC.netUpdate = true;
+
+            // Prevent netUpdate from being blocked by the spam counter.
+            if (NPC.netSpam >= 10)
+                NPC.netSpam = 9;
 
             if (NPC.realLife >= 0)
             {
@@ -439,7 +453,12 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                 Head.ModNPC<DevourerofGodsHead>().Dying = true;
                 Head.dontTakeDamage = true;
+
                 Head.netUpdate = true;
+
+                // Prevent netUpdate from being blocked by the spam counter.
+                if (Head.netSpam >= 10)
+                    Head.netSpam = 9;
             }
             return false;
         }
@@ -454,7 +473,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180, true);
+                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120, true);
                 target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 360, true);
             }
         }

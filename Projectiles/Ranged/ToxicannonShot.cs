@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(ModContent.BuffType<Irradiated>(), 240);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ExpandHitboxBy(180);
             Projectile.usesLocalNPCImmunity = true;
@@ -71,16 +71,13 @@ namespace CalamityMod.Projectiles.Ranged
                 Main.dust[idx].scale = 3f;
                 Main.dust[idx].noGravity = true;
             }
-            if (Main.rand.NextBool(3))
+            float count = Main.rand.Next(1, 2 + 1);
+            for (int i = 0; i < count; i++)
             {
-                int count = Main.rand.Next(1, 3 + 1);
-                for (int i = 0; i < count; i++)
-                {
-                    float angle = MathHelper.TwoPi * i / count;
-                    angle += Main.rand.NextFloat(0.1f, 0.35f) * Main.rand.NextBool(2).ToDirectionInt();
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, angle.ToRotationVector2() * Main.rand.NextFloat(4f, 16f),
+                float angle = MathHelper.TwoPi * i / count;
+                angle += Main.rand.NextFloat(0.1f, 0.35f) * Main.rand.NextBool().ToDirectionInt();
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, angle.ToRotationVector2() * Main.rand.NextFloat(4f, 16f),
                         ModContent.ProjectileType<ToxicannonDrop>(), Projectile.damage, 2.5f, Projectile.owner);
-                }
             }
         }
 

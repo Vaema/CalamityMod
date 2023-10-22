@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 5; k++)
             {
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.ShadowFlame, 360);
+            target.AddBuff(BuffID.ShadowFlame, 180);
         }
     }
 }

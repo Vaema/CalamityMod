@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         private void HomingAI()
         {
-            CalamityUtils.HomeInOnNPC(Projectile, true, 200f, Penumbra.ShootSpeed * 1.5f, 35f);
+            CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 12f, 35f);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Create a burst of dust
             int killDust = Main.rand.Next(30, 41);

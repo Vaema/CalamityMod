@@ -10,7 +10,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Ancient Work Bench");
             Item.width = 28;
             Item.height = 14;
             Item.maxStack = 9999;
@@ -26,7 +25,10 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<BrimstoneSlag>(), 10).AddTile(ModContent.TileType<AncientAltar>()).Register();
+            CreateRecipe().
+                AddIngredient<BrimstoneSlag>(10).
+                AddTile<AncientAltar>().
+                Register();
         }
     }
 }

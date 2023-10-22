@@ -67,9 +67,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             Main.npcFrameCount[NPC.type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
-            value.Rotation = MathHelper.ToRadians(45);
-            value.Position.Y += 12;
-            value.PortraitPositionYOverride = 12f;
+            value.Rotation = MathHelper.ToRadians(135);
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.TrailingMode[NPC.type] = 0;
             NPCID.Sets.TrailCacheLength[NPC.type] = 6;
@@ -152,7 +150,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Randomly chooses to go clockwise or anti-clockwise around the player.
             if (!checkedRotationDir)
             {
-                rotationDir = (Main.rand.NextBool(2)).ToDirectionInt();
+                rotationDir = (Main.rand.NextBool()).ToDirectionInt();
                 checkedRotationDir = true;
                 NPC.netUpdate = true;
             }

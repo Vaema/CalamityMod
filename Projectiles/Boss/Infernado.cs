@@ -129,7 +129,7 @@ namespace CalamityMod.Projectiles.Boss
             }
             if (Projectile.localAI[1] == breakThreshold && Main.zenithWorld)
             {
-                Projectile.velocity.X = Main.rand.NextBool(2) ? -tornadoSpeed : tornadoSpeed;
+                Projectile.velocity.X = Main.rand.NextBool() ? -tornadoSpeed : tornadoSpeed;
 
                 if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                     Projectile.velocity.X *= 1.5f;
@@ -161,7 +161,7 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (Projectile.timeLeft <= 600)
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
+                target.AddBuff(ModContent.BuffType<Dragonfire>(), 150);
         }
     }
 }

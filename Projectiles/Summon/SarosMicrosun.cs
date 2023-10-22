@@ -29,7 +29,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netImportant = true;
             Projectile.tileCollide = false;
             Projectile.friendly = true;
-            Projectile.minion = true;
             Projectile.ignoreWater = true;
         }
 
@@ -72,7 +71,7 @@ namespace CalamityMod.Projectiles.Summon
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int dustAmount = 180;
             for (int d = 0; d < dustAmount; d++)

@@ -90,9 +90,9 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 Item.NewItem(Projectile.GetSource_DropAsItem(), (int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height, ModContent.ItemType<WulfrumKnife>());
             }

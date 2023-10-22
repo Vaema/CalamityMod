@@ -1,6 +1,9 @@
 ﻿using System;
 using CalamityMod.Balancing;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Placeables.FurniturePlagued;
+using CalamityMod.Items.Potions;
+using CalamityMod.NPCs.DraedonLabThings;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
@@ -11,7 +14,7 @@ namespace CalamityMod.ILEditing
 {
     public partial class ILChanges
     {
-        #region Rod of Harmony Changes
+        #region Shimmer Changes
 
         private static bool AdjustShimmerRequirements(On_Item.orig_CanShimmer orig, Item item)
         {
@@ -20,6 +23,7 @@ namespace CalamityMod.ILEditing
             {
                 return DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs;
             }
+
             return orig(item);
         }
         
@@ -67,49 +71,6 @@ namespace CalamityMod.ILEditing
             // AND with 0 (false) so that the Soaring Insignia is never considered equipped and thus infinite rocket boots never triggers.
             cursor.Emit(OpCodes.Ldc_I4_0);
             cursor.Emit(OpCodes.And);
-        }
-        #endregion
-
-        #region Magiluminescence Changes
-        private static void NerfMagiluminescence(ILContext il)
-        {
-            // Nerf the run acceleration boost from 1.75x to 1.25x.
-            var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdfld<Player>("hasMagiluminescence")))
-            {
-                LogFailure("Magiluminescence Nerf", "Could not locate the Magiluminescence bool.");
-                return;
-            }
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.75f)))
-            {
-                LogFailure("Magiluminescence Nerf", "Could not locate the Magiluminescence run acceleration multiplier.");
-                return;
-            }
-            cursor.Next.Operand = 1.25f;
-
-            // Nerf the max run speed boost from 1.15x to 1.05x.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.15f)))
-            {
-                LogFailure("Magiluminescence Nerf", "Could not locate the Magiluminescence max run speed multiplier.");
-                return;
-            }
-            cursor.Next.Operand = 1.05f;
-
-            // Nerf the acc run speed boost from 1.15x to 1.05x.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.15f)))
-            {
-                LogFailure("Magiluminescence Nerf", "Could not locate the Magiluminescence acc run speed multiplier.");
-                return;
-            }
-            cursor.Next.Operand = 1.05f;
-
-            // Nerf the run slowdown boost from 1.75x to 1.25x.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.75f)))
-            {
-                LogFailure("Magiluminescence Nerf", "Could not locate the Magiluminescence run slowdown multiplier.");
-                return;
-            }
-            cursor.Next.Operand = 1.25f;
         }
         #endregion
 
@@ -474,6 +435,23 @@ namespace CalamityMod.ILEditing
 
             // Replace the value with 1, meaning -0% damage or no resist.
             cursor.Next.Operand = 1f;
+        }
+        #endregion
+
+        #region Remove Frozen Infliction From Deerclops Ice Spikes
+        private static void RemoveFrozenInflictionFromDeerclopsIceSpikes(ILContext il)
+        {
+            // Prevent Deerclops from freezing players with Ice Spike projectiles.
+            var cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(ProjectileID.DeerclopsIceSpike)))
+            {
+                LogFailure("Remove Frozen Infliction From Deerclops Ice Spikes", "Could not locate the Deerclops Ice Spike projectile ID.");
+                return;
+            }
+
+            // AND with 0 (false) so that the Ice Spike is never considered to be hitting the player and thus never trigger the Frozen debuff.
+            cursor.Emit(OpCodes.Ldc_I4_0);
+            cursor.Emit(OpCodes.And);
         }
         #endregion
     }

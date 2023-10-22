@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureVoid
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Void Bathtub");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -24,7 +23,10 @@ namespace CalamityMod.Items.Placeables.FurnitureVoid
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<SmoothVoidstone>(), 14).AddTile(ModContent.TileType<VoidCondenser>()).Register();
+            CreateRecipe().
+                AddIngredient<SmoothVoidstone>(14).
+                AddTile<VoidCondenser>().
+                Register();
         }
     }
 }

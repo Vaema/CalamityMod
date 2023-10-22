@@ -21,10 +21,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.netImportant = true;
-            Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -118,12 +115,12 @@ namespace CalamityMod.Projectiles.Summon
             Main.dust[blueT].velocity += Projectile.velocity * 0.1f;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item45, Projectile.position);
             int blue = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 59, 0f, 0f, 100, default, 1f);
             Main.dust[blue].velocity *= 0.5f;
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 Main.dust[blue].scale = 0.5f;
                 Main.dust[blue].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;

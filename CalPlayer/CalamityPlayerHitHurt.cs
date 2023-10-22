@@ -25,6 +25,7 @@ using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Other;
+using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
@@ -91,7 +92,7 @@ namespace CalamityMod.CalPlayer
                 dust.velocity *= 0.4f;
                 dust.scale *= 1f + Main.rand.Next(40) * 0.01f;
                 dust.shader = GameShaders.Armor.GetSecondaryShader(Player.ArmorSetDye(), Player);
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     dust.scale *= 1f + Main.rand.Next(40) * 0.01f;
                     dust.noGravity = true;
@@ -125,7 +126,7 @@ namespace CalamityMod.CalPlayer
                 dust.velocity *= 0.4f;
                 dust.scale *= 1f + Main.rand.Next(40) * 0.01f;
                 dust.shader = GameShaders.Armor.GetSecondaryShader(Player.cNeck, Player);
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     dust.scale *= 1f + Main.rand.Next(40) * 0.01f;
                     dust.noGravity = true;
@@ -240,7 +241,7 @@ namespace CalamityMod.CalPlayer
                     dust.scale *= 1f + Main.rand.Next(40) * 0.01f;
                     // Change this accordingly if we have a proper equipped sprite.
                     dust.shader = GameShaders.Armor.GetSecondaryShader(Player.cBody, Player);
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                         dust.scale *= 1f + Main.rand.Next(40) * 0.01f;
                 }
 
@@ -385,6 +386,14 @@ namespace CalamityMod.CalPlayer
                 if (bBlood)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BurningBlood" + Main.rand.Next(1, 2 + 1)).Format(Player.name));
+                }
+                if (brainRot)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrainRot" + Main.rand.Next(1, 3 + 1)).Format(Player.name));
+                }
+                if (elementalMix)
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ElementalMix" + Main.rand.Next(1, 2 + 1)).Format(Player.name));
                 }
                 if (cDepth)
                 {
@@ -746,7 +755,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Can't have any cooldowns here because dodges grrrrr....
-            if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID))
+            if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && TotalEnergyShielding <= 0)
                 contactDamageReduction += 0.5;
 
             if (tarragonCloak && tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID))
@@ -762,12 +771,6 @@ namespace CalamityMod.CalPlayer
             {
                 contactDamageReduction += Items.Weapons.Typeless.RelicOfResilience.WeaknessDR;
                 npc.Calamity().relicOfResilienceWeakness = 0;
-            }
-
-            if (beeResist)
-            {
-                if (CalamityLists.beeEnemyList.Contains(npc.type))
-                    contactDamageReduction += 0.25;
             }
 
             if (eskimoSet)
@@ -1027,12 +1030,6 @@ namespace CalamityMod.CalPlayer
                     projectileDamageReduction += 0.5;
             }
 
-            if (beeResist)
-            {
-                if (CalamityLists.beeProjectileList.Contains(proj.type))
-                    projectileDamageReduction += 0.25;
-            }
-
             if (trinketOfChiBuff)
                 projectileDamageReduction += 0.1;
 
@@ -1157,20 +1154,20 @@ namespace CalamityMod.CalPlayer
             // As such, to avoid cooldowns proccing from dodge hits, do it here
             if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && hurtInfo.Damage > 0)
                 Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20), true, coreOfTheBloodGod ? "bloodgod" : "default");
+
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
-            {
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
-            }
+
             if (crawCarapace)
             {
-                npc.AddBuff(ModContent.BuffType<Crumbling>(), 720);
+                npc.AddBuff(ModContent.BuffType<Crumbling>(), 900);
                 SoundEngine.PlaySound(SoundID.NPCHit33 with { Volume = 0.5f }, Player.Center);
             }
 
             if (baroclaw)
             {
-                npc.AddBuff(ModContent.BuffType<ArmorCrunch>(), 1800);
-                npc.AddBuff(ModContent.BuffType<CrushDepth>(), 1800);
+                npc.AddBuff(ModContent.BuffType<ArmorCrunch>(), 900);
+                npc.AddBuff(ModContent.BuffType<CrushDepth>(), 900);
                 SoundEngine.PlaySound(BaroclawHit, Player.Center);
                 Vector2 bloodSpawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height) * 0.04f;
                 Vector2 splatterDirection = (Player.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
@@ -1189,7 +1186,7 @@ namespace CalamityMod.CalPlayer
 
             if (absorber)
             {
-                npc.AddBuff(ModContent.BuffType<AbsorberAffliction>(), 1800);
+                npc.AddBuff(ModContent.BuffType<AbsorberAffliction>(), 900);
                 SoundEngine.PlaySound(AbsorberHit, Player.Center);
                 Vector2 bloodSpawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height) * 0.04f;
                 Vector2 splatterDirection = (Player.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
@@ -1259,7 +1256,7 @@ namespace CalamityMod.CalPlayer
                             break;
 
                         case 3:
-                            Player.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
+                            Player.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
                             break;
 
                         case 4:
@@ -1267,11 +1264,11 @@ namespace CalamityMod.CalPlayer
                             break;
 
                         case 5:
-                            Player.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 150);
+                            Player.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 100);
                             break;
 
                         case 6:
-                            Player.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
+                            Player.AddBuff(ModContent.BuffType<HolyFlames>(), 200);
                             break;
 
                         case 7:
@@ -1279,7 +1276,7 @@ namespace CalamityMod.CalPlayer
                             break;
 
                         case 8:
-                            Player.AddBuff(ModContent.BuffType<Dragonfire>(), 300);
+                            Player.AddBuff(ModContent.BuffType<Dragonfire>(), 150);
                             break;
 
                         case 9:
@@ -1330,27 +1327,27 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.PhantasmalBolt || proj.type == ProjectileID.PhantasmalEye)
                 {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 180);
+                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 120);
                 }
                 else if (proj.type == ProjectileID.PhantasmalSphere)
                 {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 360);
+                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 240);
                 }
                 else if (proj.type == ProjectileID.PhantasmalDeathray)
                 {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 600);
+                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 400);
                 }
                 else if (proj.type == ProjectileID.FairyQueenLance || proj.type == ProjectileID.HallowBossRainbowStreak || proj.type == ProjectileID.HallowBossSplitShotCore)
                 {
-                    Player.AddBuff(Main.dayTime ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 180);
+                    Player.AddBuff(Main.dayTime ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 120);
                 }
                 else if (proj.type == ProjectileID.HallowBossLastingRainbow)
                 {
-                    Player.AddBuff(Main.dayTime ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 240);
+                    Player.AddBuff(Main.dayTime ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 160);
                 }
                 else if (proj.type == ProjectileID.FairyQueenSunDance)
                 {
-                    Player.AddBuff(Main.dayTime ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 300);
+                    Player.AddBuff(Main.dayTime ? ModContent.BuffType<HolyFlames>() : ModContent.BuffType<Nightwither>(), 200);
                 }
                 else if (proj.type == ProjectileID.BloodNautilusShot)
                 {
@@ -1537,6 +1534,12 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(TheSponge.ShieldHurtSound, Player.Center);
                     hurtSoundTimer = 20;
                 }
+                else if (((pSoulArtifact && !profanedCrystal) || profanedCrystalBuffs) && pSoulShieldDurability > 0)
+                {
+                    modifiers.DisableSound();
+                    SoundEngine.PlaySound(ProfanedGuardianDefender.ShieldDeathSound);
+                    hurtSoundTimer = 20;
+                }
                 else if ((profanedCrystal || profanedCrystalForce) && !profanedCrystalHide)
                 {
                     modifiers.DisableSound();
@@ -1608,7 +1611,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (blazingCoreParry >= 18) //only the first 12 frames (0.2 seconds) counts for a valid parry
                 {
-                    if (!Player.HasCooldown(ElysianGuard.ID))
+                    if (!Player.HasCooldown(ParryCooldown.ID))
                     {
                         Player.GiveIFrames(60, true);
                         blazingCoreEmpoweredParry = true;
@@ -1618,11 +1621,28 @@ namespace CalamityMod.CalPlayer
 
                     SoundEngine.PlaySound(BlazingCore.ParrySuccessSound, Player.Center);
                     blazingCoreSuccessfulParry = 60;
-                    Player.AddCooldown(ElysianGuard.ID, 60 * 30, false); //cooldown is frames in seconds multiplied by the desired amount of seconds
+                    Player.AddCooldown(ParryCooldown.ID, 60 * 30, false, "blazingcore"); //cooldown is frames in seconds multiplied by the desired amount of seconds
                 }
 
                 if (blazingCoreParry > 1)
                     blazingCoreParry = 1; //schedule parry to end next frame
+            }
+            else if (flameLickedShellParry > 0)
+            {
+                if (flameLickedShellParry >= 18)
+                {
+                    if (!Player.HasCooldown(ParryCooldown.ID))
+                    {
+                        Player.GiveIFrames(60, true);
+                        flameLickedShellEmpoweredParry = true;
+                        modifiers.FinalDamage *= 0.1f; //90% dr
+                        modifiers.DisableSound();
+                    }
+
+                    SoundEngine.PlaySound(ProfanedGuardianDefender.ShieldDeathSound, Player.Center);
+                    Player.AddCooldown(ParryCooldown.ID, 60 * 20, false, "flamelickedshell");
+                    FlameLickedShell.handleParry(Player);
+                }
             }
         }
 
@@ -1644,6 +1664,7 @@ namespace CalamityMod.CalPlayer
             // Currently implemented energy shields:
             // - Rover Drive
             // - Lunic Corps Armor set bonus
+            // - Profaned Soul Artifact/Crystal
             // - The Sponge
             //
             // If the shield(s) completely absorb the hit, iframes are granted on the spot and the hit is marked to be dodged.
@@ -1721,6 +1742,39 @@ namespace CalamityMod.CalPlayer
                     // Actually remove damage from the incoming hit, so that later shields have less damage incoming.
                     info.Damage -= masterChefDamageBlocked;
                 }
+                
+                // PSA
+                if (pSoulArtifact && pSoulShieldDurability > 0 && !shieldsFullyAbsorbedHit)
+                {
+                    // Check whether this shield can fully absorb the incoming hit (or what's left of it).
+                    bool thisShieldCanFullyAbsorb = pSoulShieldDurability >= info.Damage;
+
+                    // Tally up how much damage was blocked by this shield.
+                    int pSoulDamageBlocked = Math.Min(pSoulShieldDurability, info.Damage);
+                    totalDamageBlocked += pSoulDamageBlocked;
+
+                    // Deal all incoming damage to this shield, because it is available.
+                    pSoulShieldDurability -= info.Damage;
+                    shieldsTookHit = true;
+
+                    // Hits which break the PSA shield cause a sound and slight screen shake.
+                    // Multiple shields breaking simultaneously has slightly stronger screen shake.
+                    if (pSoulShieldDurability <= 0)
+                    {
+                        pSoulShieldDurability = 0;
+                        SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath, Player.Center);
+                        Player.Calamity().GeneralScreenShakePower += anyShieldBroke ? 0.5f : 2f;
+                        anyShieldBroke = true;
+                    }
+
+                    // Mark the hit as being canceled if this shield has enough durability to fully absorb it.
+                    // This prevents further shields from attempting to absorb the hit.
+                    if (thisShieldCanFullyAbsorb)
+                        shieldsFullyAbsorbedHit = true;
+
+                    // Actually remove damage from the incoming hit, so that later shields have less damage incoming.
+                    info.Damage -= pSoulDamageBlocked;
+                }
 
                 // THE SPONGE
                 if (sponge && SpongeShieldDurability > 0 && !shieldsFullyAbsorbedHit)
@@ -1768,20 +1822,33 @@ namespace CalamityMod.CalPlayer
 
                     // Spawn particles when hit with the shields up, regardless of whether or not the shields broke.
                     // More particles spawn if a shield broke.
-                    int numParticles = Main.rand.Next(2, 6) + (anyShieldBroke ? 6 : 0);
-                    for (int i = 0; i < numParticles; i++)
+                    if (pSoulArtifact)
                     {
-                        // Rover Drive has slightly higher particle velocity
-                        float maxVelocity = roverDrive ? 14f : 7f;
-                        Vector2 velocity = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(3f, maxVelocity);
-                        velocity.X += 5f * info.HitDirection;
+                        for (int i = 0; i < Main.rand.Next(4, 8); i++) //very light dust
+                        {
+                            Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, (int)CalamityDusts.ProfanedFire);
+                            dust.velocity = Main.rand.NextVector2Circular(3.5f, 3.5f);
+                            dust.velocity.Y -= Main.rand.NextFloat(1f, 3f);
+                            dust.scale = Main.rand.NextFloat(1.15f, 1.45f);
+                        }
+                    }
+                    else
+                    {
+                        int numParticles = Main.rand.Next(2, 6) + (anyShieldBroke ? 6 : 0);
+                        for (int i = 0; i < numParticles; i++)
+                        {
+                            // Rover Drive has slightly higher particle velocity
+                            float maxVelocity = roverDrive ? 14f : 7f;
+                            Vector2 velocity = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(3f, maxVelocity);
+                            velocity.X += 5f * info.HitDirection;
 
-                        float scale = Main.rand.NextFloat(2.5f, 3f);
-                        Color particleColor = Main.rand.NextBool() ? new Color(99, 255, 229) : new Color(25, 132, 247);
-                        int lifetime = 25;
+                            float scale = Main.rand.NextFloat(2.5f, 3f);
+                            Color particleColor = Main.rand.NextBool() ? new Color(99, 255, 229) : new Color(25, 132, 247);
+                            int lifetime = 25;
 
-                        var shieldParticle = new TechyHoloysquareParticle(Player.Center, velocity, scale, particleColor, lifetime);
-                        GeneralParticleHandler.SpawnParticle(shieldParticle);
+                            var shieldParticle = new TechyHoloysquareParticle(Player.Center, velocity, scale, particleColor, lifetime);
+                            GeneralParticleHandler.SpawnParticle(shieldParticle);
+                        }
                     }
 
                     // Update Rover Drive durability on the cooldown rack.
@@ -1791,6 +1858,10 @@ namespace CalamityMod.CalPlayer
                     // Update Lunic Corps Armor durability on the cooldown rack.
                     if (lunicCorpsSet && cooldowns.TryGetValue(Cooldowns.LunicCorpsShieldDurability.ID, out var masterChefDurabilityCD))
                         masterChefDurabilityCD.timeLeft = LunicCorpsShieldDurability;
+
+                    // Update PSA/PSC durability on the cooldown rack
+                    if ((pSoulArtifact && (!profanedCrystal || profanedCrystalBuffs)) && cooldowns.TryGetValue(Cooldowns.ProfanedSoulShield.ID, out var profanedSoulDurabilityCD))
+                        profanedSoulDurabilityCD.timeLeft = pSoulShieldDurability;
 
                     // Update Sponge durability on the cooldown rack.
                     if (sponge && cooldowns.TryGetValue(SpongeDurability.ID, out var spongeDurabilityCD))
@@ -1809,6 +1880,9 @@ namespace CalamityMod.CalPlayer
                     if (lunicCorpsSet)
                         Player.AddCooldown(LunicCorpsShieldRecharge.ID, LunicCorpsHelmet.ShieldRechargeDelay, true);
 
+                    if (pSoulArtifact && (!profanedCrystal || profanedCrystalBuffs))
+                        Player.AddCooldown(ProfanedSoulShieldRecharge.ID, profanedCrystalBuffs ? (60 * 5) : (60 * 10), true); // 5 seconds psc, 10 seconds psa 
+                    
                     // Set The Sponge's recharge delay to full. Override any existing cooldown instance.
                     if (sponge)
                         Player.AddCooldown(SpongeRecharge.ID, TheSponge.ShieldRechargeDelay, true);
@@ -1966,14 +2040,45 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(SoundID.Item96, Player.Center);
                 }
 
-                if ((flameLickedShell) && !Player.panic)
-                    Player.AddBuff(ModContent.BuffType<ShellBoost>(), 180);
-
                 if (gShell) //5 seconds of no dash reduction and reduced defense
+                {
+                    if (giantShellPostHit == 0)
+                    {
+                        float numberOfDusts = 35f;
+                        float rotFactor = 360f / numberOfDusts;
+                        for (int i = 0; i < numberOfDusts; i++)
+                        {
+                            float rot = MathHelper.ToRadians(i * rotFactor);
+                            Vector2 offset = new Vector2(Main.rand.NextFloat(0.5f, 2.5f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
+                            Vector2 velOffset = new Vector2(Main.rand.NextFloat(0.5f, 2.5f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
+                            Dust dust = Dust.NewDustPerfect(Player.Center + offset, Main.rand.NextBool() ? 249 : 118, new Vector2(velOffset.X, velOffset.Y));
+                            dust.noGravity = false;
+                            dust.velocity = velOffset;
+                            dust.scale = Main.rand.NextFloat(1.5f, 1.2f);
+                        }
+                    }
                     giantShellPostHit = 300;
+                }
 
                 if (tortShell) //5 seconds of no dash reduction and reduced defense
+                {
+                    if (tortShellPostHit == 0)
+                    {
+                        float numberOfDusts = 43f;
+                        float rotFactor = 360f / numberOfDusts;
+                        for (int i = 0; i < numberOfDusts; i++)
+                        {
+                            float rot = MathHelper.ToRadians(i * rotFactor);
+                            Vector2 offset = new Vector2(Main.rand.NextFloat(0.5f, 3.1f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
+                            Vector2 velOffset = new Vector2(Main.rand.NextFloat(0.5f, 3.1f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
+                            Dust dust = Dust.NewDustPerfect(Player.Center + offset, Main.rand.NextBool() ? 215 : 22, new Vector2(velOffset.X, velOffset.Y));
+                            dust.noGravity = false;
+                            dust.velocity = velOffset;
+                            dust.scale = Main.rand.NextFloat(1.6f, 2.2f);
+                        }
+                    }
                     tortShellPostHit = 300;
+                }
 
                 if (abyssalDivingSuitPlates && hurtInfo.Damage > 50)
                 {
@@ -1997,7 +2102,7 @@ namespace CalamityMod.CalPlayer
                         {
                             int dust = Dust.NewDust(Player.position, Player.width, Player.height, 31, 0f, 0f, 100, default, 2f);
                             Main.dust[dust].velocity *= 3f;
-                            if (Main.rand.NextBool(2))
+                            if (Main.rand.NextBool())
                             {
                                 Main.dust[dust].scale = 0.5f;
                                 Main.dust[dust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -2024,7 +2129,7 @@ namespace CalamityMod.CalPlayer
                     {
                         int ice = Dust.NewDust(Player.position, Player.width, Player.height, 67, 0f, 0f, 100, default, 2f);
                         Main.dust[ice].velocity *= 3f;
-                        if (Main.rand.NextBool(2))
+                        if (Main.rand.NextBool())
                         {
                             Main.dust[ice].scale = 0.5f;
                             Main.dust[ice].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
@@ -2186,9 +2291,6 @@ namespace CalamityMod.CalPlayer
         #region Post Hurt
         public override void PostHurt(Player.HurtInfo hurtInfo)
         {
-            if (pArtifact && !profanedCrystal)
-                Player.AddCooldown(Cooldowns.ProfanedSoulArtifact.ID, CalamityUtils.SecondsToFrames(5));
-
             // Silver Armor medkit timer
             if (silverMedkit && hurtInfo.Damage >= SilverArmorSetChange.SetBonusMinimumDamageToHeal)
                 silverMedkitTimer = SilverArmorSetChange.SetBonusHealTime;

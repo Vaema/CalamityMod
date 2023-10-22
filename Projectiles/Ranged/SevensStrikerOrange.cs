@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.timeLeft = 480;
+            Projectile.timeLeft = 300;
         }
 
         public override void AI()
@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.ExpandHitboxBy(48, 48);
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);

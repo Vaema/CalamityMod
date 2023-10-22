@@ -123,9 +123,15 @@ namespace CalamityMod.NPCs.Ravager
                             int damage = NPC.GetProjectileDamage(type);
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, 0f, 0f);
                         }
+
                         NPC.ai[2] += 1f;
                         NPC.localAI[0] = 0f;
+
                         NPC.netUpdate = true;
+
+                        // Prevent netUpdate from being blocked by the spam counter.
+                        if (NPC.netSpam >= 10)
+                            NPC.netSpam = 9;
                     }
                 }
                 else
@@ -174,7 +180,7 @@ namespace CalamityMod.NPCs.Ravager
                 {
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 135, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -195,7 +201,7 @@ namespace CalamityMod.NPCs.Ravager
                 {
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;

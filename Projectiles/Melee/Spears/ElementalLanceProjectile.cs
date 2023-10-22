@@ -1,13 +1,17 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee.Spears
 {
     public class ElementalLanceProjectile : BaseSpearProjectile
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<ElementalLance>();
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 40;
@@ -37,6 +41,10 @@ namespace CalamityMod.Projectiles.Melee.Spears
                 int idx = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 66, Projectile.direction * 2, 0f, 150, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
                 Main.dust[idx].noGravity = true;
             }
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 60);
         }
     }
 }

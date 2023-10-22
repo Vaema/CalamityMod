@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Melee
                         float num629 = Main.rand.Next(-35, 36) * 0.02f;
                         num628 *= 10f;
                         num629 *= 10f;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, num628, num629, ModContent.ProjectileType<ScourgeoftheCosmosMini>(), (int)(Projectile.damage * 0.7), Projectile.knockBack * 0.35f, Main.myPlayer);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, num628, num629, ModContent.ProjectileType<ScourgeoftheCosmosMini>(), (int)(Projectile.damage * 0.75), Projectile.knockBack * 0.35f, Main.myPlayer);
                         num3 = num627;
                     }
                 }
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCHit4, Projectile.position);
             int num3;

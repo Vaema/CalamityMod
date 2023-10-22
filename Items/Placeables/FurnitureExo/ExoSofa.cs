@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Exo Sofa");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -24,7 +23,11 @@ namespace CalamityMod.Items.Placeables.FurnitureExo
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<ExoPlating>(), 5).AddIngredient(ItemID.Silk, 2).AddTile(ModContent.TileType<DraedonsForge>()).Register();
+            CreateRecipe().
+                AddIngredient<ExoPlating>(5).
+                AddIngredient(ItemID.Silk, 2).
+                AddTile<DraedonsForge>().
+                Register();
         }
     }
 }

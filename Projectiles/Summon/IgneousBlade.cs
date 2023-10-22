@@ -101,10 +101,8 @@ namespace CalamityMod.Projectiles.Summon
                     for (int i = 0; i < 3; i++)
                     {
                         Vector2 spawnPosition = target.Center - new Vector2(0f, 550f).RotatedByRandom(MathHelper.ToRadians(8f));
-                        int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, Vector2.Normalize(target.Center - spawnPosition) * 24f, ModContent.ProjectileType<IgneousBladeStrike>(),
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, Vector2.Normalize(target.Center - spawnPosition) * 24f, ModContent.ProjectileType<IgneousBladeStrike>(),
                             Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        if (Main.projectile.IndexInRange(p))
-                            Main.projectile[p].originalDamage = Projectile.originalDamage;
                     }
                     for (int i = 0; i < Main.rand.Next(28, 41); i++)
                     {
@@ -117,12 +115,12 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int j = 0; j < 40; j++)
             {
                 Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 6);
-                dust.velocity = Vector2.UnitY * Main.rand.NextFloat(3f, 5.5f) * Main.rand.NextBool(2).ToDirectionInt();
+                dust.velocity = Vector2.UnitY * Main.rand.NextFloat(3f, 5.5f) * Main.rand.NextBool().ToDirectionInt();
                 dust.noGravity = true;
             }
         }

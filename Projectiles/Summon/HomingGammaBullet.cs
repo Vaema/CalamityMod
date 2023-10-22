@@ -26,8 +26,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = 24;
             Projectile.height = 12;
             Projectile.friendly = true;
-            Projectile.minion = true;
-            Projectile.minionSlots = 0f;
             Projectile.alpha = 255;
             Projectile.timeLeft = 360;
             Projectile.tileCollide = true;
@@ -121,7 +119,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Main.dedServ)
                 return;

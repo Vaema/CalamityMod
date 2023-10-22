@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = 1;
             Projectile.extraUpdates = 1;
             Projectile.alpha = 255;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 360;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 12;
         }
@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.rotation = Projectile.velocity.ToRotation();
 
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 Color dustColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.9f);
                 Dust must = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20f, 20f) + Projectile.velocity, 267, Projectile.velocity * -2.6f, 0, dustColor);

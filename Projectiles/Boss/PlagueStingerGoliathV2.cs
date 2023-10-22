@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Plague>(), 180);
+            target.AddBuff(ModContent.BuffType<Plague>(), 90);
         }
 
         public override void PostDraw(Color lightColor)
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Boss
             Main.spriteBatch.Draw(glow, drawPos, null, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
 

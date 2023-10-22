@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Rogue
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             int dustType = Projectile.ai[0] == 0f ? 14 : 114;
 
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int buffType = Projectile.ai[0] == 0f ? BuffID.CursedInferno : ModContent.BuffType<BurningBlood>();
+            int buffType = Projectile.ai[0] == 0f ? ModContent.BuffType<BrainRot>() : ModContent.BuffType<BurningBlood>();
             target.AddBuff(buffType, 90);
         }
     }

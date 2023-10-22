@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void AI()
         {
             //icicle dust
-            if (Main.rand.NextBool(2))
+            if (Main.rand.NextBool())
             {
                 int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 68, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.1f);
                 Main.dust[index2].noGravity = true;
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(BuffID.Frostburn2, 180);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
             for (int index1 = 0; index1 < 5; ++index1)

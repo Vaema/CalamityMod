@@ -8,7 +8,6 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Monolith Sink");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -23,7 +22,11 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<AstralMonolith>(), 6).AddIngredient(ItemID.WaterBucket).AddTile(ModContent.TileType<MonolithAmalgam>()).Register();
+            CreateRecipe().
+                AddIngredient<AstralMonolith>(6).
+                AddIngredient(ItemID.WaterBucket).
+                AddTile<MonolithAmalgam>().
+                Register();
         }
     }
 }

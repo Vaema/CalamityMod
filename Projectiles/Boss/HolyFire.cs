@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Main.rand.NextBool())
             {
@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
                 Main.dust[num622].noGravity = true;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[num622].scale = 0.5f;
                     Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -154,7 +154,7 @@ namespace CalamityMod.Projectiles.Boss
             if ((info.Damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red) || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 120, 20);
+            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 80, 20);
         }
     }
 }

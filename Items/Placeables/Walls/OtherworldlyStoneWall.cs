@@ -15,7 +15,6 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Otherworldly Stone Wall");
             Item.width = 12;
             Item.height = 12;
             Item.maxStack = 9999;
@@ -30,7 +29,10 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void AddRecipes()
         {
-            CreateRecipe(4).AddIngredient(ModContent.ItemType<OtherworldlyStone>()).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe(4).
+                AddIngredient<OtherworldlyStone>().
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

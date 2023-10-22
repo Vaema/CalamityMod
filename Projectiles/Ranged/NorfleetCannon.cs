@@ -1,15 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using Microsoft.Xna.Framework;
 using System;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class NorfleetCannon : ModProjectile, ILocalizedModType
+    public class NorfleetCannon : ModProjectile
     {
-        public new string LocalizationCategory => "Projectiles.Ranged";
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Norfleet>();
         public override string Texture => "CalamityMod/Items/Weapons/Ranged/Norfleet";
 
         public override void SetDefaults()
@@ -49,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
                             Vector2 source = Vector2.Normalize(Projectile.velocity) * 9f;
                             source = source.RotatedBy((d - (dustAmt / 2 - 1)) * MathHelper.TwoPi / dustAmt, default) + player.Center;
                             Vector2 dustVel = source - player.Center;
-                            int index = Dust.NewDust(source + dustVel, 0, 0, Main.rand.NextBool(2) ? 221 : 244, 0f, 0f, 0, default, 4f);
+                            int index = Dust.NewDust(source + dustVel, 0, 0, Main.rand.NextBool() ? 221 : 244, 0f, 0f, 0, default, 4f);
                             Main.dust[index].noGravity = true;
                             Main.dust[index].velocity = dustVel;
                         }

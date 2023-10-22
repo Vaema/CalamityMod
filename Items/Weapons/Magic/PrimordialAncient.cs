@@ -12,9 +12,9 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 170;
+            Item.damage = 145;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 20;
+            Item.mana = 16;
             Item.width = 40;
             Item.height = 56;
             Item.useTime = 18;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<PrimordialEarth>()).
+                AddIngredient<PrimordialEarth>().
                 AddIngredient(ItemID.AncientBattleArmorMaterial, 5).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(20).

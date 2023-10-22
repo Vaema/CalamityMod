@@ -48,7 +48,7 @@ namespace CalamityMod.Items.PermanentBoosters
                 if (modPlayer.mFruit)
                 {
                     string key = "Mods.CalamityMod.Misc.MiracleFruitText";
-                    Color messageColor = Color.GreenYellow;
+                    Color messageColor = Color.DeepSkyBlue;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
                     return false;
                 }
@@ -73,7 +73,7 @@ namespace CalamityMod.Items.PermanentBoosters
                 AddIngredient(ItemID.LifeFruit, 5).
                 AddIngredient<TrapperBulb>(5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<LivingShard>(10).
+                AddIngredient<LivingShard>(12).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.ExpandHitboxBy(50);
@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Boss
                 int holy = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
                 Main.dust[holy].velocity *= 3f;
                 Main.dust[holy].noGravity = true;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[holy].scale = 0.5f;
                     Main.dust[holy].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
@@ -149,7 +149,7 @@ namespace CalamityMod.Projectiles.Boss
             if ((info.Damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red) || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 180, 50);
+            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 120, 50);
         }
     }
 }

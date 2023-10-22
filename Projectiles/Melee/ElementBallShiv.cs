@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,10 +15,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = 2;
             Projectile.tileCollide = false;
             Projectile.timeLeft = 60;
             Projectile.aiStyle = ProjAIStyleID.Beam;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -37,7 +40,7 @@ namespace CalamityMod.Projectiles.Melee
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 2; k++)
             {
@@ -48,6 +51,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 30);
             OnHitEffects(target.Center);
         }
 
@@ -59,11 +63,11 @@ namespace CalamityMod.Projectiles.Melee
         private void OnHitEffects(Vector2 targetPos)
         {
             var source = Projectile.GetSource_FromThis();
-            for (int x = 0; x < 4; x++)
+            for (int x = 0; x < 3; x++)
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, x > 2, 800f, 800f, 0f, 800f, 1f, ModContent.ProjectileType<SHIV>(), Projectile.damage, Projectile.knockBack, Projectile.owner, false, 50f);
+                    CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, x > 2, 800f, 800f, 0f, 800f, 20f, ModContent.ProjectileType<SHIV>(), Projectile.damage, Projectile.knockBack, Projectile.owner, false, 50f);
                 }
             }
         }

@@ -22,7 +22,6 @@ namespace CalamityMod.NPCs.PlagueEnemies
         {
             Main.npcFrameCount[NPC.type] = 4;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
         }
 
         public override void SetDefaults()
@@ -129,7 +128,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Plague>(), 120, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 60, true);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

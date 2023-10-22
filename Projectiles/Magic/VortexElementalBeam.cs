@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
@@ -157,6 +158,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 30);
             for (int i = 0; i < Projectile.oldPos.Length - 1; i++)
             {
                 // Skip zeroed old positions. They are almost certainly a
@@ -169,7 +171,7 @@ namespace CalamityMod.Projectiles.Magic
                     Vector2 dustSpawnPosition = Vector2.Lerp(Projectile.oldPos[i], Projectile.oldPos[i + 1], j / 8f);
                     dustSpawnPosition += Projectile.Size * 0.5f;
 
-                    Dust electricity = Dust.NewDustPerfect(dustSpawnPosition, Main.rand.NextBool(2) ? 226 : 229);
+                    Dust electricity = Dust.NewDustPerfect(dustSpawnPosition, Main.rand.NextBool() ? 226 : 229);
                     electricity.velocity = Vector2.Zero;
                     electricity.scale = Main.rand.NextFloat(1.1f, 1.18f);
                     electricity.noGravity = true;

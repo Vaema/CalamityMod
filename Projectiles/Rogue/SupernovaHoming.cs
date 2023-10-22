@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             int num154 = 14;
-            int num298 = Main.rand.NextBool(2) ? 107 : 234;
+            int num298 = Main.rand.NextBool() ? 107 : 234;
             if (Main.rand.NextBool(4))
             {
                 num298 = 269;
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Rogue
             return Projectile.ai[0] >= 90 ? null : false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 24;

@@ -20,7 +20,6 @@ namespace CalamityMod.Projectiles.Summon
         {
             Projectile.friendly = true;
             Projectile.width = Projectile.height = 18;
-            Projectile.minion = true;
             Projectile.timeLeft = 300;
             Projectile.penetrate = 3;
             Projectile.usesIDStaticNPCImmunity = true;
@@ -41,7 +40,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Venom, 120);
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
             //Dust effect

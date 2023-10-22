@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Ashen Bathtub");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -25,7 +24,10 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<SmoothBrimstoneSlag>(), 14).AddTile(ModContent.TileType<AshenAltar>()).Register();
+            CreateRecipe().
+                AddIngredient<SmoothBrimstoneSlag>(14).
+                AddTile<AshenAltar>().
+                Register();
         }
     }
 }

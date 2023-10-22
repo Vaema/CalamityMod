@@ -3,6 +3,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Audio;
+using CalamityMod.Buffs.DamageOverTime;
+
 namespace CalamityMod.Projectiles.Melee
 {
     public class DarkBall : ModProjectile, ILocalizedModType
@@ -95,7 +97,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation += Projectile.velocity.X * 0.1f;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCDeath21, Projectile.position);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
@@ -121,6 +123,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 120);
             Projectile.Kill();
         }
     }

@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Magic
                     // Emit pretty as fuck dust.
                     if (Main.rand.NextBool(3))
                     {
-                        if (Main.rand.NextBool(2))
+                        if (Main.rand.NextBool())
                         {
                             Vector2 vector93 = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi);
                             Dust dust45 = Main.dust[Dust.NewDust(Projectile.Center - vector93 * 45f, 0, 0, Utils.SelectRandom<int>(Main.rand, 86, 90))];
@@ -277,7 +277,7 @@ namespace CalamityMod.Projectiles.Magic
         public override Color? GetAlpha(Color lightColor) => new Color(255 - Projectile.alpha, 255 - Projectile.alpha, 255 - Projectile.alpha, 255 - Projectile.alpha);
 
         // Explode.
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 264;

@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.FurnitureStatigel
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.SetNameOverride("Statigel Bathtub");
             Item.width = 28;
             Item.height = 20;
             Item.maxStack = 9999;
@@ -24,7 +23,10 @@ namespace CalamityMod.Items.Placeables.FurnitureStatigel
 
         public override void AddRecipes()
         {
-            CreateRecipe(1).AddIngredient(ModContent.ItemType<StatigelBlock>(), 14).AddTile(ModContent.TileType<StaticRefiner>()).Register();
+            CreateRecipe().
+                AddIngredient<StatigelBlock>(14).
+                AddTile<StaticRefiner>().
+                Register();
         }
     }
 }

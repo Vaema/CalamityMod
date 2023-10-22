@@ -96,8 +96,10 @@ namespace CalamityMod.NPCs.AquaticScourge
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
+            bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[Type], quickUnlock: true);
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
             {
+                new BossBestiaryInfoElement(),
 				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AquaticScourge")
             });
         }
@@ -255,7 +257,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<AquaticScourgeRelic>());
 
             // GFB troll drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<SupremeBaitTackleBoxFishingStation>());
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<SupremeBaitTackleBoxFishingStation>(), hideLootReport: true);
 
             // Lore
             bool firstASKill() => !DownedBossSystem.downedAquaticScourge;

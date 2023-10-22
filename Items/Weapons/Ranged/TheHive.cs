@@ -12,12 +12,12 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 80;
+            Item.damage = 60;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 62;
             Item.height = 30;
-            Item.useTime = 21;
-            Item.useAnimation = 21;
+            Item.useTime = 34;
+            Item.useAnimation = 34;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
@@ -32,6 +32,10 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
 
+        // Figure out which rocket is used
+        public int RocketType;
+        public override void OnConsumeAmmo(Item ammo, Player player) => RocketType = ammo.type;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int rocket = Utils.SelectRandom(Main.rand, new int[]
@@ -41,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 ModContent.ProjectileType<HiveBomb>(),
                 ModContent.ProjectileType<BeeRPG>()
             });
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, rocket, damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position, velocity, rocket, damage, knockback, player.whoAmI, RocketType);
             return false;
         }
     }

@@ -12,13 +12,12 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using System.Collections.Generic;
 
-namespace CalamityMod.Projectiles.Typless
+namespace CalamityMod.Projectiles.Healing
 {
     public class AbsorberAura : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Healing";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        private static float Radius = 160f;
         private int AbDust = ModContent.DustType<AbsorberDust>();
         public int ShinkGrow = 0;
         public int Framecounter = 0;
@@ -37,22 +36,21 @@ namespace CalamityMod.Projectiles.Typless
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 2710;
+            Projectile.timeLeft = 1810;
         }
 
         public override void AI()
         {
             Framecounter++;
-
             for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
             {
                 Player player = Main.player[playerIndex];
                 float targetDist = Vector2.Distance(player.Center, Projectile.Center);
 
                 //Remove the players debuffs and defense damage, but only once per aura
-                if (targetDist < 232f)
+                if (targetDist < 310f)
                 {
-                    player.AddBuff(ModContent.BuffType<AbsorberRegen>(), 900);
+                    player.AddBuff(ModContent.BuffType<AbsorberRegen>(), 600);
                     if (cleanseList[playerIndex] == false)
                     {
                         cleanseList[playerIndex] = true;

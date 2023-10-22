@@ -25,7 +25,6 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetDefaults()
         {
             Projectile.timeLeft = 600;
-            Projectile.penetrate = 1;
 
             Projectile.width = 62;
             Projectile.height = 20;
@@ -36,7 +35,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.minion = true;
         }
 
         public override void AI()
@@ -69,7 +67,7 @@ namespace CalamityMod.Projectiles.Summon
             return true;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
             for (int k = 0; k < 5; k++)

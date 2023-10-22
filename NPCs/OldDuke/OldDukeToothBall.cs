@@ -37,6 +37,7 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.knockBackResist = 0f;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath11;
+            NPC.chaseable = false;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.Calamity().VulnerableToHeat = false;
@@ -246,7 +247,7 @@ namespace CalamityMod.NPCs.OldDuke
                 {
                     int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[num622].velocity *= 3f;
-                    if (Main.rand.NextBool(2))
+                    if (Main.rand.NextBool())
                     {
                         Main.dust[num622].scale = 0.5f;
                         Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;

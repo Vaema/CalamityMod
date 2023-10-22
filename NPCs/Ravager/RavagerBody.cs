@@ -825,7 +825,12 @@ namespace CalamityMod.NPCs.Ravager
                 if (Vector2.Distance(NPC.Center, player.Center) > distanceFromTarget)
                 {
                     NPC.active = false;
+
                     NPC.netUpdate = true;
+
+                    // Prevent netUpdate from being blocked by the spam counter.
+                    if (NPC.netSpam >= 10)
+                        NPC.netSpam = 9;
                 }
             }
         }
@@ -1042,10 +1047,10 @@ namespace CalamityMod.NPCs.Ravager
             // GFB Sans drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.Skull);
-                GFBOnly.Add(ItemID.Bone, 1, 1, 9999);
-                GFBOnly.Add(ItemID.Hotdog, 1, 1, 9999);
-                GFBOnly.Add(ModContent.ItemType<AncientBoneDust>(), 1, 1, 9999);
+                GFBOnly.Add(ItemID.Skull, hideLootReport: true);
+                GFBOnly.Add(ItemID.Bone, 1, 1, 9999, true);
+                GFBOnly.Add(ItemID.Hotdog, 1, 1, 9999, true);
+                GFBOnly.Add(ModContent.ItemType<AncientBoneDust>(), 1, 1, 9999, true);
             }
 
             // Lore

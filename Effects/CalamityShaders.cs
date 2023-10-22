@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Skies;
+using Iced.Intel;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -177,6 +178,16 @@ namespace CalamityMod.Effects
         internal static Effect CircularGradientWithEdge;
         internal static Effect GaleforceArrowTrailShader;
         #endregion
+        
+        //
+        // All below shaders were added by Amber
+        // Authorship goes to Toasty
+        //
+
+        #region Amber's Shaders
+        internal static Effect PrimitiveClearShader;
+        #endregion
+        
         // Shorthand to register a loaded shader in Terraria's graphics engine
         // All shaders registered this way are accessible under GameShaders.Misc
         // They will use the prefix described above
@@ -376,6 +387,11 @@ namespace CalamityMod.Effects
 
             GaleforceArrowTrailShader = LoadShader("GaleforceArrowTrail");
             RegisterMiscShader(ArtAttackTrailShader, "TrailPass", "GaleforceArrowTrail");
+            #endregion
+            
+            #region Loading Amber's Shaders
+            PrimitiveClearShader = LoadShader("PrimitiveClearShader");
+            RegisterScreenShader(PrimitiveClearShader, "AutoloadPass", "PrimitiveClearShader");
             #endregion
         }
     }

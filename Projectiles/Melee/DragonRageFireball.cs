@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.ExpandHitboxBy(80);
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1f);
                 Main.dust[idx].velocity *= 3f;
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool())
                 {
                     Main.dust[idx].scale = 0.5f;
                     Main.dust[idx].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
