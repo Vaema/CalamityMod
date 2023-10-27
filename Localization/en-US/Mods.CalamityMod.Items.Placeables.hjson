@@ -3453,3 +3453,53 @@ WaterTurret: {
 		Cannot attack while a boss is alive
 		'''
 }
+
+ShellstoneSlabWall: {
+	Tooltip: ""
+	DisplayName: Shellstone Slab Wall
+}
+
+ShellstoneSlab: {
+	Tooltip: ""
+	DisplayName: Shellstone Slab
+}
+
+Shellstone: {
+	DisplayName: Shellstone
+	Tooltip: ""
+}
+
+TimelessSand: {
+	DisplayName: Timeless Sand
+	Tooltip: ""
+}
+
+Basalt: {
+	DisplayName: Basalt
+	Tooltip: ""
+}
+
+PolishedNavystoneBrick: {
+	DisplayName: Polished Navystone Brick
+	Tooltip: ""
+}
+
+Driftwood: {
+	DisplayName: Driftwood
+	Tooltip: ""
+}
+
+BlackPearlPile: {
+	DisplayName: Black Pearl Pile
+	Tooltip: ""
+}
+
+PinkPearlPile: {
+	DisplayName: Pink Pearl Pile
+	Tooltip: ""
+}
+
+WhitePearlPile: {
+	DisplayName: White Pearl Pile
+	Tooltip: ""
+}
