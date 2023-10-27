@@ -2861,6 +2861,11 @@ Basalt: {
 	Tooltip: ""
 }
 
+Driftwood: {
+	DisplayName: Driftwood
+	Tooltip: ""
+}
+
 TimelessSand: {
 	DisplayName: Timeless Sand
 	Tooltip: ""
