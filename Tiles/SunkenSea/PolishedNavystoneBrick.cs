@@ -11,8 +11,8 @@ namespace CalamityMod.Tiles.SunkenSea
         {
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
-
             CalamityUtils.MergeWithGeneral(Type);
+            TileID.Sets.HasSlopeFrames[Type] = true;
 
             HitSound = SoundID.Tink;
             DustType = 96;

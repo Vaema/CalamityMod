@@ -27,6 +27,7 @@ namespace CalamityMod.Tiles.SunkenSea
             CalamityUtils.MergeWithDesert(Type);
 
             TileID.Sets.ChecksForMerge[Type] = true;
+            TileID.Sets.HasSlopeFrames[Type] = true;
             HitSound = SoundID.Dig;
             DustType = 121;
             AddMapEntry(new Color(136, 129, 154));

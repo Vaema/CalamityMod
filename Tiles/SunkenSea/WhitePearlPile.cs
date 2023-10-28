@@ -20,6 +20,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
             CalamityUtils.MergeWithGeneral(Type);
 
+            TileID.Sets.HasSlopeFrames[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Shatter;
             DustType = 149;
