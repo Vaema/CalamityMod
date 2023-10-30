@@ -21,6 +21,9 @@ namespace CalamityMod.Tiles.SunkenSea
 
             CalamityUtils.MergeWithGeneral(Type);
 
+            Main.tileShine[Type] = 3500;
+            Main.tileShine2[Type] = true;
+
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Shatter;
             DustType = 82;
