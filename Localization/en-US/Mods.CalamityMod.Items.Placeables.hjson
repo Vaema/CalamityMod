@@ -3336,6 +3336,11 @@ ShellstoneSlabWall: {
 	Tooltip: ""
 }
 
+ShellstoneWall: {
+	DisplayName: Shellstone Wall
+	Tooltip: ""
+}
+
 SilvaWall: {
 	DisplayName: Silva Wall
 	Tooltip: ""
