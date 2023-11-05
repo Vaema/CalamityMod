@@ -3508,3 +3508,18 @@ WaterTurret: {
 		Cannot attack while a boss is alive
 		'''
 }
+
+CyanCoral: {
+	DisplayName: Cyan Coral
+	Tooltip: ""
+}
+
+MagentaCoral: {
+	DisplayName: Magenta Coral
+	Tooltip: ""
+}
+
+OrangeCoral: {
+	DisplayName: Orange Coral
+	Tooltip: ""
+}
