@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 using Terraria.ObjectData;
 using System;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
     public class SmallWideCoral : ModTile
     {

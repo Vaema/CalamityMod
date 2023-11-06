@@ -9,7 +9,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 {
     public class BrainCoralEcho : ModTile
     {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/BrainCoral";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/BrainCoral";
 
         public override void SetStaticDefaults()
         {

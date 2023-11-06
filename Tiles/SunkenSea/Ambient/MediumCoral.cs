@@ -1,28 +1,35 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Localization;
+using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
-    public class SmallTubeCoral : ModTile
+    public class MediumCoral : ModTile
     {
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
+            Main.tileLavaDeath[Type] = true;
+            Main.tileWaterDeath[Type] = false;
             Main.tileNoAttach[Type] = true;
+            TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
-            DustType = 253;
-            AddMapEntry(new Color(36, 61, 111));
+            AddMapEntry(new Color(233, 132, 58));
+            DustType = DustID.Coralstone;
 
             base.SetStaticDefaults();
         }
-
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
-            num = fail ? 1 : 3;
+            num = fail ? 1 : 2;
         }
+    }
+
+    public class MediumCoral2 : MediumCoral
+    {
     }
 }

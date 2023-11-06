@@ -6,7 +6,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
     public class TableCoral : ModTile
     {

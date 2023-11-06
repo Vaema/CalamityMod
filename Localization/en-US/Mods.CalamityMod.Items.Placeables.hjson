@@ -3523,3 +3523,18 @@ OrangeCoral: {
 	DisplayName: Orange Coral
 	Tooltip: ""
 }
+
+LimeCoral: {
+	DisplayName: Lime Coral
+	Tooltip: ""
+}
+
+YellowCoral: {
+	DisplayName: Yellow Coral
+	Tooltip: ""
+}
+
+Ceramic: {
+	DisplayName: Ceramic
+	Tooltip: ""
+}

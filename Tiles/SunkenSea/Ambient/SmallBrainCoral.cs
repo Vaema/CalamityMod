@@ -7,15 +7,15 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
-    public class BrainCoral : ModTile
+    public class SmallBrainCoral : ModTile
     {
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
             DustType = 253;
             AddMapEntry(new Color(36, 61, 111));
@@ -31,8 +31,9 @@ namespace CalamityMod.Tiles.SunkenSea
         public override void NearbyEffects(int i, int j, bool closer)
         {
             if (Main.gamePaused)
+            {
                 return;
-
+            }
             if (closer)
             {
                 if (Main.rand.NextBool(300))
@@ -45,7 +46,7 @@ namespace CalamityMod.Tiles.SunkenSea
                             if (Main.tile[i, tileLocationY].LiquidAmount == 255 && Main.tile[i, tileLocationY - 1].LiquidAmount == 255 && Main.tile[i, tileLocationY - 2].LiquidAmount == 255)
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(new EntitySource_WorldEvent(), i * 16 + 16, tileLocationY * 16 + 16, 0f, -0.1f, ModContent.ProjectileType<CoralBubble>(), 0, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(new EntitySource_WorldEvent(), i * 16 + 16, tileLocationY * 16 + 16, 0f, -0.1f, ModContent.ProjectileType<CoralBubbleSmall>(), 0, 1f, Main.myPlayer);
                             }
                         }
                     }

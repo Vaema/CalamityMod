@@ -9,7 +9,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 {
     public class SmallCoralsEcho : ModTile
     {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/SmallCorals";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/SmallCorals";
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = false;

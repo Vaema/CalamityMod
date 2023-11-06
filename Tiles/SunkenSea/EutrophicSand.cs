@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Placeables;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -16,6 +17,8 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override void SetStaticDefaults()
         {
+            TileID.Sets.GeneralPlacementTiles[Type] = false;
+
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
 

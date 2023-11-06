@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
-    public class OrangeCoral : ModTile
+    public class Ceramic : ModTile
     {
         public byte[,] tileAdjacency;
         public byte[,] secondTileAdjacency;
@@ -23,9 +23,9 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.HasSlopeFrames[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            HitSound = SoundID.Shatter;
-            DustType = 119;
-            AddMapEntry(Color.Orange);
+            HitSound = SoundID.Tink;
+            DustType = 22;
+            AddMapEntry(new Color(152, 89, 78));
             Main.tileShine2[Type] = true;
 
             TileID.Sets.CanBeDugByShovel[Type] = true;

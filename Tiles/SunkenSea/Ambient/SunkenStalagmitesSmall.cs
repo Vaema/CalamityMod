@@ -9,29 +9,20 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
-    [LegacyName("SunkenStalagmites")]
-	public class SunkenStalagmite1 : ModTile
+	public class SunkenStalagmitesSmall : ModTile
 	{
 		public override void SetStaticDefaults()
 		{
 			Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
             TileObjectData.addTile(Type);
             DustType = 253;
             AddMapEntry(new Color(31, 92, 114));
 
             base.SetStaticDefaults();
 		}
-	}
-
-    public class SunkenStalagmite2 : SunkenStalagmite1
-	{
-	}
-
-	public class SunkenStalagmite3 : SunkenStalagmite1
-	{
 	}
 }
