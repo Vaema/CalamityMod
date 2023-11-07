@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
-    public class TimelessSand : ModTile
+    public class RuneSand : ModTile
     {
         public byte[,] tileAdjacency;
         public byte[,] secondTileAdjacency;

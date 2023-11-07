@@ -32,7 +32,7 @@ namespace CalamityMod.Tiles.SunkenSea
             DustType = 121;
             AddMapEntry(new Color(136, 129, 154));
 
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<TimelessSand>(), out tileAdjacency);
+            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<RuneSand>(), out tileAdjacency);
             TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Shellstone>(), out secondTileAdjacency);
             TileFraming.SetUpUniversalMerge(Type, TileID.Sandstone, out thirdTileAdjacency);
             TileFraming.SetUpUniversalMerge(Type, TileID.Sand, out fourthTileAdjacency);
@@ -50,7 +50,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<TimelessSand>(), out tileAdjacency[i, j]);
+            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<RuneSand>(), out tileAdjacency[i, j]);
             TileFraming.GetAdjacencyData(i, j, ModContent.TileType<Shellstone>(), out secondTileAdjacency[i, j]);
             TileFraming.GetAdjacencyData(i, j, TileID.Sandstone, out thirdTileAdjacency[i, j]);
             TileFraming.GetAdjacencyData(i, j, TileID.Sand, out fourthTileAdjacency[i, j]);

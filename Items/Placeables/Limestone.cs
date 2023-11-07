@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    public class Shellstone : ModItem, ILocalizedModType
+    public class Limestone : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Placeables
         {
             Item.width = 12;
             Item.height = 12;
+            Item.rare = ItemRarityID.Blue;
             Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
@@ -22,7 +23,7 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.SunkenSea.Shellstone>();
+            Item.createTile = ModContent.TileType<Tiles.SunkenSea.Limestone>();
         }
     }
 }

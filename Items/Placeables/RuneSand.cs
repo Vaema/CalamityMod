@@ -1,25 +1,21 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Walls;
-using Terraria;
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    public class Ceramic : ModItem, ILocalizedModType
+    public class RuneSand : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
-        
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 200;
+            Item.ResearchUnlockCount = 100;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Shellstone>();
         }
 
         public override void SetDefaults()
         {
             Item.width = 12;
             Item.height = 12;
-            Item.rare = ItemRarityID.Blue;
             Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
@@ -27,7 +23,7 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.SunkenSea.Ceramic>();
+            Item.createTile = ModContent.TileType<Tiles.SunkenSea.RuneSand>();
         }
     }
 }

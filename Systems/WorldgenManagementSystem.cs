@@ -125,11 +125,12 @@ namespace CalamityMod.Systems
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SunkenSea").Value;
 
                     int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
-                    int sunkenSeaY = Main.maxTilesY - (Main.maxTilesY / 2);
+                    int sunkenSeaY = Main.maxTilesY / 2;
 
-                    SunkenSea.PlaceRadiantReefs(sunkenSeaX - 130, sunkenSeaY + 75);
-                    SunkenSea.PlaceRadiantReefs(sunkenSeaX + 130, sunkenSeaY + 75);
+                    SunkenSea.PlaceRadiantReefs(sunkenSeaX - 130, sunkenSeaY + 75, true);
+                    SunkenSea.PlaceRadiantReefs(sunkenSeaX + 130, sunkenSeaY + 75, false);
                     SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 75);
+                    SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                 }));
             }
 

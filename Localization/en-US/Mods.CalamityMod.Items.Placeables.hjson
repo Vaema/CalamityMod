@@ -2866,11 +2866,6 @@ Driftwood: {
 	Tooltip: ""
 }
 
-TimelessSand: {
-	DisplayName: Timeless Sand
-	Tooltip: ""
-}
-
 Navystone: {
 	DisplayName: Navystone
 	Tooltip: ""
@@ -3534,7 +3529,17 @@ YellowCoral: {
 	Tooltip: ""
 }
 
-Ceramic: {
-	DisplayName: Ceramic
+Runestone: {
+	DisplayName: Runestone
+	Tooltip: ""
+}
+
+RuneSand: {
+	DisplayName: Rune Sand
+	Tooltip: ""
+}
+
+Limestone: {
+	DisplayName: Limestone
 	Tooltip: ""
 }
