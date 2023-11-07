@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    public class Limestone : ModItem, ILocalizedModType
+    public class VolcanicSand : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.SunkenSea.Limestone>();
+            Item.createTile = ModContent.TileType<Tiles.SunkenSea.VolcanicSand>();
         }
     }
 }

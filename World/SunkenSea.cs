@@ -13,9 +13,6 @@ namespace CalamityMod.World
     public class SunkenSea
     {
         //sides of the sunken sea (radiant reefs)
-        //TODO: leftside barrier determines which side the barrier is placed on
-        //also make the basalt wall a bit higher since the reefs go off to the side of the desert
-        //Add cleanup step to convert sand hanging off edges into shellstone/navystone for all sunken sea biomes
         public static void PlaceRadiantReefs(int startPosX, int startPosY, bool LeftSideBarrier)
         {
             int cavePerlinSeed = WorldGen.genRand.Next();
@@ -169,16 +166,11 @@ namespace CalamityMod.World
                         //place sand clumps on top of exposed shellstone
                         if (Main.tile[X, Y].TileType == ModContent.TileType<Shellstone>() && !Main.tile[X, Y - 1].HasTile)
                         {
-                            for (int j = Y; j <= Y + 3; j++)
+                            if (CanPlaceSandOnGround(X, Y, 30))
                             {
-                                bool EnoughTilesBelow = Main.tile[X, Y + 1].TileType == ModContent.TileType<Shellstone>() && Main.tile[X, Y + 2].TileType == ModContent.TileType<Shellstone>() &&
-                                Main.tile[X, Y + 3].TileType == ModContent.TileType<Shellstone>() && Main.tile[X, Y + 4].TileType == ModContent.TileType<Shellstone>();
-                                 
-                                if (EnoughTilesBelow && CanPlaceSandOnGround(X, Y))
-                                {
-                                    Main.tile[X, j].TileType = (ushort)ModContent.TileType<EutrophicSand>();
-                                    Main.tile[X, j + 1].TileType = (ushort)ModContent.TileType<EutrophicSand>();
-                                }
+                                Main.tile[X, Y].TileType = (ushort)ModContent.TileType<EutrophicSand>();
+                                Main.tile[X, Y + 1].TileType = (ushort)ModContent.TileType<EutrophicSand>();
+                                Main.tile[X, Y + 2].TileType = (ushort)ModContent.TileType<EutrophicSand>();
                             }
                         }
                     }
@@ -214,7 +206,7 @@ namespace CalamityMod.World
         }
 
         //middle of the sunken sea (polyp forest)
-        //TODO: make an actual transition, and randomly place water caves along the edge of it to make it blend with the reefs more
+        //TODO: make an actual transition, and randomly place small water caves along the edge of it to make it blend with the reefs more
         public static void PlacePolypForest(int startPosX, int startPosY)
         {
             int cavePerlinSeed = WorldGen.genRand.Next();
@@ -251,7 +243,7 @@ namespace CalamityMod.World
                         {
                             /*
                             float outerEdgePercent = (percent - blurPercent) / (1f - blurPercent);
-                            if (WorldGen.genRand.NextFloat(1f) > outerEdgePercent && Y > origin.Y && Main.tile[X, Y].HasTile)
+                            if (WorldGen.genRand.NextFloat(1f) > outerEdgePercent && Y < origin.Y && Main.tile[X, Y].HasTile)
                             {
                                 Main.tile[X, Y].TileType = (ushort)ModContent.TileType<Navystone>();
                                 WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<Navystone>());
@@ -338,16 +330,11 @@ namespace CalamityMod.World
                         //place sand on top of exposed limestone
                         if (Main.tile[X, Y].TileType == ModContent.TileType<Limestone>() && !Main.tile[X, Y - 1].HasTile)
                         {
-                            for (int j = Y; j <= Y + 3; j++)
+                            if (CanPlaceSandOnGround(X, Y, 30))
                             {
-                                bool EnoughTilesBelow = Main.tile[X, Y + 1].TileType == ModContent.TileType<Limestone>() && Main.tile[X, Y + 2].TileType == ModContent.TileType<Limestone>() &&
-                                Main.tile[X, Y + 3].TileType == ModContent.TileType<Limestone>() && Main.tile[X, Y + 4].TileType == ModContent.TileType<Limestone>();
-                                 
-                                if (EnoughTilesBelow && CanPlaceSandOnGround(X, Y))
-                                {
-                                    Main.tile[X, j].TileType = (ushort)ModContent.TileType<EutrophicSand>();
-                                    Main.tile[X, j + 1].TileType = (ushort)ModContent.TileType<EutrophicSand>();
-                                }
+                                Main.tile[X, Y].TileType = (ushort)ModContent.TileType<EutrophicSand>();
+                                Main.tile[X, Y + 1].TileType = (ushort)ModContent.TileType<EutrophicSand>();
+                                Main.tile[X, Y + 2].TileType = (ushort)ModContent.TileType<EutrophicSand>();
                             }
                         }
                     }
@@ -395,7 +382,7 @@ namespace CalamityMod.World
             float angle = MathHelper.Pi * 0.15f;
             float otherAngle = MathHelper.PiOver2 - angle;
 
-            int distanceInTiles = (Main.maxTilesY >= 2400 ? 150 : 200) + (Main.maxTilesX - 4200) / 4200 * 200;
+            int distanceInTiles = (Main.maxTilesY >= 2400 ? 150 : 235) + (Main.maxTilesX - 4200) / 4200 * 200;
             float distance = distanceInTiles * 16f;
             float constant = distance * 2f / (float)Math.Sin(angle);
 
@@ -525,16 +512,11 @@ namespace CalamityMod.World
                         //place sand on top of exposed navystone
                         if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>() && !Main.tile[X, Y - 1].HasTile)
                         {
-                            for (int j = Y; j <= Y + 3; j++)
+                            if (CanPlaceSandOnGround(X, Y, 25))
                             {
-                                bool EnoughTilesBelow = Main.tile[X, Y + 1].TileType == ModContent.TileType<Navystone>() && Main.tile[X, Y + 2].TileType == ModContent.TileType<Navystone>() &&
-                                Main.tile[X, Y + 3].TileType == ModContent.TileType<Navystone>() && Main.tile[X, Y + 4].TileType == ModContent.TileType<Navystone>();
-                                 
-                                if (EnoughTilesBelow && CanPlaceSandOnGround(X, Y))
-                                {
-                                    Main.tile[X, j].TileType = (ushort)ModContent.TileType<EutrophicSand>();
-                                    Main.tile[X, j + 1].TileType = (ushort)ModContent.TileType<EutrophicSand>();
-                                }
+                                Main.tile[X, Y].TileType = (ushort)ModContent.TileType<EutrophicSand>();
+                                Main.tile[X, Y + 1].TileType = (ushort)ModContent.TileType<EutrophicSand>();
+                                Main.tile[X, Y + 2].TileType = (ushort)ModContent.TileType<EutrophicSand>();
                             }
                         }
                     }
@@ -569,18 +551,19 @@ namespace CalamityMod.World
             }
         }
 
+        //TODO: this will be for placing all the ambient tiles, does nothing right now
         public static void SunkenSeaAmbience()
         {
             for (int X = 20; X < Main.maxTilesX - 20; X++)
             {
                 for (int Y = 20; Y < Main.maxTilesY - 20; Y++)
                 {
-
                 }
             }
         }
 
-        public static bool CanPlaceSandOnGround(int X, int Y)
+        //this method basically checks how many tiles are in a set square, and if there is enough then allow sand to be placed on the ground
+        public static bool CanPlaceSandOnGround(int X, int Y, int Threshold)
         {
             int numTiles = 0;
 
@@ -595,7 +578,7 @@ namespace CalamityMod.World
                 }
             }
 
-            if (numTiles >= 25)
+            if (numTiles >= Threshold)
             {
                 return true;
             }

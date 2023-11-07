@@ -1,15 +1,12 @@
-﻿using CalamityMod.Items.Placeables;
-using CalamityMod.Tiles.SunkenSea.Ambient;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ID;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
-    public class EutrophicSand : ModTile
+    public class VolcanicSand : ModTile
     {
         public byte[,] tileAdjacency;
         public byte[,] secondTileAdjacency;
@@ -23,42 +20,18 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileBlockLight[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
-            CalamityUtils.MergeWithDesert(Type); // Tile blends with sandstone, which it is set to merge with here
+            CalamityUtils.MergeWithDesert(Type);
 
-            Main.tileShine[Type] = 1800;
-            Main.tileShine2[Type] = false;
-
+            TileID.Sets.HasSlopeFrames[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
-            DustType = 108;
-            AddMapEntry(new Color(92, 145, 167));
+            DustType = 147;
+            AddMapEntry(new Color(210, 124, 45));
 
             TileFraming.SetUpUniversalMerge(Type, TileID.Sandstone, out tileAdjacency);
             TileFraming.SetUpUniversalMerge(Type, TileID.Sand, out secondTileAdjacency);
             TileFraming.SetUpUniversalMerge(Type, TileID.HardenedSand, out thirdTileAdjacency);
-        }
-
-        public override void RandomUpdate(int i, int j)
-        {
-            Tile tile = Main.tile[i, j];
-            Tile up = Main.tile[i, j - 1];
-            Tile up2 = Main.tile[i, j - 2];
-
-            // Place corals
-            if (WorldGen.genRand.NextBool(8) && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
-            {
-                up.TileType = (ushort)ModContent.TileType<SmallCorals>();
-                up.HasTile = true;
-                up.TileFrameY = 0;
-
-                // 15 different frames, choose a random one
-                up.TileFrameX = (short)(WorldGen.genRand.Next(15) * 18);
-                WorldGen.SquareTileFrame(i, j - 1, true);
-
-                if (Main.netMode == NetmodeID.Server)
-                    NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
-            }
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -78,7 +51,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileFraming.GetAdjacencyData(i, j, TileID.Sandstone, out tileAdjacency[i, j]);
             TileFraming.GetAdjacencyData(i, j, TileID.Sand, out secondTileAdjacency[i, j]);
             TileFraming.GetAdjacencyData(i, j, TileID.HardenedSand, out thirdTileAdjacency[i, j]);
-            return TileFraming.BrimstoneFraming(i, j, resetFrame);
+            return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
         }
     }
 }

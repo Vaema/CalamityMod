@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.HasSlopeFrames[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            HitSound = SoundID.Shatter;
+            HitSound = SoundID.Dig;
             DustType = 119;
             AddMapEntry(Color.Lime);
             Main.tileShine2[Type] = true;
