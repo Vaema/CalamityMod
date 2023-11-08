@@ -23,6 +23,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
+            Main.tileShine2[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
             DustType = 96;

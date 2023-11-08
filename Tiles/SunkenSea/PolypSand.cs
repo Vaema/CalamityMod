@@ -25,6 +25,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.HasSlopeFrames[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
+            Main.tileShine2[Type] = true;
 
             DustType = 147;
             AddMapEntry(new Color(210, 124, 45));
