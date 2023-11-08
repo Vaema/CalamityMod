@@ -56,6 +56,7 @@ namespace CalamityMod.Tiles
             ModContent.TileType<SeaPrism>(),
             ModContent.TileType<Navystone>(),
             ModContent.TileType<Shellstone>(),
+            ModContent.TileType<Limestone>(),
             ModContent.TileType<Voidstone>()
         };
 

@@ -26,7 +26,7 @@ namespace CalamityMod.Tiles.SunkenSea
             CalamityUtils.MergeWithDesert(Type); // Tile blends with sandstone, which it is set to merge with here
 
             Main.tileShine[Type] = 1800;
-            Main.tileShine2[Type] = false;
+            Main.tileShine2[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
@@ -45,15 +45,15 @@ namespace CalamityMod.Tiles.SunkenSea
             Tile up = Main.tile[i, j - 1];
             Tile up2 = Main.tile[i, j - 2];
 
-            // Place SmallCorals
+            // Place corals
             if (WorldGen.genRand.NextBool(8) && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
                 up.TileType = (ushort)ModContent.TileType<SmallCorals>();
                 up.HasTile = true;
                 up.TileFrameY = 0;
 
-                // 6 different frames, choose a random one
-                up.TileFrameX = (short)(WorldGen.genRand.Next(6) * 18);
+                // 15 different frames, choose a random one
+                up.TileFrameX = (short)(WorldGen.genRand.Next(15) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
                 if (Main.netMode == NetmodeID.Server)

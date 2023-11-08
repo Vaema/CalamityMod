@@ -3535,11 +3535,21 @@ Runestone: {
 }
 
 RuneSand: {
-	DisplayName: Rune Sand
+	DisplayName: Runesand
 	Tooltip: ""
 }
 
 Limestone: {
 	DisplayName: Limestone
+	Tooltip: ""
+}
+
+PolypSand: {
+	DisplayName: Polyp Sand
+	Tooltip: ""
+}
+
+VolcanicSand: {
+	DisplayName: Volcanic Sand
 	Tooltip: ""
 }

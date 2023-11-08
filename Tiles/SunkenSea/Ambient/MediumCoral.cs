@@ -32,4 +32,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
     public class MediumCoral2 : MediumCoral
     {
     }
+    
+    public class MediumCoral3 : MediumCoral
+    {
+    }
 }
