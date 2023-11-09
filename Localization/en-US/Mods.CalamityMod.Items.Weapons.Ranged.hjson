@@ -1315,3 +1315,18 @@ MagnaCannon: {
 		Fully charged shots fire an even longer and more rapid burst
 		'''
 }
+
+AcidwoodBow: {
+	DisplayName: Acidwood Bow
+	Tooltip: ""
+}
+
+DriftwoodBow: {
+	DisplayName: Driftwood Bow
+	Tooltip: This bow is stronger while you are wet
+}
+
+MonolithBow: {
+	DisplayName: Monolith Bow
+	Tooltip: ""
+}
