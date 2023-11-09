@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -21,7 +22,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
-
+            Main.tileLighted[Type] = true;
             Main.tileShine[Type] = 3500;
             Main.tileShine2[Type] = true;
 
@@ -45,7 +46,20 @@ namespace CalamityMod.Tiles.SunkenSea
             frameXOffset = i % 2 * subsheetWidth;
             frameYOffset = j % 2 * subsheetHeight;
         }
-
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            float brightness = 0.9f;
+            Color blue = new Color(67, 187, 204);
+            Color darkviolet = new Color(18, 67, 116);
+            Color value = Color.Lerp(blue, darkviolet, (MathF.Sin(-j / 80f + Main.GameUpdateCount * 0.017f + i / 40f) + 1f) / 2f);
+            Color value1 = Color.Lerp(blue, darkviolet, (MathF.Sin((j - 100) / 50f + Main.GameUpdateCount * 0.004f + -i / 30f) + 1f) / 2f);
+            r = (value.R + value1.R) / 700f;
+            g = (value.G + value1.G) / 700f;
+            b = (value.B + value1.B) / 700f;
+            r *= brightness;
+            g *= brightness;
+            b *= brightness;
+        }
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/NavystoneMerge");
