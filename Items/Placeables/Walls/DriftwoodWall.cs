@@ -1,15 +1,15 @@
-﻿using Terraria.ID;
 using Terraria.ModLoader;
+using WallTiles = CalamityMod.Walls;
+using Terraria.ID;
 
-namespace CalamityMod.Items.Placeables
+namespace CalamityMod.Items.Placeables.Walls
 {
-    public class Driftwood : ModItem, ILocalizedModType
+    public class DriftwoodWall : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 100;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.Wood;
+            Item.ResearchUnlockCount = 400;
         }
 
         public override void SetDefaults()
@@ -20,21 +20,16 @@ namespace CalamityMod.Items.Placeables
             Item.useTurn = true;
             Item.autoReuse = true;
             Item.useAnimation = 15;
-            Item.useTime = 10;
+            Item.useTime = 7;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.SunkenSea.Driftwood>();
-        }
-
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
-            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Wood;
+            Item.createWall = ModContent.WallType<WallTiles.DriftwoodWall>();
         }
 
         public override void AddRecipes()
         {
             CreateRecipe(4).
-            AddIngredient<Items.Placeables.Walls.DriftwoodWall>(4).
+            AddIngredient<Driftwood>().
             AddTile(TileID.WorkBenches).
             Register();
         }

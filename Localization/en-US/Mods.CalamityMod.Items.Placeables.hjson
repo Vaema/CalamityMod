@@ -3553,3 +3553,8 @@ VolcanicSand: {
 	DisplayName: Volcanic Sand
 	Tooltip: ""
 }
+
+DriftwoodWall: {
+	DisplayName: Driftwood Wall
+	Tooltip: ""
+}

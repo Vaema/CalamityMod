@@ -675,13 +675,17 @@ namespace CalamityMod.World
                                         blotchMod.Output(circle)
                                     }));
 
+                                    List<ushort> WallIDs = new()
+                                    {
+                                        WallID.LavaUnsafe1, WallID.LavaUnsafe2, WallID.LavaUnsafe3, WallID.LavaUnsafe4,
+                                    };
+
                                     //place blocks
                                     WorldUtils.Gen(new Point(X + RandomX, j), new ModShapes.All(circle), Actions.Chain(new GenAction[]
                                     {
-                                        new Actions.ClearTile(),
+                                        new Actions.Clear(),
                                         new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>()),
-                                        new Actions.ClearWall(),
-                                        new Actions.PlaceWall(WallID.LavaUnsafe3)
+                                        new Actions.PlaceWall(WorldGen.genRand.Next(WallIDs))
                                     }));
                                 }
                             }
@@ -705,7 +709,7 @@ namespace CalamityMod.World
                         }
 
                         //place lava
-                        if (WorldGen.genRand.NextBool(1200))
+                        if (WorldGen.genRand.NextBool(2000))
                         {
                             WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(WorldGen.genRand.Next(5, 12)), Actions.Chain(new Modifiers.Blotches(
                             WorldGen.genRand.Next(3, 5), WorldGen.genRand.Next(3, 5)), new Actions.SetLiquid(LiquidID.Lava, 255)));
@@ -731,7 +735,7 @@ namespace CalamityMod.World
                     {
                         for (int SandY = Y; SandY <= Y + 4; SandY++)
                         {
-                            if (EnoughTilesInArea(X, SandY, 3, 5, 28, false) && (!Main.tile[X, SandY - 1].HasTile || Main.tile[X, SandY - 1].TileType == ModContent.TileType<VolcanicSand>()))
+                            if (EnoughTilesInArea(X, SandY, 3, 5, 25, false) && (!Main.tile[X, SandY - 1].HasTile || Main.tile[X, SandY - 1].TileType == ModContent.TileType<VolcanicSand>()))
                             {
                                 Main.tile[X, SandY].TileType = (ushort)ModContent.TileType<VolcanicSand>();
                             }
@@ -767,6 +771,39 @@ namespace CalamityMod.World
                     {
                         WorldGen.PlaceTile(X, Y + 1, (ushort)ModContent.TileType<Basalt>());
                         Main.tile[X, Y].TileType = (ushort)ModContent.TileType<Basalt>();
+                    }
+                }
+            }
+        }
+
+        public static void BasaltBiomeLavaCleanup(int startPosX, int startPosY)
+        {
+            Point origin = new Point(startPosX, startPosY);
+
+            int distanceInTiles = (Main.maxTilesY >= 2400 ? 150 : 235) + (Main.maxTilesX - 4200) / 4200 * 200;
+
+            for (int X = origin.X - distanceInTiles - 250; X <= origin.X + distanceInTiles + 250; X++)
+            {
+                for (int Y = origin.Y + 50; Y <= Main.maxTilesY - 210; Y++)
+                {
+                    List<ushort> WallIDs = new()
+                    {
+                        WallID.LavaUnsafe1, WallID.LavaUnsafe2, WallID.LavaUnsafe3, WallID.LavaUnsafe4,
+                    };
+
+                    if (WallIDs.Contains(Main.tile[X, Y].WallType))
+                    {
+                        //get rid of water
+                        if (Main.tile[X, Y].LiquidType == LiquidID.Water)
+                        {
+                            Main.tile[X, Y].Get<LiquidData>().LiquidType = LiquidID.Lava;
+                        }
+
+                        //get rid of obsidian blocks
+                        if (Main.tile[X, Y].TileType == TileID.Obsidian)
+                        {
+                            WorldGen.KillTile(X, Y);
+                        }
                     }
                 }
             }

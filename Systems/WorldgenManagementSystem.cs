@@ -140,8 +140,18 @@ namespace CalamityMod.Systems
             int FinalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
             if (FinalIndex != -1)
             {
-                // Reallocate gems so rarity corresponds to depth
                 int currentFinalIndex = FinalIndex;
+
+                // sunken sea basalt lava cleanup (because vanilla for some reason places water in it)
+                tasks.Insert(++currentFinalIndex, new PassLegacy("Sunken Sea Cleanup", (progress, config) =>
+                {
+                    int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
+                    int sunkenSeaY = Main.maxTilesY / 2;
+
+                    SunkenSea.BasaltBiomeLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                }));
+
+                // Reallocate gems so rarity corresponds to depth
                 tasks.Insert(++currentFinalIndex, new PassLegacy("Gem Depth Adjustment", (progress, config) =>
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.GemAdjustment").Value;
