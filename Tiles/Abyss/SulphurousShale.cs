@@ -40,6 +40,11 @@ namespace CalamityMod.Tiles.Abyss
             TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<AbyssGravel>(), out thirdTileAdjacency);
         }
 
+        public override void NearbyEffects(int i, int j, bool closer)
+        {
+            Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater").Slot;
+        }
+
         public override bool CanExplode(int i, int j)
         {
             return false;

@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
             DustType = 147;
-            AddMapEntry(new Color(210, 124, 45));
+            AddMapEntry(new Color(117, 79, 97));
 
             TileFraming.SetUpUniversalMerge(Type, TileID.Sandstone, out tileAdjacency);
             TileFraming.SetUpUniversalMerge(Type, TileID.Sand, out secondTileAdjacency);

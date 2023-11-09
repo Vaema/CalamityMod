@@ -117,7 +117,7 @@ namespace CalamityMod.Systems
             }
 
             // Sunken sea
-            int SunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Settle Liquids Again"));
+            int SunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Larva"));
             if (SunkenSeaIndex != -1)
             {
                 tasks.Insert(SunkenSeaIndex + 1, new PassLegacy("Sunken Sea", (progress, config) =>
@@ -130,7 +130,9 @@ namespace CalamityMod.Systems
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX - 130, sunkenSeaY + 75, true);
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX + 130, sunkenSeaY + 75, false);
                     SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 75);
+                    SunkenSea.PlaceBasaltBiome(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceSunkenSeaAmbience();
                 }));
             }
 
