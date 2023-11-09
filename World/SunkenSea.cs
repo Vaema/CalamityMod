@@ -578,12 +578,12 @@ namespace CalamityMod.World
                     if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
                     {
                         //place geodes
-                        if (WorldGen.genRand.NextBool(400) && Main.tile[X, Y].TileType == ModContent.TileType<Navystone>() && 
+                        if (WorldGen.genRand.NextBool(600) && Main.tile[X, Y].TileType == ModContent.TileType<Navystone>() && 
                         Main.tile[X, Y - 1].HasTile && Main.tile[X, Y + 1].HasTile && Main.tile[X - 1, Y].HasTile && Main.tile[X + 1, Y].HasTile)
                         {
                             if (EnoughTilesInArea(X, Y, 7, 7, 35, true))
                             {
-                                PlaceGeode(X, Y, WorldGen.genRand.Next(5, 10));
+                                PlaceGeode(X, Y, WorldGen.genRand.Next(10, 17));
                             }
                         }
 
@@ -809,11 +809,171 @@ namespace CalamityMod.World
             }
         }
 
-        //TODO: this will be for placing all the ambient tiles, does nothing right now
+        //place all the ambient tiles in the sunken sea
         public static void PlaceSunkenSeaAmbience()
         {
             //first clean up unnecessary chunks of tiles
             CleanOutSmallClumps();
+
+            for (int X = 20; X <= Main.maxTilesX - 20; X++)
+            {
+                for (int Y = 20; Y <= Main.maxTilesY - 20; Y++)
+                {
+                    //gleaming burrows ambient tiles
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<HardenedEutrophicSand>())
+                    {   
+                        //brain coral
+                        if (WorldGen.genRand.NextBool(10))
+                        {
+                            WorldGen.PlaceObject(X, Y - 1, (ushort)ModContent.TileType<BrainCoral>());
+                        }
+                        //small brain coral
+                        if (WorldGen.genRand.NextBool(5))
+                        {
+                            WorldGen.PlaceObject(X, Y - 1, (ushort)ModContent.TileType<SmallBrainCoral>());
+                        }
+
+                        //tube coral
+                        if (WorldGen.genRand.NextBool(12))
+                        {
+                            WorldGen.PlaceObject(X, Y - 1, (ushort)ModContent.TileType<TubeCoral>());
+                        }
+                        //small tube coral
+                        if (WorldGen.genRand.NextBool(8))
+                        {
+                            WorldGen.PlaceObject(X, Y - 1, (ushort)ModContent.TileType<SmallTubeCoral>());
+                        }
+
+                        //giant navystone piles
+                        if (WorldGen.genRand.NextBool(15))
+                        {
+                            ushort[] GiantPiles = new ushort[] { (ushort)ModContent.TileType<GiantNavystone1>(), (ushort)ModContent.TileType<GiantNavystone2>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(GiantPiles));
+                        }
+
+                        //small navystone piles
+                        if (WorldGen.genRand.NextBool(10))
+                        {
+                            ushort[] Piles = new ushort[] { (ushort)ModContent.TileType<NavystonePile1>(), 
+                            (ushort)ModContent.TileType<NavystonePile2>(), (ushort)ModContent.TileType<NavystonePile3>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(Piles));
+                        }
+                    }
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>())
+                    {
+                        //stalactites
+                        if (WorldGen.genRand.NextBool(10))
+                        {
+                            ushort[] Stalactites = new ushort[] { (ushort)ModContent.TileType<SunkenStalactite1>(),
+                            (ushort)ModContent.TileType<SunkenStalactite2>(), (ushort)ModContent.TileType<SunkenStalactite3>() };
+
+                            WorldGen.PlaceObject(X, Y + 2, WorldGen.genRand.Next(Stalactites));
+                        }
+                        //small stalactites
+                        if (WorldGen.genRand.NextBool(8))
+                        {
+                            WorldGen.PlaceTile(X, Y + 1, (ushort)ModContent.TileType<SunkenStalactitesSmall>(), true, false, -1, 0);
+                        }
+
+                        //stalagmites
+                        if (WorldGen.genRand.NextBool(12))
+                        {
+                            ushort[] Stalagmites = new ushort[] { (ushort)ModContent.TileType<SunkenStalagmite1>(),
+                            (ushort)ModContent.TileType<SunkenStalagmite2>(), (ushort)ModContent.TileType<SunkenStalagmite3>() };
+
+                            WorldGen.PlaceObject(X, Y - 2, WorldGen.genRand.Next(Stalagmites));
+                        }
+                        //small stalagmites
+                        if (WorldGen.genRand.NextBool(10))
+                        {
+                            WorldGen.PlaceTile(X, Y - 1, (ushort)ModContent.TileType<SunkenStalagmitesSmall>(), true, false, -1, 0);
+                        }
+
+                        //giant navystone piles
+                        if (WorldGen.genRand.NextBool())
+                        {
+                            ushort[] GiantPiles = new ushort[] { (ushort)ModContent.TileType<GiantNavystone1>(), (ushort)ModContent.TileType<GiantNavystone2>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(GiantPiles));
+                        }
+
+                        //small navystone piles
+                        if (WorldGen.genRand.NextBool())
+                        {
+                            ushort[] Piles = new ushort[] { (ushort)ModContent.TileType<NavystonePile1>(), 
+                            (ushort)ModContent.TileType<NavystonePile2>(), (ushort)ModContent.TileType<NavystonePile3>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(Piles));
+                        }
+                    }
+
+                    //radiant reefs ambient tiles
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<EutrophicSand>())
+                    {
+                        //multi-colored corals
+                        if (WorldGen.genRand.NextBool(3))
+                        {
+                            ushort[] ColoredCorals = new ushort[] { (ushort)ModContent.TileType<CoralPileGiant>(), 
+                            (ushort)ModContent.TileType<CoralPileLarge>(), (ushort)ModContent.TileType<MediumCoral2>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(ColoredCorals));
+                        }
+
+                        //blue coral trees
+                        if (WorldGen.genRand.NextBool(6))
+                        {
+                            ushort[] BlueCorals = new ushort[] { (ushort)ModContent.TileType<MediumCoral3>(), (ushort)ModContent.TileType<BlueCoralTree>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BlueCorals));
+                        }
+
+                        //brown coral trees
+                        if (WorldGen.genRand.NextBool(6))
+                        {
+                            ushort[] BrownCorals = new ushort[] { (ushort)ModContent.TileType<BrownCoral1>(), (ushort)ModContent.TileType<BrownCoral2>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BrownCorals));
+                        }
+
+                        //fan coral
+                        if (WorldGen.genRand.NextBool(10))
+                        {
+                            WorldGen.PlaceObject(X, Y - 1, (ushort)ModContent.TileType<FanCoral>());
+                        }
+
+                        //misc corals
+                        if (WorldGen.genRand.NextBool())
+                        {
+                            ushort[] MiscCorals = new ushort[] { (ushort)ModContent.TileType<MediumCoral>(), 
+                            (ushort)ModContent.TileType<SmallWideCoral>(), (ushort)ModContent.TileType<SmallWideCoral2>() };
+
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(MiscCorals));
+                        }
+                    }
+
+                    /*
+                    //wall corals
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<Shellstone>())
+                    {   
+                        if (WorldGen.genRand.NextBool(8) && !Main.tile[X - 1, Y].HasTile)
+                        {
+                            ushort[] WallCorals = new ushort[] { (ushort)ModContent.TileType<TableCoral>(), (ushort)ModContent.TileType<WallCorals>() };
+
+                            WorldGen.PlaceTile(X - 2, Y, WorldGen.genRand.Next(WallCorals), true, false, -1, 0);
+                        }
+
+                        if (WorldGen.genRand.NextBool(8) && !Main.tile[X + 1, Y].HasTile)
+                        {
+                            ushort[] WallCorals = new ushort[] { (ushort)ModContent.TileType<TableCoral>(), (ushort)ModContent.TileType<WallCorals>() };
+
+                            WorldGen.PlaceTile(X + 2, Y, WorldGen.genRand.Next(WallCorals), true, false, -1, 0);
+                        }
+                    }
+                    */
+                }
+            }
         }
 
         public static void PlaceGeode(int X, int Y, int radius)
@@ -836,7 +996,7 @@ namespace CalamityMod.World
             }));
 
             //second circle of prisms
-            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(radius - 3), Actions.Chain(new GenAction[]
+            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(radius - 4), Actions.Chain(new GenAction[]
             {
                 blotchMod.Output(circle2)
             }));
@@ -847,7 +1007,7 @@ namespace CalamityMod.World
             }));
 
             //clear out the middle of the circle
-            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(radius - 6), Actions.Chain(new GenAction[]
+            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(radius - 9), Actions.Chain(new GenAction[]
             {
                 blotchMod.Output(circle3)
             }));

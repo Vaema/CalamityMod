@@ -116,11 +116,14 @@ namespace CalamityMod.Systems
                 }));
             }
 
-            // Sunken sea
-            int SunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Larva"));
-            if (SunkenSeaIndex != -1)
+            // All further tasks occur after vanilla worldgen is completed
+            int FinalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
+            if (FinalIndex != -1)
             {
-                tasks.Insert(SunkenSeaIndex + 1, new PassLegacy("Sunken Sea", (progress, config) =>
+                int currentFinalIndex = FinalIndex;
+
+                // sunken sea
+                tasks.Insert(++currentFinalIndex, new PassLegacy("Sunken Sea", (progress, config) =>
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SunkenSea").Value;
 
@@ -133,21 +136,6 @@ namespace CalamityMod.Systems
                     SunkenSea.PlaceBasaltBiome(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     SunkenSea.PlaceSunkenSeaAmbience();
-                }));
-            }
-
-            // All further tasks occur after vanilla worldgen is completed
-            int FinalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
-            if (FinalIndex != -1)
-            {
-                int currentFinalIndex = FinalIndex;
-
-                // sunken sea basalt lava cleanup (because vanilla for some reason places water in it)
-                tasks.Insert(++currentFinalIndex, new PassLegacy("Sunken Sea Cleanup", (progress, config) =>
-                {
-                    int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
-                    int sunkenSeaY = Main.maxTilesY / 2;
-
                     SunkenSea.BasaltBiomeLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                 }));
 
@@ -287,6 +275,7 @@ namespace CalamityMod.Systems
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Abyss").Value;
                     Abyss.PlaceAbyss();
+                    Abyss.AbyssCleanup();
                 }));
 
                 // Sulphurous Sea (Part 2, after Abyss)

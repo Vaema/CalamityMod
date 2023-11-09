@@ -10,7 +10,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
     public class WallCorals : ModTile
     {
-        int subsheetHeight = 34;
+        int subsheetHeight = 54;
         int subsheetWidth = 108;
         
         public override void SetStaticDefaults()

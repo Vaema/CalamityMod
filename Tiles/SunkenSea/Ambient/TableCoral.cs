@@ -12,6 +12,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
     {
         int subsheetHeight = 34;
         int subsheetWidth = 108;
+        
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -34,6 +35,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         {
             num = fail ? 1 : 3;
         }
+
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
             int xPos = i % 1;

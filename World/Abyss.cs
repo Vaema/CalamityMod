@@ -1181,5 +1181,73 @@ namespace CalamityMod.World
             }
             AbleToUnlockChests = false; //reseting the variable in case players generate multiple worlds to prevent already unlocked chests from spawning
         }
+
+        //method to clean up small clumps of tiles
+        public static void AbyssCleanup()
+        {
+            List<ushort> blockTileTypes = new()
+            {
+                (ushort)ModContent.TileType<SulphurousShale>(),
+                (ushort)ModContent.TileType<AbyssGravel>(),
+                (ushort)ModContent.TileType<PyreMantle>(),
+                (ushort)ModContent.TileType<Voidstone>(),
+            };
+            
+            void getAttachedPoints(int x, int y, List<Point> points)
+            {
+                Tile t = CalamityUtils.ParanoidTileRetrieval(x, y);
+                Point p = new(x, y);
+                
+                if (!blockTileTypes.Contains(t.TileType) || !t.HasTile || points.Count > 75 || points.Contains(p))
+                {
+                    return;
+                }
+
+                points.Add(p);
+
+                getAttachedPoints(x + 1, y, points);
+                getAttachedPoints(x - 1, y, points);
+                getAttachedPoints(x, y + 1, points);
+                getAttachedPoints(x, y - 1, points);
+            }
+
+            for (int x = 20; x < Main.maxTilesX - 20; x++)
+            {
+                for (int y = 20; y < Main.maxTilesY - 20; y++)
+                {
+                    List<Point> chunkPoints = new();
+                    getAttachedPoints(x, y, chunkPoints);
+
+                    int cutoffLimit = 75;
+                    if (chunkPoints.Count >= 1 && chunkPoints.Count < cutoffLimit)
+                    {
+                        foreach (Point p in chunkPoints)
+                        {
+                            WorldUtils.Gen(p, new Shapes.Rectangle(1, 1), Actions.Chain(new GenAction[]
+                            {
+                                new Actions.ClearTile(true),
+                                new Actions.SetLiquid()
+                            }));
+                        }
+                    }
+
+                    Tile tile = Main.tile[x, y];
+
+                    if (blockTileTypes.Contains(tile.TileType))
+                    {
+                        //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
+                        bool OnlyRight = !Main.tile[x, y - 1].HasTile && !Main.tile[x, y + 1].HasTile && !Main.tile[x - 1, y].HasTile;
+                        bool OnlyLeft = !Main.tile[x, y - 1].HasTile && !Main.tile[x, y + 1].HasTile && !Main.tile[x + 1, y].HasTile;
+                        bool OnlyDown = !Main.tile[x, y - 1].HasTile && !Main.tile[x - 1, y].HasTile && !Main.tile[x + 1, y].HasTile;
+                        bool OnlyUp = !Main.tile[x, y + 1].HasTile && !Main.tile[x - 1, y].HasTile && !Main.tile[x + 1, y].HasTile;
+
+                        if (OnlyRight || OnlyLeft || OnlyDown || OnlyUp)
+                        {
+                            WorldGen.KillTile(x, y);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

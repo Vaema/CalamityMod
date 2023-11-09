@@ -28,7 +28,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileShine2[Type] = true;
 
             DustType = 147;
-            AddMapEntry(new Color(210, 124, 45));
+            AddMapEntry(new Color(244, 193, 181));
 
             TileFraming.SetUpUniversalMerge(Type, TileID.Sandstone, out tileAdjacency);
             TileFraming.SetUpUniversalMerge(Type, TileID.Sand, out secondTileAdjacency);
