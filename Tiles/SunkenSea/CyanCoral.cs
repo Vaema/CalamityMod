@@ -3,6 +3,7 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
@@ -19,6 +20,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileBlockLight[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
+            Main.tileLighted[Type] = true;
 
             TileID.Sets.HasSlopeFrames[Type] = true;
 
@@ -42,6 +44,20 @@ namespace CalamityMod.Tiles.SunkenSea
             //TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/ShellstoneMerge");
             TileFraming.DrawUniversalMergeFrames(i, j, thirdTileAdjacency, "CalamityMod/Tiles/Merges/EutrophicSandMerge");
             TileFraming.DrawUniversalMergeFrames(i, j, fourthTileAdjacency, "CalamityMod/Tiles/Merges/NavystoneMerge");
+        }
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            float brightness = 0.9f;
+            Color Cyan1 = new Color(130, 213, 247);
+            Color Cyan2 = new Color(26, 68, 85);
+            Color value = Color.Lerp(Cyan1, Cyan2, (MathF.Sin(-j / 80f + Main.GameUpdateCount * 0.017f + i / 40f) + 1f) / 2f);
+            Color value1 = Color.Lerp(Cyan1, Cyan2, (MathF.Sin((j - 100) / 50f + Main.GameUpdateCount * 0.004f + -i / 30f) + 1f) / 2f);
+            r = (value.R + value1.R) / 400f;
+            g = (value.G + value1.G) / 400f;
+            b = (value.B + value1.B) / 400f;
+            r *= brightness;
+            g *= brightness;
+            b *= brightness;
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
