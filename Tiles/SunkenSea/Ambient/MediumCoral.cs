@@ -14,6 +14,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileLavaDeath[Type] = true;
             Main.tileWaterDeath[Type] = false;
             Main.tileNoAttach[Type] = true;
+            Main.tileLighted[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
@@ -26,13 +27,31 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         {
             num = fail ? 1 : 2;
         }
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            r = 229f / 350f;
+            g = 137f / 350f;
+            b = 204f / 350f;
+        }
     }
 
     public class MediumCoral2 : MediumCoral
     {
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            r = 60f / 400f;
+            g = 110f / 400f;
+            b = 146f / 400f;
+        }
     }
     
     public class MediumCoral3 : MediumCoral
     {
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            r = 60f / 255f;
+            g = 110f / 255f;
+            b = 146f / 255f;
+        }
     }
 }

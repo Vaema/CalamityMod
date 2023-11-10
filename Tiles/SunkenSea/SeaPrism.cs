@@ -53,9 +53,9 @@ namespace CalamityMod.Tiles.SunkenSea
             Color darkviolet = new Color(18, 67, 116);
             Color value = Color.Lerp(blue, darkviolet, (MathF.Sin(-j / 80f + Main.GameUpdateCount * 0.017f + i / 40f) + 1f) / 2f);
             Color value1 = Color.Lerp(blue, darkviolet, (MathF.Sin((j - 100) / 50f + Main.GameUpdateCount * 0.004f + -i / 30f) + 1f) / 2f);
-            r = (value.R + value1.R) / 700f;
-            g = (value.G + value1.G) / 700f;
-            b = (value.B + value1.B) / 700f;
+            r = (value.R + value1.R) / 900f;
+            g = (value.G + value1.G) / 900f;
+            b = (value.B + value1.B) / 900f;
             r *= brightness;
             g *= brightness;
             b *= brightness;

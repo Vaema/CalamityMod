@@ -44,9 +44,9 @@ namespace CalamityMod.Tiles.SunkenSea
                 r = lessLightDueToLowWater ? 0.36f : 0.48f;
                 g = lessLightDueToLowWater ? 0.315f : 0.42f;
                 b = lessLightDueToLowWater ? 0.405f : 0.54f;
-                r *= (value.R + value1.R) / 250f;
-                g *= (value.G + value1.G) / 250f;
-                b *= (value.B + value1.B) / 250f;
+                r *= (value.R + value1.R) / 300f;
+                g *= (value.G + value1.G) / 300f;
+                b *= (value.B + value1.B) / 300f;
                 
             }
             else if (xframe >= 14)
@@ -59,9 +59,9 @@ namespace CalamityMod.Tiles.SunkenSea
                 r = lessLightDueToLowWater ? 0.225f : 0.3f;
                 g = lessLightDueToLowWater ? 0.405f : 0.54f;
                 b = lessLightDueToLowWater ? 0.315f : 0.42f;
-                r *= (value2.R + value3.R) / 250f;
-                g *= (value2.G + value3.G) / 250f;
-                b *= (value2.B + value3.B) / 250f;
+                r *= (value2.R + value3.R) / 300f;
+                g *= (value2.G + value3.G) / 300f;
+                b *= (value2.B + value3.B) / 300f;
             }
             else
             {
@@ -73,9 +73,9 @@ namespace CalamityMod.Tiles.SunkenSea
                 r = lessLightDueToLowWater ? 0.27f : 0.36f;
                 g = lessLightDueToLowWater ? 0.405f : 0.54f;
                 b = lessLightDueToLowWater ? 0.405f : 0.54f;
-                r *= (value.R + value1.R) / 250f;
-                g *= (value.G + value1.G) / 250f;
-                b *= (value.B + value1.B) / 250f;
+                r *= (value.R + value1.R) / 300f;
+                g *= (value.G + value1.G) / 300f;
+                b *= (value.B + value1.B) / 300f;
             }
         }
 
