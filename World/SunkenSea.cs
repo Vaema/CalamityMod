@@ -16,6 +16,19 @@ namespace CalamityMod.World
 {
     public class SunkenSea
     {
+        /*
+        Dylandoe checklist:
+        
+        -Add navystone vines in game and to the generation (in ambient tile placement)
+        -Add basalt slab block
+        -Add navystone brick wall
+        -Make ambient tiles naturally grow on sunken sea tiles/sands
+        -Add the wall corals properly
+        -Make geodes not collide
+        -Add coral piles
+        -Make sunken sea walls 
+        */
+
         //sides of the sunken sea (radiant reefs)
         public static void PlaceRadiantReefs(int startPosX, int startPosY, bool LeftSideBarrier)
         {
@@ -44,7 +57,7 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
                     {
                         float percent = dist / constant;
                         float blurPercent = 0.99f;
@@ -99,7 +112,7 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
                     {
                         float percent = dist / constant;
                         float blurPercent = 0.99f;
@@ -160,7 +173,7 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
                     {
                         //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
                         bool OnlyRight = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile;
@@ -187,25 +200,19 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
                     {
-                        bool PlaceSand = false;
+                        bool canPlaceSand = false;
 
                         //place sand clumps on top of exposed shellstone
                         if (Main.tile[X, Y].TileType == ModContent.TileType<Shellstone>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile)
                         {
-                            PlaceSand = true;
+                            canPlaceSand = true;
                         }
 
-                        if (PlaceSand)
+                        if (canPlaceSand)
                         {
-                            for (int SandY = Y; SandY <= Y + 4; SandY++)
-                            {
-                                if (EnoughTilesInArea(X, SandY, 3, 5, 30, false) && (!Main.tile[X, SandY - 1].HasTile || Main.tile[X, SandY - 1].TileType == ModContent.TileType<EutrophicSand>()))
-                                {
-                                    Main.tile[X, SandY].TileType = (ushort)ModContent.TileType<EutrophicSand>();
-                                }
-                            }
+                            PlaceSand(X, Y, 5, ModContent.TileType<EutrophicSand>());
                         }
                     }
                 }
@@ -216,7 +223,7 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
                     {
                         //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
                         bool OnlyRight = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile;
@@ -277,7 +284,7 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
                     {
                         float percent = dist / constant;
                         float blurPercent = 0.98f;
@@ -342,7 +349,7 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
                     {
                         //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
                         bool OnlyRight = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile;
@@ -369,25 +376,19 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
                     {
-                        bool PlaceSand = false;
+                        bool canPlaceSand = false;
 
                         //place sand clumps on top of exposed limestone
                         if (Main.tile[X, Y].TileType == ModContent.TileType<Limestone>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile)
                         {
-                            PlaceSand = true;
+                            canPlaceSand = true;
                         }
 
-                        if (PlaceSand)
+                        if (canPlaceSand)
                         {
-                            for (int SandY = Y; SandY <= Y + 4; SandY++)
-                            {
-                                if (EnoughTilesInArea(X, SandY, 3, 5, 30, false) && (!Main.tile[X, SandY - 1].HasTile || Main.tile[X, SandY - 1].TileType == ModContent.TileType<PolypSand>()))
-                                {
-                                    Main.tile[X, SandY].TileType = (ushort)ModContent.TileType<PolypSand>();
-                                }
-                            }
+                            PlaceSand(X, Y, 5, ModContent.TileType<PolypSand>());
                         }
                     }
                 }
@@ -398,7 +399,7 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
                     {
                         //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
                         bool OnlyRight = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile;
@@ -459,7 +460,7 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
                     {
                         float percent = dist / constant;
                         float blurPercent = 0.99f;
@@ -519,7 +520,7 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
                     {
                         //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
                         bool OnlyRight = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile;
@@ -546,45 +547,35 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
                     {
-                        bool PlaceSand = false;
+                        bool canPlaceSand = false;
 
                         //place sand clumps on top of exposed navystone
                         if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile)
                         {
-                            PlaceSand = true;
+                            canPlaceSand = true;
                         }
 
-                        if (PlaceSand)
+                        if (canPlaceSand)
                         {
-                            for (int SandY = Y; SandY <= Y + 4; SandY++)
-                            {
-                                if (EnoughTilesInArea(X, SandY, 3, 5, 30, false) && (!Main.tile[X, SandY - 1].HasTile || Main.tile[X, SandY - 1].TileType == ModContent.TileType<HardenedEutrophicSand>()))
-                                {
-                                    Main.tile[X, SandY].TileType = (ushort)ModContent.TileType<HardenedEutrophicSand>();
-                                }
-                            }
+                            PlaceSand(X, Y, 4, ModContent.TileType<HardenedEutrophicSand>());
                         }
                     }
                 }
             }
 
-            //cleanup again
+            //cleanup again, also place geodes
             for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
                     {
                         //place geodes
-                        if (WorldGen.genRand.NextBool(600) && Main.tile[X, Y].TileType == ModContent.TileType<Navystone>() && 
-                        Main.tile[X, Y - 1].HasTile && Main.tile[X, Y + 1].HasTile && Main.tile[X - 1, Y].HasTile && Main.tile[X + 1, Y].HasTile)
+                        if (WorldGen.genRand.NextBool(800) && Main.tile[X, Y].TileType == ModContent.TileType<Navystone>())
                         {
-                            if (EnoughTilesInArea(X, Y, 7, 7, 35, true))
-                            {
-                                PlaceGeode(X, Y, WorldGen.genRand.Next(10, 17));
-                            }
+                            PlaceGeode(X, Y, WorldGen.genRand.Next(10, 17));
                         }
 
                         //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
@@ -642,14 +633,14 @@ namespace CalamityMod.World
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
-                    if (CheckInEllipse(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
                     {
                         float percent = dist / constant;
                         float blurPercent = 0.97f;
 
                         if (percent > blurPercent)
                         {
-                            if (Y > origin.Y - 10 && Main.tile[X, Y].TileType != ModContent.TileType<Basalt>())
+                            if (Y > origin.Y + 20 && Main.tile[X, Y].TileType != ModContent.TileType<Basalt>())
                             {
                                 ShapeData circle = new ShapeData();
                                 GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
@@ -723,23 +714,17 @@ namespace CalamityMod.World
             {
                 for (int Y = origin.Y + 50; Y <= Main.maxTilesY - 200; Y++)
                 {
-                    bool PlaceSand = false;
+                    bool canPlaceSand = false;
 
                     //place sand clumps on top of exposed basalt
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Basalt>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile)
                     {
-                        PlaceSand = true;
+                        canPlaceSand = true;
                     }
 
-                    if (PlaceSand)
+                    if (canPlaceSand)
                     {
-                        for (int SandY = Y; SandY <= Y + 4; SandY++)
-                        {
-                            if (EnoughTilesInArea(X, SandY, 3, 5, 25, false) && (!Main.tile[X, SandY - 1].HasTile || Main.tile[X, SandY - 1].TileType == ModContent.TileType<VolcanicSand>()))
-                            {
-                                Main.tile[X, SandY].TileType = (ushort)ModContent.TileType<VolcanicSand>();
-                            }
-                        }
+                        PlaceSand(X, Y, 3, ModContent.TileType<VolcanicSand>());
                     }
                 }
             }
@@ -922,7 +907,7 @@ namespace CalamityMod.World
                         }
 
                         //blue coral trees
-                        if (WorldGen.genRand.NextBool(6))
+                        if (WorldGen.genRand.NextBool(4))
                         {
                             ushort[] BlueCorals = new ushort[] { (ushort)ModContent.TileType<MediumCoral3>(), (ushort)ModContent.TileType<BlueCoralTree>() };
 
@@ -930,7 +915,7 @@ namespace CalamityMod.World
                         }
 
                         //brown coral trees
-                        if (WorldGen.genRand.NextBool(6))
+                        if (WorldGen.genRand.NextBool(4))
                         {
                             ushort[] BrownCorals = new ushort[] { (ushort)ModContent.TileType<BrownCoral1>(), (ushort)ModContent.TileType<BrownCoral2>() };
 
@@ -951,6 +936,19 @@ namespace CalamityMod.World
 
                             WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(MiscCorals));
                         }
+                    }
+
+                    //grow depth vines on navystone
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>() && Main.tile[X, Y].Slope == 0 && !Main.tile[X, Y + 1].HasTile && !Main.tile[X, Y + 2].HasTile)
+                    {
+                        if (WorldGen.genRand.NextBool(7))
+                        {
+                            WorldGen.PlaceTile(X, Y + 1, (ushort)ModContent.TileType<DepthVines>());
+                        }
+                    }
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<DepthVines>())
+                    {
+                        CalamityUtils.GrowVines(X, Y, WorldGen.genRand.Next(1, 4), (ushort)ModContent.TileType<DepthVines>());
                     }
 
                     /*
@@ -976,6 +974,44 @@ namespace CalamityMod.World
             }
         }
 
+        //check if theres enough tiles to place sand below
+        public static bool PlaceSand(int X, int Y, int height, int tileType)
+        {
+            for (int j = Y; j <= Y + height; j++)
+            {
+                if (Main.tile[X, j].HasTile && Main.tile[X, j + 1].HasTile && Main.tile[X, j + 2].HasTile && Main.tile[X, j + 3].HasTile &&
+                Main.tile[X - 1, j + 3].HasTile && Main.tile[X + 1, j + 3].HasTile)
+                {
+                    Main.tile[X, j].TileType = (ushort)tileType;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /*
+        public static bool CanPlaceGeode(int X, int Y, int halfCheck)
+        {
+            for (int i = X - halfCheck; i <= X + halfCheck; X++)
+            {
+                for (int j = Y - halfCheck; j <= Y + halfCheck; j++)
+                {
+                    if (Main.tile[i, j].TileType == ModContent.TileType<SeaPrism>())
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+        */
+
+        //placing sea prism geodes
         public static void PlaceGeode(int X, int Y, int radius)
         {
             ShapeData circle1 = new ShapeData();
@@ -1017,56 +1053,6 @@ namespace CalamityMod.World
                 new Actions.SetLiquid(),
                 new Actions.PlaceWall((ushort)ModContent.WallType<NavystoneWall>())
             }));
-        }
-
-        //this method basically checks how many tiles are in a set square, and if there is enough then allow sand to be placed on the ground
-        public static bool EnoughTilesInArea(int X, int Y, int halfWidth, int height, int Threshold, bool GeodeCheck)
-        {
-            int numTiles = 0;
-
-            for (int i = X - halfWidth; i <= X + halfWidth; i++)
-            {
-                for (int j = Y; j <= Y + height; j++)
-                {
-                    if (Main.tile[i, j].HasTile)
-                    {
-                        numTiles++;
-                    }
-
-                    //GeodeCheck specificially makes sure there are no sea prisms in the area while placing a geode to prevent overlapping
-                    if (GeodeCheck && Main.tile[i, j].TileType == ModContent.TileType<SeaPrism>())
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            if (numTiles >= Threshold)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        //method to make sure things only generate in each biome circle
-        public static bool CheckInEllipse(Point tile, Vector2 focus1, Vector2 focus2, float distanceConstant, Vector2 center, out float distance, bool collapse = false)
-        {
-            Vector2 point = tile.ToWorldCoordinates();
-
-            if (collapse)
-            {
-                float distY = center.Y - point.Y;
-                point.Y -= distY * 3f;
-            }
-
-            float distance1 = Vector2.Distance(point, focus1);
-            float distance2 = Vector2.Distance(point, focus2);
-            distance = distance1 + distance2;
-
-            return distance <= distanceConstant;
         }
 
         //method to clean up small clumps of tiles (taken from the sulphur sea generation)
@@ -1123,6 +1109,24 @@ namespace CalamityMod.World
                     }
                 }
             }
+        }
+
+        //method to make sure things only generate in each biome circle
+        public static bool CheckInBiomeArea(Point tile, Vector2 focus1, Vector2 focus2, float distanceConstant, Vector2 center, out float distance, bool collapse = false)
+        {
+            Vector2 point = tile.ToWorldCoordinates();
+
+            if (collapse)
+            {
+                float distY = center.Y - point.Y;
+                point.Y -= distY * 3f;
+            }
+
+            float distance1 = Vector2.Distance(point, focus1);
+            float distance2 = Vector2.Distance(point, focus2);
+            distance = distance1 + distance2;
+
+            return distance <= distanceConstant;
         }
     }
 }

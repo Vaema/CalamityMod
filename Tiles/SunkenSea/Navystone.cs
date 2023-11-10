@@ -5,6 +5,8 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
+using CalamityMod.Tiles.SunkenSea.Ambient;
+
 namespace CalamityMod.Tiles.SunkenSea
 {
     public class Navystone : ModTile
@@ -56,6 +58,27 @@ namespace CalamityMod.Tiles.SunkenSea
             TileFraming.GetAdjacencyData(i, j, TileID.Sand, out thirdTileAdjacency[i, j]);
             TileFraming.GetAdjacencyData(i, j, TileID.HardenedSand, out thirdTileAdjacency[i, j]);
             return TileFraming.BrimstoneFraming(i, j, resetFrame);
+        }
+
+        public override void RandomUpdate(int i, int j)
+        {
+            Tile Tile = Framing.GetTileSafely(i, j);
+			Tile Below = Framing.GetTileSafely(i, j + 1);
+            Tile Above = Framing.GetTileSafely(i, j - 1);
+
+			if (!Below.HasTile && Below.LiquidType <= 0 && !Tile.BottomSlope) 
+            {
+                if (Main.rand.NextBool(10))
+                {
+                    Below.TileType = (ushort)ModContent.TileType<DepthVines>();
+                    Below.HasTile = true;
+                    WorldGen.SquareTileFrame(i, j + 1, true);
+                    if (Main.netMode == NetmodeID.Server) 
+                    {
+                        NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
+                    }
+                }
+            }
         }
     }
 }
