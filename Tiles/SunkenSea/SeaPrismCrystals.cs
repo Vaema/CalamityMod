@@ -17,7 +17,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = true;
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
-            AddMapEntry(new Color(0, 150, 200), CalamityUtils.GetItemName<PrismShard>());
+            AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<PrismShard>());
             HitSound = SoundID.Item27;
             DustType = 67;
             Main.tileSpelunker[Type] = true;

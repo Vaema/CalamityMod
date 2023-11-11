@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Dig;
             DustType = 119;
-            AddMapEntry(Color.Cyan);
+            AddMapEntry(new Color(92, 168, 198));
             Main.tileShine2[Type] = true;
 
             TileID.Sets.CanBeDugByShovel[Type] = true;

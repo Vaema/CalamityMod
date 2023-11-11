@@ -29,7 +29,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
             TileID.Sets.ChecksForMerge[Type] = true;
             DustType = 96;
-            AddMapEntry(new Color(31, 92, 114));
+            AddMapEntry(new Color(17, 53, 77));
             HitSound = SoundID.Tink;
 
             TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<EutrophicSand>(), out tileAdjacency);
