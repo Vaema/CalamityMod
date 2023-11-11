@@ -19,14 +19,11 @@ namespace CalamityMod.World
         /*
         Dylandoe checklist:
         
-        -Add navystone vines in game and to the generation (in ambient tile placement)
+        -Make ambient tiles naturally grow on sunken sea tiles/sands (only eutrophic sand is done)
         -Add basalt slab block
-        -Add navystone brick wall
-        -Make ambient tiles naturally grow on sunken sea tiles/sands
+        -Add navystone brick wall  
         -Add the wall corals properly
-        -Make geodes not collide
-        -Add coral piles
-        -Make sunken sea walls 
+        -Make sunken sea walls produce water
         */
 
         //sides of the sunken sea (radiant reefs)
@@ -108,6 +105,7 @@ namespace CalamityMod.World
                 }
             }
 
+            //generate the actual caverns
             for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
@@ -136,7 +134,7 @@ namespace CalamityMod.World
                             float cavePerlinValue = CalamityUtils.PerlinNoise2D(X / 1000f, Y / 750f, 5, cavePerlinSeed) + 0.5f + horizontalOffsetNoise;
                             float cavePerlinValue2 = CalamityUtils.PerlinNoise2D(X / 1000f, Y / 750f, 5, unchecked(cavePerlinSeed - 1)) + 0.5f;
                             float caveNoiseMap = (cavePerlinValue + cavePerlinValue2) * 0.5f;
-                            float caveCreationThreshold = horizontalOffsetNoise * 3.5f + 0.235f;
+                            float caveCreationThreshold = horizontalOffsetNoise * 3.5f + 0.280f;
 
                             //kill or place tiles depending on the noise map
                             if (caveNoiseMap * caveNoiseMap > caveCreationThreshold)
@@ -154,7 +152,7 @@ namespace CalamityMod.World
                             float cavePerlinValueWalls = CalamityUtils.PerlinNoise2D(X / 1000f, Y / 750f, 5, cavePerlinSeedWalls) + 0.5f + horizontalOffsetNoiseWalls;
                             float cavePerlinValue2Walls = CalamityUtils.PerlinNoise2D(X / 1000f, Y / 750f, 5, unchecked(cavePerlinSeedWalls - 1)) + 0.5f;
                             float caveNoiseMapWalls = (cavePerlinValueWalls + cavePerlinValue2Walls) * 0.5f;
-                            float caveCreationThresholdWalls = horizontalOffsetNoiseWalls * 3.5f + 0.235f;
+                            float caveCreationThresholdWalls = horizontalOffsetNoiseWalls * 3.5f + 0.280f;
 
                             if (caveNoiseMapWalls * caveNoiseMapWalls > caveCreationThresholdWalls)
                             {
@@ -195,6 +193,20 @@ namespace CalamityMod.World
                 }
             }
 
+            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            {
+                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
+                {
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
+                    {
+                        if (!Main.tile[X, Y].HasTile && Main.tile[X, Y - 1].HasTile && Main.tile[X, Y + 1].HasTile && Main.tile[X - 1, Y].HasTile && Main.tile[X + 1, Y].HasTile)
+                        {
+                            WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<Shellstone>());
+                        }
+                    }
+                }
+            }
+
             //place extra tiles
             for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
             {
@@ -205,7 +217,8 @@ namespace CalamityMod.World
                         bool canPlaceSand = false;
 
                         //place sand clumps on top of exposed shellstone
-                        if (Main.tile[X, Y].TileType == ModContent.TileType<Shellstone>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile)
+                        if (Main.tile[X, Y].TileType == ModContent.TileType<Shellstone>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile && 
+                        !Main.tile[X, Y - 3].HasTile && !Main.tile[X, Y - 4].HasTile && !Main.tile[X, Y - 5].HasTile)
                         {
                             canPlaceSand = true;
                         }
@@ -292,14 +305,21 @@ namespace CalamityMod.World
                         //biome "blending" on the edges (disabled for now)
                         if (percent > blurPercent)
                         {
-                            /*
                             float outerEdgePercent = (percent - blurPercent) / (1f - blurPercent);
-                            if (WorldGen.genRand.NextFloat(1f) > outerEdgePercent && Y < origin.Y && Main.tile[X, Y].HasTile)
+                            if (Y > origin.Y && Main.tile[X, Y].HasTile && Main.tile[X, Y].TileType != ModContent.TileType<Limestone>())
                             {
-                                Main.tile[X, Y].TileType = (ushort)ModContent.TileType<Navystone>();
-                                WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<Navystone>());
+                                ShapeData circle = new ShapeData();
+                                GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
+                                WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(WorldGen.genRand.Next(1, 3)), Actions.Chain(new GenAction[]
+                                {
+                                    blotchMod.Output(circle)
+                                }));
+
+                                WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+                                {
+                                    new Actions.ClearTile(), new Actions.PlaceTile((ushort)ModContent.TileType<Limestone>())
+                                }));
                             }
-                            */
                         }
                         else
                         {
@@ -381,7 +401,8 @@ namespace CalamityMod.World
                         bool canPlaceSand = false;
 
                         //place sand clumps on top of exposed limestone
-                        if (Main.tile[X, Y].TileType == ModContent.TileType<Limestone>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile)
+                        if (Main.tile[X, Y].TileType == ModContent.TileType<Limestone>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile && 
+                        !Main.tile[X, Y - 3].HasTile && !Main.tile[X, Y - 4].HasTile && !Main.tile[X, Y - 5].HasTile)
                         {
                             canPlaceSand = true;
                         }
@@ -552,7 +573,7 @@ namespace CalamityMod.World
                         bool canPlaceSand = false;
 
                         //place sand clumps on top of exposed navystone
-                        if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile)
+                        if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile && !Main.tile[X, Y - 3].HasTile)
                         {
                             canPlaceSand = true;
                         }
@@ -804,6 +825,26 @@ namespace CalamityMod.World
             {
                 for (int Y = 20; Y <= Main.maxTilesY - 20; Y++)
                 {
+                    //place coral blobs
+                    if (WorldGen.genRand.NextBool(120) && ((Main.tile[X, Y].TileType == ModContent.TileType<EutrophicSand>() && !Main.tile[X, Y - 1].HasTile) ||
+                    (Main.tile[X, Y].TileType == ModContent.TileType<Shellstone>() && !Main.tile[X, Y + 1].HasTile)))
+                    {
+                        ushort[] Corals = new ushort[] { (ushort)ModContent.TileType<CyanCoral>(), (ushort)ModContent.TileType<LimeCoral>(),
+                        (ushort)ModContent.TileType<MagentaCoral>(), (ushort)ModContent.TileType<OrangeCoral>(), (ushort)ModContent.TileType<YellowCoral>() };
+
+                        ShapeData circle = new ShapeData();
+                        GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
+                        WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(WorldGen.genRand.Next(2, 4)), Actions.Chain(new GenAction[]
+                        {
+                            blotchMod.Output(circle)
+                        }));
+
+                        WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+                        {
+                            new Actions.ClearTile(), new Actions.PlaceTile(WorldGen.genRand.Next(Corals))
+                        }));
+                    }
+
                     //gleaming burrows ambient tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<HardenedEutrophicSand>())
                     {   
@@ -830,7 +871,7 @@ namespace CalamityMod.World
                         }
 
                         //giant navystone piles
-                        if (WorldGen.genRand.NextBool(15))
+                        if (WorldGen.genRand.NextBool(10))
                         {
                             ushort[] GiantPiles = new ushort[] { (ushort)ModContent.TileType<GiantNavystone1>(), (ushort)ModContent.TileType<GiantNavystone2>() };
 
@@ -838,7 +879,7 @@ namespace CalamityMod.World
                         }
 
                         //small navystone piles
-                        if (WorldGen.genRand.NextBool(10))
+                        if (WorldGen.genRand.NextBool(5))
                         {
                             ushort[] Piles = new ushort[] { (ushort)ModContent.TileType<NavystonePile1>(), 
                             (ushort)ModContent.TileType<NavystonePile2>(), (ushort)ModContent.TileType<NavystonePile3>() };
@@ -993,27 +1034,28 @@ namespace CalamityMod.World
             return true;
         }
 
-        /*
-        public static bool CanPlaceGeode(int X, int Y, int halfCheck)
+        //placing sea prism geodes
+        public static bool PlaceGeode(int X, int Y, int radius)
         {
-            for (int i = X - halfCheck; i <= X + halfCheck; X++)
+            int crystalNearby = 0;
+
+            //check a 20 by 20 square for other geodes before placing
+            for (int i = X - 20; i < X + 20; i++)
             {
-                for (int j = Y - halfCheck; j <= Y + halfCheck; j++)
+                for (int j = Y - 20; j < Y + 20; j++)
                 {
-                    if (Main.tile[i, j].TileType == ModContent.TileType<SeaPrism>())
+                    //dont allow geodes to place if another one is too close
+                    if (Main.tile[i, j].HasTile && Main.tile[i, j].TileType == ModContent.TileType<SeaPrism>())
                     {
-                        return false;
+                        crystalNearby++;
+                        if (crystalNearby > 0)
+                        {
+                            return false;
+                        }
                     }
                 }
             }
 
-            return true;
-        }
-        */
-
-        //placing sea prism geodes
-        public static void PlaceGeode(int X, int Y, int radius)
-        {
             ShapeData circle1 = new ShapeData();
             ShapeData circle2 = new ShapeData();
             ShapeData circle3 = new ShapeData();
@@ -1053,6 +1095,8 @@ namespace CalamityMod.World
                 new Actions.SetLiquid(),
                 new Actions.PlaceWall((ushort)ModContent.WallType<NavystoneWall>())
             }));
+
+            return true;
         }
 
         //method to clean up small clumps of tiles (taken from the sulphur sea generation)
@@ -1060,14 +1104,15 @@ namespace CalamityMod.World
         {
             List<ushort> blockTileTypes = new()
             {
-                (ushort)ModContent.TileType<Navystone>(),
+                (ushort)ModContent.TileType<Shellstone>(),
                 (ushort)ModContent.TileType<EutrophicSand>(),
-                (ushort)ModContent.TileType<HardenedEutrophicSand>(),
                 (ushort)ModContent.TileType<Limestone>(),
                 (ushort)ModContent.TileType<PolypSand>(),
-                (ushort)ModContent.TileType<Shellstone>(),
-                (ushort)ModContent.TileType<Basalt>(),
+                (ushort)ModContent.TileType<Navystone>(),
+                (ushort)ModContent.TileType<HardenedEutrophicSand>(),
                 (ushort)ModContent.TileType<SeaPrism>(),
+                (ushort)ModContent.TileType<Basalt>(),
+                (ushort)ModContent.TileType<VolcanicSand>(),
             };
             
             void getAttachedPoints(int x, int y, List<Point> points)

@@ -116,14 +116,11 @@ namespace CalamityMod.Systems
                 }));
             }
 
-            // All further tasks occur after vanilla worldgen is completed
-            int FinalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
-            if (FinalIndex != -1)
+            // sunken sea
+            int SunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Cactus, Palm Trees, & Coral"));
+            if (SunkenSeaIndex != -1)
             {
-                int currentFinalIndex = FinalIndex;
-
-                // sunken sea
-                tasks.Insert(++currentFinalIndex, new PassLegacy("Sunken Sea", (progress, config) =>
+                tasks.Insert(SunkenSeaIndex + 1, new PassLegacy("Sunken Sea", (progress, config) =>
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SunkenSea").Value;
 
@@ -138,6 +135,13 @@ namespace CalamityMod.Systems
                     SunkenSea.PlaceSunkenSeaAmbience();
                     SunkenSea.BasaltBiomeLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                 }));
+            }
+
+            // All further tasks occur after vanilla worldgen is completed
+            int FinalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
+            if (FinalIndex != -1)
+            {
+                int currentFinalIndex = FinalIndex;
 
                 // Reallocate gems so rarity corresponds to depth
                 tasks.Insert(++currentFinalIndex, new PassLegacy("Gem Depth Adjustment", (progress, config) =>
