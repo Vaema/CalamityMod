@@ -27,15 +27,19 @@ namespace CalamityMod.Tiles.Abyss
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
 		{
-            if (WorldGen.loadSuccess)
+			Tile tileAbove = Framing.GetTileSafely(i, j - 1);
+			int type = -1;
+			if (tileAbove.HasTile && !tileAbove.BottomSlope) 
             {
-                Tile tileAbove = Framing.GetTileSafely(i, j - 1);
-                if (!tileAbove.HasTile)
-                {
-                    WorldGen.KillTile(i, j);
-                    return true;
-                }
-            }
+				type = tileAbove.TileType;
+			}
+
+			if (type == ModContent.TileType<PlantyMush>() || type == Type) 
+            {
+				return true;
+			}
+
+			WorldGen.KillTile(i, j);
 			return true;
 		}
 
@@ -60,48 +64,39 @@ namespace CalamityMod.Tiles.Abyss
         }
 
         public override void RandomUpdate(int i, int j)
-        {
-            if (Main.tile[i, j + 1] != null)
+		{
+			Tile tileBelow = Framing.GetTileSafely(i, j + 1);
+			if (WorldGen.genRand.NextBool(5) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
             {
-                if (!Main.tile[i, j + 1].HasTile && Main.tile[i, j + 1].TileType != (ushort)ModContent.TileType<ViperVines>())
+				bool PlaceVine = false;
+				int Test = j;
+				while (Test > j - 10) 
                 {
-                    if (Main.tile[i, j + 1].LiquidAmount >= 128 && Main.tile[i, j + 1].LiquidType != LiquidID.Lava)
+					Tile testTile = Framing.GetTileSafely(i, Test);
+					if (testTile.BottomSlope) 
                     {
-                        bool flag13 = false;
-                        for (int num52 = j; num52 > j - 10; j--)
-                        {
-                            if (Main.tile[i, num52].BottomSlope)
-                            {
-                                flag13 = false;
-                                break;
-                            }
-                            if (Main.tile[i, num52].HasTile && !Main.tile[i, num52].BottomSlope)
-                            {
-                                flag13 = true;
-                                break;
-                            }
-                        }
-                        if (flag13)
-                        {
-                            int num53 = i;
-                            int num54 = j + 1;
-                            Main.tile[num53, num54].TileType = (ushort)ModContent.TileType<ViperVines>();
-                            Main.tile[num53, num54].TileFrameX = (short)(WorldGen.genRand.Next(8) * 18);
-                            Main.tile[num53, num54].TileFrameY = (short)(4 * 18);
-                            Main.tile[num53, num54 - 1].TileFrameX = (short)(WorldGen.genRand.Next(12) * 18);
-                            Main.tile[num53, num54 - 1].TileFrameY = (short)(WorldGen.genRand.Next(4) * 18);
-                            Main.tile[num53, num54].Get<TileWallWireStateData>().HasTile = true;
-                            WorldGen.SquareTileFrame(num53, num54, true);
-                            WorldGen.SquareTileFrame(num53, num54 - 1, true);
-                            if (Main.netMode == NetmodeID.Server)
-                            {
-                                NetMessage.SendTileSquare(-1, num53, num54, 3, TileChangeType.None);
-                                NetMessage.SendTileSquare(-1, num53, num54 - 1, 3, TileChangeType.None);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+						break;
+					}
+					else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<PlantyMush>()) 
+                    {
+						Test--;
+						continue;
+					}
+					PlaceVine = true;
+					break;
+				}
+				
+				if (PlaceVine) 
+                {
+					tileBelow.TileType = Type;
+					tileBelow.HasTile = true;
+					WorldGen.SquareTileFrame(i, j + 1, true);
+					if (Main.netMode == NetmodeID.Server) 
+                    {
+						NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
+					}
+				}
+			}
+		}
     }
 }

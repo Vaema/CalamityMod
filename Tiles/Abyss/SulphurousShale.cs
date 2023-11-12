@@ -42,7 +42,7 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            if (!Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.AbyssLayer2Biome>()))
+            if (Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.AbyssLayer1Biome>()))
             {
                 Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater").Slot;
             }

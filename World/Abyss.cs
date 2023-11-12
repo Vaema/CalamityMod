@@ -750,7 +750,7 @@ namespace CalamityMod.World
                     }
 
                     //esentially what this does is grow one vine on the bottom of a tile, then use the util to keep placing the vine until it decides to stop
-                    if (tileToGrowVineOn.TileType == ModContent.TileType<PlantyMush>() && !Main.tile[abyssIndex, abyssIndex2 + 1].HasTile)
+                    if (tileToGrowVineOn.TileType == ModContent.TileType<PlantyMush>() && Main.tile[abyssIndex, abyssIndex2].Slope == 0 && !Main.tile[abyssIndex, abyssIndex2 + 1].HasTile)
                     {
                         if (WorldGen.genRand.Next(2) == 0)
                         {
@@ -763,7 +763,7 @@ namespace CalamityMod.World
                     }
 
                     //same as above but for sulphur vines
-                    if (tileToGrowVineOn.TileType == ModContent.TileType<SulphurousShale>() && !Main.tile[abyssIndex, abyssIndex2 + 1].HasTile)
+                    if (tileToGrowVineOn.TileType == ModContent.TileType<SulphurousShale>() && Main.tile[abyssIndex, abyssIndex2].Slope == 0 && !Main.tile[abyssIndex, abyssIndex2 + 1].HasTile)
                     {
                         if (WorldGen.genRand.Next(5) == 0)
                         {

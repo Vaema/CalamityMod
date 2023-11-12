@@ -130,10 +130,10 @@ namespace CalamityMod.Systems
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX - 130, sunkenSeaY + 75, true);
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX + 130, sunkenSeaY + 75, false);
                     SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 75);
-                    SunkenSea.PlaceBasaltBiome(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceBasaltGully(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     SunkenSea.PlaceSunkenSeaAmbience();
-                    SunkenSea.BasaltBiomeLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                 }));
             }
 

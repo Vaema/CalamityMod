@@ -10,9 +10,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
     public class TableCoral : ModTile
     {
-        int subsheetHeight = 34;
-        int subsheetWidth = 108;
-        
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -27,21 +24,19 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.addTile(Type);
             DustType = 253;
             AddMapEntry(new Color(54, 69, 72));
-
-            base.SetStaticDefaults();
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
         }
+    }
 
-        public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
-        {
-            int xPos = i % 1;
-            int yPos = j % 3;
-            frameXOffset = xPos * subsheetWidth;
-            frameYOffset = yPos * subsheetHeight;
-        }
+    public class TableCoral2 : TableCoral
+    {
+    }
+
+    public class TableCoral3 : TableCoral
+    {
     }
 }

@@ -117,12 +117,8 @@ namespace CalamityMod.World
 
                         if (percent > blurPercent)
                         {
-                            float outerEdgePercent = (percent - blurPercent) / (1f - blurPercent);
-                            if (Y > origin.Y - 60)
-                            {
-                                //place smaller shellstone clumps infront of the basalt so the basalt isnt actually inside of the biome itself
-                                WorldGen.TileRunner(X, Y, WorldGen.genRand.Next(8, 12), WorldGen.genRand.Next(8, 12), ModContent.TileType<Shellstone>(), true, 0f, 0f, true, true);
-                            }
+                            //place smaller shellstone clumps infront of the basalt so the basalt isnt actually inside of the biome itself
+                            WorldGen.TileRunner(X, Y, WorldGen.genRand.Next(8, 12), WorldGen.genRand.Next(8, 12), ModContent.TileType<Shellstone>(), true, 0f, 0f, true, true);
                         }
                         else
                         {
@@ -269,7 +265,6 @@ namespace CalamityMod.World
         }
 
         //middle of the sunken sea (polyp forest)
-        //TODO: make an actual transition, and randomly place small water caves along the edge of it to make it blend with the reefs more
         public static void PlacePolypForest(int startPosX, int startPosY)
         {
             int cavePerlinSeed = WorldGen.genRand.Next();
@@ -305,8 +300,7 @@ namespace CalamityMod.World
                         //biome "blending" on the edges (disabled for now)
                         if (percent > blurPercent)
                         {
-                            float outerEdgePercent = (percent - blurPercent) / (1f - blurPercent);
-                            if (Y > origin.Y && Main.tile[X, Y].HasTile && Main.tile[X, Y].TileType != ModContent.TileType<Limestone>())
+                            if (Main.tile[X, Y].HasTile && Main.tile[X, Y].TileType != ModContent.TileType<Limestone>())
                             {
                                 ShapeData circle = new ShapeData();
                                 GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
@@ -453,7 +447,6 @@ namespace CalamityMod.World
         }
 
         //bottom of the biome (gleaming burrows)
-        //TODO: randomly place water caves along the top-half edge of it to make it blend with the reefs more (like the polyp forest)
         public static void PlaceGleamingBurrows(int startPosX, int startPosY)
         {
             int cavePerlinSeed = WorldGen.genRand.Next();
@@ -492,6 +485,22 @@ namespace CalamityMod.World
                             {
                                 //place smaller navystone clumps infront of the basalt so the basalt isnt actually inside of the biome itself
                                 WorldGen.TileRunner(X, Y, WorldGen.genRand.Next(8, 12), WorldGen.genRand.Next(8, 12), ModContent.TileType<Navystone>(), true, 0f, 0f, true, true);
+                            }
+
+                            //place clean transition between the burrows and the other biomes
+                            if (Y < origin.Y && Main.tile[X, Y].HasTile && Main.tile[X, Y].TileType != ModContent.TileType<Navystone>())
+                            {
+                                ShapeData circle = new ShapeData();
+                                GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
+                                WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(WorldGen.genRand.Next(1, 3)), Actions.Chain(new GenAction[]
+                                {
+                                    blotchMod.Output(circle)
+                                }));
+
+                                WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+                                {
+                                    new Actions.ClearTile(), new Actions.PlaceTile((ushort)ModContent.TileType<Navystone>())
+                                }));
                             }
                         }
                         else
@@ -630,7 +639,7 @@ namespace CalamityMod.World
         }
 
         //basalt biome underneath the sunken sea
-        public static void PlaceBasaltBiome(int startPosX, int startPosY)
+        public static void PlaceBasaltGully(int startPosX, int startPosY)
         {
             Point origin = new Point(startPosX, startPosY);
             Vector2 center = origin.ToVector2() * 16f + new Vector2(8f);
@@ -707,7 +716,7 @@ namespace CalamityMod.World
             }
 
             //place caverns and lava
-            for (int X = origin.X - distanceInTiles - 250; X <= origin.X + distanceInTiles + 250; X++)
+            for (int X = origin.X - distanceInTiles - (Main.maxTilesX / 25); X <= origin.X + distanceInTiles + (Main.maxTilesX / 25); X++)
             {
                 for (int Y = origin.Y + 50; Y <= Main.maxTilesY - 210; Y++)
                 {
@@ -782,7 +791,7 @@ namespace CalamityMod.World
             }
         }
 
-        public static void BasaltBiomeLavaCleanup(int startPosX, int startPosY)
+        public static void BasaltGullyLavaCleanup(int startPosX, int startPosY)
         {
             Point origin = new Point(startPosX, startPosY);
 
@@ -826,7 +835,7 @@ namespace CalamityMod.World
                 for (int Y = 20; Y <= Main.maxTilesY - 20; Y++)
                 {
                     //place coral blobs
-                    if (WorldGen.genRand.NextBool(120) && ((Main.tile[X, Y].TileType == ModContent.TileType<EutrophicSand>() && !Main.tile[X, Y - 1].HasTile) ||
+                    if (WorldGen.genRand.NextBool(100) && ((Main.tile[X, Y].TileType == ModContent.TileType<EutrophicSand>() && !Main.tile[X, Y - 1].HasTile) ||
                     (Main.tile[X, Y].TileType == ModContent.TileType<Shellstone>() && !Main.tile[X, Y + 1].HasTile)))
                     {
                         ushort[] Corals = new ushort[] { (ushort)ModContent.TileType<CyanCoral>(), (ushort)ModContent.TileType<LimeCoral>(),
@@ -847,7 +856,7 @@ namespace CalamityMod.World
 
                     //gleaming burrows ambient tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<HardenedEutrophicSand>())
-                    {   
+                    {
                         //brain coral
                         if (WorldGen.genRand.NextBool(10))
                         {
@@ -992,25 +1001,27 @@ namespace CalamityMod.World
                         CalamityUtils.GrowVines(X, Y, WorldGen.genRand.Next(1, 4), (ushort)ModContent.TileType<DepthVines>());
                     }
 
-                    /*
                     //wall corals
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Shellstone>())
                     {   
-                        if (WorldGen.genRand.NextBool(8) && !Main.tile[X - 1, Y].HasTile)
+                        if (WorldGen.genRand.NextBool(5) && !Main.tile[X + 1, Y].HasTile)
                         {
-                            ushort[] WallCorals = new ushort[] { (ushort)ModContent.TileType<TableCoral>(), (ushort)ModContent.TileType<WallCorals>() };
-
-                            WorldGen.PlaceTile(X - 2, Y, WorldGen.genRand.Next(WallCorals), true, false, -1, 0);
-                        }
-
-                        if (WorldGen.genRand.NextBool(8) && !Main.tile[X + 1, Y].HasTile)
-                        {
-                            ushort[] WallCorals = new ushort[] { (ushort)ModContent.TileType<TableCoral>(), (ushort)ModContent.TileType<WallCorals>() };
+                            ushort[] WallCorals = new ushort[] { (ushort)ModContent.TileType<WallCoral1>(), (ushort)ModContent.TileType<WallCoral2>(), 
+                            (ushort)ModContent.TileType<WallCoral3>(), (ushort)ModContent.TileType<WallCoral4>(), (ushort)ModContent.TileType<TableCoral>(), 
+                            (ushort)ModContent.TileType<TableCoral2>(), (ushort)ModContent.TileType<TableCoral3>() };
 
                             WorldGen.PlaceTile(X + 2, Y, WorldGen.genRand.Next(WallCorals), true, false, -1, 0);
                         }
+
+                        if (WorldGen.genRand.NextBool(5) && !Main.tile[X - 1, Y].HasTile)
+                        {
+                            ushort[] WallCorals = new ushort[] { (ushort)ModContent.TileType<WallCoral1>(), (ushort)ModContent.TileType<WallCoral2>(), 
+                            (ushort)ModContent.TileType<WallCoral3>(), (ushort)ModContent.TileType<WallCoral4>(), (ushort)ModContent.TileType<TableCoral>(), 
+                            (ushort)ModContent.TileType<TableCoral2>(), (ushort)ModContent.TileType<TableCoral3>() };
+
+                            WorldGen.PlaceTile(X - 2, Y, WorldGen.genRand.Next(WallCorals), true, false, -1, 0);
+                        }
                     }
-                    */
                 }
             }
         }
