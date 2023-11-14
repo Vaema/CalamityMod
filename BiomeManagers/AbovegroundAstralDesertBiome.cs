@@ -10,7 +10,7 @@ namespace CalamityMod.BiomeManagers
     public class AbovegroundAstralDesertBiome : ModBiome
     {
         public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/AstralWater");
-        public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/AstralDesertSurfaceBGStyle");
+        public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/AstralSurfaceBGStyle");
         public override int BiomeTorchItemType => ModContent.ItemType<AstralTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AstralDesertIcon";
@@ -22,21 +22,6 @@ namespace CalamityMod.BiomeManagers
         public override bool IsBiomeActive(Player player)
         {
             return !player.ZoneDungeon && BiomeTileCounterSystem.AstralTiles > 950 && player.ZoneDesert && !player.ZoneSnow;
-        }
-
-        public override void SpecialVisuals(Player player, bool isActive)
-        {
-            if (SkyManager.Instance["CalamityMod:AstralDesert"] != null && isActive != SkyManager.Instance["CalamityMod:AstralDesert"].IsActive())
-            {
-                if (isActive)
-                {
-                    SkyManager.Instance.Activate("CalamityMod:AstralDesert");
-                }
-                else
-                {
-                    SkyManager.Instance.Deactivate("CalamityMod:AstralDesert");
-                }
-            }
         }
     }
 }

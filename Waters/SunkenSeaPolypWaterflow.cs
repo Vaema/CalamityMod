@@ -1,8 +1,8 @@
 using Terraria.ModLoader;
+
 namespace CalamityMod.Waters
 {
-    public class SunkenSeaWaterflow : ModWaterfallStyle
+    public class SunkenSeaPolypWaterflow : ModWaterfallStyle
     {
-
     }
 }

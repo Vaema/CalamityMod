@@ -21,21 +21,5 @@ namespace CalamityMod.BiomeManagers
         {
             return !player.ZoneDungeon && BiomeTileCounterSystem.AstralTiles > 950 && !player.ZoneSnow && !player.ZoneDesert;
         }
-
-        public override void SpecialVisuals(Player player, bool isActive)
-        {
-            if (SkyManager.Instance["CalamityMod:AstralSurface"] != null && isActive != SkyManager.Instance["CalamityMod:AstralSurface"].IsActive())
-            {
-                if (isActive)
-                {
-                    SkyManager.Instance.Activate("CalamityMod:AstralSurface");
-                }
-                else
-                {
-                    SkyManager.Instance.Deactivate("CalamityMod:AstralSurface");
-                }
-            }
-        }
-
     }
 }

@@ -88,27 +88,6 @@ namespace CalamityMod
 
         //Astral Sky/BG
         public static Texture2D AstralSky;
-        public static Texture2D AstralSurfaceFront;
-        public static Texture2D AstralSurfaceFrontGlow;
-        public static Texture2D AstralSurfaceClose;
-        public static Texture2D AstralSurfaceCloseGlow;
-        public static Texture2D AstralSurfaceMiddle;
-        public static Texture2D AstralSurfaceMiddleGlow;
-        public static Texture2D AstralSurfaceFar;
-        public static Texture2D AstralSurfaceHorizon;
-
-        //Astral Desert Sky/BG
-        public static Texture2D AstralDesertSurfaceClose;
-        public static Texture2D AstralDesertSurfaceMiddle;
-        public static Texture2D AstralDesertSurfaceFar;
-
-        //Astral Snow Sky/BG
-        public static Texture2D AstralSnowSurfaceMiddle;
-
-        //Sulpher Sea Sky/BG
-        public static Texture2D SulphurSeaSky;
-        public static Texture2D SulphurSeaSkyFront;
-        public static Texture2D SulphurSeaSurface;
 
         // DR data structure
         public static SortedDictionary<int, float> DRValues;
@@ -239,55 +218,17 @@ namespace CalamityMod
             BaseIdleHoldoutProjectile.LoadAll();
             PlayerDashManager.Load();
 
-            /*
-            //keep this disabled for now, hell bg system isnt used and there is a better way to load it
-            //hell background loading
-            HellBGManager.Load();
-
-            //load stuff for hell background
-            loadCache = new List<HellBGLoad>();
-
-            foreach (Type type in Code.GetTypes())
-            {
-                if (!type.IsAbstract && type.GetInterfaces().Contains(typeof(HellBGLoad)))
-                {
-                    var instance = Activator.CreateInstance(type);
-                    loadCache.Add(instance as HellBGLoad);
-                }
-            }
-
-            for (int k = 0; k < loadCache.Count; k++)
-            {
-                loadCache[k].Load();
-            }
-            */
+            //load all the detours for the custom surface backgrounds
+            Backgrounds.AstralSurfaceBG.Load();
+            Backgrounds.AstralDesertBG.Load();
+            Backgrounds.AstralSnowBG.Load();
+            Backgrounds.SulphurSeaBG.Load();
         }
 
         private void LoadClient()
         {
             //Astral Sky/BG
             AstralSky = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSky", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceFront = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSurfaceFront", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceFrontGlow = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSurfaceFrontGlow", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceClose = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSurfaceClose", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceCloseGlow = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSurfaceCloseGlow", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceMiddle = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSurfaceMiddle", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceMiddleGlow = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSurfaceMiddleGlow", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceFar = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSurfaceFar", AssetRequestMode.ImmediateLoad).Value;
-            AstralSurfaceHorizon = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSurfaceHorizon", AssetRequestMode.ImmediateLoad).Value;
-
-            //Astral Desert Sky/BG
-            AstralDesertSurfaceClose = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralDesertSurfaceClose", AssetRequestMode.ImmediateLoad).Value;
-            AstralDesertSurfaceMiddle = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralDesertSurfaceMiddle", AssetRequestMode.ImmediateLoad).Value;
-            AstralDesertSurfaceFar = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralDesertSurfaceFar", AssetRequestMode.ImmediateLoad).Value;
-
-            //Astral Snow Sky/BG
-            AstralSnowSurfaceMiddle = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSnowSurfaceMiddle", AssetRequestMode.ImmediateLoad).Value;
-
-            //Sulpher Sea Sky/BG
-            SulphurSeaSky = ModContent.Request<Texture2D>("CalamityMod/Skies/SulphurSeaSky", AssetRequestMode.ImmediateLoad).Value;
-            SulphurSeaSkyFront = ModContent.Request<Texture2D>("CalamityMod/Skies/SulphurSeaSkyFront", AssetRequestMode.ImmediateLoad).Value;
-            SulphurSeaSurface = ModContent.Request<Texture2D>("CalamityMod/Skies/SulphurSeaSurface", AssetRequestMode.ImmediateLoad).Value;
 
             // TODO -- Sky shaders should probably be loaded in a ModSystem
             Filters.Scene["CalamityMod:DevourerofGodsHead"] = new Filter(new DoGScreenShaderData("FilterMiniTower").UseColor(0.4f, 0.1f, 1.0f).UseOpacity(0.5f), EffectPriority.VeryHigh);
@@ -331,10 +272,6 @@ namespace CalamityMod
             SkyManager.Instance["CalamityMod:BrimstoneCrag"] = new BrimstoneCragSky();
 
             SkyManager.Instance["CalamityMod:Astral"] = new AstralSky();
-            SkyManager.Instance["CalamityMod:AstralSurface"] = new AstralSkySurface();
-            SkyManager.Instance["CalamityMod:AstralDesert"] = new AstralSkyDesert();
-            SkyManager.Instance["CalamityMod:AstralSnow"] = new AstralSkySnow();
-            SkyManager.Instance["CalamityMod:SulphurSea"] = new SulphurSeaSky();
             SkyManager.Instance["CalamityMod:Cryogen"] = new CryogenSky();
             SkyManager.Instance["CalamityMod:StormWeaverFlash"] = new StormWeaverFlashSky();
 

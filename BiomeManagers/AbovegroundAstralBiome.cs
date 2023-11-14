@@ -10,7 +10,6 @@ namespace CalamityMod.BiomeManagers
     public class AbovegroundAstralBiome : ModBiome
     {
         public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/AstralWater");
-        public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/AstralSurfaceFogBGStyle");
         public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle => ModContent.Find<ModUndergroundBackgroundStyle>("CalamityMod/AstralUndergroundBGStyle");
         public override int BiomeTorchItemType => ModContent.ItemType<AstralTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
@@ -28,7 +27,6 @@ namespace CalamityMod.BiomeManagers
         public override void SpecialVisuals(Player player, bool isActive)
         {
             player.ManageSpecialBiomeVisuals("CalamityMod:Astral", isActive);
-
         }
     }
 }

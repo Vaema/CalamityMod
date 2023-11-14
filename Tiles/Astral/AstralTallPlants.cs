@@ -37,6 +37,26 @@ namespace CalamityMod.Tiles.Astral
             base.SetStaticDefaults();
         }
 
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+		{
+			Tile tileBelow = Framing.GetTileSafely(i, j + 1);
+			int type = -1;
+
+			if (tileBelow.HasTile)
+            {
+				type = tileBelow.TileType;
+			}
+
+			if (type == ModContent.TileType<AstralGrass>())
+            {
+				return true;
+			}
+
+			WorldGen.KillTile(i, j);
+
+			return true;
+		}
+
 		public override void DropCritterChance(int i, int j, ref int wormChance, ref int grassHopperChance, ref int jungleGrubChance)
 		{
 			if (NPC.CountNPCS(NPCID.EnchantedNightcrawler) < 5 && Main.rand.NextBool(200))

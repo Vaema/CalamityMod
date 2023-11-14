@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
-    public class SunkenSeaWater : ModWaterStyle
+    public class SunkenSeaPolypWater : ModWaterStyle
     {
         public static int Type;
         public override void SetStaticDefaults()
@@ -12,7 +12,7 @@ namespace CalamityMod.Waters
         }
         public override int ChooseWaterfallStyle()
         {
-            return ModContent.Find<ModWaterfallStyle>("CalamityMod/SunkenSeaWaterflow").Slot;
+            return ModContent.Find<ModWaterfallStyle>("CalamityMod/SunkenSeaPolypWaterflow").Slot;
         }
 
         public override int GetSplashDust()
@@ -27,7 +27,7 @@ namespace CalamityMod.Waters
 
         public override Color BiomeHairColor()
         {
-            return Color.Blue;
+            return Color.Coral;
         }
     }
 }

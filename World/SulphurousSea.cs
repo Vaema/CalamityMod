@@ -211,9 +211,10 @@ namespace CalamityMod.World
         
         public static void SulphurSeaGenerationAfterAbyss()
         {
-            CreateBeachAndReef();
+            CreateBeach();
             ClearOutStrayTiles();
             ClearAloneTiles();
+            PlaceSulphurReef();
             var scrapPilePositions = PlaceScrapPiles();
             GenerateColumnsInCaverns();
             GenerateHardenedSandstone();
@@ -670,7 +671,71 @@ namespace CalamityMod.World
             }
         }
 
-        public static void CreateBeachAndReef()
+        public static void PlaceSulphurReef()
+        {
+            int beachWidth = WorldGen.genRand.Next(150, 190 + 1);
+            int x = GetActualX(BiomeWidth - 10);
+            float xRatio = Utils.GetLerpValue(BiomeWidth - 10, BiomeWidth + beachWidth, x, true);
+            int depth = (int)(Math.Sin((1f - xRatio) * MathHelper.PiOver2) * BeachMaxDepth + 1f);
+
+            int cavePerlinSeed = WorldGen.genRand.Next();
+            int cavePerlinSeedWalls = WorldGen.genRand.Next();
+
+            Point origin = new Point(x + (x < Main.maxTilesX / 2 ? -100 : 100), (int)Main.worldSurface + 20);
+            Vector2 center = origin.ToVector2() * 16f + new Vector2(8f);
+
+            float angle = MathHelper.Pi * 0.15f;
+            float otherAngle = MathHelper.PiOver2 - angle;
+
+            int distanceInTiles = 120 + (Main.maxTilesX - 4200) / 4200 * 200;
+            float distance = distanceInTiles * 16f;
+            float constant = distance * 2f / (float)Math.Sin(angle);
+
+            float fociSpacing = distance * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
+            int verticalRadius = (int)(constant / 16f);
+
+            Vector2 fociOffset = Vector2.UnitY * fociSpacing;
+            Vector2 topFoci = center - fociOffset;
+            Vector2 bottomFoci = center + fociOffset;
+
+            //first, place a basalt barrier around where the biome will be
+            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            {
+                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
+                {
+                    if (CheckReefsCircle(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist))
+                    {
+                        //clear absolutely everything before generating the caverns
+                        Main.tile[X, Y].ClearEverything();
+
+                        //generate perlin noise caves
+                        float horizontalOffsetNoise = CalamityUtils.PerlinNoise2D(X / 20f, Y / 20f, 5, unchecked(cavePerlinSeed + 1)) * 0.01f;
+                        float cavePerlinValue = CalamityUtils.PerlinNoise2D(X / 350f, Y / 600f, 5, cavePerlinSeed) + 0.5f + horizontalOffsetNoise;
+                        float cavePerlinValue2 = CalamityUtils.PerlinNoise2D(X / 350f, Y / 600f, 5, unchecked(cavePerlinSeed - 1)) + 0.5f;
+                        float caveNoiseMap = (cavePerlinValue + cavePerlinValue2) * 0.5f;
+                        float caveCreationThreshold = horizontalOffsetNoise * 3.5f + 0.235f;
+
+                        //kill or place tiles depending on the noise map
+                        if (caveNoiseMap * caveNoiseMap > caveCreationThreshold)
+                        {
+                            WorldGen.KillTile(X, Y);
+                        }
+                        else
+                        {
+                            WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<SulphurousSand>());
+                        }
+
+                        Main.tile[X, Y].WallType = (ushort)ModContent.WallType<SulphurousSandWall>();
+                        WorldGen.PlaceWall(X, Y, ModContent.WallType<SulphurousSandWall>());
+
+                        Main.tile[X, Y].Get<LiquidData>().LiquidType = LiquidID.Water;
+                        Main.tile[X, Y].LiquidAmount = byte.MaxValue;
+                    }
+                }
+            }
+        }
+
+        public static void CreateBeach()
         {
             int beachWidth = WorldGen.genRand.Next(150, 190 + 1);
             var searchCondition = Searches.Chain(new Searches.Down(3000), new Conditions.IsSolid());
@@ -696,68 +761,6 @@ namespace CalamityMod.World
                 int depth = (int)(Math.Sin((1f - xRatio) * MathHelper.PiOver2) * BeachMaxDepth + 1f);
                 for (int y = YStart - 50; y < YStart + depth; y++)
                 {
-                    /*
-                    //place sulphur reef, disabled for now
-                    if (i == BiomeWidth - 10 && y == YStart + depth - 1)
-                    {
-                        int cavePerlinSeed = WorldGen.genRand.Next();
-                        int cavePerlinSeedWalls = WorldGen.genRand.Next();
-
-                        Point origin = new Point(i + (i < Main.maxTilesX / 2 ? -70 : 70), (int)GenVars.worldSurfaceLow);
-                        Vector2 center = origin.ToVector2() * 16f + new Vector2(8f);
-
-                        float angle = MathHelper.Pi * 0.15f;
-                        float otherAngle = MathHelper.PiOver2 - angle;
-
-                        int distanceInTiles = 100 + (Main.maxTilesX - 4200) / 4200 * 200;
-                        float distance = distanceInTiles * 16f;
-                        float constant = distance * 2f / (float)Math.Sin(angle);
-
-                        float fociSpacing = distance * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
-                        int verticalRadius = (int)(constant / 16f);
-
-                        Vector2 fociOffset = Vector2.UnitY * fociSpacing;
-                        Vector2 topFoci = center - fociOffset;
-                        Vector2 bottomFoci = center + fociOffset;
-
-                        //first, place a basalt barrier around where the biome will be
-                        for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
-                        {
-                            for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
-                            {
-                                if (CheckReefsCircle(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist))
-                                {
-                                    //clear absolutely everything before generating the caverns
-                                    Main.tile[X, Y].ClearEverything();
-
-                                    //generate perlin noise caves
-                                    float horizontalOffsetNoise = CalamityUtils.PerlinNoise2D(X / 20f, Y / 20f, 5, unchecked(cavePerlinSeed + 1)) * 0.01f;
-                                    float cavePerlinValue = CalamityUtils.PerlinNoise2D(X / 350f, Y / 600f, 5, cavePerlinSeed) + 0.5f + horizontalOffsetNoise;
-                                    float cavePerlinValue2 = CalamityUtils.PerlinNoise2D(X / 350f, Y / 600f, 5, unchecked(cavePerlinSeed - 1)) + 0.5f;
-                                    float caveNoiseMap = (cavePerlinValue + cavePerlinValue2) * 0.5f;
-                                    float caveCreationThreshold = horizontalOffsetNoise * 3.5f + 0.235f;
-
-                                    //kill or place tiles depending on the noise map
-                                    if (caveNoiseMap * caveNoiseMap > caveCreationThreshold)
-                                    {
-                                        WorldGen.KillTile(X, Y);
-                                    }
-                                    else
-                                    {
-                                        WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<SulphurousSand>());
-                                    }
-
-                                    Main.tile[X, Y].WallType = (ushort)ModContent.WallType<SulphurousSandWall>();
-                                    WorldGen.PlaceWall(X, Y, ModContent.WallType<SulphurousSandWall>());
-
-                                    Main.tile[X, Y].Get<LiquidData>().LiquidType = LiquidID.Water;
-                                    Main.tile[X, Y].LiquidAmount = byte.MaxValue;
-                                }
-                            }
-                        }
-                    }
-                    */
-
                     Tile tileAtPosition = CalamityUtils.ParanoidTileRetrieval(x, y);
                     if (tileAtPosition.HasTile && ValidBeachDestroyTiles.Contains(tileAtPosition.TileType))
                     {

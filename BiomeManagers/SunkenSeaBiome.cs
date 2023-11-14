@@ -8,10 +8,7 @@ namespace CalamityMod.BiomeManagers
 {
     public class SunkenSeaBiome : ModBiome
     {
-        public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaWater");
-        public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle => ModContent.Find<ModUndergroundBackgroundStyle>("CalamityMod/SunkenSeaBGStyle");
-        public override int BiomeTorchItemType => ModContent.ItemType<NavyPrismTorch>();
-        public override int Music => CalamityMod.Instance.GetMusicFromMusicMod("SunkenSea") ?? MusicID.OceanNight;
+        //this is just a global sunken sea biome to check if you are in any of the existing biomes
         public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/SunkenSeaIcon";
 		// Placeholder until we get a dedicated Sunken Sea background

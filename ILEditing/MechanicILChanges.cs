@@ -795,7 +795,11 @@ namespace CalamityMod.ILEditing
             {
                 initialColor = SelectLavaQuadColor(initialTexture, ref initialColor, liquidType == 1);
 
-                if (liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaWater").Slot ||
+                if (liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/BasaltGullyWater").Slot ||
+                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaBurrowsWater").Slot ||
+                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaPolypWater").Slot ||
+                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaReefsWater").Slot ||
+                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaShoresWater").Slot ||
                 liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricWater").Slot ||
                 liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater").Slot ||
                 liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/UpperAbyssWater").Slot ||
@@ -917,7 +921,8 @@ namespace CalamityMod.ILEditing
 
             Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
             if (tile.LiquidAmount <= 0 || tile.HasTile || tile.Get<LiquidData>().LiquidType != LiquidID.Water || (Main.waterStyle != SulphuricWater.Type &&
-            Main.waterStyle != SulphuricDepthsWater.Type && Main.waterStyle != SunkenSeaWater.Type))
+            Main.waterStyle != SulphuricDepthsWater.Type && Main.waterStyle != SunkenSeaBurrowsWater.Type && Main.waterStyle != SunkenSeaPolypWater.Type && 
+            Main.waterStyle != SunkenSeaReefsWater.Type && Main.waterStyle != SunkenSeaShoresWater.Type && Main.waterStyle != BasaltGullyWater.Type))
                 return;
 
             Tile above = CalamityUtils.ParanoidTileRetrieval(x, y - 1);
@@ -988,8 +993,34 @@ namespace CalamityMod.ILEditing
                 if (Main.waterStyle == SulphuricDepthsWater.Type)
                     outputColor = Vector3.Lerp(outputColor, Color.MediumSeaGreen.ToVector3(), 0.18f);
 
-                if (Main.waterStyle == SunkenSeaWater.Type)
+                if (Main.waterStyle == SunkenSeaBurrowsWater.Type || Main.waterStyle == SunkenSeaPolypWater.Type || Main.waterStyle == SunkenSeaReefsWater.Type || 
+                Main.waterStyle == SunkenSeaShoresWater.Type || Main.waterStyle == BasaltGullyWater.Type)
                 {
+                    //default to white
+                    Color waterGlowColor = Color.White;
+
+                    //set the glow colors for each sunken sea biome water style
+                    if (Main.waterStyle == SunkenSeaShoresWater.Type)
+                    {
+                        waterGlowColor = new Color(233, 170, 184);
+                    }
+                    if (Main.waterStyle == SunkenSeaPolypWater.Type)
+                    {
+                        waterGlowColor = new Color(213, 185, 178);
+                    }
+                    if (Main.waterStyle == SunkenSeaReefsWater.Type)
+                    {
+                        waterGlowColor = new Color(140, 222, 239);
+                    }
+                    if (Main.waterStyle == SunkenSeaBurrowsWater.Type)
+                    {
+                        waterGlowColor = new Color(76, 211, 231);
+                    }
+                    if (Main.waterStyle == BasaltGullyWater.Type)
+                    {
+                        waterGlowColor = new Color(144, 174, 200);
+                    }
+
                     float brightness = MathHelper.Clamp(0.07f, 0f, 0.07f);
                     float waveScale1 = Main.GameUpdateCount * 0.028f;
                     float waveScale2 = Main.GameUpdateCount * 0.1f;
@@ -1009,7 +1040,7 @@ namespace CalamityMod.ILEditing
                     float wave5angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave5));
                     float wave6angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave6));
                     float bigwaveangle = 0.55f + 0.80f * (float)Math.Sin(MathHelper.ToRadians(bigwave));
-                    outputColor = Vector3.Lerp(outputColor, Color.DeepSkyBlue.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
+                    outputColor = Vector3.Lerp(outputColor, waterGlowColor.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
                     outputColor *= brightness;
                 }
             }

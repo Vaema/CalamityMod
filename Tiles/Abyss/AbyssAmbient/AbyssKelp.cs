@@ -35,6 +35,26 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             base.SetStaticDefaults();
         }
 
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+		{
+			Tile tileBelow = Framing.GetTileSafely(i, j + 1);
+			int type = -1;
+
+			if (tileBelow.HasTile)
+            {
+				type = tileBelow.TileType;
+			}
+
+			if (type == ModContent.TileType<AbyssGravel>() || type == ModContent.TileType<PlantyMush>()) 
+            {
+				return true;
+			}
+
+			WorldGen.KillTile(i, j);
+
+			return true;
+		}
+
         public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
         {
             offsetY = -16;
