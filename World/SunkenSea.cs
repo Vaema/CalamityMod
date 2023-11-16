@@ -38,11 +38,11 @@ namespace CalamityMod.World
             float angle = MathHelper.Pi * 0.15f;
             float otherAngle = MathHelper.PiOver2 - angle;
 
-            int distanceInTiles = (Main.maxTilesY >= 2400 ? 100 : 180) + (Main.maxTilesX - 4200) / 4200 * 200;
-            float distance = distanceInTiles * 16f;
-            float constant = distance * 2f / (float)Math.Sin(angle);
+            int biomeSize = 180 + (Main.maxTilesX / 180);
+            float actualSize = biomeSize * 16f;
+            float constant = actualSize * 2f / (float)Math.Sin(angle);
 
-            float fociSpacing = distance * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
+            float fociSpacing = actualSize * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
             int verticalRadius = (int)(constant / 16f);
 
             Vector2 fociOffset = Vector2.UnitY * fociSpacing;
@@ -50,7 +50,7 @@ namespace CalamityMod.World
             Vector2 bottomFoci = center + fociOffset;
 
             //first, place a basalt barrier around where the biome will be
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -106,7 +106,7 @@ namespace CalamityMod.World
             }
 
             //generate the actual caverns
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -163,7 +163,7 @@ namespace CalamityMod.World
             }
 
             //cleanup
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -189,7 +189,7 @@ namespace CalamityMod.World
                 }
             }
 
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -204,7 +204,7 @@ namespace CalamityMod.World
             }
 
             //place extra tiles
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -228,7 +228,7 @@ namespace CalamityMod.World
             }
 
             //cleanup again
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -276,11 +276,11 @@ namespace CalamityMod.World
             float angle = MathHelper.Pi * 0.15f;
             float otherAngle = MathHelper.PiOver2 - angle;
 
-            int distanceInTiles = (Main.maxTilesY >= 2400 ? 20 : 150) + (Main.maxTilesX - 4200) / 4200 * 200;
-            float distance = distanceInTiles * 16f;
-            float constant = distance * 2f / (float)Math.Sin(angle);
+            int biomeSize = 140 + (Main.maxTilesX / 180);
+            float actualSize = biomeSize * 16f;
+            float constant = actualSize * 2f / (float)Math.Sin(angle);
 
-            float fociSpacing = distance * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
+            float fociSpacing = actualSize * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
             int verticalRadius = (int)(constant / 16f);
 
             Vector2 fociOffset = Vector2.UnitY * fociSpacing;
@@ -288,7 +288,7 @@ namespace CalamityMod.World
             Vector2 bottomFoci = center + fociOffset;
 
             //place the polyp forest caverns
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -359,7 +359,7 @@ namespace CalamityMod.World
             }
 
             //cleanup
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -386,7 +386,7 @@ namespace CalamityMod.World
             }
 
             //place extra tiles
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -410,7 +410,7 @@ namespace CalamityMod.World
             }
  
             //cleanup again
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -458,19 +458,30 @@ namespace CalamityMod.World
             float angle = MathHelper.Pi * 0.15f;
             float otherAngle = MathHelper.PiOver2 - angle;
 
-            int distanceInTiles = (Main.maxTilesY >= 2400 ? 150 : 235) + (Main.maxTilesX - 4200) / 4200 * 200;
-            float distance = distanceInTiles * 16f;
-            float constant = distance * 2f / (float)Math.Sin(angle);
+            int biomeSize = 220 + (Main.maxTilesX / 180);
+            float actualSize = biomeSize * 16f;
+            float constant = actualSize * 2f / (float)Math.Sin(angle);
 
-            float fociSpacing = distance * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
+            float fociSpacing = actualSize * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
             int verticalRadius = (int)(constant / 16f);
 
             Vector2 fociOffset = Vector2.UnitY * fociSpacing;
             Vector2 topFoci = center - fociOffset;
             Vector2 bottomFoci = center + fociOffset;
 
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
+            {
+                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
+                {
+                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
+                    {
+
+                    }
+                }
+            }
+
             //place the gleaming burrows caverns
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -546,7 +557,7 @@ namespace CalamityMod.World
             }
 
             //cleanup the perlin caves
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -573,7 +584,7 @@ namespace CalamityMod.World
             }
 
             //place extra tiles
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -596,7 +607,7 @@ namespace CalamityMod.World
             }
 
             //cleanup again, also place geodes
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -647,11 +658,11 @@ namespace CalamityMod.World
             float angle = MathHelper.Pi * 0.15f;
             float otherAngle = MathHelper.PiOver2 - angle;
 
-            int distanceInTiles = (Main.maxTilesY >= 2400 ? 150 : 235) + (Main.maxTilesX - 4200) / 4200 * 200;
-            float distance = distanceInTiles * 16f;
-            float constant = distance * 2f / (float)Math.Sin(angle);
+            int biomeSize = 230 + (Main.maxTilesX / 180);
+            float actualSize = biomeSize * 16f;
+            float constant = actualSize * 2f / (float)Math.Sin(angle);
 
-            float fociSpacing = distance * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
+            float fociSpacing = actualSize * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
             int verticalRadius = (int)(constant / 16f);
 
             Vector2 fociOffset = Vector2.UnitY * fociSpacing;
@@ -659,18 +670,18 @@ namespace CalamityMod.World
             Vector2 bottomFoci = center + fociOffset;
 
             //first, place a basalt barrier around where the gleaming burrows will be
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
                     if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
                     {
                         float percent = dist / constant;
-                        float blurPercent = 0.97f;
+                        float blurPercent = 0.98f;
 
                         if (percent > blurPercent)
                         {
-                            if (Y > origin.Y + 20 && Main.tile[X, Y].TileType != ModContent.TileType<Basalt>())
+                            if (Y > origin.Y + 75 && Main.tile[X, Y].TileType != ModContent.TileType<Basalt>())
                             {
                                 ShapeData circle = new ShapeData();
                                 GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
@@ -716,7 +727,7 @@ namespace CalamityMod.World
             }
 
             //place caverns and lava
-            for (int X = origin.X - distanceInTiles - (Main.maxTilesX / 25); X <= origin.X + distanceInTiles + (Main.maxTilesX / 25); X++)
+            for (int X = origin.X - biomeSize - (Main.maxTilesX / 25); X <= origin.X + biomeSize + (Main.maxTilesX / 25); X++)
             {
                 for (int Y = origin.Y + 50; Y <= Main.maxTilesY - 210; Y++)
                 {
@@ -740,7 +751,7 @@ namespace CalamityMod.World
             }
 
             //place sand blocks
-            for (int X = origin.X - distanceInTiles - 250; X <= origin.X + distanceInTiles + 250; X++)
+            for (int X = origin.X - biomeSize - (Main.maxTilesX / 25); X <= origin.X + biomeSize + (Main.maxTilesX / 25); X++)
             {
                 for (int Y = origin.Y + 50; Y <= Main.maxTilesY - 200; Y++)
                 {
@@ -760,7 +771,7 @@ namespace CalamityMod.World
             }
 
             //cleanup
-            for (int X = origin.X - distanceInTiles - 250; X <= origin.X + distanceInTiles + 250; X++)
+            for (int X = origin.X - biomeSize - (Main.maxTilesX / 25); X <= origin.X + biomeSize + (Main.maxTilesX / 25); X++)
             {
                 for (int Y = origin.Y + 50; Y <= Main.maxTilesY - 210; Y++)
                 {
@@ -795,9 +806,9 @@ namespace CalamityMod.World
         {
             Point origin = new Point(startPosX, startPosY);
 
-            int distanceInTiles = (Main.maxTilesY >= 2400 ? 150 : 235) + (Main.maxTilesX - 4200) / 4200 * 200;
+            int biomeSize = 230 + (Main.maxTilesX / 180);
 
-            for (int X = origin.X - distanceInTiles - 250; X <= origin.X + distanceInTiles + 250; X++)
+            for (int X = origin.X - biomeSize - (Main.maxTilesX / 25); X <= origin.X + biomeSize + (Main.maxTilesX / 25); X++)
             {
                 for (int Y = origin.Y + 50; Y <= Main.maxTilesY - 210; Y++)
                 {

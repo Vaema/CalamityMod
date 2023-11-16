@@ -681,17 +681,17 @@ namespace CalamityMod.World
             int cavePerlinSeed = WorldGen.genRand.Next();
             int cavePerlinSeedWalls = WorldGen.genRand.Next();
 
-            Point origin = new Point(x + (x < Main.maxTilesX / 2 ? -100 : 100), (int)Main.worldSurface + 20);
+            Point origin = new Point(x + (x < Main.maxTilesX / 2 ? -10 : 10), YStart + depth + 30);
             Vector2 center = origin.ToVector2() * 16f + new Vector2(8f);
 
             float angle = MathHelper.Pi * 0.15f;
             float otherAngle = MathHelper.PiOver2 - angle;
 
-            int distanceInTiles = 120 + (Main.maxTilesX - 4200) / 4200 * 200;
-            float distance = distanceInTiles * 16f;
-            float constant = distance * 2f / (float)Math.Sin(angle);
+            int size = 80 + (Main.maxTilesX / 180);
+            float actualSize = size * 16f;
+            float constant = actualSize * 2f / (float)Math.Sin(angle);
 
-            float fociSpacing = distance * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
+            float fociSpacing = actualSize * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
             int verticalRadius = (int)(constant / 16f);
 
             Vector2 fociOffset = Vector2.UnitY * fociSpacing;
@@ -699,7 +699,7 @@ namespace CalamityMod.World
             Vector2 bottomFoci = center + fociOffset;
 
             //first, place a basalt barrier around where the biome will be
-            for (int X = origin.X - distanceInTiles - 3; X <= origin.X + distanceInTiles + 3; X++)
+            for (int X = origin.X - size - 3; X <= origin.X + size + 3; X++)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -710,8 +710,8 @@ namespace CalamityMod.World
 
                         //generate perlin noise caves
                         float horizontalOffsetNoise = CalamityUtils.PerlinNoise2D(X / 20f, Y / 20f, 5, unchecked(cavePerlinSeed + 1)) * 0.01f;
-                        float cavePerlinValue = CalamityUtils.PerlinNoise2D(X / 350f, Y / 600f, 5, cavePerlinSeed) + 0.5f + horizontalOffsetNoise;
-                        float cavePerlinValue2 = CalamityUtils.PerlinNoise2D(X / 350f, Y / 600f, 5, unchecked(cavePerlinSeed - 1)) + 0.5f;
+                        float cavePerlinValue = CalamityUtils.PerlinNoise2D(X / 1000f, Y / 350f, 5, cavePerlinSeed) + 0.5f + horizontalOffsetNoise;
+                        float cavePerlinValue2 = CalamityUtils.PerlinNoise2D(X / 1000f, Y / 350f, 5, unchecked(cavePerlinSeed - 1)) + 0.5f;
                         float caveNoiseMap = (cavePerlinValue + cavePerlinValue2) * 0.5f;
                         float caveCreationThreshold = horizontalOffsetNoise * 3.5f + 0.235f;
 
@@ -725,14 +725,28 @@ namespace CalamityMod.World
                             WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<SulphurousSand>());
                         }
 
-                        Main.tile[X, Y].WallType = (ushort)ModContent.WallType<SulphurousSandWall>();
-                        WorldGen.PlaceWall(X, Y, ModContent.WallType<SulphurousSandWall>());
+                        Main.tile[X, Y].WallType = (ushort)ModContent.WallType<SulphurousSandstoneWall>();
+                        WorldGen.PlaceWall(X, Y, ModContent.WallType<SulphurousSandstoneWall>());
 
                         Main.tile[X, Y].Get<LiquidData>().LiquidType = LiquidID.Water;
                         Main.tile[X, Y].LiquidAmount = byte.MaxValue;
                     }
                 }
             }
+        }
+
+        public static bool CheckReefsCircle(Point tile, Vector2 focus1, Vector2 focus2, float distanceConstant, Vector2 center, out float distance)
+        {
+            Vector2 point = tile.ToWorldCoordinates();
+
+            float distY = center.Y - point.Y;
+            point.Y -= distY * 3f;
+
+            float distance1 = Vector2.Distance(point, focus1);
+            float distance2 = Vector2.Distance(point, focus2);
+            distance = distance1 + distance2;
+
+            return distance <= distanceConstant;
         }
 
         public static void CreateBeach()
@@ -804,20 +818,6 @@ namespace CalamityMod.World
                         WorldGen.KillTile(treePlantPosition.X, treePlantPosition.Y);
                 }
             }
-        }
-
-        public static bool CheckReefsCircle(Point tile, Vector2 focus1, Vector2 focus2, float distanceConstant, Vector2 center, out float distance)
-        {
-            Vector2 point = tile.ToWorldCoordinates();
-
-            float distY = center.Y - point.Y;
-            point.Y -= distY * 3f;
-
-            float distance1 = Vector2.Distance(point, focus1);
-            float distance2 = Vector2.Distance(point, focus2);
-            distance = distance1 + distance2;
-
-            return distance <= distanceConstant;
         }
 
         public static void ClearAloneTiles()

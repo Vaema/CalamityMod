@@ -109,9 +109,9 @@ namespace CalamityMod.Backgrounds
 
                     for (int j = num6 - 2; j < num6 + 4 + (int)(Main.screenWidth / RectangleScale); j++)
                     {
-                        int sulphurSeaHeight = SulphurousSea.YStart;
+                        int AstralBiomeHeight = (World.AstralBiome.YStart + (int)Main.worldSurface) / 2;
 
-                        Vector2 drawPosition = (new Vector2(j * Scale * (rectangle.Width / vector3.X), sulphurSeaHeight * 16f) + vector2 - vector) * vector3 + vector - Main.screenPosition - vector2 + zero;
+                        Vector2 drawPosition = (new Vector2(j * Scale * (rectangle.Width / vector3.X), AstralBiomeHeight * 16f) + vector2 - vector) * vector3 + vector - Main.screenPosition - vector2 + zero;
                         var frame = rectangle;
                         var clr = new Color(50, 50, 50) * Transparency;
 
