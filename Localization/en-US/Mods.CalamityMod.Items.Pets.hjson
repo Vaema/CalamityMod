@@ -1,10 +1,9 @@
 AbyssShellFossil: {
-	DisplayName: Abyss Shell Fossil
+	DisplayName: Abyssal Shell Fossil
 	Tooltip:
 		'''
-		A fossil of a prehistoric creature, long forgotten in the deep abyss
-		Summons a pet Escargidolon Snail to follow you
-		Slightly reduces creatures' ability to detect you in the abyss while equipped
+		Summons an escargidolon snail to follow you
+		Slightly reduces creatures' ability to detect you in the abyss
 		'''
 }
 

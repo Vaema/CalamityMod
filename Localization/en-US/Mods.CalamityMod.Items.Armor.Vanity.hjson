@@ -242,3 +242,13 @@ YharonMask: {
 	DisplayName: Yharon Mask
 	Tooltip: ""
 }
+
+SnailHead: {
+	DisplayName: Wearable Head Snail
+	Tooltip: ""
+}
+
+SnailRobe: {
+	DisplayName: Fancy Abyss Robe
+	Tooltip: ""
+}

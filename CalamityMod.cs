@@ -409,21 +409,6 @@ namespace CalamityMod
 
             carpetOriginal = null;
 
-            /*
-            //unload hell background stuff
-            HellBGManager.Unload();
-
-            if (loadCache != null)
-            {
-                foreach (var loadable in loadCache)
-                {
-                    loadable.Unload();
-                }
-            }
-
-            loadCache = null;
-            */
-
             Instance = null;
             base.Unload();
         }
