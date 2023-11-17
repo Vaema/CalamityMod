@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Pets
             Item.noMelee = true;
 
             Item.value = Item.sellPrice(platinum: 1);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ItemRarityID.Cyan;
             Item.Calamity().devItem = true;
 
             Item.shoot = ModContent.ProjectileType<EidolonSnail>();

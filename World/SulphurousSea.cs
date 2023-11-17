@@ -681,7 +681,7 @@ namespace CalamityMod.World
             int cavePerlinSeed = WorldGen.genRand.Next();
             int cavePerlinSeedWalls = WorldGen.genRand.Next();
 
-            Point origin = new Point(x + (x < Main.maxTilesX / 2 ? -10 : 10), YStart + depth + 30);
+            Point origin = new Point(x + (x < Main.maxTilesX / 2 ? -10 : 10), YStart + depth + 80);
             Vector2 center = origin.ToVector2() * 16f + new Vector2(8f);
 
             float angle = MathHelper.Pi * 0.15f;
