@@ -243,12 +243,12 @@ YharonMask: {
 	Tooltip: ""
 }
 
-SnailHead: {
-	DisplayName: Wearable Head Snail
-	Tooltip: ""
+AbyssHood: {
+	DisplayName: Abyss Cultist Hood
+	Tooltip: Turns your face into tentacles
 }
 
-SnailRobe: {
-	DisplayName: Fancy Abyss Robe
-	Tooltip: ""
+AbyssRobe: {
+	DisplayName: Abyss Cultist Robe
+	Tooltip: It feels cold, but very cozy
 }

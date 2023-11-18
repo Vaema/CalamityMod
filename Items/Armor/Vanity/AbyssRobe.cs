@@ -8,7 +8,7 @@ using CalamityMod.Items.Materials;
 namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Body)]
-    public class SnailRobe : ModItem, ILocalizedModType
+    public class AbyssRobe : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Vanity";
 
@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Armor.Vanity
         {
             if (Main.netMode != NetmodeID.Server)
             {
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Vanity/SnailRobe_Legs", EquipType.Legs, this);
+                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Vanity/AbyssRobe_Legs", EquipType.Legs, this);
             }
         }
 
@@ -38,11 +38,11 @@ namespace CalamityMod.Items.Armor.Vanity
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AbyssGravel>(22).
-                AddIngredient<Lumenyl>(25).
-                AddIngredient(ItemID.Silk, 25).
-                AddTile(TileID.Loom).
-                Register();
+            AddIngredient<AbyssGravel>(22).
+            AddIngredient<Lumenyl>(25).
+            AddIngredient(ItemID.Silk, 25).
+            AddTile(TileID.Loom).
+            Register();
         }
     }
 }

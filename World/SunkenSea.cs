@@ -189,20 +189,6 @@ namespace CalamityMod.World
                 }
             }
 
-            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
-            {
-                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
-                {
-                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, Y < origin.Y))
-                    {
-                        if (!Main.tile[X, Y].HasTile && Main.tile[X, Y - 1].HasTile && Main.tile[X, Y + 1].HasTile && Main.tile[X - 1, Y].HasTile && Main.tile[X + 1, Y].HasTile)
-                        {
-                            WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<Shellstone>());
-                        }
-                    }
-                }
-            }
-
             //place extra tiles
             for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
@@ -276,7 +262,7 @@ namespace CalamityMod.World
             float angle = MathHelper.Pi * 0.15f;
             float otherAngle = MathHelper.PiOver2 - angle;
 
-            int biomeSize = 140 + (Main.maxTilesX / 180);
+            int biomeSize = 120 + (Main.maxTilesX / 180);
             float actualSize = biomeSize * 16f;
             float constant = actualSize * 2f / (float)Math.Sin(angle);
 
@@ -469,13 +455,34 @@ namespace CalamityMod.World
             Vector2 topFoci = center - fociOffset;
             Vector2 bottomFoci = center + fociOffset;
 
-            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
+            //place another barrier so the gleaming burrows doesnt just burst into the gully
+            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X += 10)
             {
-                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
+                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y += 2)
                 {
                     if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
                     {
+                        float percent = dist / constant;
+                        float blurPercent = 0.98f;
 
+                        if (percent > blurPercent)
+                        {
+                            if (Y > origin.Y + 20)
+                            {
+                                ShapeData circle = new ShapeData();
+                                GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
+                                
+                                WorldUtils.Gen(new Point(X, Y + 10), new Shapes.Circle(20), Actions.Chain(new GenAction[]
+                                {
+                                    blotchMod.Output(circle)
+                                }));
+                                WorldUtils.Gen(new Point(X, Y + 10), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+                                {
+                                    new Actions.Clear(),
+                                    new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>())
+                                }));
+                            }
+                        }
                     }
                 }
             }
@@ -652,84 +659,55 @@ namespace CalamityMod.World
         //basalt biome underneath the sunken sea
         public static void PlaceBasaltGully(int startPosX, int startPosY)
         {
-            Point origin = new Point(startPosX, startPosY);
-            Vector2 center = origin.ToVector2() * 16f + new Vector2(8f);
-
-            float angle = MathHelper.Pi * 0.15f;
-            float otherAngle = MathHelper.PiOver2 - angle;
-
             int biomeSize = 230 + (Main.maxTilesX / 180);
-            float actualSize = biomeSize * 16f;
-            float constant = actualSize * 2f / (float)Math.Sin(angle);
 
-            float fociSpacing = actualSize * (float)Math.Sin(otherAngle) / (float)Math.Sin(angle);
-            int verticalRadius = (int)(constant / 16f);
-
-            Vector2 fociOffset = Vector2.UnitY * fociSpacing;
-            Vector2 topFoci = center - fociOffset;
-            Vector2 bottomFoci = center + fociOffset;
-
-            //first, place a basalt barrier around where the gleaming burrows will be
-            for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
+            //place area of basalt all the way down to hell
+            for (int X = startPosX - biomeSize; X <= startPosX + biomeSize; X += 20)
             {
-                for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
+                for (int Y = startPosY + 20; Y <= Main.maxTilesY - 250; Y += 20)
                 {
-                    if (CheckInBiomeArea(new Point(X, Y), topFoci, bottomFoci, constant, center, out float dist, true))
+                    if (Main.tile[X, Y].TileType != ModContent.TileType<Basalt>())
                     {
-                        float percent = dist / constant;
-                        float blurPercent = 0.98f;
-
-                        if (percent > blurPercent)
+                        ShapeData circle = new ShapeData();
+                        GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
+                        
+                        WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(60), Actions.Chain(new GenAction[]
                         {
-                            if (Y > origin.Y + 75 && Main.tile[X, Y].TileType != ModContent.TileType<Basalt>())
+                            blotchMod.Output(circle)
+                        }));
+                        WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+                        {
+                            new Actions.Clear(),
+                            new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>())
+                        }));
+
+                        //place a giant area of basalt below the sunken sea
+                        for (int j = Y; j <= Main.maxTilesY - 250; j += 15)
+                        {
+                            int radius = WorldGen.genRand.Next(30, 45);
+                            int RandomX = Main.rand.Next(-25, 25);
+
+                            WorldUtils.Gen(new Point(X + RandomX, j), new Shapes.Circle(radius), Actions.Chain(new GenAction[]
                             {
-                                ShapeData circle = new ShapeData();
-                                GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
-                                
-                                WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(60), Actions.Chain(new GenAction[]
-                                {
-                                    blotchMod.Output(circle)
-                                }));
-                                WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
-                                {
-                                    new Actions.Clear(),
-                                    new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>())
-                                }));
+                                blotchMod.Output(circle)
+                            }));
 
-                                //place a giant area of basalt below the sunken sea
-                                for (int j = Y; j <= Main.maxTilesY - 250; j += 15)
-                                {
-                                    int radius = WorldGen.genRand.Next(30, 45);
-                                    int RandomX = Main.rand.Next(-25, 25);
-
-                                    WorldUtils.Gen(new Point(X + RandomX, j), new Shapes.Circle(radius), Actions.Chain(new GenAction[]
-                                    {
-                                        blotchMod.Output(circle)
-                                    }));
-
-                                    List<ushort> WallIDs = new()
-                                    {
-                                        WallID.LavaUnsafe1, WallID.LavaUnsafe2, WallID.LavaUnsafe3, WallID.LavaUnsafe4,
-                                    };
-
-                                    //place blocks
-                                    WorldUtils.Gen(new Point(X + RandomX, j), new ModShapes.All(circle), Actions.Chain(new GenAction[]
-                                    {
-                                        new Actions.Clear(),
-                                        new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>()),
-                                        new Actions.PlaceWall(WorldGen.genRand.Next(WallIDs))
-                                    }));
-                                }
-                            }
+                            //place blocks
+                            WorldUtils.Gen(new Point(X + RandomX, j), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+                            {
+                                new Actions.Clear(),
+                                new Actions.PlaceTile((ushort)ModContent.TileType<Basalt>()),
+                                new Actions.PlaceWall(WallID.LavaUnsafe1)
+                            }));
                         }
                     }
                 }
             }
 
             //place caverns and lava
-            for (int X = origin.X - biomeSize - (Main.maxTilesX / 25); X <= origin.X + biomeSize + (Main.maxTilesX / 25); X++)
+            for (int X = startPosX - biomeSize - (Main.maxTilesX / 25); X <= startPosX + biomeSize + (Main.maxTilesX / 25); X++)
             {
-                for (int Y = origin.Y + 50; Y <= Main.maxTilesY - 210; Y++)
+                for (int Y = startPosY; Y <= Main.maxTilesY - 210; Y++)
                 {
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Basalt>())
                     {
@@ -751,9 +729,9 @@ namespace CalamityMod.World
             }
 
             //place sand blocks
-            for (int X = origin.X - biomeSize - (Main.maxTilesX / 25); X <= origin.X + biomeSize + (Main.maxTilesX / 25); X++)
+            for (int X = startPosX - biomeSize - (Main.maxTilesX / 25); X <= startPosX + biomeSize + (Main.maxTilesX / 25); X++)
             {
-                for (int Y = origin.Y + 50; Y <= Main.maxTilesY - 200; Y++)
+                for (int Y = startPosY; Y <= Main.maxTilesY - 210; Y++)
                 {
                     bool canPlaceSand = false;
 
@@ -771,9 +749,9 @@ namespace CalamityMod.World
             }
 
             //cleanup
-            for (int X = origin.X - biomeSize - (Main.maxTilesX / 25); X <= origin.X + biomeSize + (Main.maxTilesX / 25); X++)
+            for (int X = startPosX - biomeSize - (Main.maxTilesX / 25); X <= startPosX + biomeSize + (Main.maxTilesX / 25); X++)
             {
-                for (int Y = origin.Y + 50; Y <= Main.maxTilesY - 210; Y++)
+                for (int Y = startPosY; Y <= Main.maxTilesY - 210; Y++)
                 {
                     //clean tiles that are sticking out (aka tiles only attached to one tile on one side)
                     bool OnlyRight = !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile;
@@ -804,20 +782,13 @@ namespace CalamityMod.World
 
         public static void BasaltGullyLavaCleanup(int startPosX, int startPosY)
         {
-            Point origin = new Point(startPosX, startPosY);
-
             int biomeSize = 230 + (Main.maxTilesX / 180);
 
-            for (int X = origin.X - biomeSize - (Main.maxTilesX / 25); X <= origin.X + biomeSize + (Main.maxTilesX / 25); X++)
+            for (int X = startPosX - biomeSize - (Main.maxTilesX / 25); X <= startPosX + biomeSize + (Main.maxTilesX / 25); X++)
             {
-                for (int Y = origin.Y + 50; Y <= Main.maxTilesY - 210; Y++)
+                for (int Y = startPosY + 50; Y <= Main.maxTilesY - 200; Y++)
                 {
-                    List<ushort> WallIDs = new()
-                    {
-                        WallID.LavaUnsafe1, WallID.LavaUnsafe2, WallID.LavaUnsafe3, WallID.LavaUnsafe4,
-                    };
-
-                    if (WallIDs.Contains(Main.tile[X, Y].WallType))
+                    if (Main.tile[X, Y].WallType == WallID.LavaUnsafe1)
                     {
                         //get rid of water
                         if (Main.tile[X, Y].LiquidType == LiquidID.Water)
@@ -888,6 +859,12 @@ namespace CalamityMod.World
                         if (WorldGen.genRand.NextBool(8))
                         {
                             WorldGen.PlaceObject(X, Y - 1, (ushort)ModContent.TileType<SmallTubeCoral>());
+                        }
+
+                        //anemonies
+                        if (WorldGen.genRand.NextBool(10))
+                        {
+                            WorldGen.PlaceObject(X, Y - 1, (ushort)ModContent.TileType<SeaAnemone>());
                         }
 
                         //giant navystone piles
@@ -1186,7 +1163,7 @@ namespace CalamityMod.World
             if (collapse)
             {
                 float distY = center.Y - point.Y;
-                point.Y -= distY * 3f;
+                point.Y -= distY * 4f;
             }
 
             float distance1 = Vector2.Distance(point, focus1);

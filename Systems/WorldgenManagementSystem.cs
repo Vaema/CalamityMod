@@ -127,11 +127,12 @@ namespace CalamityMod.Systems
                     int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
                     int sunkenSeaY = Main.maxTilesY / 2;
 
-                    SunkenSea.PlaceRadiantReefs(sunkenSeaX - 130, sunkenSeaY + 75, true);
-                    SunkenSea.PlaceRadiantReefs(sunkenSeaX + 130, sunkenSeaY + 75, false);
+                    //place each piece of the sunken sea based on the above positons
+                    SunkenSea.PlaceRadiantReefs(sunkenSeaX - 100, sunkenSeaY + 75, true);
+                    SunkenSea.PlaceRadiantReefs(sunkenSeaX + 100, sunkenSeaY + 75, false);
                     SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 75);
                     SunkenSea.PlaceBasaltGully(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
-                    SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
                     SunkenSea.PlaceSunkenSeaAmbience();
                     SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                 }));

@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Placeables;
+using CalamityMod.Tiles.SunkenSea.Ambient;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -61,6 +63,45 @@ namespace CalamityMod.Tiles.SunkenSea
             TileFraming.GetAdjacencyData(i, j, TileID.HardenedSand, out fourthTileAdjacency[i, j]);
             TileFraming.GetAdjacencyData(i, j, TileID.Sand, out fifthTileAdjacency[i, j]);
             return TileFraming.BrimstoneFraming(i, j, resetFrame);
+        }
+
+        public override void RandomUpdate(int i, int j)
+        {
+            Tile tile = Main.tile[i, j];
+            Tile up = Main.tile[i, j - 1];
+            Tile up2 = Main.tile[i, j - 2];
+
+            if (!up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            {
+                //brain corals
+                if (WorldGen.genRand.NextBool(18))
+                {
+                    ushort[] BrainCorals = new ushort[] { (ushort)ModContent.TileType<BrainCoral>(), (ushort)ModContent.TileType<SmallBrainCoral>() };
+
+                    ushort newObject = Main.rand.Next(BrainCorals);
+
+                    WorldGen.PlaceObject(i, j - 1, newObject, true);
+                    NetMessage.SendObjectPlacement(-1, i, j - 1, newObject, 0, 0, -1, -1);
+                }
+
+                //tube corals
+                if (WorldGen.genRand.NextBool(8))
+                {
+                    ushort[] TubeCorals = new ushort[] { (ushort)ModContent.TileType<TubeCoral>(), (ushort)ModContent.TileType<SmallTubeCoral>() };
+
+                    ushort newObject = Main.rand.Next(TubeCorals);
+
+                    WorldGen.PlaceObject(i, j - 1, newObject, true);
+                    NetMessage.SendObjectPlacement(-1, i, j - 1, newObject, 0, 0, -1, -1);
+                }
+
+                //anemonie
+                if (WorldGen.genRand.NextBool(10))
+                {
+                    WorldGen.PlaceObject(i, j - 1, (ushort)ModContent.TileType<SeaAnemone>(), true);
+                    NetMessage.SendObjectPlacement(-1, i, j - 1, (ushort)ModContent.TileType<SeaAnemone>(), 0, 0, -1, -1);
+                }
+            }
         }
     }
 }

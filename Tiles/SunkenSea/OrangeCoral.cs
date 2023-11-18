@@ -42,10 +42,10 @@ namespace CalamityMod.Tiles.SunkenSea
             if (!Main.tile[i - 1, j].HasTile || !Main.tile[i + 1, j].HasTile || !Main.tile[i, j - 1].HasTile || !Main.tile[i, j + 1].HasTile)
             {
                 float brightness = 0.9f;
-                Color Orange1 = new Color(255, 177, 120);
-                Color Orange2 = new Color(117, 23, 44);
-                Color value = Color.Lerp(Orange1, Orange2, (MathF.Sin(-j / 80f + Main.GameUpdateCount * 0.017f + i / 40f) + 1f) / 2f);
-                Color value1 = Color.Lerp(Orange1, Orange2, (MathF.Sin((j - 100) / 50f + Main.GameUpdateCount * 0.004f + -i / 30f) + 1f) / 2f);
+                Color Color1 = new Color(255, 177, 120);
+                Color Color2 = new Color(117, 23, 44);
+                Color value = Color.Lerp(Color1, Color2, (MathF.Sin(-j / 80f + Main.GameUpdateCount * 0.017f + i / 40f) + 1f) / 2f);
+                Color value1 = Color.Lerp(Color1, Color2, (MathF.Sin((j - 100) / 50f + Main.GameUpdateCount * 0.004f + -i / 30f) + 1f) / 2f);
                 r = (value.R + value1.R) / 300f;
                 g = (value.G + value1.G) / 300f;
                 b = (value.B + value1.B) / 300f;

@@ -8,7 +8,7 @@ using CalamityMod.Items.Materials;
 namespace CalamityMod.Items.Armor.Vanity
 {
     [AutoloadEquip(EquipType.Head)]
-    public class SnailHead : ModItem, ILocalizedModType
+    public class AbyssHood : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Vanity";
 
@@ -32,10 +32,11 @@ namespace CalamityMod.Items.Armor.Vanity
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AbyssGravel>(10).
-                AddIngredient<Lumenyl>(18).
-                AddTile(TileID.Loom).
-                Register();
+            AddIngredient<AbyssGravel>(10).
+            AddIngredient<Lumenyl>(18).
+            AddIngredient(ItemID.Silk, 20).
+            AddTile(TileID.Loom).
+            Register();
         }
     }
 }
