@@ -214,7 +214,7 @@ namespace CalamityMod.World
             CreateBeach();
             ClearOutStrayTiles();
             ClearAloneTiles();
-            PlaceSulphurReef();
+            //PlaceSulphurReef();
             var scrapPilePositions = PlaceScrapPiles();
             GenerateColumnsInCaverns();
             GenerateHardenedSandstone();
@@ -671,6 +671,7 @@ namespace CalamityMod.World
             }
         }
 
+        /*
         public static void PlaceSulphurReef()
         {
             int beachWidth = WorldGen.genRand.Next(150, 190 + 1);
@@ -810,6 +811,7 @@ namespace CalamityMod.World
 
             return distance <= distanceConstant;
         }
+        */
 
         public static void CreateBeach()
         {

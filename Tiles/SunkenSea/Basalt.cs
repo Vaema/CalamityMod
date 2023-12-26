@@ -32,6 +32,8 @@ namespace CalamityMod.Tiles.SunkenSea
 
             AddMapEntry(new Color(58, 55, 70));
 
+            MinPick = 100;
+
             TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<RuneSand>(), out tileAdjacency);
             TileFraming.SetUpUniversalMerge(Type, TileID.Sandstone, out secondTileAdjacency);
             TileFraming.SetUpUniversalMerge(Type, TileID.Sand, out thirdTileAdjacency);

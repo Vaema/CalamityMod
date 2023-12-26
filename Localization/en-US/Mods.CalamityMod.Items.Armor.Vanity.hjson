@@ -242,13 +242,3 @@ YharonMask: {
 	DisplayName: Yharon Mask
 	Tooltip: ""
 }
-
-AbyssHood: {
-	DisplayName: Abyss Cultist Hood
-	Tooltip: Turns your face into tentacles
-}
-
-AbyssRobe: {
-	DisplayName: Abyss Cultist Robe
-	Tooltip: It feels cold, but very cozy
-}

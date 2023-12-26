@@ -1,9 +1,9 @@
 AbyssShellFossil: {
-	DisplayName: Abyssal Shell Fossil
+	DisplayName: Abyss Shell Fossil
 	Tooltip:
 		'''
-		Summons an escargidolon snail to follow you
-		Slightly reduces creatures' ability to detect you in the abyss
+		Summons a pet Eidolon Snail to follow you
+		Slightly reduces creatures' ability to detect you in the abyss while equipped
 		'''
 }
 

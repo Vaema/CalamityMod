@@ -24,7 +24,7 @@ namespace CalamityMod.Tiles.Abyss
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Dig;
             DustType = 119;
-            AddMapEntry(new Color(139, 206, 56));
+            AddMapEntry(new Color(70, 115, 144));
             Main.tileShine2[Type] = true;
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
