@@ -1014,7 +1014,7 @@ namespace CalamityMod.ILEditing
                     }
                     if (Main.waterStyle == SunkenSeaBurrowsWater.Type)
                     {
-                        waterGlowColor = new Color(44, 123, 135);
+                        waterGlowColor = new Color(76, 211, 231);
                     }
                     if (Main.waterStyle == BasaltGullyWater.Type)
                     {
