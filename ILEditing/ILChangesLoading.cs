@@ -4,6 +4,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureExo;
+using CalamityMod.Walls;
 using Terraria;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
@@ -11,6 +12,7 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.GameContent.Liquid;
 using Terraria.GameContent.UI.States;
 using Terraria.Graphics.Light;
+using Terraria.Map;
 using Terraria.ModLoader;
 
 namespace CalamityMod.ILEditing
@@ -143,10 +145,21 @@ namespace CalamityMod.ILEditing
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;
 
+            // Let Sunken Sea BG walls appear even when covered with water.
+            IL_MapHelper.CreateMapTile += ShowSunkenSeaBGWallsThroughWater;
+            
             //Additional detours that are in their own item files given they are only relevant to these specific items:
             //Rover drive detours on Player.DrawInfernoRings to draw its shield
             //Wulfrum armor hooks on Player.KeyDoubleTap and DrawPendingMouseText to activate its set bonus and spoof the mouse text to display the stats of the activated weapon if shift is held
             //HeldOnlyItem detours Player.dropItemCheck, ItemSlot.Draw (Sb, itemarray, int, int, vector2, color) and ItemSlot.LeftClick_ItemArray to make its stuff work
+        }
+
+        /// <summary>
+        /// Loads things which need to be instantiated later in the load order.
+        /// </summary>
+        public override void AddRecipes()
+        {
+            WallVisibleThroughWater.InitializeWaterMapEntryLookups();
         }
 
         /// <summary>

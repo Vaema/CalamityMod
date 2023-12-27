@@ -2,12 +2,12 @@
 using Terraria.ModLoader;
 namespace CalamityMod.Walls
 {
-    public class NavystoneWall : ModWall
+    public class NavystoneWall : WallVisibleThroughWater
     {
         public override void SetStaticDefaults()
         {
             DustType = 96;
-            AddMapEntry(new Color(16, 45, 48));
+            AddEntries(new Color(16, 45, 48));
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;

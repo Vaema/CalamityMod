@@ -4,6 +4,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -13,6 +14,7 @@ using System.Reflection;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Map;
 using Terraria.ModLoader;
 
 namespace CalamityMod.ILEditing
@@ -907,6 +909,64 @@ namespace CalamityMod.ILEditing
                         NetMessage.SendData(MessageID.SyncItem, -1, -1, null, number, 1f);
                 }
             }
+        }
+        #endregion
+
+        #region Map Colors
+        private static void ShowSunkenSeaBGWallsThroughWater(ILContext context)
+        {
+            var cursor = new ILCursor(context);
+
+            // Find the tile.active method which will place the cursor right before the code for using the tile's map entry
+            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCall<Tile>("active")))
+            {
+                LogFailure("Show Sunken Sea BG Walls Through Water", "Could not locate the tile.active method.");
+                return;
+            }
+
+            // Find the MapHelper.GetTileBaseOption method which will place the cursor right after the code for using the tile's map entry
+            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCall(typeof(MapHelper), "GetTileBaseOption")))
+            {
+                LogFailure("Show Sunken Sea BG Walls Through Water", "Could not locate the MapHelper.GetTileBaseOption method.");
+                return;
+            }
+
+            // Find the tile.invisibleWall method which will place the cursor right before the code for using the tile's wall map entry
+            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCall<Tile>("invisibleWall")))
+            {
+                LogFailure("Show Sunken Sea BG Walls Through Water", "Could not locate the tile.invisibleWall method.");
+                return;
+            }
+
+            // Find the tile.liquidType method which will place the cursor right before the code for using the water's map entry
+            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCall<Tile>("liquidType")))
+            {
+                LogFailure("Show Sunken Sea BG Walls Through Water", "Could not locate the tile.liquidType method.");
+                return;
+            }
+
+            var localVariableIndex = cursor.Instrs[cursor.Index].Operand;
+
+            // Move to after it updates the map tile to the water map entry
+            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchStloc3()))
+            {
+                LogFailure("Show Sunken Sea BG Walls Through Water", "Could not locate to where it replaces the map entry with the water map entry");
+                return;
+            }
+
+            cursor.Emit(OpCodes.Ldloc, 0);
+            cursor.Emit(OpCodes.Ldloc, 3);
+            cursor.Emit(OpCodes.Ldloc, localVariableIndex);
+            cursor.EmitDelegate<Func<Tile, int, int, int>>((tile, mapEntry, liquidType) => 
+            { 
+                if (WallLoader.GetWall(tile.WallType) is WallVisibleThroughWater visibleThroughWater && liquidType == LiquidID.Water)
+                {
+                    return visibleThroughWater.WaterMapEntry;
+                }
+
+                return mapEntry;
+            });
+            cursor.Emit(OpCodes.Stloc_3);
         }
         #endregion
     }

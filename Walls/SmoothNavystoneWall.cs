@@ -4,13 +4,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
 {
-    public class SmoothNavystoneWall : ModWall
+    public class SmoothNavystoneWall : WallVisibleThroughWater
     {
         public override void SetStaticDefaults()
         {
             Main.wallHouse[Type] = true;
 
-            AddMapEntry(new Color(27, 35, 36));
+            AddEntries(new Color(27, 35, 36));
         }
 
         public override bool CreateDust(int i, int j, ref int type)
