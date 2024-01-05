@@ -46,5 +46,9 @@ namespace CalamityMod.Tiles.FurnitureAuric
             }
             return colour;
         }
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+        {
+            return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
+        }
     }
 }

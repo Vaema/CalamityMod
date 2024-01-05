@@ -1359,7 +1359,7 @@ AuricPlatform: {
 
 AuricRepulserPanel: {
 	DisplayName: Auric Repulser Panel
-	Tooltip: "Repels players that come in contact with it"
+	Tooltip: Repels players that come in contact with it
 }
 
 ExoAuricPanel: {

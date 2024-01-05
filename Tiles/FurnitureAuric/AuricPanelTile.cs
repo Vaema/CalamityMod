@@ -19,5 +19,9 @@ namespace CalamityMod.Tiles.FurnitureAuric
             DustType = 55;
             AddMapEntry(new Color(204, 224, 25));
         }
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+        {
+            return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
+        }
     }
 }
