@@ -51,6 +51,7 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
+using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
 using CalamityMod.World;
@@ -639,6 +640,7 @@ namespace CalamityMod.CalPlayer
         {
             int astralOreID = ModContent.TileType<AstralOre>();
             int auricOreID = ModContent.TileType<AuricOre>();
+            int auricRepulserID = ModContent.TileType<AuricRepulserPanelTile>();
             int scoriaOreID = ModContent.TileType<ScoriaOre>();
             int abyssKelpID = ModContent.TileType<AbyssKelp>();
 
@@ -681,18 +683,24 @@ namespace CalamityMod.CalPlayer
 
                 // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor
                 // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
-                else if (tile.TileType == auricOreID && !auricSet)
+                else if ((tile.TileType == auricOreID && !auricSet) || tile.TileType == auricRepulserID)
                 {
                     // Cut grappling hooks so the player is surely thrown
                     Player.RemoveAllGrapplingHooks();
 
                     // Force Auric Ore to animate with its crackling electricity
-                    AuricOre.Animate = true;
+                    if (tile.TileType == auricOreID)
+                    {
+                        AuricOre.Animate = true;
+                    }
 
                     var yeetVec = Vector2.Normalize(Player.Center - touchedTile.ToWorldCoordinates());
                     Player.velocity += yeetVec * auricRejectionKB;
-                    Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").Format(Player.name)), auricRejectionDamage, 0);
-                    Player.AddBuff(BuffID.Electrified, 300);
+                    if (tile.TileType == auricOreID)
+                    {
+                        Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").Format(Player.name)), auricRejectionDamage, 0);
+                        Player.AddBuff(BuffID.Electrified, 300);
+                    }
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"));
                 }
             }

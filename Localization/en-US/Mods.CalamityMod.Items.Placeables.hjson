@@ -1337,6 +1337,36 @@ SmoothBrimstoneSlag: {
 	Tooltip: ""
 }
 
+ActivatedAuricPanel: {
+	DisplayName: Activated Auric Panel
+	Tooltip: ""
+}
+
+AuricAbsorber: {
+	DisplayName: Auric Absorber
+	Tooltip: ""
+}
+
+AuricPanel: {
+	DisplayName: Auric Panel
+	Tooltip: ""
+}
+
+AuricPlatform: {
+	DisplayName: Auric Platform
+	Tooltip: ""
+}
+
+AuricRepulserPanel: {
+	DisplayName: Auric Repulser Panel
+	Tooltip: "Repels players that come in contact with it"
+}
+
+ExoAuricPanel: {
+	DisplayName: Exo Auric Panel
+	Tooltip: ""
+}
+
 BotanicBathtub: {
 	DisplayName: Botanic Bathtub
 	Tooltip: ""

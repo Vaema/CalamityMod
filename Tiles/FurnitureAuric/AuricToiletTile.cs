@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Furniture;
+﻿using CalamityMod.Items.Placeables.FurnitureAuric;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -8,7 +8,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Furniture
+namespace CalamityMod.Tiles.FurnitureAuric
 {
     public class AuricToiletTile : ModTile
     {

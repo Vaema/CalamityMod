@@ -3,11 +3,11 @@ using CalamityMod.Items.Placeables.FurnitureBotanic;
 using CalamityMod.Items.Placeables.FurnitureCosmilite;
 using CalamityMod.Items.Placeables.FurnitureSilva;
 using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityMod.Tiles.FurnitureAuric;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Items.Placeables.Furniture
+namespace CalamityMod.Items.Placeables.FurnitureAuric
 {
     public class AuricToilet : ModItem, ILocalizedModType
     {
