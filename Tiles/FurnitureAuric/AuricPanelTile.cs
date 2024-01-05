@@ -17,7 +17,7 @@ namespace CalamityMod.Tiles.FurnitureAuric
             HitSound = AuricOre.MineSound;
             MineResist = 3f;
             DustType = 55;
-            AddMapEntry(new Color(204, 224, 25));
+            AddMapEntry(new Color(213, 138, 69));
         }
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {

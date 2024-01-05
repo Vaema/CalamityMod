@@ -20,7 +20,7 @@ namespace CalamityMod.Tiles.FurnitureAuric
             Main.tileBlockLight[Type] = true;
             HitSound = AuricOre.MineSound;
             MineResist = 3f;
-            AddMapEntry(new Color(147, 158, 43));
+            AddMapEntry(new Color(166, 96, 64));
         }
 
         public override bool CreateDust(int i, int j, ref int type)

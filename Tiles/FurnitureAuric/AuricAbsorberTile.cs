@@ -17,7 +17,7 @@ namespace CalamityMod.Tiles.FurnitureAuric
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             HitSound = SoundID.NPCHit34;
-            AddMapEntry(new Color(22, 214, 240));
+            AddMapEntry(new Color(192, 237, 255));
             DustType = DustID.Electric;
         }
 
