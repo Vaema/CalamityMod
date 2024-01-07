@@ -1347,6 +1347,16 @@ AuricAbsorber: {
 	Tooltip: ""
 }
 
+AuricConsole: {
+	DisplayName: Auric Console
+	Tooltip: ""
+}
+
+AuricDisplay: {
+	DisplayName: Auric Display
+	Tooltip: ""
+}
+
 AuricPanel: {
 	DisplayName: Auric Panel
 	Tooltip: ""
@@ -1357,9 +1367,29 @@ AuricPlatform: {
 	Tooltip: ""
 }
 
+AuricReinforcedCrate: {
+	DisplayName: Auric Reinforced Crate
+	Tooltip: ""
+}
+
 AuricRepulserPanel: {
 	DisplayName: Auric Repulser Panel
 	Tooltip: Repels players that come in contact with it
+}
+
+AuricScreen: {
+	DisplayName: Auric Screen
+	Tooltip: ""
+}
+
+AuricServer: {
+	DisplayName: Auric Server
+	Tooltip: ""
+}
+
+AuricTerminal: {
+	DisplayName: Auric Terminal
+	Tooltip: ""
 }
 
 ExoAuricPanel: {
