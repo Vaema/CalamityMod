@@ -670,20 +670,21 @@ namespace CalamityMod.CalPlayer
 
                 // Ores below here
                 // Seraph Tracers give immunity to block contact effects
-                if (tracersSeraph)
-                    return;
+                if (!tracersSeraph)
+                {
 
-                // Astral Ore inflicts Astral Infection briefly on contact
-                if (tile.TileType == astralOreID)
-                    Player.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 2);
+                    // Astral Ore inflicts Astral Infection briefly on contact
+                    if (tile.TileType == astralOreID)
+                        Player.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 2);
 
-                // You will need to set each resistant item here for burning as it gets bypassed for somereason
-                if (tile.TileType == scoriaOreID && !Player.fireWalk)
-                    Player.AddBuff(BuffID.Burning, 2);
+                    // You will need to set each resistant item here for burning as it gets bypassed for somereason
+                    if (tile.TileType == scoriaOreID && !Player.fireWalk)
+                        Player.AddBuff(BuffID.Burning, 2);
+                }
 
                 // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor
                 // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
-                else if ((tile.TileType == auricOreID && !auricSet) || tile.TileType == auricRepulserID)
+                if ((tile.TileType == auricOreID && !(auricSet || tracersSeraph)) || tile.TileType == auricRepulserID)
                 {
                     // Cut grappling hooks so the player is surely thrown
                     Player.RemoveAllGrapplingHooks();
