@@ -27,6 +27,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.extraUpdates = 3;
             Projectile.timeLeft = 150;
             Projectile.alpha = 100;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 5;
         }
 
         public override void AI()
@@ -102,12 +104,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            // TODO -- Why are there so many incorrectly programmed i-frame sets
-            target.immune[Projectile.owner] = 5;
-            target.AddBuff(ModContent.BuffType<Plague>(), 120);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 120);
 
         public override bool PreDraw(ref Color lightColor)
         {

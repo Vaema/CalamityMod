@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.damage = 1666;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = Item.useAnimation = 30; // 29 because of useStyle 1
+            Item.useTime = Item.useAnimation = 80; // 79 because of useStyle 1
             Item.autoReuse = true;
             Item.noMelee = true;
             Item.knockBack = 0f;

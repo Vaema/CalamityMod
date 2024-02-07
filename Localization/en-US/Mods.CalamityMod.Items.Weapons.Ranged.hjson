@@ -329,7 +329,7 @@ CrackshotColt: {
 		Press <right> to toss a Copper Coin in the air
 		Striking a coin with a bullet causes it to ricochet into the nearest enemy
 		Up to 4 coins can be tossed simultaneously, and shots will ricochet off multiple coins if possible
-		Ricocheted bullets always critically strike
+		Coins guarantee a critical strike after a short delay
 		'''
 }
 
@@ -380,7 +380,7 @@ DeepcoreGK2: {
 	DisplayName: Deepcore GK2
 	Tooltip:
 		'''
-		Bullets are twice as large and ignores 15 points of enemy defense
+		Bullets are twice as large and ignores 10 points of enemy defense
 		'For rock and stone!'
 		'''
 }
@@ -731,7 +731,7 @@ MidasPrime: {
 		Press <right> to toss a Gold Coin or Silver Coin in the air
 		Striking a coin with a bullet causes it to ricochet into the nearest enemy
 		Up to 4 coins can be tossed simultaneously, and shots will ricochet off multiple coins if possible
-		Ricocheted bullets always critically strike and do bonus damage based on the coins used
+		Coins guarantee a critical strike after a short delay and bullets do bonus damage based on coins used
 		'''
 	UltrakillEasterEgg:
 		'''

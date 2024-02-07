@@ -1,4 +1,5 @@
 ﻿using CalamityMod.DataStructures;
+using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -23,7 +24,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.timeLeft = duration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
-			Projectile.scale = 1.2f;
+            Projectile.scale = 1.2f;
         }
 
         public override void AI()
@@ -94,7 +95,7 @@ namespace CalamityMod.Projectiles.Typeless
             // 12AUG2023: Ozzatron: TML was giving NaN knockback, probably due to 0 base knockback. Do not use hit.Knockback
             if (CalamityGlobalNPC.ShouldAffectNPC(target))
             {
-                float knockbackMultiplier = MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
+                float knockbackMultiplier = SandCloak.KnockbackStrength * MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
                 Vector2 trueKnockback = target.Center - Projectile.Center;
                 trueKnockback.Normalize();
                 target.velocity = trueKnockback * knockbackMultiplier;

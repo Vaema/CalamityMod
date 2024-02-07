@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class GodSlayerBlaze : ModProjectile, ILocalizedModType
+    public class HideOfAstrumDeusExplosion : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -73,18 +73,12 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.ai[1] == 1f)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 300);
-            else
-                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 300);
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 300);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            if (Projectile.ai[1] == 1f)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 300);
-            else
-                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 300);
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 300);
         }
     }
 }

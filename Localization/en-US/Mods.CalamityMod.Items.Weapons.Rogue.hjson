@@ -9,7 +9,7 @@ AcidicRainBarrel: {
 
 AdamantiteThrowingAxe: {
 	DisplayName: Adamantite Throwing Axe
-	Tooltip: Stealth strikes summon lightning bolts on enemy hits
+	Tooltip: Stealth strikes ignore gravity and rain down lightning on enemy hits
 }
 
 AlphaVirus: {
@@ -489,7 +489,7 @@ GildedDagger: {
 	Tooltip:
 		'''
 		Throws a shiny blade that ricochets towards another enemy on hit
-		Stealth strikes cause the blade to home in after ricocheting, with each ricochet dealing 20% more damage
+		Stealth strikes cause the blade to home in after ricocheting, with each ricochet dealing 5% more damage
 		Stealth strikes also have increased piercing
 		'''
 }
@@ -508,7 +508,7 @@ GleamingDagger: {
 	Tooltip:
 		'''
 		Throws a shiny blade that ricochets towards another enemy on hit
-		Stealth strikes cause the blade to home in after ricocheting, with each ricochet dealing 20% more damage
+		Stealth strikes cause the blade to home in after ricocheting, with each ricochet dealing 5% more damage
 		Stealth strikes also have increased piercing
 		'''
 }
@@ -1170,7 +1170,7 @@ SubductionSlicer: {
 	Tooltip:
 		'''
 		Throws a scythe that explodes on enemy hits
-		Stealth strikes also summon an orange pillar of fire on enemy hits
+		Stealth strikes also summon a pillar of fire on enemy hits
 		'''
 }
 

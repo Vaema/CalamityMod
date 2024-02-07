@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Healing;
+﻿using CalamityMod.Projectiles.Healing;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -45,28 +44,32 @@ namespace CalamityMod.Items.Weapons.Melee
                 player.HealEffect(4);
             }
 
-            OnHitEffects(player, target.Center, target.life, target.lifeMax, Item.knockBack, Item.damage, hit.Crit);
+            OnHitEffects(player, target.Center, target.life, target.lifeMax, Item.knockBack, Item.damage);
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            OnHitEffects(player, target.Center, target.statLife, target.statLifeMax2, Item.knockBack, Item.damage, false);
+            OnHitEffects(player, target.Center, target.statLife, target.statLifeMax2, Item.knockBack, Item.damage);
         }
-        // this should use onHitNPC and ModifyHitNPC instead of onHitEffects
-        private void OnHitEffects(Player player, Vector2 targetPos, int targetLife, int targetMaxLife, float knockback, int damage, bool crit)
+
+        private void OnHitEffects(Player player, Vector2 targetPos, int targetLife, int targetMaxLife, float knockback, int damage)
         {
             var source = player.GetSource_ItemUse(Item);
-            if (crit)
-                damage /= 2;
 
-            Projectile.NewProjectile(source, targetPos, Vector2.Zero, ModContent.ProjectileType<RainbowBoom>(), (int)(damage * 0.5f), 0f, player.whoAmI);
+            // Grand Guardian is classed as a regular melee weapon, so despite being a true melee on-hit, these scale with regular melee.
+            StatModifier playerMeleeDmg = player.GetTotalDamage<MeleeDamageClass>();
+            int rainbowBoomDamage = (int)playerMeleeDmg.ApplyTo(damage * 0.5f);
+            int rainBoltDamage = (int)playerMeleeDmg.ApplyTo(damage * 0.75f);
+            
+            Projectile.NewProjectile(source, targetPos, Vector2.Zero, ModContent.ProjectileType<RainbowBoom>(), rainbowBoomDamage, 0f, player.whoAmI);
+
             if (targetLife <= (targetMaxLife * 0.5f) && player.ownedProjectileCounts[ModContent.ProjectileType<RainBolt>()] < 3)
             {
                 float randomSpeedX = Main.rand.Next(6, 13);
                 float randomSpeedY = Main.rand.Next(6, 13);
-                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, -randomSpeedX, -randomSpeedY, ModContent.ProjectileType<RainBolt>(), (int)(damage * 0.75f), knockback, player.whoAmI);
-                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, randomSpeedX, -randomSpeedY, ModContent.ProjectileType<RainBolt>(), (int)(damage * 0.75f), knockback, player.whoAmI);
-                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, 0f, -randomSpeedY, ModContent.ProjectileType<RainBolt>(), (int)(damage * 0.75f), knockback, player.whoAmI);
+                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, -randomSpeedX, -randomSpeedY, ModContent.ProjectileType<RainBolt>(), rainBoltDamage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, randomSpeedX, -randomSpeedY, ModContent.ProjectileType<RainBolt>(), rainBoltDamage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, 0f, -randomSpeedY, ModContent.ProjectileType<RainBolt>(), rainBoltDamage, knockback, player.whoAmI);
             }
             if (targetLife <= 0 && !player.moonLeech && player.ownedProjectileCounts[ModContent.ProjectileType<RainHeal>()] < 3)
             {

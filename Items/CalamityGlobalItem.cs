@@ -437,20 +437,20 @@ namespace CalamityMod.Items
                     modPlayer.canFireAtaxiaRogueProjectile = false;
                     int flareID = ModContent.ProjectileType<HydrothermicFlareRogue>();
 
-                    // Ataxia Rogue Flares: 8 x 50%, soft cap starts at 120 base damage
-                    int flareDamage = CalamityUtils.DamageSoftCap(damage * 0.5, 120);
+                    // Ataxia Rogue Flares: 6 x 50%, soft cap starts at 90 base damage
+                    int flareDamage = CalamityUtils.DamageSoftCap(damage * 0.5, 90);
                     flareDamage = player.ApplyArmorAccDamageBonusesTo(flareDamage);
 
                     if (player.whoAmI == Main.myPlayer)
                     {
                         SoundEngine.PlaySound(SoundID.Item20, player.Center);
-                        float spread = 45f * 0.0174f;
+                        float spread = 60f * 0.0174f;
                         double startAngle = Math.Atan2(player.velocity.X, player.velocity.Y) - spread / 2;
-                        double deltaAngle = spread / 8f;
+                        double deltaAngle = spread / 6f;
                         double offsetAngle;
-                        for (int i = 0; i < 4; i++)
+                        for (int i = 0; i < 3; i++)
                         {
-                            offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
+                            offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 30f * i;
                             Projectile.NewProjectile(source, player.Center.X, player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), flareID, flareDamage, 1f, player.whoAmI);
                             Projectile.NewProjectile(source, player.Center.X, player.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), flareID, flareDamage, 1f, player.whoAmI);
                         }
@@ -1256,7 +1256,8 @@ namespace CalamityMod.Items
             }
             else if (item.type == ItemID.FinWings) // Boosted water abilities, faster fall in water
             {
-                player.gills = true;
+                if (player.IsUnderwater())
+                    player.gills = true;
                 player.ignoreWater = true;
                 player.noFallDmg = true;
                 if (!player.mount.Active)

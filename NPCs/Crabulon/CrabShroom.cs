@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.Crabulon
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 NPC.scale = 2f;
 
-            NPC.lifeMax = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 30 : 15;
+            NPC.lifeMax = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 180 : 30;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 8000;
             if (Main.getGoodWorld)
@@ -37,7 +37,7 @@ namespace CalamityMod.NPCs.Crabulon
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             AIType = -1;
-            NPC.knockBackResist = 0.75f;
+            NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.canGhostHeal = false;
@@ -58,37 +58,40 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void AI()
         {
-            Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0f, 0.2f, 0.4f);
+            Lighting.AddLight(NPC.Center, 0f, 0.2f, 0.4f);
+
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
-            float xVelocityLimit = BossRushEvent.BossRushActive ? 7.5f : 5f;
-            float yVelocityLimit = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.5f : revenge ? 1.25f : 1f;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+
+            float xVelocityLimit = BossRushEvent.BossRushActive ? 12f : death ? 8f : revenge ? 6f : 5f;
+            float yVelocityLimit = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.25f : death ? 0.75f : revenge ? 0.9f : 1f;
+
             NPC.TargetClosest();
             Player player = Main.player[NPC.target];
+
             NPC.velocity.Y += 0.02f;
             if (NPC.velocity.Y > yVelocityLimit)
-            {
                 NPC.velocity.Y = yVelocityLimit;
-            }
+
             if (NPC.position.X + NPC.width < player.position.X)
             {
                 if (NPC.velocity.X < 0f)
-                {
                     NPC.velocity.X *= 0.98f;
-                }
+
                 NPC.velocity.X += 0.1f;
             }
             else if (NPC.position.X > player.position.X + player.width)
             {
                 if (NPC.velocity.X > 0f)
-                {
                     NPC.velocity.X *= 0.98f;
-                }
+
                 NPC.velocity.X -= 0.1f;
             }
+
             if (NPC.velocity.X > xVelocityLimit || NPC.velocity.X < -xVelocityLimit)
-            {
                 NPC.velocity.X *= 0.97f;
-            }
+
             NPC.rotation = NPC.velocity.X * 0.1f;
 
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
@@ -155,16 +158,13 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void HitEffect(NPC.HitInfo hit)
         {
-            for (int k = 0; k < 3; k++)
-            {
+            for (int k = 0; k < 2; k++)
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, 56, hit.HitDirection, -1f, 0, default, 1f);
-            }
+
             if (NPC.life <= 0)
             {
-                for (int k = 0; k < 10; k++)
-                {
+                for (int k = 0; k < 6; k++)
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, 56, hit.HitDirection, -1f, 0, default, 1f);
-                }
             }
         }
     }

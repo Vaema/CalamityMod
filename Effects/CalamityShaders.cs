@@ -192,6 +192,10 @@ namespace CalamityMod.Effects
         internal static Effect DeerclopsShadowShader;
         #endregion
 
+        #region YuH's Shaders
+        internal static Effect TeslaTrailShader;
+        #endregion
+
         // Shorthand to register a loaded shader in Terraria's graphics engine
         // All shaders registered this way are accessible under GameShaders.Misc
         // They will use the prefix described above
@@ -405,6 +409,11 @@ namespace CalamityMod.Effects
             DeerclopsShadowShader = LoadShader("ScreenShaders/DeerclopsShadowShader");
             RegisterMiscShader(DeerclopsShadowShader, "ShadowPass", "DeerclopsShadowShader");
 
+            #endregion
+
+            #region Loading YuH's Shaders
+            TeslaTrailShader = LoadShader("TeslaTrail");
+            RegisterMiscShader(TeslaTrailShader, "TrailPass", "TeslaTrail");
             #endregion
         }
     }

@@ -953,7 +953,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (!Main.rand.NextBool(3))
                         continue;
-                    
+
                     Dust holyCinder = Dust.NewDustDirect(Player.position, Player.width, Player.height, (int)CalamityDusts.ProfanedFire);
                     holyCinder.velocity = Main.rand.NextVector2Circular(3.5f, 3.5f);
                     holyCinder.velocity.Y -= Main.rand.NextFloat(1f, 3f);
@@ -1025,7 +1025,7 @@ namespace CalamityMod.CalPlayer
                     Vector2 spawnPoint = new Vector2(Player.Center.X + Main.rand.Next(-1000, 1001), Player.Center.Y - Main.rand.Next(700, 801));
 
                     if (Player.miscCounter % slimeRainRate == 0f)
-                    {                        
+                    {
                         if (DownedBossSystem.downedAquaticScourge && !DownedBossSystem.downedPolterghast && Main.rand.NextBool(12))
                         {
                             NPC.NewNPC(new EntitySource_SpawnNPC(), (int)spawnPoint.X, (int)spawnPoint.Y, ModContent.NPCType<IrradiatedSlime>());
@@ -1119,7 +1119,7 @@ namespace CalamityMod.CalPlayer
                     {
                         Player.velocity.Y += Player.gravity * Player.gravDir * (BalancingConstants.HoldingDownGravityMultiplier - 1f);
                         if (Player.Calamity().gSabaton)
-                        { 
+                        {
                             Player.maxFallSpeed *= 1.5f;
                         }
                         if (Player.velocity.Y * Player.gravDir > Player.maxFallSpeed)
@@ -1259,7 +1259,7 @@ namespace CalamityMod.CalPlayer
                             }
                         }
 
-                        if (target > 0) 
+                        if (target > 0)
                         {
                             unstableSelectedTarget = Main.npc[target];
                             unstableSelectedTarget.Calamity().arcZapCooldown = 18;
@@ -1479,7 +1479,7 @@ namespace CalamityMod.CalPlayer
                 auralisAurora--;
             if (auralisAuroraCooldown > 0)
                 auralisAuroraCooldown--;
-            
+
             if (blazingCore)
             {
                 if (blazingCoreSuccessfulParry > 0)
@@ -1491,7 +1491,7 @@ namespace CalamityMod.CalPlayer
             {
                 FlameLickedShell.HandleParryCountdown(Player);
             }
-            
+
             // Silver Armor "Medkit" effect
             if (silverMedkitTimer > 0)
             {
@@ -1870,6 +1870,25 @@ namespace CalamityMod.CalPlayer
             }
             else if (polarisBoostCounter >= 10)
                 polarisBoostTwo = true;
+
+            // Haste buff
+            if (hasteLevel > 0)
+            {
+                // capped out at 3
+                if (hasteLevel > 3)
+                    hasteLevel = 3;
+                // if the haste counter hits 5 seconds, subtract a haste level, and if there are none left afterwards, delete the buff
+                if (++hasteCounter == 300)
+                {
+                    hasteLevel--;
+                    if (hasteLevel <= 0)
+                    {
+                        if (Player.FindBuffIndex(ModContent.BuffType<Haste>()) > -1)
+                            Player.ClearBuff(ModContent.BuffType<Haste>());
+                    }
+                    hasteCounter = 0;
+                }
+            }
 
             // Calcium Potion buff
             if (calcium)
@@ -2488,7 +2507,7 @@ namespace CalamityMod.CalPlayer
             if (decayEffigy)
             {
                 Player.buffImmune[ModContent.BuffType<SulphuricPoisoning>()] = true;
-                if (!ZoneAbyss)
+                if (!ZoneAbyss && Player.IsUnderwater())
                 {
                     Player.gills = true;
                 }
@@ -2766,9 +2785,6 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-
-            if (CalamityLists.scopedWeaponList.Contains(Player.ActiveItem().type))
-                Player.scope = true;
 
             if (CalamityLists.highTestFishList.Contains(Player.ActiveItem().type))
                 Player.accFishingLine = true;

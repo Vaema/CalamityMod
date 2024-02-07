@@ -448,6 +448,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             {
                 if (npc.ai[1] == 0f)
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     float retinazerPhase1MaxSpeed = 8.25f;
                     float retinazerPhase1Acceleration = 0.115f;
                     retinazerPhase1MaxSpeed += 4f * enrageScale;
@@ -584,6 +587,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                 else if (npc.ai[1] == 1f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     npc.rotation = retinazerHoverRotation;
                     float retinazerChargeSpeed = 15f;
                     retinazerChargeSpeed += 10f * enrageScale;
@@ -603,18 +609,20 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 }
                 else if (npc.ai[1] == 2f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     npc.ai[2] += 1f;
                     if (npc.ai[2] >= 25f)
                     {
+                        // Avoid cheap bullshit
+                        npc.damage = 0;
+
                         npc.velocity *= 0.96f;
                         if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
-                        {
                             npc.velocity.X = 0f;
-                        }
                         if (npc.velocity.Y > -0.1 && npc.velocity.Y < 0.1)
-                        {
                             npc.velocity.Y = 0f;
-                        }
                     }
                     else
                         npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X) - MathHelper.PiOver2;
@@ -649,6 +657,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
             else if (npc.ai[0] == 1f || npc.ai[0] == 2f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 if (NPC.IsMechQueenUp)
                     npc.reflectsProjectiles = true;
 
@@ -717,7 +728,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                 npc.chaseable = !spazInPhase1;
 
-                npc.damage = (int)(npc.defDamage * 1.5);
+                int setDamage = (int)(npc.defDamage * 1.5);
                 npc.defense = npc.defDefense + 10;
                 calamityGlobalNPC.DR = spazInPhase1 ? 0.9999f : 0.2f;
                 calamityGlobalNPC.unbreakableDR = spazInPhase1;
@@ -727,6 +738,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                 if (npc.ai[1] == 0f)
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     float retinazerPhase2MaxSpeed = 9.5f + (death ? 3f * (0.7f - lifeRatio) : 0f);
                     float retinazerPhase2Accel = 0.175f + (death ? 0.05f * (0.7f - lifeRatio) : 0f);
                     retinazerPhase2MaxSpeed += 4.5f * enrageScale;
@@ -857,6 +871,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 {
                     if (npc.ai[1] == 1f)
                     {
+                        // Avoid cheap bullshit
+                        npc.damage = 0;
+
                         int retinazerPhase2FaceDirection = 1;
                         if (npc.position.X + (npc.width / 2) < Main.player[npc.target].position.X + Main.player[npc.target].width)
                             retinazerPhase2FaceDirection = -1;
@@ -962,6 +979,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     // Charge
                     else if (npc.ai[1] == 2f)
                     {
+                        // Set damage
+                        npc.damage = setDamage;
+
                         // Set rotation and velocity
                         npc.rotation = retinazerHoverRotation;
                         float retinazerPhase3ChargeSpeed = 22f + (death ? 8f * (0.7f - lifeRatio) : 0f);
@@ -985,6 +1005,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                     else if (npc.ai[1] == 3f)
                     {
+                        // Set damage
+                        npc.damage = setDamage;
+
                         npc.ai[2] += 1f;
 
                         float chargeTime = spazAlive ? 45f : 30f;
@@ -997,6 +1020,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                         // Slow down
                         if (npc.ai[2] >= chargeTime)
                         {
+                            // Avoid cheap bullshit
+                            npc.damage = 0;
+
                             npc.velocity *= 0.93f;
                             if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
                                 npc.velocity.X = 0f;
@@ -1063,6 +1089,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     // Get in position for charge
                     else if (npc.ai[1] == 4f)
                     {
+                        // Avoid cheap bullshit
+                        npc.damage = 0;
+
                         int chargeLineUpDist = spazAlive ? 600 : 500;
                         float chargeSpeed = 12f + (death ? 4f * (0.7f - lifeRatio) : 0f);
                         float chargeAccel = 0.3f + (death ? 0.1f * (0.7f - lifeRatio) : 0f);
@@ -1275,6 +1304,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 // Cursed fireball phase
                 if (npc.ai[1] == 0f)
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     // Velocity
                     float spazmatismFireballMaxSpeed = 12f;
                     float spazmatismFireballAccel = 0.4f;
@@ -1408,6 +1440,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 // Charging phase
                 else if (npc.ai[1] == 1f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     // Rotation and velocity
                     npc.rotation = spazmatismRotation;
                     float spazmatismPhase1ChargeSpeed = 16f;
@@ -1428,11 +1463,17 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 }
                 else if (npc.ai[1] == 2f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     npc.ai[2] += 1f;
 
                     float timeBeforeSlowDown = 12f;
                     if (npc.ai[2] >= timeBeforeSlowDown)
                     {
+                        // Avoid cheap bullshit
+                        npc.damage = 0;
+
                         // Slow down
                         npc.velocity *= 0.9f;
 
@@ -1483,6 +1524,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             // Transition phase
             else if (npc.ai[0] == 1f || npc.ai[0] == 2f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 if (NPC.IsMechQueenUp)
                     npc.reflectsProjectiles = true;
 
@@ -1557,7 +1601,8 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 npc.chaseable = !retInPhase1;
 
                 // Increase defense and damage
-                npc.damage = (int)(npc.defDamage * 1.5);
+                int setDamage = (int)(npc.defDamage * 1.5);
+                int reducedSetDamage = (int)(setDamage * 0.5f);
                 npc.defense = npc.defDefense + 18;
                 calamityGlobalNPC.DR = retInPhase1 ? 0.9999f : 0.2f;
                 calamityGlobalNPC.unbreakableDR = retInPhase1;
@@ -1569,6 +1614,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 // Shadowflamethrower phase
                 if (npc.ai[1] == 0f)
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = reducedSetDamage;
+
                     float spazmatismFlamethrowerMaxSpeed = 6.2f + (death ? 2f * (0.7f - lifeRatio) : 0f);
                     float spazmatismFlamethrowerAccel = 0.1f + (death ? 0.03f * (0.7f - lifeRatio) : 0f);
                     spazmatismFlamethrowerMaxSpeed += 4f * enrageScale;
@@ -1724,6 +1772,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     // Charge
                     if (npc.ai[1] == 1f)
                     {
+                        // Set damage
+                        npc.damage = setDamage;
+
                         // Play charge sound
                         SoundEngine.PlaySound(SoundID.Roar, npc.position);
 
@@ -1742,6 +1793,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                     if (npc.ai[1] == 2f)
                     {
+                        // Set damage
+                        npc.damage = setDamage;
+
                         npc.ai[2] += retAlive ? 1f : 1.25f;
 
                         float chargeTime = 50f - (death ? 12f * (0.7f - lifeRatio) : 0f);
@@ -1749,6 +1803,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                         // Slow down
                         if (npc.ai[2] >= chargeTime)
                         {
+                            // Avoid cheap bullshit
+                            npc.damage = reducedSetDamage;
+
                             npc.velocity *= 0.93f;
                             if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
                                 npc.velocity.X = 0f;
@@ -1778,6 +1835,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     // Crazy charge
                     else if (npc.ai[1] == 3f)
                     {
+                        // Avoid cheap bullshit
+                        npc.damage = reducedSetDamage;
+
                         // Reset AI array and go to shadowflamethrower phase or fireball phase if ret is dead
                         float secondFastCharge = 4f;
                         if (npc.ai[3] >= (retAlive ? secondFastCharge : secondFastCharge + 1f))
@@ -1847,6 +1907,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     // Crazy charge
                     else if (npc.ai[1] == 4f)
                     {
+                        // Set damage
+                        npc.damage = setDamage;
+
                         if (npc.ai[2] == 0f)
                             SoundEngine.PlaySound(SoundID.Roar, npc.position);
 
@@ -1860,6 +1923,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                         // Slow down
                         if (npc.ai[2] >= spazmatismRetDeadChargeSpeed)
                         {
+                            // Avoid cheap bullshit
+                            npc.damage = reducedSetDamage;
+
                             npc.velocity *= 0.93f;
                             if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
                                 npc.velocity.X = 0f;
@@ -1887,6 +1953,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     // Get in position for charge
                     else if (npc.ai[1] == 5f)
                     {
+                        // Avoid cheap bullshit
+                        npc.damage = reducedSetDamage;
+
                         float chargeLineUpDist = retAlive ? 600f : 500f;
                         float chargeSpeed = 16f + (death ? 5f * (0.7f - lifeRatio) : 0f);
                         float chargeAccel = 0.4f + (death ? 0.1f * (0.7f - lifeRatio) : 0f);

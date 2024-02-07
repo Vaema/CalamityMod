@@ -284,21 +284,10 @@ namespace CalamityMod.Items
             if (item.type == ItemID.AnkhShield)
                 EditTooltipByNum(1, (line) => line.Text += ", including Mighty Wind");
 
-            // Water removing items cannot be used in the Abyss
-            string noAbyssLine = "\nCannot be used in the Abyss";
-            if (item.type == ItemID.SuperAbsorbantSponge)
-                EditTooltipByNum(0, (line) => line.Text += noAbyssLine);
-            if (item.type == ItemID.EmptyBucket)
-                EditTooltipByName("Defense", (line) => line.Text += noAbyssLine);
-
             // If Early Hardmode Rework is enabled: Remind users that ores will NOT spawn when an altar is smashed.
             if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && (item.type == ItemID.Pwnhammer || item.type == ItemID.Hammush))
                 EditTooltipByNum(0, (line) => line.Text += "\nDemon Altars now drop Souls of Night instead of generating ores when destroyed" +
                 "\nHardmode ores now generate after defeating Mechanical Bosses for the first time");
-
-            // Bottled Honey gives the Honey buff
-            if (item.type == ItemID.BottledHoney)
-                EditTooltipByName("HealLife", (line) => line.Text += "\nGrants the Honey buff for 2 minutes");
 
             // Warmth Potion provides debuff immunities
             if (item.type == ItemID.WarmthPotion)
@@ -448,16 +437,22 @@ namespace CalamityMod.Items
                 EditTooltipByName("Knockback", (line) => line.Text += "\nIncreases how frequently the Orichalcum set bonus triggers on hit");
 
             // Adamantite
-            if (item.type == ItemID.AdamantiteSword || item.type == ItemID.AdamantiteGlaive)
+            if (item.type == ItemID.AdamantiteSword)
+                EditTooltipByName("Material", (line) => line.Text += "\nSlows enemies on hit");
+
+            if (item.type == ItemID.AdamantiteGlaive)
                 EditTooltipByName("Knockback", (line) => line.Text += "\nSlows enemies on hit");
 
             // Titanium
-            if (item.type == ItemID.TitaniumSword || item.type == ItemID.TitaniumTrident)
+            if (item.type == ItemID.TitaniumSword)
+                EditTooltipByName("Material", (line) => line.Text += "\nDeals increased damage to enemies with high knockback resistance");
+
+            if (item.type == ItemID.TitaniumTrident)
                 EditTooltipByName("Knockback", (line) => line.Text += "\nDeals increased damage to enemies with high knockback resistance");
 
             // Hallowed (and True Excalibur)
             if (item.type == ItemID.Excalibur || item.type == ItemID.Gungnir || item.type == ItemID.TrueExcalibur)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nDeals double damage to enemies above 75% life");
+                EditTooltipByName("Material", (line) => line.Text += "\nDeals double damage to enemies above 75% life");
             #endregion
 
             // Other melee weapon tooltips
@@ -466,13 +461,27 @@ namespace CalamityMod.Items
             if (item.type == ItemID.CandyCaneSword || item.type == ItemID.FruitcakeChakram)
                 EditTooltipByName("Knockback", (line) => line.Text += "\nHeals you on hit");
 
-            // Stylish Scissors, all Phaseblades, and all Phasesabers
-            if (item.type == ItemID.StylistKilLaKillScissorsIWish || (item.type >= ItemID.BluePhaseblade && item.type <= ItemID.YellowPhaseblade) || (item.type >= ItemID.BluePhasesaber && item.type <= ItemID.YellowPhasesaber) || item.type == ItemID.OrangePhaseblade || item.type == ItemID.OrangePhasesaber)
+            // Stylish Scissors, all Phaseblades, and all Phasesabers ignore 100% of defense
+            if (item.type == ItemID.StylistKilLaKillScissorsIWish || (item.type >= ItemID.BluePhasesaber && item.type <= ItemID.YellowPhasesaber) || item.type == ItemID.OrangePhasesaber)
                 EditTooltipByName("Knockback", (line) => line.Text += "\nIgnores 100% of enemy defense");
 
-            if (item.type == ItemID.AntlionClaw || item.type == ItemID.BoneSword || item.type == ItemID.BreakerBlade)
+            // Phaseblades are done separately to ensure it appears under the Material line
+            if (item.type >= ItemID.BluePhaseblade && item.type <= ItemID.YellowPhaseblade || item.type == ItemID.OrangePhaseblade)
+                EditTooltipByName("Material", (line) => line.Text += "\nIgnores 100% of enemy defense");
+
+            // Bone Sword, Breaker Blade, and Mandible Blade ignore 50% of defense
+            if (item.type == ItemID.BoneSword || item.type == ItemID.BreakerBlade)
                 EditTooltipByName("Knockback", (line) => line.Text += "\nIgnores 50% of enemy defense");
 
+            // Mandible Blade is done separately to ensure it appears under the Material line
+            if (item.type == ItemID.AntlionClaw)
+                EditTooltipByName("Material", (line) => line.Text += "\nIgnores 50% of enemy defense");
+
+            // Muramasa inflicts Nightwither
+            if (item.type == ItemID.Muramasa)
+                EditTooltipByName("Material", (line) => line.Text += "\nInflicts Nightwither on hit");
+
+            // Death Sickle inflict Whispering Death
             if (item.type == ItemID.DeathSickle)
                 EditTooltipByNum(0, (line) => line.Text += "\nInflicts Whispering Death on hit");
             #endregion
@@ -573,7 +582,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HellfireTreads)
             {
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("fire blocks", "the Burning and On Fire! debuffs"));
-                EditTooltipByNum(3, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5\n" +
+                EditTooltipByNum(2, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5\n" +
                 "All attacks inflict Hellfire");
             }
 
@@ -582,10 +591,6 @@ namespace CalamityMod.Items
                 EditTooltipByNum(2, (line) => line.Text += "\nFairies can spawn at any time on the surface and spawn far more frequently\n" +
                 "Nearby fairies grant +2 HP/s life regen, 10 defense and  10% movement speed\n" +
                 "Fairies are immune to damage and will no longer flee");
-
-            // Armor Crunch immunity pre-Golem.
-            if (item.type == ItemID.ArmorPolish || item.type == ItemID.ArmorBracing)
-                EditTooltipByNum(0, (line) => line.Text += " and Armor Crunch");
 
             // Reduced Nightwither and Holy Flames damage, and melee speed removal.
             if (item.type == ItemID.MoonStone)
@@ -691,10 +696,9 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.MechanicalGlove)
             {
-                string extraLine = "\n12% increased melee speed, does not stack with downgrades";
-                EditTooltipByNum(1, (line) => line.Text = "12% increased melee damage" + extraLine);
-                EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("12% increased melee speed", "12% increased melee speed, does not stack with downgrades"));
-                EditTooltipByNum(0, (line) => line.Text += "\n10% increased true melee damage");
+                string extraLine = "\n10% increased true melee damage";
+                string extraLine2 = "\n12% increased melee speed, does not stack with downgrades" + extraLine;
+                EditTooltipByNum(1, (line) => line.Text = "12% increased melee damage" + extraLine2);
             }
 
             if (item.type == ItemID.FireGauntlet)
@@ -920,9 +924,11 @@ namespace CalamityMod.Items
             if (item.type == ItemID.Picksaw)
                 EditTooltipByNum(0, (line) => line.Text += "\nCan mine Scoria Ore located in the Abyss");
 
-            if (item.type == ItemID.SolarFlarePickaxe || item.type == ItemID.VortexPickaxe || item.type == ItemID.NebulaPickaxe || item.type == ItemID.StardustPickaxe
-                || item.type == ItemID.SolarFlareDrill || item.type == ItemID.VortexDrill || item.type == ItemID.NebulaDrill || item.type == ItemID.StardustDrill)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nCan mine Uelibloom Ore");
+            if (item.type == ItemID.SolarFlarePickaxe || item.type == ItemID.VortexPickaxe || item.type == ItemID.NebulaPickaxe || item.type == ItemID.StardustPickaxe)
+                EditTooltipByName("Material", (line) => line.Text += "\nCan mine Uelibloom Ore");
+
+            if (item.type == ItemID.SolarFlareDrill || item.type == ItemID.VortexDrill || item.type == ItemID.NebulaDrill || item.type == ItemID.StardustDrill)
+                EditTooltipByName("TileBoost", (line) => line.Text += "\nCan mine Uelibloom Ore");
             #endregion
 
             // Rebalances and information about vanilla set bonuses

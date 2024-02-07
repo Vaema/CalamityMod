@@ -13,6 +13,7 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.NPCs.Abyss
 {
@@ -280,7 +281,11 @@ namespace CalamityMod.NPCs.Abyss
             NPC.netUpdate = true;
         }
 
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => target.AddBuff(BuffID.Poisoned, 60 * (this.shouldTarget ? 10 : 5)); //10 sec for explosion, 5 sec for non explosion
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+        {
+            target.AddBuff(BuffID.Poisoned, 60 * (this.shouldTarget ? 4 : 2)); //4 sec for explosion, 2 sec for non explosion
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 60 * (this.shouldTarget ? 4 : 2)); //4 sec for explosion, 2 sec for non explosion
+        }
 
         public override bool CheckDead()
         {

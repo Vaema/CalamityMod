@@ -12,7 +12,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
     public class GaussDagger : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
-        public const int HitsRequiredForFlux = 2;
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
@@ -41,17 +40,11 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 1);
 
-        public override void ModifyHitNPC(Player player, NPC target, ref NPC.HitModifiers modifiers)
-        {
-            modifiers.CritDamage *= 0.5f;
-        }
-
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.Calamity().GaussFluxTimer += 50;
-            if (target.Calamity().GaussFluxTimer >= 30 * HitsRequiredForFlux)
+            if (target.Calamity().GaussFluxTimer == 0)
             {
-                target.Calamity().GaussFluxTimer = 0;
+                target.Calamity().GaussFluxTimer = 50;
                 if (player.whoAmI == Main.myPlayer)
                 {
                     Projectile.NewProjectile(player.GetSource_ItemUse(Item), target.Center, Vector2.Zero, ModContent.ProjectileType<GaussFlux>(), Item.damage, 0f, player.whoAmI, 0f, target.whoAmI);

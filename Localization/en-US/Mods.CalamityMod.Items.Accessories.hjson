@@ -46,7 +46,7 @@ AbyssalDivingSuit: {
 		Provides light underwater and extra mobility on ice
 		Provides a moderate amount of light in the abyss
 		Greatly reduces breath loss in the abyss
-		Reduces creature's ability to detect you in the abyss
+		Makes it more difficult for abyss creatures to detect you
 		Reduces the defense reduction that the abyss causes
 		Grants immunity to the sulphurous waters
 		Allows you to fall faster while in liquids
@@ -160,7 +160,7 @@ AnechoicPlating: {
 	DisplayName: Anechoic Plating
 	Tooltip:
 		'''
-		Reduces creature's ability to detect you in the abyss
+		Makes it more difficult for abyss creatures to detect you
 		Reduces the defense reduction that the abyss causes
 		'''
 }
@@ -544,8 +544,8 @@ DimensionalSoulArtifact: {
 	DisplayName: Dimensional Soul Artifact
 	Tooltip:
 		'''
-		Power
 		Multiplies all damage by 1.2x, but at the cost of increasing damage taken by 15%
+		Power
 		'''
 }
 

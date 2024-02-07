@@ -182,10 +182,14 @@ namespace CalamityMod.Items.Weapons.Melee
 
         #endregion
 
+        // 03FEB2024: Ozzatron: added so the Iban Blades don't break Overhaul compatibility. Weapons are functionally unchanged.
+        public override bool AltFunctionUse(Player player) => true;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (mainAttunement == null)
+            if (mainAttunement == null || player.altFunctionUse != ItemAlternativeFunctionID.None)
                 return false;
+
             return true;
         }
 
@@ -245,7 +249,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool CanUseItem(Player player)
         {
-            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
+            bool isRightClicking = player.altFunctionUse != ItemAlternativeFunctionID.None;
+            return !isRightClicking && !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
             (n.type == ProjectileType<PhoenixsPride>() ||
              n.type == ProjectileType<AndromedasStride>() ||
              n.type == ProjectileType<PolarisGaze>() ||

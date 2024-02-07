@@ -753,6 +753,11 @@ HallowedRuneRegeneration: {
 	Description: Regenerating life
 }
 
+Haste: {
+	DisplayName: Haste
+	Description: Increased movement speed and acceleration
+}
+
 IceShieldBuff: {
 	DisplayName: Ice Shield
 	Description: Absorbs 20% damage from the next hit you take, then shatters

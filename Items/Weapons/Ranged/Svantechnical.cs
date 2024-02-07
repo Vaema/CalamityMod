@@ -38,10 +38,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Bullet;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-5, 0);
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
+
+        public override void HoldItem(Player player) => player.scope = true;
 
         public override bool CanConsumeAmmo(Item ammo, Player player)
         {

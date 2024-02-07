@@ -25,8 +25,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 180;
-            Projectile.idStaticNPCHitCooldown = 6;
             Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 8;
             Projectile.tileCollide = false;
             Projectile.extraUpdates = 0;
             Projectile.aiStyle = -1;

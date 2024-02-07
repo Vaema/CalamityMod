@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.Vilethorn).
                 AddIngredient(ItemID.MagicMissile).
-                AddIngredient(ItemID.WandofSparking).
+                AddIngredient(ItemID.WandofFrosting).
                 AddIngredient(ItemID.AmberStaff).
                 AddIngredient<PurifiedGel>(10).
                 AddTile(TileID.DemonAltar).
@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.CrimsonRod).
                 AddIngredient(ItemID.MagicMissile).
-                AddIngredient(ItemID.WandofSparking).
+                AddIngredient(ItemID.WandofFrosting).
                 AddIngredient(ItemID.AmberStaff).
                 AddIngredient<PurifiedGel>(10).
                 AddTile(TileID.DemonAltar).

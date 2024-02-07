@@ -200,7 +200,7 @@ namespace CalamityMod.NPCs.SulphurousSea
                     NPC.netUpdate = true;
                     return;
                 }
-                NPC.noTileCollide = true;
+                NPC.noTileCollide = false;
                 float velocityBoost = 1f;
                 NPC.TargetClosest(true);
                 bool closeToTargetX = false;
@@ -235,52 +235,58 @@ namespace CalamityMod.NPCs.SulphurousSea
                         NPC.velocity.X = (NPC.velocity.X * 20f - velocityBoost) / 21f;
                     }
                 }
-                int collisionWidth = 80;
-                int collisionHeight = 20;
-                Vector2 collisionSize = new Vector2(NPC.Center.X - (float)(collisionWidth / 2), NPC.position.Y + (float)NPC.height - (float)collisionHeight);
-                bool shouldFallThroughTiles = false;
-                if (NPC.position.X < Main.player[NPC.target].position.X && NPC.position.X + (float)NPC.width > Main.player[NPC.target].position.X + (float)Main.player[NPC.target].width && NPC.position.Y + (float)NPC.height < Main.player[NPC.target].position.Y + (float)Main.player[NPC.target].height - 16f)
+                if (NPC.velocity.Y >= 0f)
                 {
-                    shouldFallThroughTiles = true;
+                    int fallFaceDirection = 0;
+                    if (NPC.velocity.X < 0f)
+                    {
+                        fallFaceDirection = -1;
+                    }
+                    if (NPC.velocity.X > 0f)
+                    {
+                        fallFaceDirection = 1;
+                    }
+                    Vector2 trashPosition = NPC.position;
+                    trashPosition.X += NPC.velocity.X;
+                    int xTileBelow = (int)((trashPosition.X + (float)(NPC.width / 2) + (float)((NPC.width / 2 + 1) * fallFaceDirection)) / 16f);
+                    int yTileBelow = (int)((trashPosition.Y + (float)NPC.height - 1f) / 16f);
+                    if ((float)(xTileBelow * 16) < trashPosition.X + (float)NPC.width && (float)(xTileBelow * 16 + 16) > trashPosition.X && ((Main.tile[xTileBelow, yTileBelow].HasUnactuatedTile && !Main.tile[xTileBelow, yTileBelow].TopSlope && !Main.tile[xTileBelow, yTileBelow - 1].TopSlope && Main.tileSolid[(int)Main.tile[xTileBelow, yTileBelow].TileType] && !Main.tileSolidTop[(int)Main.tile[xTileBelow, yTileBelow].TileType]) || (Main.tile[xTileBelow, yTileBelow - 1].IsHalfBlock && Main.tile[xTileBelow, yTileBelow - 1].HasUnactuatedTile)) && (!Main.tile[xTileBelow, yTileBelow - 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[xTileBelow, yTileBelow - 1].TileType] || Main.tileSolidTop[(int)Main.tile[xTileBelow, yTileBelow - 1].TileType] || (Main.tile[xTileBelow, yTileBelow - 1].IsHalfBlock && (!Main.tile[xTileBelow, yTileBelow - 4].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[xTileBelow, yTileBelow - 4].TileType] || Main.tileSolidTop[(int)Main.tile[xTileBelow, yTileBelow - 4].TileType]))) && (!Main.tile[xTileBelow, yTileBelow - 2].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[xTileBelow, yTileBelow - 2].TileType] || Main.tileSolidTop[(int)Main.tile[xTileBelow, yTileBelow - 2].TileType]) && (!Main.tile[xTileBelow, yTileBelow - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[xTileBelow, yTileBelow - 3].TileType] || Main.tileSolidTop[(int)Main.tile[xTileBelow, yTileBelow - 3].TileType]) && (!Main.tile[xTileBelow - fallFaceDirection, yTileBelow - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[xTileBelow - fallFaceDirection, yTileBelow - 3].TileType]))
+                    {
+                        float yPixelDistance = (float)(yTileBelow * 16);
+                        if (Main.tile[xTileBelow, yTileBelow].IsHalfBlock)
+                        {
+                            yPixelDistance += 8f;
+                        }
+                        if (Main.tile[xTileBelow, yTileBelow - 1].IsHalfBlock)
+                        {
+                            yPixelDistance -= 8f;
+                        }
+                        if (yPixelDistance < trashPosition.Y + (float)NPC.height)
+                        {
+                            float percentageTileRisen = trashPosition.Y + (float)NPC.height - yPixelDistance;
+                            float fullTileAmt = 16.1f;
+                            if (percentageTileRisen <= fullTileAmt)
+                            {
+                                NPC.gfxOffY += NPC.position.Y + (float)NPC.height - yPixelDistance;
+                                NPC.position.Y = yPixelDistance - (float)NPC.height;
+                                if (percentageTileRisen < 9f)
+                                {
+                                    NPC.stepSpeed = 1f;
+                                }
+                                else
+                                {
+                                    NPC.stepSpeed = 2f;
+                                }
+                            }
+                        }
+                    }
+                    if (NPC.oldPosition == NPC.position)
+                    {
+                        NPC.velocity.Y = -10f;
+                        NPC.netUpdate = true;
+                    }
                 }
-                if (shouldFallThroughTiles)
-                {
-                    NPC.velocity.Y = NPC.velocity.Y + 0.5f;
-                }
-                else if (Collision.SolidCollision(collisionSize, collisionWidth, collisionHeight))
-                {
-                    if (NPC.velocity.Y > 0f)
-                    {
-                        NPC.velocity.Y = 0f;
-                    }
-                    if (NPC.velocity.Y > -0.2f)
-                    {
-                        NPC.velocity.Y = NPC.velocity.Y - 0.025f;
-                    }
-                    else
-                    {
-                        NPC.velocity.Y = NPC.velocity.Y - 0.2f;
-                    }
-                    if (NPC.velocity.Y < -4f)
-                    {
-                        NPC.velocity.Y = -4f;
-                    }
-                }
-                else
-                {
-                    if (NPC.velocity.Y < 0f)
-                    {
-                        NPC.velocity.Y = 0f;
-                    }
-                    if (NPC.velocity.Y < 0.1f)
-                    {
-                        NPC.velocity.Y = NPC.velocity.Y + 0.025f;
-                    }
-                    else
-                    {
-                        NPC.velocity.Y = NPC.velocity.Y + 0.5f;
-                    }
-                }
+                NPC.velocity.Y = NPC.velocity.Y + 0.55f;
                 if (NPC.velocity.Y > 10f)
                 {
                     NPC.velocity.Y = 10f;

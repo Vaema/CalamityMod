@@ -90,6 +90,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] DemolitionistNames =
         {
             "Tavish DeGroot", // <@!442447226992721930> (magicoal)
+            "Fimmy", // <@!407348617079160832> (darkmega5)
         };
         private static readonly string[] DryadNames =
         {
@@ -132,6 +133,7 @@ namespace CalamityMod.NPCs
             "Leeman", // <@!281999243168841728> (Tweee#5831)
             "Mihai", // <@!373941893467209730> (cmihaii.)
             "Aka Retribution", // <@!302318734633205761> (azurr_nihilo)
+            "Cooler Kevin", // <@!614126424751603714> (exellent.)
         };
         private static readonly string[] MechanicNames =
         {

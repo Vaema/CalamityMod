@@ -51,6 +51,10 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             bool phase3 = lifeRatio < 0.35f;
             bool phase4 = lifeRatio < 0.2f;
 
+            // Contact damage values for phase 2
+            int setDamage = (int)(npc.defDamage * 1.4f);
+            int reducedSetDamage = (int)(setDamage * 0.5f);
+
             // Variables and target
             bool enrage = bossRush;
             bool despawn = false;
@@ -135,11 +139,17 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             Vector2 npcCenterAccountingForHooks = new Vector2(hookPositionX, hookPositionY);
             float maxVelocityX = Main.player[npc.target].Center.X - npcCenterAccountingForHooks.X;
             float maxVelocityY = Main.player[npc.target].Center.Y - npcCenterAccountingForHooks.Y;
+            bool phase1MoveAway = !phase2 && Vector2.Distance(Main.player[npc.target].Center, npc.Center) < 480f && Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
             if (despawn)
             {
                 maxVelocityY *= -1f;
                 maxVelocityX *= -1f;
                 velocity += 8f;
+            }
+            else if (phase1MoveAway)
+            {
+                maxVelocityY *= -1f;
+                maxVelocityX *= -1f;
             }
             float distanceFromTarget = (float)Math.Sqrt(maxVelocityX * maxVelocityX + maxVelocityY * maxVelocityY);
 
@@ -330,6 +340,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 // Slow down and return to normal behavior
                 if (npc.ai[3] <= BeginChargeSlowDownGateValue)
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = reducedSetDamage;
+
                     npc.velocity *= chargeDeceleration;
                     float timeToDecelerateDecrement = bossRush ? 2f : phase4 ? 1.5f : 1f;
                     npc.ai[3] -= timeToDecelerateDecrement;
@@ -357,6 +370,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 // Emit spore gas in phase 3
                 else if (npc.ai[3] <= BeginChargeGateValue)
                 {
+                    // Set damage
+                    npc.damage = setDamage;
+
                     float sporeGasDashGateValue = death ? 4f : 6f;
                     if (phase3 && npc.ai[3] % sporeGasDashGateValue == 0f)
                     {
@@ -386,6 +402,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 // Move a specified distance away from the target and charge once that distance is reached
                 else
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = reducedSetDamage;
+
                     // Line up before charging
                     if (npc.Calamity().newAI[0] == 0f)
                     {
@@ -423,6 +442,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     npc.ai[3] -= timeToLineUpChargeDecrement;
                     if (npc.ai[3] <= BeginChargeGateValue)
                     {
+                        // Set damage
+                        npc.damage = setDamage;
+
                         // Charge
                         npc.ai[3] = BeginChargeGateValue;
                         npc.velocity = Vector2.Normalize(Main.player[npc.target].Center - npc.Center) * chargeVelocity;
@@ -471,6 +493,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             }
             else
             {
+                // Avoid cheap bullshit
+                npc.damage = phase2 ? reducedSetDamage : 0;
+
                 // Velocity ranges from 4 to 7.2, Acceleration ranges from 0.04 to 0.072, non-enraged phase 1
                 // Velocity ranges from 7 to 12.6, Acceleration ranges from 0.07 to 0.126, non-enraged phase 2
                 // Velocity ranges from 9 to 16.2, Acceleration ranges from 0.07 to 0.126, non-enraged phase 3
@@ -550,7 +575,6 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 calamityGlobalNPC.DR = 0.15f;
                 calamityGlobalNPC.unbreakableDR = false;
                 npc.defense = 32;
-                npc.damage = npc.defDamage;
 
                 // Fire projectiles
                 if (!usingSeedGatling && !slowedAfterGatlingAttack)
@@ -608,7 +632,6 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 calamityGlobalNPC.DR = 0.15f;
                 calamityGlobalNPC.unbreakableDR = false;
                 npc.defense = 10;
-                npc.damage = (int)(npc.defDamage * 1.4f);
 
                 // Spawn tentacles
                 if (Main.netMode != NetmodeID.MultiplayerClient)

@@ -1,14 +1,13 @@
-﻿using CalamityMod.Items.Fishing.SunkenSeaCatches;
+﻿using CalamityMod.Dusts;
+using CalamityMod.Items.Fishing.AstralCatches;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.Astral
 {
-    public class SunkenCrateTile : ModTile
+    public class MonolithCrateTile : ModTile
     {
         public override void SetStaticDefaults()
         {
@@ -22,8 +21,21 @@ namespace CalamityMod.Tiles.SunkenSea
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(106, 218, 230), CalamityUtils.GetItemName<SunkenCrate>());
-            DustType = 253;
+            AddMapEntry(new Color(110, 45, 117), CalamityUtils.GetItemName<MonolithCrate>());
+            DustType = ModContent.DustType<AstralBlue>();
+        }
+
+        public override bool CreateDust(int i, int j, ref int type)
+        {
+            if (Main.rand.NextBool())
+            {
+                type = ModContent.DustType<AstralOrange>();
+            }
+            else
+            {
+                type = ModContent.DustType<AstralBlue>();
+            }
+            return true;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

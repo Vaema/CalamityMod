@@ -45,7 +45,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<MurasamaSlash>();
             Item.shootSpeed = 24f;
             Item.rare = ModContent.RarityType<Violet>();
-            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 14));
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults

@@ -26,7 +26,8 @@ namespace CalamityMod.Items.Accessories
             player.npcTypeNoAggro[NPCID.PinkJellyfish] = true;
             player.npcTypeNoAggro[NPCID.Crab] = true;
             player.npcTypeNoAggro[NPCID.Squid] = true;
-            player.gills = true;
+            if (player.IsUnderwater())
+                player.gills = true;
         }
     }
 }

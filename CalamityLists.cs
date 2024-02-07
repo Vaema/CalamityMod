@@ -122,7 +122,6 @@ namespace CalamityMod
         public static List<int> angryBonesList;
         public static List<int> hornetList;
         public static List<int> mossHornetList;
-        public static List<int> bossMinionList;
         public static List<int> minibossList;
 
         public static List<int> pierceResistList;
@@ -1024,6 +1023,8 @@ namespace CalamityMod
                 NPCType<RavagerLegRight>(),
                 NPCType<RockPillar>(),
                 NPCType<RavagerHead>(),
+                NPCType<ProfanedGuardianDefender>(),
+                NPCType<ProfanedGuardianHealer>(),
                 NPCType<Bumblefuck2>(),
                 NPCType<ProvSpawnDefense>(),
                 NPCType<ProvSpawnHealer>(),
@@ -1587,17 +1588,7 @@ namespace CalamityMod
                 NPCType<SuperDummyNPC>()
             };
 
-            // TODO -- override HoldItem => Player.scope = true; on these items
-            scopedWeaponList = new List<int>()
-            {
-                ItemType<AntiMaterielRifle>(),
-                ItemType<Auralis>(),
-                ItemType<HalleysInferno>(),
-                ItemType<Shroomer>(),
-                ItemType<Svantechnical>(),
-                ItemType<TyrannysEnd>()
-            };
-
+            // TODO -- override HoldItem => Player.accFishingLine = true; on these items, just like the scope fix...
             highTestFishList = new List<int>()
             {
                 ItemID.GoldenFishingRod,
@@ -2097,7 +2088,7 @@ namespace CalamityMod
             {
                 ProjectileID.Arkhalis,
                 ProjectileID.ChargedBlasterLaser,
-		        ProjectileID.ClingerStaff,
+                ProjectileID.ClingerStaff,
                 ProjectileID.FinalFractal,
                 ProjectileID.FlyingKnife,
                 ProjectileID.LastPrismLaser,
@@ -2148,6 +2139,7 @@ namespace CalamityMod
                 ProjectileType<StickyBol>(),
                 ProjectileType<SulphuricBlast>(),
                 ProjectileType<TaserHook>(),
+                ProjectileType<Teslabeam>(),
                 ProjectileType<TyphonsGreedStaff>(),
                 ProjectileType<UrchinBall>(),
                 ProjectileType<UrchinBallSpike>(),
@@ -2703,113 +2695,6 @@ namespace CalamityMod
                 { NPCID.Deerclops, 44 }
             };
 
-            bossMinionList = new List<int>()
-            {
-                NPCType<KingSlimeJewel>(),
-                NPCType<DesertNuisanceHead>(),
-                NPCType<DesertNuisanceBody>(),
-                NPCType<DesertNuisanceTail>(),
-                NPCID.SlimeSpiked,
-                NPCID.ServantofCthulhu,
-                NPCType<CrabShroom>(),
-                NPCID.EaterofWorldsHead,
-                NPCID.EaterofWorldsBody,
-                NPCID.EaterofWorldsTail,
-                NPCID.Creeper,
-                NPCType<PerforatorHeadSmall>(),
-                NPCType<PerforatorBodySmall>(),
-                NPCType<PerforatorTailSmall>(),
-                NPCType<PerforatorHeadMedium>(),
-                NPCType<PerforatorBodyMedium>(),
-                NPCType<PerforatorTailMedium>(),
-                NPCType<PerforatorHeadLarge>(),
-                NPCType<PerforatorBodyLarge>(),
-                NPCType<PerforatorTailLarge>(),
-                NPCType<HiveBlob>(),
-                NPCType<HiveBlob2>(),
-                NPCType<DankCreeper>(),
-                NPCID.SkeletronHand,
-                NPCType<EbonianPaladin>(),
-                NPCType<SplitEbonianPaladin>(),
-                NPCType<CrimulanPaladin>(),
-                NPCType<SplitCrimulanPaladin>(),
-                NPCType<CorruptSlimeSpawn>(),
-                NPCType<CorruptSlimeSpawn2>(),
-                NPCType<CrimsonSlimeSpawn>(),
-                NPCType<CrimsonSlimeSpawn2>(),
-                NPCID.LeechHead,
-                NPCID.LeechBody,
-                NPCID.LeechTail,
-                NPCID.WallofFleshEye,
-                NPCID.TheHungry,
-                NPCID.TheHungryII,
-                NPCID.QueenSlimeMinionBlue,
-                NPCID.QueenSlimeMinionPink,
-                NPCID.QueenSlimeMinionPurple,
-                NPCType<CryogenShield>(),
-                NPCID.PrimeCannon,
-                NPCID.PrimeLaser,
-                NPCID.PrimeSaw,
-                NPCID.PrimeVice,
-                NPCType<Brimling>(),
-                NPCID.Probe,
-                NPCID.TheDestroyer,
-                NPCID.TheDestroyerBody,
-                NPCID.TheDestroyerTail,
-                NPCType<AquaticScourgeHead>(),
-                NPCType<AquaticScourgeBody>(),
-                NPCType<AquaticScourgeBodyAlt>(),
-                NPCType<AquaticScourgeTail>(),
-                NPCType<Cataclysm>(),
-                NPCType<Catastrophe>(),
-                NPCType<SoulSeeker>(),
-                NPCID.PlanterasTentacle,
-                NPCType<PlanterasFreeTentacle>(),
-                NPCType<AnahitasIceShield>(),
-                NPCType<AquaticAberration>(),
-                NPCType<AureusSpawn>(),
-                NPCID.Spore,
-                NPCID.GolemHead,
-                NPCID.GolemHeadFree,
-                NPCID.GolemFistLeft,
-                NPCID.GolemFistRight,
-                NPCType<PlagueMine>(),
-                NPCType<PlagueHomingMissile>(),
-                NPCType<RavagerClawLeft>(),
-                NPCType<RavagerClawRight>(),
-                NPCType<RavagerLegLeft>(),
-                NPCType<RavagerLegRight>(),
-                NPCType<RavagerHead>(),
-                NPCID.CultistDragonHead,
-                NPCID.CultistDragonBody1,
-                NPCID.CultistDragonBody2,
-                NPCID.CultistDragonBody3,
-                NPCID.CultistDragonBody4,
-                NPCID.CultistDragonTail,
-                NPCID.AncientCultistSquidhead,
-                NPCID.AncientDoom,
-                NPCID.MoonLordLeechBlob,
-                NPCID.MoonLordFreeEye,
-                NPCID.MoonLordHand,
-                NPCID.MoonLordHead,
-                NPCType<ProfanedGuardianDefender>(),
-                NPCType<ProfanedGuardianHealer>(),
-                NPCType<Bumblefuck2>(),
-                NPCType<ProvSpawnOffense>(),
-                NPCType<ProvSpawnDefense>(),
-                NPCType<ProvSpawnHealer>(),
-                NPCType<ProfanedRocks>(),
-                NPCType<DarkEnergy>(),
-                NPCType<CosmicLantern>(),
-                NPCType<PolterPhantom>(),
-                NPCType<CosmicGuardianHead>(),
-                NPCType<CosmicGuardianBody>(),
-                NPCType<CosmicGuardianTail>(),
-                NPCType<BrimstoneHeart>(),
-                NPCType<SupremeCataclysm>(),
-                NPCType<SupremeCatastrophe>()
-            };
-
             legOverrideList = new List<int>()
             {
                 EquipLoader.GetEquipSlot(CalamityMod.Instance, "ProfanedSoulCrystal", EquipType.Legs),
@@ -2897,7 +2782,6 @@ namespace CalamityMod
             angryBonesList = null;
             hornetList = null;
             mossHornetList = null;
-            bossMinionList = null;
             minibossList = null;
             pierceResistList = null;
             pierceResistExceptionLeviAureusList = null;

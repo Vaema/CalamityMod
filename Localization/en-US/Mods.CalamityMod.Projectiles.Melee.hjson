@@ -56,14 +56,19 @@ BrokenBiomeBladeHoldout.DisplayName: Broken Biome Blade
 BurningMeteor.DisplayName: Meteor
 CatastropheClaymoreSparkle.DisplayName: Catastrophe Sparkle
 ChainedMeatHook.DisplayName: Enchanted Meat Hook
+ChronoIcicleLarge.DisplayName: Chrono Icicle
+ChronoIcicleSmall.DisplayName: Chrono Icicle
+ChronomancersScytheHoldout.DisplayName: Chronomancer's Scythe
 ClamCrusherFlail.DisplayName: Clam Crusher
 CometQuasherMeteor.DisplayName: Comet Quasher Meteor
 CosmicBolt.DisplayName: Cosmic Bolt
 CosmicDischargeFlail.DisplayName: Cosmic Discharge
 CosmicIceBurst.DisplayName: Cosmic Ice
 CosmicOrb.DisplayName: Cosmic Orb
+CosmicShivAura.DisplayName: Cosmic Shiv Aura
 CosmicShivBall.DisplayName: Cosmic Energy
 CosmicShivBlade.DisplayName: Cosmic Beam
+CosmicShivTrail.DisplayName: Cosmic Shiv Trail
 CosmicSpiritBomb1.DisplayName: Cosmic Bomb
 CosmicSpiritBomb2.DisplayName: Cosmic Bomb
 CosmicSpiritBomb3.DisplayName: Cosmic Bomb
@@ -305,3 +310,9 @@ WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YateveoBloomProj.DisplayName: Yateveo Bloom
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
+DepthCrusherProjectile.DisplayName: Depth Crusher
+DepthCrusherSplitProjectile.DisplayName: Depth Crusher Jet
+AbyssBladeProjectile.DisplayName: Abyss Blade
+AbyssBladeSplitProjectile.DisplayName: Abyss Blade Jet
+NeptunesBountyProjectile.DisplayName: Neptune's Bounty
+NeptunesBountySplitProjectile.DisplayName: Neptune's Bounty Jet

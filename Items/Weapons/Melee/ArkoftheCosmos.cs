@@ -26,7 +26,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float MaxThrowReach = 760;
         public static float snapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
 
-        public static float chargeDamageMultiplier = 1.4f; //Extra damage from charge
+        public static float MaxCharge = 15f; // Maximum charge value AKA how much charge you get from a parry
+        public static float chargeDamageMultiplier = 1.35f; //Extra damage from charge
         public static float chainDamageMultiplier = 0.1f;
 
         public static int DashIframes = 10;
@@ -202,7 +203,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Vector2 barOrigin = barBG.Size() * 0.5f;
             float yOffset = 50f;
             Vector2 drawPos = position + Vector2.UnitY * scale * (frame.Height - yOffset);
-            Rectangle frameCrop = new Rectangle(0, 0, (int)(Charge / 10f * barFG.Width), barFG.Height);
+            Rectangle frameCrop = new Rectangle(0, 0, (int)(Charge / MaxCharge * barFG.Width), barFG.Height);
             Color color = Main.hslToRgb((Main.GlobalTimeWrappedHourly * 0.6f) % 1, 1, 0.75f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 0.1f);
 
             spriteBatch.Draw(barBG, drawPos, null, color, 0f, barOrigin, scale * barScale, 0f, 0f);

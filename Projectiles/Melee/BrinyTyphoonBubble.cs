@@ -138,7 +138,7 @@ namespace CalamityMod.Projectiles.Melee
                         break;
                     }
                 }
-                int SPOUT = Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)(projTileY * 16 + 8), (float)(projTileX * 16 - 24), 0f, 0f, ModContent.ProjectileType<BrinySpout>(), Projectile.damage, 6f, Main.myPlayer, 8f, 25f);
+                int SPOUT = Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)(projTileY * 16 + 8), (float)(projTileX * 16 - 32), 0f, 0f, ModContent.ProjectileType<BrinySpout>(), Projectile.damage, 6f, Main.myPlayer, 3f, 7f); //First overload seems to deal with timing, second is segment amount
                 Main.projectile[SPOUT].netUpdate = true;
             }
         }

@@ -14,6 +14,8 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
         {
             Item.ResearchUnlockCount = 5;
             ItemID.Sets.IsFishingCrate[Type] = true;
+            ItemID.Sets.IsFishingCrateHardmode[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SlagCrate>();
         }
 
         public override void SetDefaults()

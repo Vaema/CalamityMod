@@ -36,6 +36,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override Vector2? HoldoutOffset() => new Vector2(-25, 0);
 
+        public override void HoldItem(Player player) => player.scope = true;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<Shroom>(), (int)(damage * 0.5), knockback, player.whoAmI);

@@ -41,6 +41,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override Vector2? HoldoutOffset() => new Vector2(-28, 0);
 
+        public override void HoldItem(Player player) => player.scope = true;
+
         public override void AddRecipes()
         {
             CreateRecipe().

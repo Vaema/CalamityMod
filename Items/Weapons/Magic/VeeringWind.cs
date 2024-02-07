@@ -21,9 +21,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 28;
             Item.height = 32;
-            Item.damage = 15;
+            Item.damage = 19;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 20;
+            Item.mana = 14;
             Item.useTime = Item.useAnimation = 36;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -47,6 +47,12 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override float UseSpeedMultiplier(Player player) => player.altFunctionUse == 2 ? 0.5f : 1f;
 
+        public override void ModifyManaCost(Player player, ref float reduce, ref float mult)
+        {
+            if (player.altFunctionUse == 2)
+                mult *= 2f;
+        }
+
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
             if (player.altFunctionUse == 2)
@@ -59,7 +65,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int totalProjectiles = 24;
+            int totalProjectiles = 12;
             for (int i = 0; i < totalProjectiles; i++)
             {
                 Vector2 waveVelocity = ((MathHelper.TwoPi * i / (float)totalProjectiles) + velocity.ToRotation()).ToRotationVector2() * velocity.Length();

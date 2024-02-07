@@ -718,7 +718,11 @@ SlitheringEels: {
 
 SnowstormStaff: {
 	DisplayName: Snowstorm Staff
-	Tooltip: Fires a snowflake that follows the mouse cursor
+	Tooltip:
+		'''
+		Fires snowflakes that follows the mouse cursor
+		Snowflakes split into ice stars on enemy hits
+		'''
 }
 
 SoulPiercer: {
@@ -768,6 +772,18 @@ TerraRay: {
 		'''
 		Casts a brilliant ray that dissolves into energy on enemy hits
 		More energy is created the farther along the ray the hit enemy is
+		'''
+}
+
+Teslastaff: {
+	DisplayName: Teslastaff
+	Tooltip:
+		'''
+		Fires a channeled beam of pinpoint-accurate lightning
+		The beam has limited turning speed capability
+		Each successive hit on the same enemy increases damage per hit
+		The damage increases 10% per hit to a maximum of 500% damage
+		This damage will rapidly decrease after the enemy stops being hit
 		'''
 }
 

@@ -1,7 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.knockBack = 2f;
             Item.value = CalamityGlobalItem.Rarity2BuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.UseSound = SoundID.NPCDeath34;
+            Item.UseSound = Stormlion.DeathSound;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<StormjawBaby>();
             Item.shootSpeed = 10f;

@@ -30,6 +30,7 @@ BossRushTierAnimation.DisplayName: Boss Rush Tier Animation
 BrimstoneHellfireballFriendly2.DisplayName: Hellfire
 ChaoticGeyser.DisplayName: Chaotic Geyser
 ChlorophyteLifePulse.DisplayName: Life Pulse
+ChronoClock.DisplayName: Chrono Clock
 CoralBubble.DisplayName: Bubble
 CoralBubbleSmall.DisplayName: Bubble
 CryonicShield.DisplayName: Cryonic Shield
@@ -58,13 +59,13 @@ FungalClumpMinion.DisplayName: Fungal Clump
 GemTechArmorGem.DisplayName: Trireme's Gem
 GhostlyBolt.DisplayName: Bolt
 GodKiller.DisplayName: God Killer
-GodSlayerBlaze.DisplayName: Blaze
 GodSlayerShrapnel.DisplayName: Flame
 GodSlayerShrapnelRound.DisplayName: Round
 GoldenGunProj.DisplayName: Golden Round
 GreenLabSeeker.DisplayName: Seeking Mechanism
 HellfireExplosionFriendly2.DisplayName: Explosion
 HeronBobber.DisplayName: Heron Bobber
+HideOfAstrumDeusExplosion.DisplayName: Explosion
 HolyExplosion.DisplayName: Explosion
 HolyExplosionSupreme.DisplayName: Explosion
 HydrothermalSmoke.DisplayName: Smoke

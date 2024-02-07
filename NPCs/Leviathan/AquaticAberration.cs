@@ -84,6 +84,9 @@ namespace CalamityMod.NPCs.Leviathan
                 return;
             }
 
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             bool bossRush = BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
@@ -197,6 +200,9 @@ namespace CalamityMod.NPCs.Leviathan
                 }
                 else
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     Vector2 npcCenterAgain = NPC.Center;
                     Vector2 targetCenterAgain = Main.player[NPC.target].Center;
                     Vector2 vec2 = targetCenterAgain - npcCenterAgain;

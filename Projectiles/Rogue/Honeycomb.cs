@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Player player = Main.player[Main.myPlayer];
             if (Projectile.Calamity().stealthStrike)
-                player.AddBuff(BuffID.Honey, 300);
+                player.AddBuff(BuffID.Honey, 600);
             SpawnProjectiles();
         }
 
@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Player player = Main.player[Main.myPlayer];
             if (Projectile.Calamity().stealthStrike)
-                player.AddBuff(BuffID.Honey, 300);
+                player.AddBuff(BuffID.Honey, 600);
             SpawnProjectiles();
         }
 

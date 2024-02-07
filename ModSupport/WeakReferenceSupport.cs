@@ -18,6 +18,7 @@ using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.Astral;
@@ -138,7 +139,7 @@ namespace CalamityMod
         /// 17.0 = Lunatic Cultist<br />
         /// 18.0 = Moon Lord
         /// </summary>
-        private static readonly Dictionary<string, float> BossChecklistProgressionValues = new Dictionary<string, float>
+        private static readonly Dictionary<string, float> BossChecklistProgressionValues = new()
         {
             { "DesertScourge", 1.6f },
             { "GiantClam", 1.61f },
@@ -187,6 +188,7 @@ namespace CalamityMod
             FargosSupport();
             DialogueTweakSupport();
             SummonersAssociationSupport();
+            ColoredDamageTypesSupport();
         }
 
         #region WikiThis
@@ -1040,6 +1042,17 @@ namespace CalamityMod
             if (fargos is null)
                 return;
 
+            // Stat Sheet support
+            double Damage(DamageClass damageClass) => Math.Round(Main.LocalPlayer.GetTotalDamage(damageClass).Additive * Main.LocalPlayer.GetTotalDamage(damageClass).Multiplicative * 100 - 100);
+            int Crit(DamageClass damageClass) => (int)Main.LocalPlayer.GetTotalCritChance(damageClass);
+
+            int rogueItem = ModContent.ItemType<WulfrumKnife>(); 
+            DamageClass rogueDamageClass = ModContent.GetInstance<RogueDamageClass>();
+            Func<string> rogueDamage = () => $"Rogue Damage: {Damage(rogueDamageClass)}%";
+            Func<string> rogueCrit = () => $"Rogue Critical: {Crit(rogueDamageClass)}%";
+            fargos.Call("AddStat", rogueItem, rogueDamage);
+            fargos.Call("AddStat", rogueItem, rogueCrit);
+
             void AddToMutantShop(string bossName, string summonItemName, Func<bool> downed, int price)
             {
                 BossChecklistProgressionValues.TryGetValue(bossName, out float order);
@@ -1181,6 +1194,44 @@ namespace CalamityMod
                     ["ProjID"] = ProjectileType<WhiteDragonHead>()
                 }
             });
+        }
+        #endregion
+
+        #region Colored Damage Types
+        // These are vanilla Terraria's colors for tooltips and damage
+        private static Color DefaultTooltipColor = Color.White;
+        private static Color DefaultDamageColor = new(255, 160, 80);
+        private static Color DefaultCritColor = new(255, 100, 30);
+
+        // These are Colored Damage Types' colors for the Melee class
+        private static Color MeleeTooltipColor = new(254, 121, 2);
+        private static Color MeleeDamageColor = new(254, 121, 2);
+        private static Color MeleeCritColor = new(253, 62, 3);
+
+        private static Color RogueTooltipColor = new(206, 132, 227);
+        private static Color RogueDamageColor = new(206, 132, 227);
+        private static Color RogueCritColor = new(194, 38, 212);
+        private static Color StealthTooltipColor = RogueTooltipColor;
+        private static Color StealthDamageColor = new(185, 105, 250);
+        private static Color StealthCritColor = new(144, 33, 235);
+
+        public static void ColoredDamageTypesSupport()
+        {
+            Mod coloredDamageTypes = GetInstance<CalamityMod>().coloredDamageTypes;
+            if (coloredDamageTypes is null)
+                return;
+
+            // Anything that directly uses AverageDamageClass uses the default vanilla colors.
+            coloredDamageTypes.Call("AddDamageType", AverageDamageClass.Instance, DefaultTooltipColor, DefaultDamageColor, DefaultCritColor);
+
+            // True melee uses the same colorations as regular Melee.
+            coloredDamageTypes.Call("AddDamageType", TrueMeleeDamageClass.Instance, MeleeTooltipColor, MeleeDamageColor, MeleeCritColor);
+            coloredDamageTypes.Call("AddDamageType", TrueMeleeNoSpeedDamageClass.Instance, MeleeTooltipColor, MeleeDamageColor, MeleeCritColor);
+
+            // Rogue has its own lavender color. Stealth strikes are hued towards violet so they stick out more.
+            // They would be hued towards magenta, but that would make them collide with Nebula-colored Magic in Colored Damage Types config.
+            coloredDamageTypes.Call("AddDamageType", RogueDamageClass.Instance, RogueTooltipColor, RogueDamageColor, RogueCritColor);
+            coloredDamageTypes.Call("AddDamageType", StealthDamageClass.Instance, StealthTooltipColor, StealthDamageColor, StealthCritColor);
         }
         #endregion
     }

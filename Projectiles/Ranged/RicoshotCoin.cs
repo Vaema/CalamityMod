@@ -269,8 +269,8 @@ namespace CalamityMod.Projectiles.Ranged
             // https://www.desmos.com/calculator/ngfg5fc9ds
             int numUpdatesPassed = CoinLifetime - Projectile.timeLeft;
             float x = Math.Clamp((float)numUpdatesPassed / CritDelayTime, 0f, 2f); // interpolant for the crit delay sheen
-            float sheenFunction = Math.Min(MathF.Pow(x + 0.1f, 6f), MathF.Pow(x - 2.1f, 6f));
-            float sheenOpacity = Math.Clamp(sheenFunction, 0f, 1f);
+            float sheenFunction = Math.Min(MathF.Pow(x + 0.1f, 10f), MathF.Pow(x - 2.1f, 10f));
+            float sheenOpacity = Math.Clamp(sheenFunction, 0f, 2f);
 
             // oh BOY another end begin boy
             if (sheenOpacity > 0f)
@@ -293,7 +293,7 @@ namespace CalamityMod.Projectiles.Ranged
                 };
 
                 Main.EntitySpriteDraw(bloomTex, Projectile.Center - Main.screenPosition, null, shineColor * sheenOpacity * 0.3f, MathHelper.PiOver2, bloomTex.Size() / 2f, shineScale * Projectile.scale, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(shineTex, Projectile.Center - Main.screenPosition, null, shineColor * sheenOpacity * 0.7f, MathHelper.PiOver2, shineTex.Size() / 2f, shineScale * Projectile.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(shineTex, Projectile.Center - Main.screenPosition, null, shineColor * sheenOpacity, MathHelper.PiOver2, shineTex.Size() / 2f, shineScale * Projectile.scale, SpriteEffects.None, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

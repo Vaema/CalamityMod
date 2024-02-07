@@ -30,9 +30,6 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 teleportScale *= teleportScaleSpeed;
             }
 
-            // Reset damage
-            npc.damage = npc.defDamage;
-
             bool bossRush = BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || bossRush;
 
@@ -249,6 +246,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             // Jump
             if (npc.velocity.Y == 0f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.velocity.X *= 0.8f;
                 if (npc.velocity.X > -0.1f && npc.velocity.X < 0.1f)
                     npc.velocity.X = 0f;
@@ -258,6 +258,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     npc.ai[0] += (bossRush ? 15f : MathHelper.Lerp(1f, 8f, 1f - lifeRatio));
                     if (npc.ai[0] >= 0f)
                     {
+                        // Set damage
+                        npc.damage = npc.defDamage;
+
                         npc.netUpdate = true;
                         npc.TargetClosest();
 

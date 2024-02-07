@@ -288,7 +288,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 180, true);
+                target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 180, true);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)

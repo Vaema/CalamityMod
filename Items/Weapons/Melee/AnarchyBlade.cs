@@ -45,11 +45,6 @@ namespace CalamityMod.Items.Weapons.Melee
             int lifeAmount = player.statLifeMax2 - player.statLife;
             damage.Base += lifeAmount * 0.1f;
         }
-
-        public override void ModifyHitNPC(Player player, NPC target, ref NPC.HitModifiers modifiers)
-        {
-            modifiers.CritDamage *= 0.5f;
-        }
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             var source = player.GetSource_ItemUse(Item);

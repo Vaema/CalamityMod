@@ -156,7 +156,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 npc.damage = 0;
 
                 // Start other phases; if arms are dead, start with spin phase
-                if (phase2 || CalamityWorld.LegendaryMode)
+                if (phase2 || CalamityWorld.LegendaryMode || allArmsDead)
                 {
                     // Start spin phase after 1.5 seconds
                     npc.ai[2] += phase3 ? 1.5f : 1f;
@@ -282,8 +282,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 if (npc.ai[1] == 1f)
                 {
                     npc.defense *= 2;
-                    npc.damage = npc.defDamage;
-                    npc.damage *= 2;
+                    npc.damage = npc.defDamage * 2;
 
                     if (phase2 && Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -680,12 +679,10 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             // Inflict 0 damage for 3 seconds after spawning
             bool dontAttack = npc.Calamity().newAI[2] < 180f;
             if (dontAttack)
-            {
                 npc.Calamity().newAI[2] += 1f;
-                npc.damage = 0;
-            }
-            else
-                npc.damage = npc.defDamage;
+
+            // Avoid cheap bullshit
+            npc.damage = 0;
 
             bool normalLaserRotation = npc.localAI[1] % 2f == 0f;
 
@@ -913,12 +910,10 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             // Inflict 0 damage for 3 seconds after spawning
             bool dontAttack = npc.Calamity().newAI[2] < 180f;
             if (dontAttack)
-            {
                 npc.Calamity().newAI[2] += 1f;
-                npc.damage = 0;
-            }
-            else
-                npc.damage = npc.defDamage;
+
+            // Avoid cheap bullshit
+            npc.damage = 0;
 
             bool fireSlower = false;
             if (laserAlive)
@@ -1174,12 +1169,10 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
             // Inflict 0 damage for 3 seconds after spawning
             if (npc.Calamity().newAI[2] < 180f)
-            {
                 npc.Calamity().newAI[2] += 1f;
-                npc.damage = 0;
-            }
-            else
-                npc.damage = npc.defDamage;
+
+            // Avoid cheap bullshit
+            npc.damage = 0;
 
             // Return to the head
             if (npc.ai[2] == 99f)
@@ -1332,6 +1325,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                     if (npc.position.Y < Main.npc[(int)npc.ai[1]].position.Y - 280f)
                     {
+                        // Set damage
+                        npc.damage = npc.defDamage;
+
                         float chargeVelocity = bossRush ? 20f : 16f;
                         if (!cannonAlive)
                             chargeVelocity += 1.5f;
@@ -1356,6 +1352,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 // Charge 4 times (more if arms are dead)
                 else if (npc.ai[2] == 2f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     if (npc.position.Y > Main.player[npc.target].position.Y || npc.velocity.Y < 0f)
                     {
                         float chargeAmt = 4f;
@@ -1396,6 +1395,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                     if (npc.position.X + (npc.width / 2) < Main.npc[(int)npc.ai[1]].position.X + (Main.npc[(int)npc.ai[1]].width / 2) - 500f || npc.position.X + (npc.width / 2) > Main.npc[(int)npc.ai[1]].position.X + (Main.npc[(int)npc.ai[1]].width / 2) + 500f)
                     {
+                        // Set damage
+                        npc.damage = npc.defDamage;
+
                         float chargeVelocity = bossRush ? 17.5f : 14f;
                         if (!cannonAlive)
                             chargeVelocity += 1.15f;
@@ -1420,6 +1422,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 // Charge 4 times (more if arms are dead)
                 else if (npc.ai[2] == 5f && npc.position.X + (npc.width / 2) < Main.player[npc.target].position.X + (Main.player[npc.target].width / 2) - 100f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     float chargeAmt = 4f;
                     if (!cannonAlive)
                         chargeAmt += 1f;
@@ -1508,12 +1513,13 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
             // Inflict 0 damage for 3 seconds after spawning
             if (npc.Calamity().newAI[2] < 180f)
-            {
                 npc.Calamity().newAI[2] += 1f;
-                npc.damage = 0;
-            }
-            else
-                npc.damage = npc.defDamage;
+
+            // Min saw damage
+            int reducedSetDamage = (int)(npc.defDamage * 0.5f);
+
+            // Avoid cheap bullshit
+            npc.damage = reducedSetDamage;
 
             if (npc.ai[2] == 99f)
             {
@@ -1654,6 +1660,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                     if (npc.position.Y < Main.npc[(int)npc.ai[1]].position.Y - 200f)
                     {
+                        // Set damage
+                        npc.damage = npc.defDamage;
+
                         float chargeVelocity = bossRush ? 27.5f : 22f;
                         if (!cannonAlive)
                             chargeVelocity += 1.5f;
@@ -1677,6 +1686,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                 else if (npc.ai[2] == 2f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     if (npc.position.Y > Main.player[npc.target].position.Y || npc.velocity.Y < 0f)
                         npc.ai[2] = 3f;
                 }
@@ -1685,6 +1697,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 {
                     if (npc.ai[2] == 4f)
                     {
+                        // Set damage
+                        npc.damage = npc.defDamage;
+
                         float chargeVelocity = bossRush ? 13.5f : 11f;
                         if (!cannonAlive)
                             chargeVelocity += 1.5f;

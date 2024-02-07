@@ -3551,6 +3551,7 @@ namespace CalamityMod.NPCs
             if (targetData.Type == NPCTargetType.Player)
                 targetDead = Main.player[npc.target].dead;
 
+            bool deathModeVelocityBuff = true;
             float maxVelocity = 6f;
             float acceleration = 0.05f;
             if (npc.type == NPCID.EaterofSouls || npc.type == NPCID.Crimera)
@@ -3619,48 +3620,59 @@ namespace CalamityMod.NPCs
             }
             else if (npc.type == NPCID.ServantofCthulhu)
             {
-                maxVelocity = 5f + npc.ai[2] * 3f;
-                acceleration = 0.03f + npc.ai[2] * 0.15f;
+                maxVelocity = 5f + npc.ai[2] * 2f;
+                acceleration = 0.03f + npc.ai[2] * 0.03f;
             }
             else if (npc.type == NPCID.Bee || npc.type == NPCID.BeeSmall)
             {
-                npc.ai[1] += 1f;
-                float originalFlyAwayTime = 60f;
-                float flyAwayTime = CalamityWorld.death ? 30f : 40f;
-                float originalFlyAwayVelocity = 6f;
-                float flyAwayDistance = originalFlyAwayTime * originalFlyAwayVelocity;
-                float flyAwayVelocity = flyAwayDistance / flyAwayTime;
-                float flyAwayAccel = (npc.ai[1] - flyAwayTime) / flyAwayTime;
-                if (flyAwayAccel > 1f)
+                bool notQueenBeeBee = npc.ai[3] == 0f;
+                if (notQueenBeeBee)
                 {
-                    flyAwayAccel = 1f;
+                    npc.ai[1] += 1f;
+                    float originalFlyAwayTime = 60f;
+                    float flyAwayTime = CalamityWorld.death ? 30f : 40f;
+                    float originalFlyAwayVelocity = 6f;
+                    float flyAwayDistance = originalFlyAwayTime * originalFlyAwayVelocity;
+                    float flyAwayVelocity = flyAwayDistance / flyAwayTime;
+                    float flyAwayAccel = (npc.ai[1] - flyAwayTime) / flyAwayTime;
+                    if (flyAwayAccel > 1f)
+                    {
+                        flyAwayAccel = 1f;
+                    }
+                    else
+                    {
+                        if (npc.velocity.X > flyAwayVelocity)
+                            npc.velocity.X = flyAwayVelocity;
+
+                        if (npc.velocity.X < -flyAwayVelocity)
+                            npc.velocity.X = -flyAwayVelocity;
+
+                        if (npc.velocity.Y > flyAwayVelocity)
+                            npc.velocity.Y = flyAwayVelocity;
+
+                        if (npc.velocity.Y < -flyAwayVelocity)
+                            npc.velocity.Y = -flyAwayVelocity;
+                    }
+
+                    maxVelocity = 5f;
+                    acceleration = 0.1f * flyAwayAccel;
                 }
                 else
                 {
-                    if (npc.velocity.X > flyAwayVelocity)
-                        npc.velocity.X = flyAwayVelocity;
-
-                    if (npc.velocity.X < -flyAwayVelocity)
-                        npc.velocity.X = -flyAwayVelocity;
-
-                    if (npc.velocity.Y > flyAwayVelocity)
-                        npc.velocity.Y = flyAwayVelocity;
-
-                    if (npc.velocity.Y < -flyAwayVelocity)
-                        npc.velocity.Y = -flyAwayVelocity;
+                    deathModeVelocityBuff = false;
+                    maxVelocity = 5f + npc.ai[2] * 2f;
+                    acceleration = 0.1f + npc.ai[2] * 0.04f;
                 }
-
-                maxVelocity = 5f + npc.ai[2] * 3f;
-                acceleration = 0.1f + npc.ai[2] * 0.15f;
-                acceleration *= flyAwayAccel;
             }
+
             maxVelocity *= 1.25f;
             acceleration *= 1.25f;
-            if (CalamityWorld.death)
+            if (CalamityWorld.death && deathModeVelocityBuff)
             {
                 maxVelocity *= 1.25f;
                 acceleration *= 1.25f;
             }
+
             Vector2 vector = new Vector2(npc.position.X + (float)npc.width * 0.5f, npc.position.Y + (float)npc.height * 0.5f);
             float targetXDist = Main.player[npc.target].position.X + (float)(Main.player[npc.target].width / 2);
             float targetYDist = Main.player[npc.target].position.Y + (float)(Main.player[npc.target].height / 2);
@@ -3672,11 +3684,11 @@ namespace CalamityMod.NPCs
             targetYDist -= vector.Y;
             float targetDistance = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
             float targetDistCheck = targetDistance;
+
             bool flag = false;
             if (targetDistance > 600f)
-            {
                 flag = true;
-            }
+
             if (targetDistance == 0f)
             {
                 targetXDist = npc.velocity.X;
@@ -3688,42 +3700,37 @@ namespace CalamityMod.NPCs
                 targetXDist *= targetDistance;
                 targetYDist *= targetDistance;
             }
+
             if (npc.type == NPCID.Hornet || npc.type == NPCID.MossHornet || (npc.type >= NPCID.HornetFatty && npc.type <= NPCID.HornetStingy) || npc.type == NPCID.EaterofSouls || npc.type == NPCID.Corruptor || npc.type == NPCID.Probe || npc.type == NPCID.Crimera || npc.type == NPCID.Moth || npc.type == NPCID.Bee || npc.type == NPCID.BeeSmall || npc.type == NPCID.BloodSquid)
             {
                 if (targetDistCheck > 100f || npc.type == NPCID.Corruptor || npc.type == NPCID.Bee || npc.type == NPCID.BeeSmall || npc.type == NPCID.BloodSquid || npc.type == NPCID.Hornet || npc.type == NPCID.MossHornet || (npc.type >= NPCID.HornetFatty && npc.type <= NPCID.HornetStingy))
                 {
                     npc.ai[0] += 1f;
                     if (npc.ai[0] > 0f)
-                    {
                         npc.velocity.Y = npc.velocity.Y + 0.03f;
-                    }
                     else
-                    {
                         npc.velocity.Y = npc.velocity.Y - 0.03f;
-                    }
+
                     if (npc.ai[0] < -100f || npc.ai[0] > 100f)
-                    {
                         npc.velocity.X = npc.velocity.X + 0.03f;
-                    }
                     else
-                    {
                         npc.velocity.X = npc.velocity.X - 0.03f;
-                    }
+
                     if (npc.ai[0] > 200f)
-                    {
                         npc.ai[0] = -200f;
-                    }
                 }
+
                 if (targetDistCheck < 150f && (npc.type == NPCID.EaterofSouls || npc.type == NPCID.Corruptor || npc.type == NPCID.Crimera || npc.type == NPCID.BloodSquid))
                 {
                     npc.velocity.X = npc.velocity.X + targetXDist * 0.009f;
                     npc.velocity.Y = npc.velocity.Y + targetYDist * 0.009f;
                 }
+
                 if (npc.type == NPCID.Bee || npc.type == NPCID.BeeSmall)
                 {
                     if (npc.ai[3] == 1f)
                     {
-                        float pushVelocity = 0.5f + npc.ai[2] * 0.25f;
+                        float pushVelocity = 0.5f + npc.ai[2] * 0.2f;
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             if (Main.npc[i].active)
@@ -3748,42 +3755,37 @@ namespace CalamityMod.NPCs
                     }
                 }
             }
+
             if (targetDead)
             {
                 targetXDist = (float)npc.direction * maxVelocity / 2f;
                 targetYDist = -maxVelocity / 2f;
             }
+
             if (npc.velocity.X < targetXDist)
             {
                 npc.velocity.X = npc.velocity.X + acceleration;
                 if (npc.type != NPCID.Crimera && npc.type != NPCID.EaterofSouls && npc.type != NPCID.Corruptor && npc.type != NPCID.Probe && npc.type != NPCID.BloodSquid && npc.velocity.X < 0f && targetXDist > 0f)
-                {
                     npc.velocity.X = npc.velocity.X + acceleration;
-                }
             }
             else if (npc.velocity.X > targetXDist)
             {
                 npc.velocity.X = npc.velocity.X - acceleration;
                 if (npc.type != NPCID.Crimera && npc.type != NPCID.EaterofSouls && npc.type != NPCID.Corruptor && npc.type != NPCID.Probe && npc.type != NPCID.BloodSquid && npc.velocity.X > 0f && targetXDist < 0f)
-                {
                     npc.velocity.X = npc.velocity.X - acceleration;
-                }
             }
+
             if (npc.velocity.Y < targetYDist)
             {
                 npc.velocity.Y = npc.velocity.Y + acceleration;
                 if (npc.type != NPCID.Crimera && npc.type != NPCID.EaterofSouls && npc.type != NPCID.Corruptor && npc.type != NPCID.Probe && npc.type != NPCID.BloodSquid && npc.velocity.Y < 0f && targetYDist > 0f)
-                {
                     npc.velocity.Y = npc.velocity.Y + acceleration;
-                }
             }
             else if (npc.velocity.Y > targetYDist)
             {
                 npc.velocity.Y = npc.velocity.Y - acceleration;
                 if (npc.type != NPCID.Crimera && npc.type != NPCID.EaterofSouls && npc.type != NPCID.Corruptor && npc.type != NPCID.Probe && npc.type != NPCID.BloodSquid && npc.velocity.Y > 0f && targetYDist < 0f)
-                {
                     npc.velocity.Y = npc.velocity.Y - acceleration;
-                }
             }
 
             if (npc.type == NPCID.ServantofCthulhu)
@@ -3841,19 +3843,20 @@ namespace CalamityMod.NPCs
                         Projectile.NewProjectile(npc.GetSource_FromAI(), vector.X, vector.Y, targetXDist, targetYDist, projType, projDamage, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
+
                 int npcXPos = (int)npc.position.X + npc.width / 2;
                 int npcTileY = (int)npc.position.Y + npc.height / 2;
                 int npcTileX = npcXPos / 16;
                 npcTileY /= 16;
                 if (!WorldGen.SolidTile(npcTileX, npcTileY))
-                {
                     Lighting.AddLight((int)((npc.position.X + (float)(npc.width / 2)) / 16f), (int)((npc.position.Y + (float)(npc.height / 2)) / 16f), 0.3f, 0.1f, 0.05f);
-                }
+
                 if (targetXDist > 0f)
                 {
                     npc.spriteDirection = 1;
                     npc.rotation = (float)Math.Atan2((double)targetYDist, (double)targetXDist);
                 }
+
                 if (targetXDist < 0f)
                 {
                     npc.spriteDirection = -1;
@@ -3867,52 +3870,41 @@ namespace CalamityMod.NPCs
             else if (npc.type == NPCID.Moth || npc.type == NPCID.Hornet || npc.type == NPCID.MossHornet || (npc.type >= NPCID.HornetFatty && npc.type <= NPCID.HornetStingy))
             {
                 if (npc.velocity.X > 0f)
-                {
                     npc.spriteDirection = 1;
-                }
                 if (npc.velocity.X < 0f)
-                {
                     npc.spriteDirection = -1;
-                }
+
                 npc.rotation = npc.velocity.X * 0.1f;
             }
             else
-            {
                 npc.rotation = (float)Math.Atan2((double)npc.velocity.Y, (double)npc.velocity.X) - MathHelper.PiOver2;
-            }
+
             if (npc.type == NPCID.Hornet || npc.type == NPCID.MossHornet || (npc.type >= NPCID.HornetFatty && npc.type <= NPCID.HornetStingy) || npc.type == NPCID.EaterofSouls || npc.type == NPCID.MeteorHead || npc.type == NPCID.Corruptor || npc.type == NPCID.Probe || npc.type == NPCID.Crimera || npc.type == NPCID.Moth || npc.type == NPCID.Bee || npc.type == NPCID.BeeSmall || npc.type == NPCID.BloodSquid)
             {
                 float reboundSpeed = 0.7f;
                 if (npc.type == NPCID.EaterofSouls || npc.type == NPCID.Crimera)
-                {
                     reboundSpeed = 0.4f;
-                }
+
                 if (npc.collideX)
                 {
                     npc.netUpdate = true;
                     npc.velocity.X = npc.oldVelocity.X * -reboundSpeed;
                     if (npc.direction == -1 && npc.velocity.X > 0f && npc.velocity.X < 2f)
-                    {
                         npc.velocity.X = 2f;
-                    }
                     if (npc.direction == 1 && npc.velocity.X < 0f && npc.velocity.X > -2f)
-                    {
                         npc.velocity.X = -2f;
-                    }
                 }
+
                 if (npc.collideY)
                 {
                     npc.netUpdate = true;
                     npc.velocity.Y = npc.oldVelocity.Y * -reboundSpeed;
                     if (npc.velocity.Y > 0f && (double)npc.velocity.Y < 1.5)
-                    {
                         npc.velocity.Y = 2f;
-                    }
                     if (npc.velocity.Y < 0f && (double)npc.velocity.Y > -1.5)
-                    {
                         npc.velocity.Y = -2f;
-                    }
                 }
+
                 if (npc.type == NPCID.BloodSquid)
                 {
                     int bloodDust = Dust.NewDust(npc.position, npc.width, npc.height, 5, npc.velocity.X * 0.2f, npc.velocity.Y * 0.2f, 100);
@@ -3930,9 +3922,8 @@ namespace CalamityMod.NPCs
                 {
                     int dustType = 18;
                     if (npc.type == NPCID.Crimera)
-                    {
                         dustType = 5;
-                    }
+
                     int idleDust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + (float)npc.height * 0.25f), npc.width, (int)((float)npc.height * 0.5f), dustType, npc.velocity.X, 2f, 75, npc.color, npc.scale);
                     Dust dust = Main.dust[idleDust];
                     dust.velocity.X *= 0.5f;

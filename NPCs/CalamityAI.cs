@@ -62,7 +62,25 @@ namespace CalamityMod.NPCs
                     npc.chaseable = true;
                     npc.netUpdate = true;
                 }
-                npc.damage = npc.defDamage;
+
+                // Calculate contact damage based on velocity
+                float minimalContactDamageVelocity = 4f;
+                float minimalDamageVelocity = 8f;
+                if (npc.velocity.Length() <= minimalContactDamageVelocity)
+                {
+                    if (head)
+                        npc.damage = (int)(npc.defDamage * 0.5f);
+                    else
+                        npc.damage = 0;
+                }
+                else
+                {
+                    float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                    if (head)
+                        npc.damage = (int)MathHelper.Lerp(npc.defDamage * 0.5f, npc.defDamage, velocityDamageScalar);
+                    else
+                        npc.damage = (int)MathHelper.Lerp(0f, npc.defDamage, velocityDamageScalar);
+                }
             }
             else
                 npc.damage = 0;
@@ -611,9 +629,6 @@ namespace CalamityMod.NPCs
             // Emit light
             Lighting.AddLight((int)((npc.position.X + (npc.width / 2)) / 16f), (int)((npc.position.Y + (npc.height / 2)) / 16f), 1.2f, 0f, 0f);
 
-            // Set damage
-            npc.damage = npc.defDamage;
-
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 npc.TargetClosest();
@@ -787,6 +802,9 @@ namespace CalamityMod.NPCs
 
             if (npc.ai[0] == -1f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int phase;
@@ -815,6 +833,9 @@ namespace CalamityMod.NPCs
             // Pick a location to teleport to
             else if (npc.ai[0] == 0f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.chaseable = true;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -962,6 +983,9 @@ namespace CalamityMod.NPCs
             // Float above target and fire projectiles
             else if (npc.ai[0] == 3f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.chaseable = true;
                 npc.rotation = npc.velocity.X * 0.04f;
 
@@ -1041,6 +1065,9 @@ namespace CalamityMod.NPCs
             // Cocoon bullet hell
             else if (npc.ai[0] == 4f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.defense = npc.defDefense * 4;
 
                 npc.chaseable = false;
@@ -1150,6 +1177,9 @@ namespace CalamityMod.NPCs
             // Laser beam attack
             else if (npc.ai[0] == 5f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.chaseable = true;
 
                 npc.defense = npc.defDefense * 2;
@@ -1534,9 +1564,6 @@ namespace CalamityMod.NPCs
             else if (npc.timeLeft < 1800)
                 npc.timeLeft = 1800;
 
-            // Reset damage from bullet hell phases
-            npc.damage = npc.defDamage;
-
             // Distance from destination where Cal Clone stops moving
             float movementDistanceGateValue = 100f;
 
@@ -1605,10 +1632,12 @@ namespace CalamityMod.NPCs
             // Bullet hell phase
             if (calamityGlobalNPC.newAI[2] > 0f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 if (calamityGlobalNPC.newAI[3] < 900f)
                 {
                     calamityGlobalNPC.newAI[3] += 1f;
-                    npc.damage = 0;
                     npc.dontTakeDamage = true;
                     npc.alpha = 255;
 
@@ -1798,11 +1827,13 @@ namespace CalamityMod.NPCs
             }
 
             npc.alpha = npc.dontTakeDamage ? 255 : 0;
-            npc.damage = npc.dontTakeDamage ? 0 : npc.defDamage;
 
             // Float above target and fire lasers or fireballs
             if (npc.ai[1] == 0f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.ai[2] += 1f;
                 float phaseTimer = 400f - (death ? 120f * (1f - lifeRatio) : 0f);
                 if (npc.ai[2] >= phaseTimer || phase4)
@@ -1852,6 +1883,9 @@ namespace CalamityMod.NPCs
             // Float to the side of the target and fire
             else if (npc.ai[1] == 1f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     npc.localAI[1] += 1f;
@@ -1908,6 +1942,9 @@ namespace CalamityMod.NPCs
             }
             else if (npc.ai[1] == 2f)
             {
+                // Set damage
+                npc.damage = npc.defDamage;
+
                 npc.rotation = rotation;
 
                 float chargeVelocity = phase4 ? 30f : death ? 28f : 25f;
@@ -1921,11 +1958,17 @@ namespace CalamityMod.NPCs
             }
             else if (npc.ai[1] == 3f)
             {
+                // Set damage
+                npc.damage = npc.defDamage;
+
                 npc.ai[2] += 1f;
 
                 float chargeTime = phase4 ? 35f : death ? 40f : 45f;
                 if (npc.ai[2] >= chargeTime)
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     npc.velocity *= 0.9f;
                     if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
                         npc.velocity.X = 0f;
@@ -1969,6 +2012,9 @@ namespace CalamityMod.NPCs
             }
             else
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.ai[2] += 1f;
                 if (npc.ai[2] >= (phase4 ? 15f : 30f))
                 {
@@ -2088,6 +2134,9 @@ namespace CalamityMod.NPCs
 
             if (npc.ai[1] == 0f)
             {
+                // Avoid cheap bullshit
+                npc.damage = (int)(npc.defDamage * 0.5f);
+
                 float calCloneBroProjAttackMaxSpeed = 5f;
                 float calCloneBroProjAttackAccel = 0.1f;
                 calCloneBroProjAttackMaxSpeed += 2f * enrageScale;
@@ -2206,6 +2255,9 @@ namespace CalamityMod.NPCs
             {
                 if (npc.ai[1] == 1f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     SoundEngine.PlaySound(SoundID.Roar, npc.Center);
                     npc.rotation = calCloneBroRotation;
 
@@ -2253,6 +2305,9 @@ namespace CalamityMod.NPCs
 
                 if (npc.ai[1] == 2f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     npc.ai[2] += 1f + (death ? 0.5f * (1f - lifeRatio) : 0f);
                     if (expertMode)
                         npc.ai[2] += 0.25f;
@@ -2261,6 +2316,9 @@ namespace CalamityMod.NPCs
 
                     if (npc.ai[2] >= 75f)
                     {
+                        // Avoid cheap bullshit
+                        npc.damage = (int)(npc.defDamage * 0.5f);
+
                         npc.velocity.X *= 0.93f;
                         npc.velocity.Y *= 0.93f;
 
@@ -2395,6 +2453,9 @@ namespace CalamityMod.NPCs
 
             if (npc.ai[1] == 0f)
             {
+                // Avoid cheap bullshit
+                npc.damage = (int)(npc.defDamage * 0.5f);
+
                 float calCloneBroProjAttackMaxSpeed = 4.5f;
                 float calCloneBroProjAttackAccel = 0.2f;
                 calCloneBroProjAttackMaxSpeed += 2f * enrageScale;
@@ -2513,6 +2574,9 @@ namespace CalamityMod.NPCs
             {
                 if (npc.ai[1] == 1f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     SoundEngine.PlaySound(SoundID.Roar, npc.Center);
                     npc.rotation = calCloneBroRotation;
 
@@ -2560,6 +2624,9 @@ namespace CalamityMod.NPCs
 
                 if (npc.ai[1] == 2f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     npc.ai[2] += 1f + (death ? 0.5f * (1f - lifeRatio) : 0f);
                     if (expertMode)
                         npc.ai[2] += 0.25f;
@@ -2568,6 +2635,9 @@ namespace CalamityMod.NPCs
 
                     if (npc.ai[2] >= 60f) //50
                     {
+                        // Avoid cheap bullshit
+                        npc.damage = (int)(npc.defDamage * 0.5f);
+
                         npc.velocity.X *= 0.93f;
                         npc.velocity.Y *= 0.93f;
 
@@ -2624,23 +2694,13 @@ namespace CalamityMod.NPCs
             bool exhausted = npc.ai[2] >= (phase3 ? 2f : 1f);
             calamityGlobalNPC.DR = exhausted ? 0.25f : 0.5f;
             npc.defense = exhausted ? npc.defDefense / 2 : npc.defDefense;
-            npc.damage = exhausted ? 0 : npc.defDamage;
 
             // Don't fire projectiles and don't increment phase timers for 4 seconds after the teleport phase to avoid cheap bullshit
             float noProjectileOrPhaseIncrementTime = 240f;
 
-            // Don't deal contact damage for 2 seconds after the teleport phase to avoid cheap bullshit
-            float noContactDamageTime = 120f;
-
-            bool dontDealContactDamage = npc.localAI[3] > noProjectileOrPhaseIncrementTime - noContactDamageTime;
             bool dontAttack = npc.localAI[3] > 0f;
             if (dontAttack)
-            {
                 npc.localAI[3] -= 1f;
-
-                if (dontDealContactDamage)
-                    npc.damage = 0;
-            }
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -2894,6 +2954,9 @@ namespace CalamityMod.NPCs
             // Start up
             if (npc.ai[0] == 0f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.ai[0] = 1f;
                 npc.netUpdate = true;
                 CustomGravity();
@@ -2902,6 +2965,9 @@ namespace CalamityMod.NPCs
             // Idle
             else if (npc.ai[0] == 1f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 // Slow down
                 npc.velocity.X *= 0.8f;
 
@@ -2943,6 +3009,9 @@ namespace CalamityMod.NPCs
             // Walk
             else if (npc.ai[0] == 2f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 // Set walking direction
                 if (Math.Abs(npc.Center.X - player.Center.X) < 200f * npc.scale)
                 {
@@ -3033,6 +3102,9 @@ namespace CalamityMod.NPCs
             // Jump
             else if (npc.ai[0] == 3f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.noTileCollide = false;
 
                 if (npc.velocity.Y == 0f)
@@ -3050,6 +3122,9 @@ namespace CalamityMod.NPCs
                     }
                     else if (npc.ai[1] == -1f)
                     {
+                        // Set damage
+                        npc.damage = npc.defDamage;
+
                         // Set jump velocity, reset and set AI to next phase (Stomp)
                         float distanceFromPlayerOnXAxis = npc.Center.X - player.Center.X;
                         npc.direction = distanceFromPlayerOnXAxis < 0 ? 1 : -1;
@@ -3113,6 +3188,9 @@ namespace CalamityMod.NPCs
             {
                 if (npc.velocity.Y == 0f)
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     // Play stomp sound. Gotta specify the filepath to avoid confusion between the namespace and npc
                     SoundStyle soundToPlay = Main.zenithWorld ? NPCs.ExoMechs.Ares.AresGaussNuke.NukeExplosionSound : NPCs.AstrumAureus.AstrumAureus.StompSound;
                     SoundEngine.PlaySound(soundToPlay, npc.Center);
@@ -3231,6 +3309,9 @@ namespace CalamityMod.NPCs
                 }
                 else
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     // Set velocities while falling, this happens before the stomp
                     // Fall through
                     if (!player.dead)
@@ -3315,6 +3396,9 @@ namespace CalamityMod.NPCs
             // Teleport
             else if (npc.ai[0] == 5f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 // Slow down
                 npc.velocity.X *= 0.8f;
 
@@ -3529,9 +3613,30 @@ namespace CalamityMod.NPCs
 
             // Deus cannot hit for 3 seconds or while invulnerable
             if (calamityGlobalNPC.newAI[1] < 180f || npc.dontTakeDamage)
+            {
                 npc.damage = 0;
+            }
             else
-                npc.damage = npc.defDamage;
+            {
+                // Calculate contact damage based on velocity
+                float minimalContactDamageVelocity = 2f;
+                float minimalDamageVelocity = 8f;
+                if (npc.velocity.Length() <= minimalContactDamageVelocity)
+                {
+                    if (head)
+                        npc.damage = (int)(npc.defDamage * 0.5f);
+                    else
+                        npc.damage = 0;
+                }
+                else
+                {
+                    float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                    if (head)
+                        npc.damage = (int)MathHelper.Lerp(npc.defDamage * 0.5f, npc.defDamage, velocityDamageScalar);
+                    else
+                        npc.damage = (int)MathHelper.Lerp(0f, npc.defDamage, velocityDamageScalar);
+                }
+            }
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)

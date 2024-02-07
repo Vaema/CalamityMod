@@ -1,4 +1,4 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,7 +20,8 @@ namespace CalamityMod.Buffs.StatBuffs
             CalamityPlayer modPlayer = player.Calamity();
             if (modPlayer.abyssalDivingSuitPrevious)
             {
-                player.gills = true;
+                if (player.IsUnderwater())
+                    player.gills = true;
                 modPlayer.abyssalDivingSuitPower = true;
                 modPlayer.depthCharm = true;
                 modPlayer.jellyfishNecklace = true;

@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee
             ArkoftheCosmos sword = (Owner.HeldItem.ModItem as ArkoftheCosmos);
             if (sword != null)
             {
-                sword.Charge = 10f;
+                sword.Charge = ArkoftheCosmos.MaxCharge;
                 sword.Combo = 0f;
             }
             SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact);

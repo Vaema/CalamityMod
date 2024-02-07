@@ -74,7 +74,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 long cashAvailable = Utils.CoinsCount(out bool overflow, player.inventory);
 
                 // If the player has at least 1 gold in their inventory, spend it and use a gold coin
-                if (overflow || cashAvailable > 10000)
+                if (overflow || (cashAvailable >= 10000 && (Main.LocalPlayer.InventoryHas(ItemID.GoldCoin) || Main.LocalPlayer.InventoryHas(ItemID.PlatinumCoin))))
                 {
                     player.BuyItem(10000);
                     nextShotGoldCoin = true;

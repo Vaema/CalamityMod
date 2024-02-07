@@ -137,11 +137,6 @@ namespace CalamityMod.NPCs.Leviathan
             float spawnAnimationTime = 180f;
             bool spawnAnimation = calamityGlobalNPC.newAI[3] < spawnAnimationTime;
 
-            // Don't do damage during spawn animation
-            NPC.damage = NPC.defDamage;
-            if (spawnAnimation)
-                NPC.damage = 0;
-
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
@@ -233,6 +228,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.buffImmune[BuffID.Slow] = immuneToSlowingDebuffs;
             NPC.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
 
+            // Despawn
             if (!player.active || player.dead || Vector2.Distance(player.Center, npcCenter) > 5600f)
             {
                 NPC.TargetClosest(false);
@@ -277,6 +273,9 @@ namespace CalamityMod.NPCs.Leviathan
                 // Slowly drift up when spawning
                 if (spawnAnimation)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     float minSpawnVelocity = 0.4f;
                     float maxSpawnVelocity = 4f;
                     float velocityY = maxSpawnVelocity - MathHelper.Lerp(minSpawnVelocity, maxSpawnVelocity, calamityGlobalNPC.newAI[3] / spawnAnimationTime);
@@ -297,6 +296,9 @@ namespace CalamityMod.NPCs.Leviathan
 
                 if (NPC.ai[0] == 0f)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     float hoverSpeed = (sirenAlive && !phase4) ? 3.5f : 7f;
                     float hoverAcceleration = (sirenAlive && !phase4) ? 0.1f : 0.2f;
                     hoverSpeed += 2f * enrageScale;
@@ -428,6 +430,9 @@ namespace CalamityMod.NPCs.Leviathan
                 }
                 else if (NPC.ai[0] == 1f)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     Vector2 aberrationSpawn = new Vector2(npcCenter.X, NPC.position.Y + NPC.height * 0.8f);
                     Vector2 leviCenterAberration = npcCenter;
                     float playerXDist = player.Center.X - leviCenterAberration.X;
@@ -535,6 +540,9 @@ namespace CalamityMod.NPCs.Leviathan
 
                     if (NPC.ai[1] % 2f == 0f)
                     {
+                        // Avoid cheap bullshit
+                        NPC.damage = 0;
+
                         int dustAmt = 7;
                         for (int j = 0; j < dustAmt; j++)
                         {
@@ -549,6 +557,9 @@ namespace CalamityMod.NPCs.Leviathan
 
                         if (Math.Abs(NPC.position.Y + (NPC.height / 2) - (player.position.Y + (player.height / 2))) < 20f)
                         {
+                            // Set damage
+                            NPC.damage = NPC.defDamage;
+
                             NPC.ai[1] += 1f;
                             NPC.ai[2] = 0f;
 
@@ -623,6 +634,9 @@ namespace CalamityMod.NPCs.Leviathan
                     }
                     else
                     {
+                        // Set damage
+                        NPC.damage = NPC.defDamage;
+
                         if (NPC.velocity.X < 0f)
                             NPC.direction = -1;
                         else

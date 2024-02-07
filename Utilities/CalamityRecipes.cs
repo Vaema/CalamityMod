@@ -810,6 +810,8 @@ namespace CalamityMod
             var edits = new Dictionary<Func<Recipe, bool>, Action<Recipe>>(128)
             {
                 { Vanilla(ItemID.EnchantedBoomerang), Disable }, // Calamity adds its own recipe
+                { Vanilla(ItemID.MiniNukeI), Disable },
+                { Vanilla(ItemID.MiniNukeII), Disable },
 
                 // Make various things cheaper (sorted by progression)
                 { Vanilla(ItemID.Leather), ChangeIngredientStack(ItemID.RottenChunk, 2) },
@@ -825,6 +827,7 @@ namespace CalamityMod
                 { Vanilla(ItemID.TrueExcalibur), ChangeIngredientStack(ItemID.ChlorophyteBar, 12) },
 
                 // Tier lock various items to a higher tier (sorted by progression)
+                { Vanilla(ItemID.Trimarang), AddIngredient(ModContent.ItemType<PearlShard>(), 5) },
                 { Vanilla(ItemID.BundleofBalloons), AddIngredient(ModContent.ItemType<AerialiteBar>(), 3) },
                 { r => r.HasResult(ItemID.HorseshoeBundle) && !r.HasIngredient(ItemID.BundleofBalloons), AddIngredient(ModContent.ItemType<AerialiteBar>(), 3) },
                 { Vanilla(ItemID.NightsEdge), AddIngredient(ModContent.ItemType<PurifiedGel>(), 5) },
@@ -1431,7 +1434,7 @@ namespace CalamityMod
             // Enchanted Boomerang
             r = Recipe.Create(ItemID.EnchantedBoomerang);
             r.AddIngredient(ItemID.WoodenBoomerang);
-            r.AddIngredient(ModContent.ItemType<PearlShard>(), 6);
+            r.AddIngredient(ItemID.FallenStar, 6);
             r.AddRecipeGroup(AnyGoldBar, 8);
             r.AddTile(TileID.Anvils);
             r.Register();
@@ -1946,6 +1949,22 @@ namespace CalamityMod
             r.AddIngredient(ItemID.SoulofFright);
             r.AddIngredient(ItemID.SoulofMight);
             r.AddIngredient(ItemID.SoulofSight);
+            r.Register();
+            r.DisableDecraft();
+
+            // Tiershift Mini Nuke 1s to post Moon Lord.
+            r = Recipe.Create(ItemID.MiniNukeI, 333);
+            r.AddIngredient(ItemID.RocketIII, 333);
+            r.AddIngredient(ItemID.LunarBar);
+            r.AddTile(TileID.LunarCraftingStation);
+            r.Register();
+            r.DisableDecraft();
+
+            // Tiershift Mini Nuke 2s to post Moon Lord.
+            r = Recipe.Create(ItemID.MiniNukeII, 333);
+            r.AddIngredient(ItemID.RocketIV, 333);
+            r.AddIngredient(ItemID.LunarBar);
+            r.AddTile(TileID.LunarCraftingStation);
             r.Register();
             r.DisableDecraft();
         }

@@ -978,6 +978,8 @@ namespace CalamityMod.CalPlayer
         public bool avertorBonus = false;
         public bool divineBless = false;
         public bool infiniteFlight = false;
+        public int hasteCounter = 0;
+        public int hasteLevel = 0;
         #endregion
 
         #region Minion
@@ -2469,6 +2471,8 @@ namespace CalamityMod.CalPlayer
             healingPotionMultiplier = 1f;
             avertorBonus = false;
             divineBless = false;
+            hasteLevel = 0;
+            hasteCounter = 0;
             #endregion
 
             #region Armor Set Bonuses
@@ -3656,7 +3660,8 @@ namespace CalamityMod.CalPlayer
                     (silvaSet ? 0.05f : 0f) +
                     (blueCandle ? 0.05f : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
-                    ((deepDiver && Player.IsUnderwater()) ? 0.15f : 0f);
+                    ((deepDiver && Player.IsUnderwater()) ? 0.15f : 0f) +
+                    (hasteLevel * 0.05f);
 
                 float runSpeedMult = 1f +
                     (lunicCorpsLegs ? 0.1f : 0f) +
@@ -3670,7 +3675,8 @@ namespace CalamityMod.CalPlayer
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
-                    ((deepDiver && Player.IsUnderwater()) ? 0.15f : 0f);
+                    ((deepDiver && Player.IsUnderwater()) ? 0.15f : 0f) +
+                    (hasteLevel * 0.05f);
 
                 if ((Player.slippy || Player.slippy2) && Player.iceSkate)
                     runAccMult *= 0.6f;

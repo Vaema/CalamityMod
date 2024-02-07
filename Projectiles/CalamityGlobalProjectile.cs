@@ -409,13 +409,41 @@ namespace CalamityMod.Projectiles
                 return false;
             }
 
+            else if (projectile.type == ProjectileID.BloodShot)
+            {
+                if (projectile.localAI[0] == 0f)
+                {
+                    SoundEngine.PlaySound(SoundID.Item17, projectile.Center);
+                    projectile.localAI[0] = 1f;
+                    for (int i = 0; i < 8; i++)
+                    {
+                        Dust blood1 = Main.dust[Dust.NewDust(projectile.position, projectile.width, projectile.height, 5, projectile.velocity.X, projectile.velocity.Y, 100)];
+                        blood1.velocity = (Main.rand.NextFloatDirection() * (float)Math.PI).ToRotationVector2() * 2f + projectile.velocity.SafeNormalize(Vector2.Zero) * 3f;
+                        blood1.scale = 1.5f;
+                        blood1.fadeIn = 1.7f;
+                        blood1.position = projectile.Center;
+                    }
+                }
+
+                projectile.alpha = 0;
+
+                Dust blood2 = Main.dust[Dust.NewDust(projectile.position, projectile.width, projectile.height, 5, projectile.velocity.X, projectile.velocity.Y, 100)];
+                blood2.velocity = blood2.velocity / 4f + projectile.velocity / 2f;
+                blood2.scale = 1.2f;
+                blood2.position = projectile.Center + Main.rand.NextFloat() * projectile.velocity * 2f;
+
+                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
+
+                return false;
+            }
+
             else if (projectile.type == ProjectileID.BloodNautilusShot)
             {
                 if (projectile.localAI[0] == 0f)
                 {
                     SoundEngine.PlaySound(SoundID.Item171, projectile.Center);
                     projectile.localAI[0] = 1f;
-                    for (int num160 = 0; num160 < 8; num160++)
+                    for (int i = 0; i < 8; i++)
                     {
                         Dust blood1 = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, 5, projectile.velocity.X, projectile.velocity.Y, 100);
                         blood1.velocity = (Main.rand.NextFloatDirection() * MathHelper.Pi).ToRotationVector2() * 2f + projectile.velocity.SafeNormalize(Vector2.Zero) * 2f;
@@ -425,26 +453,55 @@ namespace CalamityMod.Projectiles
                     }
                 }
 
-                projectile.alpha -= 20;
-                if (projectile.alpha < 0)
-                    projectile.alpha = 0;
+                projectile.alpha = 0;
 
-                for (int num161 = 0; num161 < 2; num161++)
-                {
-                    Dust blood2 = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, 5, projectile.velocity.X, projectile.velocity.Y, 100);
-                    blood2.velocity = blood2.velocity / 4f + projectile.velocity / 2f;
-                    blood2.scale = 1.2f;
-                    blood2.position = projectile.Center + Main.rand.NextFloat() * projectile.velocity * 2f;
-                }
+                Dust blood2 = Dust.NewDustDirect(projectile.position, projectile.width, projectile.height, 5, projectile.velocity.X, projectile.velocity.Y, 100);
+                blood2.velocity = blood2.velocity / 4f + projectile.velocity / 2f;
+                blood2.scale = 1.2f;
+                blood2.position = projectile.Center + Main.rand.NextFloat() * projectile.velocity * 2f;
 
-                for (int num162 = 1; num162 < projectile.oldPos.Length && !(projectile.oldPos[num162] == Vector2.Zero); num162++)
+                for (int j = 1; j < projectile.oldPos.Length && !(projectile.oldPos[j] == Vector2.Zero); j++)
                 {
-                    if (Main.rand.Next(3) == 0)
+                    if (Main.rand.NextBool(3))
                     {
-                        Dust blood3 = Dust.NewDustDirect(projectile.oldPos[num162], projectile.width, projectile.height, 5, projectile.velocity.X, projectile.velocity.Y, 100);
+                        Dust blood3 = Dust.NewDustDirect(projectile.oldPos[j], projectile.width, projectile.height, 5, projectile.velocity.X, projectile.velocity.Y, 100);
                         blood3.velocity = blood3.velocity / 4f + projectile.velocity / 2f;
                         blood3.scale = 1.2f;
-                        blood3.position = projectile.oldPos[num162] + projectile.Size / 2f + Main.rand.NextFloat() * projectile.velocity * 2f;
+                        blood3.position = projectile.oldPos[j] + projectile.Size / 2f + Main.rand.NextFloat() * projectile.velocity * 2f;
+                    }
+                }
+
+                projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
+
+                return false;
+            }
+
+            else if (projectile.type == ProjectileID.QueenBeeStinger)
+            {
+                if (projectile.ai[1] != 0f)
+                {
+                    if (projectile.position.Y > projectile.ai[1])
+                        projectile.tileCollide = true;
+                }
+
+                if (Main.rand.NextBool())
+                    Dust.NewDustDirect(projectile.position - projectile.velocity, projectile.width, projectile.height, 147, 0f, 0f, 0, default(Color), 0.9f).noGravity = true;
+
+                if (projectile.localAI[0] == 0f)
+                {
+                    projectile.localAI[0] = 1f;
+                    for (int num99 = 0; num99 < 20; num99++)
+                    {
+                        Dust dust3 = Dust.NewDustDirect(projectile.position - projectile.velocity, projectile.width, projectile.height, 147, 0f, 0f, 0, default(Color), 1.3f);
+                        dust3.noGravity = true;
+                        dust3.velocity += projectile.velocity * 0.75f;
+                    }
+
+                    for (int num100 = 0; num100 < 10; num100++)
+                    {
+                        Dust dust4 = Dust.NewDustDirect(projectile.position - projectile.velocity, projectile.width, projectile.height, 147, 0f, 0f, 0, default(Color), 1.3f);
+                        dust4.noGravity = true;
+                        dust4.velocity *= 2f;
                     }
                 }
 
@@ -500,6 +557,119 @@ namespace CalamityMod.Projectiles
                 return false;
             }
 
+            else if (projectile.type == ProjectileID.CultistBossLightningOrb)
+            {
+                if (NPC.AnyNPCs(NPCID.CultistBoss))
+                {
+                    if (projectile.localAI[1] == 0f)
+                    {
+                        SoundEngine.PlaySound(SoundID.Item121, projectile.position);
+                        projectile.localAI[1] = 1f;
+                    }
+
+                    if (projectile.ai[0] < 180f)
+                    {
+                        projectile.alpha -= 5;
+                        if (projectile.alpha < 0)
+                            projectile.alpha = 0;
+                    }
+                    else
+                    {
+                        projectile.alpha += 5;
+                        if (projectile.alpha > 255)
+                        {
+                            projectile.alpha = 255;
+                            projectile.Kill();
+                            return false;
+                        }
+                    }
+
+                    ref float reference = ref projectile.ai[0];
+                    ref float reference46 = ref reference;
+                    float num15 = reference;
+                    reference46 = num15 + 1f;
+
+                    if (projectile.ai[0] % 30f == 0f && projectile.ai[0] < 180f && Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int maxTargets = 2;
+                        int[] array6 = new int[maxTargets];
+                        Vector2[] array7 = new Vector2[maxTargets];
+                        int num731 = 0;
+                        float num732 = 2000f;
+
+                        for (int num733 = 0; num733 < Main.maxPlayers; num733++)
+                        {
+                            if (!Main.player[num733].active || Main.player[num733].dead)
+                                continue;
+
+                            Vector2 center9 = Main.player[num733].Center;
+                            float num734 = Vector2.Distance(center9, projectile.Center);
+                            if (num734 < num732 && Collision.CanHit(projectile.Center, 1, 1, center9, 1, 1))
+                            {
+                                array6[num731] = num733;
+                                array7[num731] = center9;
+                                int num34 = num731 + 1;
+                                num731 = num34;
+                                if (num34 >= array7.Length)
+                                    break;
+                            }
+                        }
+
+                        for (int num735 = 0; num735 < num731; num735++)
+                        {
+                            Vector2 vector52 = array7[num735] + Main.player[array6[num735]].velocity * 40f - projectile.Center;
+                            float ai = Main.rand.Next(100);
+                            Vector2 vector53 = Vector2.Normalize(vector52.RotatedByRandom(MathHelper.PiOver4)) * 7f;
+                            Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, vector53, 466, projectile.damage, 0f, Main.myPlayer, vector52.ToRotation(), ai);
+                        }
+                    }
+
+                    Lighting.AddLight(projectile.Center, 0.4f, 0.85f, 0.9f);
+
+                    if (++projectile.frameCounter >= 4)
+                    {
+                        projectile.frameCounter = 0;
+                        if (++projectile.frame >= Main.projFrames[projectile.type])
+                            projectile.frame = 0;
+                    }
+
+                    if (projectile.alpha >= 150 || !(projectile.ai[0] < 180f))
+                        return false;
+
+                    for (int num736 = 0; num736 < 1; num736++)
+                    {
+                        float num737 = (float)Main.rand.NextDouble() * 1f - 0.5f;
+                        if (num737 < -0.5f)
+                            num737 = -0.5f;
+                        if (num737 > 0.5f)
+                            num737 = 0.5f;
+
+                        Vector2 value40 = new Vector2(-projectile.width * 0.2f * projectile.scale, 0f).RotatedBy(num737 * MathHelper.TwoPi).RotatedBy(projectile.velocity.ToRotation());
+                        Dust zap = Dust.NewDustDirect(projectile.Center - Vector2.One * 5f, 10, 10, 226, (0f - projectile.velocity.X) / 3f, (0f - projectile.velocity.Y) / 3f, 150, Color.Transparent, 0.7f);
+                        zap.position = projectile.Center + value40;
+                        zap.velocity = Vector2.Normalize(zap.position - projectile.Center) * 2f;
+                        zap.noGravity = true;
+                    }
+
+                    for (int num739 = 0; num739 < 1; num739++)
+                    {
+                        float num740 = (float)Main.rand.NextDouble() * 1f - 0.5f;
+                        if (num740 < -0.5f)
+                            num740 = -0.5f;
+                        if (num740 > 0.5f)
+                            num740 = 0.5f;
+
+                        Vector2 value41 = new Vector2(-projectile.width * 0.6f * projectile.scale, 0f).RotatedBy(num740 * MathHelper.TwoPi).RotatedBy(projectile.velocity.ToRotation());
+                        Dust zap = Dust.NewDustDirect(projectile.Center - Vector2.One * 5f, 10, 10, 226, (0f - projectile.velocity.X) / 3f, (0f - projectile.velocity.Y) / 3f, 150, Color.Transparent, 0.7f);
+                        zap.velocity = Vector2.Zero;
+                        zap.position = projectile.Center + value41;
+                        zap.noGravity = true;
+                    }
+
+                    return false;
+                }
+            }
+
             else if (projectile.type == ProjectileID.Starfury)
             {
                 if (projectile.timeLeft > 75)
@@ -553,7 +723,7 @@ namespace CalamityMod.Projectiles
             {
                 float maxSpeed = 12f;
                 int accelerationTime = 30;
-                
+
                 if (projectile.localAI[0] > 0f)
                     projectile.localAI[0]--;
 
@@ -1680,118 +1850,6 @@ namespace CalamityMod.Projectiles
                 {
                     if (projectile.velocity.Length() < 8f)
                         projectile.velocity *= 1.01f;
-                }
-
-                else if (projectile.type == ProjectileID.CultistBossLightningOrb && BossRushEvent.BossRushActive)
-                {
-                    if (NPC.AnyNPCs(NPCID.CultistBoss))
-                    {
-                        if (projectile.localAI[1] == 0f)
-                        {
-                            SoundEngine.PlaySound(SoundID.Item121, projectile.position);
-                            projectile.localAI[1] = 1f;
-                        }
-
-                        if (projectile.ai[0] < 180f)
-                        {
-                            projectile.alpha -= 5;
-                            if (projectile.alpha < 0)
-                                projectile.alpha = 0;
-                        }
-                        else
-                        {
-                            projectile.alpha += 5;
-                            if (projectile.alpha > 255)
-                            {
-                                projectile.alpha = 255;
-                                projectile.Kill();
-                                return false;
-                            }
-                        }
-
-                        ref float reference = ref projectile.ai[0];
-                        ref float reference46 = ref reference;
-                        float num15 = reference;
-                        reference46 = num15 + 1f;
-
-                        if (projectile.ai[0] % 30f == 0f && projectile.ai[0] < 180f && Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            int[] array6 = new int[5];
-                            Vector2[] array7 = new Vector2[5];
-                            int num731 = 0;
-                            float num732 = 2000f;
-
-                            for (int num733 = 0; num733 < 255; num733++)
-                            {
-                                if (!Main.player[num733].active || Main.player[num733].dead)
-                                    continue;
-
-                                Vector2 center9 = Main.player[num733].Center;
-                                float num734 = Vector2.Distance(center9, projectile.Center);
-                                if (num734 < num732 && Collision.CanHit(projectile.Center, 1, 1, center9, 1, 1))
-                                {
-                                    array6[num731] = num733;
-                                    array7[num731] = center9;
-                                    int num34 = num731 + 1;
-                                    num731 = num34;
-                                    if (num34 >= array7.Length)
-                                        break;
-                                }
-                            }
-
-                            for (int num735 = 0; num735 < num731; num735++)
-                            {
-                                Vector2 vector52 = array7[num735] + Main.player[array6[num735]].velocity * 40f - projectile.Center;
-                                float ai = Main.rand.Next(100);
-                                Vector2 vector53 = Vector2.Normalize(vector52.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                                Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, vector53, 466, projectile.damage, 0f, Main.myPlayer, vector52.ToRotation(), ai);
-                            }
-                        }
-
-                        Lighting.AddLight(projectile.Center, 0.4f, 0.85f, 0.9f);
-
-                        if (++projectile.frameCounter >= 4)
-                        {
-                            projectile.frameCounter = 0;
-                            if (++projectile.frame >= Main.projFrames[projectile.type])
-                                projectile.frame = 0;
-                        }
-
-                        if (projectile.alpha >= 150 || !(projectile.ai[0] < 180f))
-                            return false;
-
-                        for (int num736 = 0; num736 < 1; num736++)
-                        {
-                            float num737 = (float)Main.rand.NextDouble() * 1f - 0.5f;
-                            if (num737 < -0.5f)
-                                num737 = -0.5f;
-                            if (num737 > 0.5f)
-                                num737 = 0.5f;
-
-                            Vector2 value40 = new Vector2(-projectile.width * 0.2f * projectile.scale, 0f).RotatedBy(num737 * MathHelper.TwoPi).RotatedBy(projectile.velocity.ToRotation());
-                            Dust zap = Dust.NewDustDirect(projectile.Center - Vector2.One * 5f, 10, 10, 226, (0f - projectile.velocity.X) / 3f, (0f - projectile.velocity.Y) / 3f, 150, Color.Transparent, 0.7f);
-                            zap.position = projectile.Center + value40;
-                            zap.velocity = Vector2.Normalize(zap.position - projectile.Center) * 2f;
-                            zap.noGravity = true;
-                        }
-
-                        for (int num739 = 0; num739 < 1; num739++)
-                        {
-                            float num740 = (float)Main.rand.NextDouble() * 1f - 0.5f;
-                            if (num740 < -0.5f)
-                                num740 = -0.5f;
-                            if (num740 > 0.5f)
-                                num740 = 0.5f;
-
-                            Vector2 value41 = new Vector2(-projectile.width * 0.6f * projectile.scale, 0f).RotatedBy(num740 * MathHelper.TwoPi).RotatedBy(projectile.velocity.ToRotation());
-                            Dust zap = Dust.NewDustDirect(projectile.Center - Vector2.One * 5f, 10, 10, 226, (0f - projectile.velocity.X) / 3f, (0f - projectile.velocity.Y) / 3f, 150, Color.Transparent, 0.7f);
-                            zap.velocity = Vector2.Zero;
-                            zap.position = projectile.Center + value41;
-                            zap.noGravity = true;
-                        }
-
-                        return false;
-                    }
                 }
 
                 else if (projectile.type == ProjectileID.CultistBossIceMist)
@@ -2936,6 +2994,9 @@ namespace CalamityMod.Projectiles
                     return Color.Coral;
             }
 
+            if (projectile.type == ProjectileID.BloodNautilusShot)
+                return new Color(200, 0, 0, projectile.alpha);
+
             if (projectile.type == ProjectileID.Stinger)
                 return new Color(200, 200, 0, projectile.alpha);
 
@@ -3085,14 +3146,15 @@ namespace CalamityMod.Projectiles
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int beeAmt = Main.rand.Next(2, 5);
+                        int beeAmt = Main.rand.Next(2, 4);
                         int availableAmountOfNPCsToSpawnUpToSlot = NPC.GetAvailableAmountOfNPCsToSpawnUpToSlot(beeAmt);
                         for (int i = 0; i < availableAmountOfNPCsToSpawnUpToSlot; i++)
                         {
-                            int beeType = Main.rand.Next(210, 212);
+                            int beeType = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
                             int beeSpawn = NPC.NewNPC(projectile.GetSource_FromThis(), (int)projectile.Center.X, (int)projectile.Center.Y, beeType, 1);
                             Main.npc[beeSpawn].velocity.X = (float)Main.rand.Next(-200, 201) * 0.002f;
                             Main.npc[beeSpawn].velocity.Y = (float)Main.rand.Next(-200, 201) * 0.002f;
+                            Main.npc[beeSpawn].ai[3] = 1f;
                             Main.npc[beeSpawn].netUpdate = true;
                         }
                     }

@@ -323,7 +323,7 @@ namespace CalamityMod
                 { NPCID.VileSpitEaterOfWorlds, new int[] { -1, 64, 64, 64, 96 } },
 
                 { NPCID.BrainofCthulhu, new int[] { 30, 54, 81, 99, 135 } },
-                { NPCID.Creeper, new int[] { 20, 36, 54, 72, 90 } },
+                { NPCID.Creeper, new int[] { 20, 36, 66, 80, 108 } },
 
                 { ModContent.NPCType<HiveMind>(), new int[] { 35, 63, 81, 90, 135 } },
                 { ModContent.NPCType<DankCreeper>(), new int[] { 25, 50, 62, 68, 90 } },
@@ -340,8 +340,8 @@ namespace CalamityMod
                 { ModContent.NPCType<PerforatorTailSmall>(), new int[] { 10, 20, 26, 30, 45 } },
 
                 { NPCID.QueenBee, new int[] { 30, 54, 81, 99, 135 } },
-                { NPCID.Bee, new int[] { 20, 24, 30, 36, 54 } },
-                { NPCID.BeeSmall, new int[] { 15, 18, 24, 30, 45 } },
+                { NPCID.Bee, new int[] { 20, 24, 48, 60, 72 } },
+                { NPCID.BeeSmall, new int[] { 15, 18, 30, 44, 54 } },
 
                 { NPCID.SkeletronHead, new int[] {
                     35, // Same for all phases
@@ -349,7 +349,7 @@ namespace CalamityMod
                     88, // 114 while spinning
                     99, // 128 while spinning
                     132 } }, // 171 while spinning
-                { NPCID.SkeletronHand, new int[] { 20, 44, 55, 66, 99 } },
+                { NPCID.SkeletronHand, new int[] { 20, 44, 77, 88, 110 } },
                 { NPCID.ChaosBall, new int[] { -1, -1, -1, 40, 60 } },
 
                 { NPCID.Deerclops, new int[] { 20, 40, 50, 60, 80 } },
@@ -552,7 +552,7 @@ namespace CalamityMod
 
             EnemyStats.ProjectileDamageValues = new SortedDictionary<Tuple<int, int>, int[]>
             {
-                { new Tuple<int, int>(ModContent.NPCType<KingSlimeJewel>(), ModContent.ProjectileType<JewelProjectile>()), new int[] { 22, 36, 44, 48, 66 } },
+                { new Tuple<int, int>(ModContent.NPCType<KingSlimeJewel>(), ModContent.ProjectileType<JewelProjectile>()), new int[] { 0, 0, 44, 48, 66 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<DesertScourgeHead>(), ModContent.ProjectileType<SandBlast>()), new int[] { 26, 44, 60, 68, 90 } },
                 { new Tuple<int, int>(ModContent.NPCType<DesertScourgeHead>(), ModContent.ProjectileType<GreatSandBlast>()), new int[] { 26, 44, 60, 68, 90 } },
@@ -562,8 +562,12 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<Crabulon>(), ModContent.ProjectileType<MushBomb>()), new int[] { 32, 48, 60, 68, 90 } },
                 { new Tuple<int, int>(ModContent.NPCType<Crabulon>(), ModContent.ProjectileType<MushBombFall>()), new int[] { 32, 48, 60, 68, 90 } },
 
-                { new Tuple<int, int>(NPCID.EaterofWorldsHead, ProjectileID.CursedFlameHostile), new int[] { 32, 48, 60, 68, 90 } },
-                { new Tuple<int, int>(NPCID.EaterofWorldsHead, ModContent.ProjectileType<ShadowflameFireball>()), new int[] { 22, 36, 44, 48, 66 } },
+                { new Tuple<int, int>(NPCID.EaterofWorldsHead, ProjectileID.CursedFlameHostile), new int[] { 0, 0, 60, 68, 90 } },
+                { new Tuple<int, int>(NPCID.EaterofWorldsHead, ModContent.ProjectileType<ShadowflameFireball>()), new int[] { 0, 0, 0, 48, 66 } },
+
+                { new Tuple<int, int>(NPCID.BrainofCthulhu, ProjectileID.BloodNautilusShot), new int[] { 0, 0, 68, 76, 102 } },
+                { new Tuple<int, int>(NPCID.BrainofCthulhu, ProjectileID.BloodShot), new int[] { 0, 0, 60, 68, 90 } },
+                { new Tuple<int, int>(NPCID.Creeper, ProjectileID.BloodShot), new int[] { 0, 0, 60, 68, 90 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<HiveMind>(), ModContent.ProjectileType<ShadeNimbusHostile>()), new int[] { 36, 56, 68, 76, 102 } },
                 { new Tuple<int, int>(ModContent.NPCType<DankCreeper>(), ModContent.ProjectileType<ShadeNimbusHostile>()), new int[] { 36, 56, 68, 76, 102 } },
@@ -602,8 +606,8 @@ namespace CalamityMod
                     68,
                     76,
                     102 } }, // 66 to 90, depending on life
-                { new Tuple<int, int>(NPCID.WallofFleshEye, ProjectileID.DeathLaser), new int[] { 40, 72, 88, 96, 132 } },
-                { new Tuple<int, int>(NPCID.WallofFlesh, ProjectileID.DemonSickle), new int[] { 52, 92, 112, 124, 168 } },
+                { new Tuple<int, int>(NPCID.WallofFleshEye, ProjectileID.DeathLaser), new int[] { 0, 0, 88, 96, 132 } },
+                { new Tuple<int, int>(NPCID.WallofFlesh, ProjectileID.DemonSickle), new int[] { 0, 0, 112, 124, 168 } },
 
                 { new Tuple<int, int>(NPCID.QueenSlimeBoss, ProjectileID.QueenSlimeGelAttack), new int[] { 60, 120, 136, 152, 210 } },
                 { new Tuple<int, int>(NPCID.QueenSlimeBoss, ProjectileID.QueenSlimeSmash), new int[] { 80, 160, 188, 200, 270 } },

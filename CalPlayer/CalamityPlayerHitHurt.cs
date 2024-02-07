@@ -741,30 +741,6 @@ namespace CalamityMod.CalPlayer
             // The amount of damage that will be dealt is yet to be determined.
             //
 
-            if (areThereAnyDamnBosses && CalamityMod.bossVelocityDamageScaleValues.ContainsKey(npc.type))
-            {
-                CalamityMod.bossVelocityDamageScaleValues.TryGetValue(npc.type, out float velocityScalar);
-
-                if (((npc.type == NPCID.EyeofCthulhu || npc.type == NPCID.Spazmatism) && npc.ai[0] >= 2f) || (npc.type == NPCID.Plantera && npc.life / (float)npc.lifeMax <= 0.5f) ||
-                    (npc.type == ModContent.NPCType<Apollo>() && npc.life / (float)npc.lifeMax < 0.6f))
-                    velocityScalar = CalamityMod.bitingEnemeyVelocityScale;
-
-                if (npc.velocity == Vector2.Zero)
-                {
-                    contactDamageReduction += 1f - velocityScalar;
-                }
-                else
-                {
-                    float amount = npc.velocity.Length() / (npc.Calamity().maxVelocity * 0.5f);
-                    if (amount > 1f)
-                        amount = 1f;
-
-                    float damageReduction = MathHelper.Lerp(velocityScalar, 1f, amount);
-                    if (damageReduction < 1f)
-                        contactDamageReduction += 1f - damageReduction;
-                }
-            }
-
             if (transformer)
             {
                 if (npc.type == NPCID.BlueJellyfish || npc.type == NPCID.PinkJellyfish || npc.type == NPCID.GreenJellyfish ||
@@ -1317,6 +1293,10 @@ namespace CalamityMod.CalPlayer
                 else if (proj.type == ProjectileID.Skull)
                 {
                     Player.AddBuff(BuffID.Weak, 300);
+                }
+                else if (proj.type == ProjectileID.CursedFlameHostile)
+                {
+                    Player.AddBuff(BuffID.CursedInferno, 120);
                 }
                 else if (proj.type == ProjectileID.ThornBall)
                 {
@@ -2011,8 +1991,8 @@ namespace CalamityMod.CalPlayer
             if (hideOfDeus)
             {
                 hideOfDeusMeleeBoostTimer += 3 * hurtInfo.Damage;
-                if (hideOfDeusMeleeBoostTimer > 900)
-                    hideOfDeusMeleeBoostTimer = 900;
+                if (hideOfDeusMeleeBoostTimer > 600)
+                    hideOfDeusMeleeBoostTimer = 600;
             }
 
             if (Player.whoAmI == Main.myPlayer)
@@ -2408,7 +2388,7 @@ namespace CalamityMod.CalPlayer
                     int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(320);
                     astralStarDamage = Player.ApplyArmorAccDamageBonusesTo(astralStarDamage);
 
-                    Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, 0f, ModContent.ProjectileType<GodSlayerBlaze>(), blazeDamage, 5f, Player.whoAmI, 0f, 1f);
+                    Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, 0f, ModContent.ProjectileType<HideOfAstrumDeusExplosion>(), blazeDamage, 5f, Player.whoAmI, 0f, 1f);
                     for (int n = 0; n < 12; n++)
                     {
                         CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<AstralStar>(), astralStarDamage, 5f, Player.whoAmI);

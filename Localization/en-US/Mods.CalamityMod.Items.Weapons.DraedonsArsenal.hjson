@@ -34,7 +34,7 @@ GaussDagger: {
 	Tooltip:
 		'''
 		Slices through foes with turbulent magnetic force
-		Repeated strikes envelop foes in a damaging magnetic flux
+		Striking foes envelops them in a damaging magnetic flux
 		'''
 }
 

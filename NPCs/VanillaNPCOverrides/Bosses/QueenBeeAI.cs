@@ -39,7 +39,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 enrage = false;
 
             float maxEnrageScale = 2f;
-            float enrageScale = death ? 0.25f : 0f;
+            float enrageScale = death ? 0.5f : 0f;
             if (((npc.position.Y / 16f) < Main.worldSurface && enrage) || bossRush)
             {
                 npc.Calamity().CurrentlyEnraged = !bossRush;
@@ -64,7 +64,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
             // Bee spawn limit
-            int beeLimit = 20;
+            int beeLimit = 15;
 
             // Queen Bee Bee count
             int totalBees = 0;
@@ -87,20 +87,23 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             // Phases
 
             // Become more aggressive and start firing double stingers (triple in death mode) phase
-            bool phase2 = lifeRatio < 0.8f;
+            bool phase2 = lifeRatio < 0.85f;
 
-            // Begin launching beehives instead of bees phase, spawn hornets in death mode
-            bool phase3 = lifeRatio < 0.6f;
+            // Begin launching beehives instead of bees phase
+            bool phase3 = lifeRatio < 0.7f;
 
-            // Stop spawning bees from ass, spawn bees while charging and become more aggressive phase
-            bool phase4 = lifeRatio < 0.3f;
+            // Stop spawning bees from ass and start performing stinger arcs + diagonal dashes, spawn bees while charging and become more aggressive phase
+            bool phase4 = lifeRatio < 0.5f;
+
+            // Perform many shorter-range dashes and use stinger arc in two possible directions phase
+            bool phase5 = lifeRatio < 0.3f;
 
             // Triple stinger (quintuple in death mode) bombardment phase
-            bool phase5 = lifeRatio < 0.1f;
+            bool phase6 = lifeRatio < 0.1f;
 
             // Despawn
             float distanceFromTarget = Vector2.Distance(npc.Center, Main.player[npc.target].Center);
-            if (npc.ai[0] != 5f)
+            if (npc.ai[0] != 6f)
             {
                 if (npc.timeLeft < 60)
                     npc.timeLeft = 60;
@@ -108,7 +111,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     npc.ai[0] = 4f;
             }
             if (Main.player[npc.target].dead)
-                npc.ai[0] = 5f;
+                npc.ai[0] = 6f;
 
             // Adjust slowing debuff immunity
             bool immuneToSlowingDebuffs = npc.ai[0] == 0f;
@@ -132,8 +135,11 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             }
 
             // Despawn phase
-            if (npc.ai[0] == 5f)
+            if (npc.ai[0] == 6f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.velocity.Y *= 0.98f;
 
                 if (npc.velocity.X < 0f)
@@ -172,25 +178,42 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int phase;
-                    do phase = Main.rand.Next(4);
+                    int maxRandom = phase4 ? 5 : 4;
+                    do phase = Main.rand.Next(maxRandom);
                     while (phase == npc.ai[1] || phase == 1 || (phase == 2 && phase4));
+
+                    bool charging = phase == 0;
+
+                    // 5 is stinger arc and charge
+                    if (phase == 4)
+                        phase = 5;
 
                     npc.TargetClosest();
                     npc.ai[0] = phase;
                     npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
+
+                    // Movement direction for the stinger arcs
+                    npc.ai[2] = (phase == 5 && phase5) ? (Main.rand.NextBool() ? 1f : -1f) : phase == 5 ? 1f : 0f;
+
+                    // Velocity for the charges
+                    npc.ai[3] = charging ? ((phase6 ? 25f : phase5 ? 14f : phase4 ? 25f : phase2 ? 20f : 15f) + 6f * enrageScale) : 0f;
+
+                    // Distance for the charges
+                    calamityGlobalNPC.newAI[1] = charging ? ((phase6 ? 750f : phase5 ? 350f : phase4 ? 650f : phase2 ? 550f : 450f) - 100f * enrageScale) : 0f;
+                    npc.SyncExtraAI();
                 }
             }
 
             // Charging phase
             else if (npc.ai[0] == 0f)
             {
+                // Charging distance from player
+                int chargeDistanceX = (int)calamityGlobalNPC.newAI[1];
+
                 // Number of charges
-                int chargeAmt = (int)Math.Ceiling(2f + enrageScale);
-                if (phase3)
-                    chargeAmt++;
-                if (phase4)
-                    chargeAmt++;
+                int chargeAmt = (int)Math.Ceiling((phase6 ? 2f : phase5 ? 4f : phase4 ? 3f : 2f) + enrageScale);
+                if (death)
+                    chargeAmt = phase6 ? 1 : phase5 ? 3 : phase4 ? 2 : 1;
 
                 // Switch to a random phase if chargeAmt has been exceeded
                 if (npc.ai[1] > (2 * chargeAmt) && npc.ai[1] % 2f == 0f)
@@ -203,36 +226,38 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 }
 
                 // Charge velocity
-                float speed = 16f;
-                if (phase2)
-                    speed += 8f;
-                if (phase4)
-                    speed += 8f;
-
-                speed += 8f * enrageScale;
+                float velocity = npc.ai[3];
 
                 // Line up and initiate charge
                 if (npc.ai[1] % 2f == 0f)
                 {
-                    // Initiate charge
-                    float chargeDistance = 20f;
-                    chargeDistance += 20f * enrageScale;
-                    if (death)
-                        chargeDistance += MathHelper.Lerp(0f, 100f, 1f - lifeRatio);
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
 
-                    if (Math.Abs(npc.position.Y + (npc.height / 2) - (Main.player[npc.target].position.Y + (Main.player[npc.target].height / 2))) < chargeDistance)
+                    // Initiate charge
+                    float chargeDistanceY = phase6 ? 100f : phase4 ? 50f : 20f;
+                    chargeDistanceY += 100f * enrageScale;
+                    if (death)
+                        chargeDistanceY += MathHelper.Lerp(0f, 100f, 1f - lifeRatio);
+
+                    float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[npc.target].Center.X);
+                    float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y);
+                    if (distanceFromTargetY < chargeDistanceY && distanceFromTargetX >= chargeDistanceX)
                     {
+                        // Set damage
+                        npc.damage = npc.defDamage;
+
                         // Set AI variables and speed
                         npc.localAI[0] = 1f;
                         npc.ai[1] += 1f;
                         npc.ai[2] = 0f;
 
                         // Get target location
-                        Vector2 beeLocation = new Vector2(npc.position.X + npc.width * 0.5f, npc.position.Y + npc.height * 0.5f);
-                        float targetXDist = Main.player[npc.target].position.X + (Main.player[npc.target].width / 2) - beeLocation.X;
-                        float targetYDist = Main.player[npc.target].position.Y + (Main.player[npc.target].height / 2) - beeLocation.Y;
+                        Vector2 beeLocation = npc.Center;
+                        float targetXDist = Main.player[npc.target].Center.X - beeLocation.X;
+                        float targetYDist = Main.player[npc.target].Center.Y - beeLocation.Y;
                         float targetDistance = (float)Math.Sqrt(targetXDist * targetXDist + targetYDist * targetYDist);
-                        targetDistance = speed / targetDistance;
+                        targetDistance = velocity / targetDistance;
                         npc.velocity.X = targetXDist * targetDistance;
                         npc.velocity.Y = targetYDist * targetDistance;
 
@@ -248,44 +273,38 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                     // Velocity variables
                     npc.localAI[0] = 0f;
-                    float chargeVelocity = 12f;
-                    float chargeAcceleration = 0.15f;
-                    if (phase2)
-                    {
-                        chargeVelocity += 3f;
-                        chargeAcceleration += 0.125f;
-                    }
-                    if (phase4)
-                    {
-                        chargeVelocity += 3f;
-                        chargeAcceleration += 0.125f;
-                    }
-                    chargeVelocity += 3f * enrageScale;
-                    chargeAcceleration += 0.5f * enrageScale;
+                    float chargeVelocityX = (phase4 ? 24f : phase2 ? 20f : 16f) + 8f * enrageScale;
+                    float chargeVelocityY = (phase4 ? 18f : phase2 ? 15f : 12f) + 6f * enrageScale;
+                    float chargeAccelerationX = (phase4 ? 0.9f : phase2 ? 0.7f : 0.5f) + 0.5f * enrageScale;
+                    float chargeAccelerationY = (phase4 ? 0.45f : phase2 ? 0.35f : 0.25f) + 0.25f * enrageScale;
 
                     // Velocity calculations
-                    if (npc.position.Y + (npc.height / 2) < Main.player[npc.target].position.Y + (Main.player[npc.target].height / 2))
-                        npc.velocity.Y += chargeAcceleration;
+                    if (npc.Center.Y < Main.player[npc.target].Center.Y - chargeDistanceY)
+                        npc.velocity.Y += chargeAccelerationY;
+                    else if (npc.Center.Y > Main.player[npc.target].Center.Y + chargeDistanceY)
+                        npc.velocity.Y -= chargeAccelerationY;
                     else
-                        npc.velocity.Y -= chargeAcceleration;
+                        npc.velocity.Y *= 0.7f;
 
-                    if (npc.velocity.Y < -chargeVelocity)
-                        npc.velocity.Y = -chargeVelocity;
-                    if (npc.velocity.Y > chargeVelocity)
-                        npc.velocity.Y = chargeVelocity;
+                    if (npc.velocity.Y < -chargeVelocityY)
+                        npc.velocity.Y = -chargeVelocityY;
+                    if (npc.velocity.Y > chargeVelocityY)
+                        npc.velocity.Y = chargeVelocityY;
 
-                    if (Math.Abs(npc.position.X + (npc.width / 2) - (Main.player[npc.target].position.X + (Main.player[npc.target].width / 2))) > 500f)
-                        npc.velocity.X += chargeAcceleration * npc.direction;
-                    else if (Math.Abs(npc.position.X + (npc.width / 2) - (Main.player[npc.target].position.X + (Main.player[npc.target].width / 2))) < 300f)
-                        npc.velocity.X -= chargeAcceleration * npc.direction;
+                    float distanceXMax = 100f;
+                    float distanceXMin = 20f;
+                    if (distanceFromTargetX > chargeDistanceX + distanceXMax)
+                        npc.velocity.X += chargeAccelerationX * npc.direction;
+                    else if (distanceFromTargetX < chargeDistanceX + distanceXMin)
+                        npc.velocity.X -= chargeAccelerationX * npc.direction;
                     else
-                        npc.velocity.X *= 0.8f;
+                        npc.velocity.X *= 0.7f;
 
                     // Limit velocity
-                    if (npc.velocity.X < -chargeVelocity)
-                        npc.velocity.X = -chargeVelocity;
-                    if (npc.velocity.X > chargeVelocity)
-                        npc.velocity.X = chargeVelocity;
+                    if (npc.velocity.X < -chargeVelocityX)
+                        npc.velocity.X = -chargeVelocityX;
+                    if (npc.velocity.X > chargeVelocityX)
+                        npc.velocity.X = chargeVelocityX;
 
                     // Face the correct direction
                     float playerLocation2 = npc.Center.X - Main.player[npc.target].Center.X;
@@ -299,6 +318,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 }
                 else
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     // Face the correct direction
                     if (npc.velocity.X < 0f)
                         npc.direction = -1;
@@ -307,27 +329,19 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                     npc.spriteDirection = npc.direction;
 
-                    // Charging distance from player
-                    int chargingDistance = 400;
-                    if (phase4)
-                        chargingDistance = 600;
-                    else if (phase2)
-                        chargingDistance = 500;
-                    chargingDistance -= (int)(100f * enrageScale);
-
                     // Get which side of the player the boss is on
                     int chargeDirection = 1;
-                    if (npc.position.X + (npc.width / 2) < Main.player[npc.target].position.X + (Main.player[npc.target].width / 2))
+                    if (npc.Center.X < Main.player[npc.target].Center.X)
                         chargeDirection = -1;
 
                     // If boss is in correct position, slow down, if not, reset
                     bool shouldCharge = false;
-                    if (npc.direction == chargeDirection && Math.Abs(npc.position.X + (npc.width / 2) - (Main.player[npc.target].position.X + (Main.player[npc.target].width / 2))) > chargingDistance)
+                    if (npc.direction == chargeDirection && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) > chargeDistanceX)
                     {
                         npc.ai[2] = 1f;
                         shouldCharge = true;
                     }
-                    if (Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) > chargingDistance * 1.5f)
+                    if (Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) > chargeDistanceX * 1.5f)
                     {
                         npc.ai[2] = 1f;
                         shouldCharge = true;
@@ -339,19 +353,26 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     if (npc.ai[2] != 1f)
                     {
                         // Velocity fix if Queen Bee is slowed
-                        if (npc.velocity.Length() < speed)
-                            npc.velocity.X = speed * npc.direction;
+                        if (npc.velocity.Length() < velocity)
+                            npc.velocity.X = velocity * npc.direction;
+
+                        float accelerateGateValue = phase6 ? 30f : phase5 ? 10f : 90f;
+                        if (enrageScale > 0f)
+                            accelerateGateValue *= 0.5f;
 
                         calamityGlobalNPC.newAI[0] += 1f;
-                        if (calamityGlobalNPC.newAI[0] > 90f)
+                        if (calamityGlobalNPC.newAI[0] > accelerateGateValue)
                         {
                             npc.SyncExtraAI();
-                            npc.velocity.X *= 1.01f;
+                            float velocityXLimit = velocity * 2f;
+                            if (Math.Abs(npc.velocity.X) < velocityXLimit)
+                                npc.velocity.X *= 1.01f;
                         }
 
                         // Spawn bees
-                        bool spawnBee = phase4 && calamityGlobalNPC.newAI[0] % 20f == 0f;
-                        if (Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height) && spawnBee)
+                        float beeSpawnGateValue = 20f;
+                        bool spawnBee = phase4 && calamityGlobalNPC.newAI[0] % beeSpawnGateValue == 0f && Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
+                        if (spawnBee)
                         {
                             SoundEngine.PlaySound(SoundID.NPCHit1, npc.Center);
 
@@ -376,7 +397,6 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                                     {
                                         Main.npc[spawn].ai[2] = enrageScale;
                                         Main.npc[spawn].ai[3] = 1f;
-                                        Main.npc[spawn].localAI[0] = 60f;
                                     }
                                     Main.npc[spawn].netUpdate = true;
                                 }
@@ -427,20 +447,25 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             // Fly above target before bee spawning phase
             else if (npc.ai[0] == 2f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
+                // Direction
                 float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
                 npc.direction = playerLocation < 0 ? 1 : -1;
                 npc.spriteDirection = npc.direction;
 
                 // Get target location
-                float beeAttackAccel = death ? 0.125f : 0.1f;
-                Vector2 beeAttackPosition = new Vector2(npc.position.X + npc.width * 0.5f, npc.position.Y + npc.height * 0.5f);
-                float beeAttackTargetX = Main.player[npc.target].position.X + (Main.player[npc.target].width / 2) - beeAttackPosition.X;
-                float beeAttackTargetY = Main.player[npc.target].position.Y + (Main.player[npc.target].height / 2) - 200f - beeAttackPosition.Y;
-                float beeAttackTargetDist = (float)Math.Sqrt(beeAttackTargetX * beeAttackTargetX + beeAttackTargetY * beeAttackTargetY);
+                float beeAttackAccel = death ? 0.3f : 0.24f;
+                float beeAttackSpeed = 12f + enrageScale * 3f;
+                bool canHitTarget = Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
+                float distanceAboveTarget = !canHitTarget ? 0f : 320f;
+                Vector2 hoverDestination = Main.player[npc.target].Center - Vector2.UnitY * distanceAboveTarget;
+                Vector2 idealVelocity = npc.SafeDirectionTo(hoverDestination) * beeAttackSpeed;
 
                 // Go to bee spawn phase
                 calamityGlobalNPC.newAI[0] += 1f;
-                if (beeAttackTargetDist < 360f || calamityGlobalNPC.newAI[0] >= 180f)
+                if ((Vector2.Distance(npc.Center, hoverDestination) < 400f && canHitTarget) || calamityGlobalNPC.newAI[0] >= 180f)
                 {
                     npc.ai[0] = 1f;
                     npc.ai[1] = 0f;
@@ -450,44 +475,25 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     return false;
                 }
 
-                // Velocity calculations
-                if (npc.velocity.X < beeAttackTargetX)
-                {
-                    npc.velocity.X += beeAttackAccel;
-                    if (npc.velocity.X < 0f && beeAttackTargetX > 0f)
-                        npc.velocity.X += beeAttackAccel;
-                }
-                else if (npc.velocity.X > beeAttackTargetX)
-                {
-                    npc.velocity.X -= beeAttackAccel;
-                    if (npc.velocity.X > 0f && beeAttackTargetX < 0f)
-                        npc.velocity.X -= beeAttackAccel;
-                }
-                if (npc.velocity.Y < beeAttackTargetY)
-                {
-                    npc.velocity.Y += beeAttackAccel;
-                    if (npc.velocity.Y < 0f && beeAttackTargetY > 0f)
-                        npc.velocity.Y += beeAttackAccel;
-                }
-                else if (npc.velocity.Y > beeAttackTargetY)
-                {
-                    npc.velocity.Y -= beeAttackAccel;
-                    if (npc.velocity.Y > 0f && beeAttackTargetY < 0f)
-                        npc.velocity.Y -= beeAttackAccel;
-                }
+                npc.SimpleFlyMovement(idealVelocity, beeAttackAccel);
             }
 
             // Bee spawn phase
             else if (npc.ai[0] == 1f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.localAI[0] = 0f;
 
                 // Get target location and spawn bees from ass
-                Vector2 beeSpawnLocation = new Vector2(npc.position.X + (npc.width / 2) + (Main.rand.Next(20) * npc.direction), npc.position.Y + npc.height * 0.8f);
-                Vector2 queenBeeLocation = new Vector2(npc.position.X + npc.width * 0.5f, npc.position.Y + npc.height * 0.5f);
-                float beeSpawnTargetX = Main.player[npc.target].position.X + (Main.player[npc.target].width / 2) - queenBeeLocation.X;
-                float beeSpawnTargetY = Main.player[npc.target].position.Y + (Main.player[npc.target].height / 2) - queenBeeLocation.Y;
-                float beeSpawnTargetDist = (float)Math.Sqrt(beeSpawnTargetX * beeSpawnTargetX + beeSpawnTargetY * beeSpawnTargetY);
+                float beeAttackHoverSpeed = 16f + enrageScale * 4f;
+                float beeAttackHoverAccel = death ? 0.4f : 0.3f;
+                Vector2 beeSpawnLocation = new Vector2(npc.Center.X + (Main.rand.Next(20) * npc.direction), npc.position.Y + npc.height * 0.8f);
+                Vector2 beeSpawnCollisionLocation = new Vector2(beeSpawnLocation.X, beeSpawnLocation.Y - 30f);
+                bool canHitTarget = Collision.CanHit(beeSpawnCollisionLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
+                Vector2 hoverDestination = Main.player[npc.target].Center - Vector2.UnitY * (!canHitTarget ? 0f : 320f);
+                Vector2 idealVelocity = npc.SafeDirectionTo(hoverDestination) * beeAttackHoverSpeed;
 
                 // Bee spawn timer
                 npc.ai[1] += 1f;
@@ -502,7 +508,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     npc.ai[1] += 1f;
 
                 bool spawnBee = false;
-                float beeSpawnCheck = (phase3 ? 60f : 15f) - (phase3 ? 24f : 6f) * enrageScale;
+                float beeSpawnCheck = (phase3 ? 45f : 15f) - (phase3 ? 18f : 6f) * enrageScale;
                 if (npc.ai[1] > beeSpawnCheck)
                 {
                     npc.ai[1] = 0f;
@@ -523,19 +529,6 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                         if (phase3 && !Main.zenithWorld)
                         {
                             Projectile.NewProjectile(npc.GetSource_FromAI(), beeSpawnLocation, (Main.player[npc.target].Center - beeSpawnLocation).SafeNormalize(Vector2.UnitY), ProjectileID.BeeHive, 0, 0f, Main.myPlayer, 0f, 0f, 1f);
-
-                            if (death)
-                            {
-                                int spawnType = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
-                                int spawn = NPC.NewNPC(npc.GetSource_FromAI(), (int)beeSpawnLocation.X, (int)beeSpawnLocation.Y, spawnType);
-                                Main.npc[spawn].velocity = Main.player[npc.target].Center - npc.Center;
-                                Main.npc[spawn].velocity.Normalize();
-                                Main.npc[spawn].velocity *= 5f;
-                                Main.npc[spawn].ai[2] = enrageScale;
-                                Main.npc[spawn].ai[3] = 1f;
-                                Main.npc[spawn].localAI[0] = 60f;
-                                Main.npc[spawn].netUpdate = true;
-                            }
                         }
                         else
                         {
@@ -556,7 +549,6 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                             {
                                 Main.npc[spawn].ai[2] = enrageScale;
                                 Main.npc[spawn].ai[3] = 1f;
-                                Main.npc[spawn].localAI[0] = 60f;
                             }
                             Main.npc[spawn].netUpdate = true;
                         }
@@ -564,43 +556,10 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 }
 
                 // Velocity calculations if target is too far away
-                if (beeSpawnTargetDist > 400f || !Collision.CanHit(new Vector2(beeSpawnLocation.X, beeSpawnLocation.Y - 30f), 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                {
-                    float beeAttackHoverSpeed = death ? 17.5f : 14f;
-                    float beeAttackHoverAccel = death ? 0.125f : 0.1f;
-                    queenBeeLocation = beeSpawnLocation;
-                    beeSpawnTargetX = Main.player[npc.target].position.X + (Main.player[npc.target].width / 2) - queenBeeLocation.X;
-                    beeSpawnTargetY = Main.player[npc.target].position.Y + (Main.player[npc.target].height / 2) - queenBeeLocation.Y;
-                    beeSpawnTargetDist = (float)Math.Sqrt(beeSpawnTargetX * beeSpawnTargetX + beeSpawnTargetY * beeSpawnTargetY);
-                    beeSpawnTargetDist = beeAttackHoverSpeed / beeSpawnTargetDist;
-
-                    if (npc.velocity.X < beeSpawnTargetX)
-                    {
-                        npc.velocity.X += beeAttackHoverAccel;
-                        if (npc.velocity.X < 0f && beeSpawnTargetX > 0f)
-                            npc.velocity.X += beeAttackHoverAccel;
-                    }
-                    else if (npc.velocity.X > beeSpawnTargetX)
-                    {
-                        npc.velocity.X -= beeAttackHoverAccel;
-                        if (npc.velocity.X > 0f && beeSpawnTargetX < 0f)
-                            npc.velocity.X -= beeAttackHoverAccel;
-                    }
-                    if (npc.velocity.Y < beeSpawnTargetY)
-                    {
-                        npc.velocity.Y += beeAttackHoverAccel;
-                        if (npc.velocity.Y < 0f && beeSpawnTargetY > 0f)
-                            npc.velocity.Y += beeAttackHoverAccel;
-                    }
-                    else if (npc.velocity.Y > beeSpawnTargetY)
-                    {
-                        npc.velocity.Y -= beeAttackHoverAccel;
-                        if (npc.velocity.Y > 0f && beeSpawnTargetY < 0f)
-                            npc.velocity.Y -= beeAttackHoverAccel;
-                    }
-                }
+                if (Vector2.Distance(beeSpawnLocation, hoverDestination) > 400f || !canHitTarget)
+                    npc.SimpleFlyMovement(idealVelocity, beeAttackHoverAccel);
                 else
-                    npc.velocity *= (death ? 0.85f : 0.9f);
+                    npc.velocity *= (death ? 0.8f : 0.85f);
 
                 // Face the correct direction
                 float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
@@ -621,32 +580,40 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             // Stinger phase
             else if (npc.ai[0] == 3f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
+                // Direction
+                float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
+                npc.direction = playerLocation < 0 ? 1 : -1;
+                npc.spriteDirection = npc.direction;
+
                 // Get target location and shoot from ass
-                Vector2 stingerSpawnLocation = new Vector2(npc.position.X + (npc.width / 2) + (Main.rand.Next(20) * npc.direction), npc.position.Y + npc.height * 0.8f);
-                Vector2 stingerQueenBeeLocation = new Vector2(npc.position.X + npc.width * 0.5f, npc.position.Y + npc.height * 0.5f);
-                float stingerAttackTargetX = Main.player[npc.target].position.X + (Main.player[npc.target].width / 2) - stingerQueenBeeLocation.X;
-                float stingerAttackTargetY = Main.player[npc.target].position.Y + (Main.player[npc.target].height / 2) - (phase4 ? 400f : phase2 ? 350f : 300f) - stingerQueenBeeLocation.Y;
-                float stingerAttackTargetDist = (float)Math.Sqrt(stingerAttackTargetX * stingerAttackTargetX + stingerAttackTargetY * stingerAttackTargetY);
+                float stingerAttackSpeed = 16f + enrageScale * 4f;
+                float stingerAttackAccel = phase6 ? 0.32f : 0.24f;
+                if (enrageScale > 0f)
+                    stingerAttackAccel = MathHelper.Lerp(phase6 ? 0.4f : 0.32f, phase6 ? 0.8f : 0.64f, enrageScale / maxEnrageScale);
+
+                Vector2 stingerSpawnLocation = new Vector2(npc.Center.X + (Main.rand.Next(20) * npc.direction), npc.position.Y + npc.height * 0.8f);
+                bool canHitTarget = Collision.CanHit(new Vector2(stingerSpawnLocation.X, stingerSpawnLocation.Y - 30f), 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
+                Vector2 hoverDestination = Main.player[npc.target].Center - Vector2.UnitY * (!canHitTarget ? 0f : phase4 ? 400f : phase2 ? 360f : 320f);
+                Vector2 idealVelocity = npc.SafeDirectionTo(hoverDestination) * stingerAttackSpeed;
 
                 npc.ai[1] += 1f;
-                int stingerAttackTimer = phase5 ? 45 : phase2 ? 30 : 20;
-                stingerAttackTimer -= (int)Math.Ceiling((phase5 ? 18f : phase2 ? 12f : 8f) * enrageScale);
+                int stingerAttackTimer = phase6 ? 40 : phase2 ? 30 : 20;
+                stingerAttackTimer -= (int)Math.Ceiling((phase6 ? 16f : phase2 ? 12f : 8f) * enrageScale);
                 if (stingerAttackTimer < 5)
                     stingerAttackTimer = 5;
 
                 // Fire stingers
-                if (npc.ai[1] % stingerAttackTimer == (stingerAttackTimer - 1) && npc.position.Y + npc.height < Main.player[npc.target].position.Y && Collision.CanHit(stingerSpawnLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                if (npc.ai[1] % stingerAttackTimer == (stingerAttackTimer - 1) && npc.Bottom.Y < Main.player[npc.target].Top.Y && Collision.CanHit(stingerSpawnLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                 {
-                    SoundEngine.PlaySound(SoundID.Item17, npc.position);
+                    SoundEngine.PlaySound(SoundID.Item17, stingerSpawnLocation);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        float stingerSpeed = 5f;
-                        if (phase3)
-                            stingerSpeed += 1f;
-                        stingerSpeed += 2f * enrageScale;
-
-                        float stingerTargetX = Main.player[npc.target].position.X + Main.player[npc.target].width * 0.5f - stingerSpawnLocation.X;
-                        float stingerTargetY = Main.player[npc.target].position.Y + Main.player[npc.target].height * 0.5f - stingerSpawnLocation.Y;
+                        float stingerSpeed = (phase3 ? 6f : 5f) + enrageScale;
+                        float stingerTargetX = Main.player[npc.target].Center.X - stingerSpawnLocation.X;
+                        float stingerTargetY = Main.player[npc.target].Center.Y - stingerSpawnLocation.Y;
                         float stingerTargetDist = (float)Math.Sqrt(stingerTargetX * stingerTargetX + stingerTargetY * stingerTargetY);
                         stingerTargetDist = stingerSpeed / stingerTargetDist;
                         stingerTargetX *= stingerTargetDist;
@@ -655,16 +622,16 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                         int type = Main.zenithWorld ? (phase3 ? ModContent.ProjectileType<PlagueStingerGoliathV2>() : ProjectileID.FlamingWood) : ProjectileID.QueenBeeStinger;
 
                         int projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation, stingerVelocity, type, Main.zenithWorld ? 25 : npc.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, (Main.zenithWorld && phase3) ? Main.player[npc.target].position.Y : 0f);
-                        Main.projectile[projectile].timeLeft = 600;
+                        Main.projectile[projectile].timeLeft = 1200;
                         Main.projectile[projectile].extraUpdates = 1;
 
                         if (phase2)
                         {
-                            int numExtraStingers = death ? (phase5 ? 4 : 2) : (phase5 ? 2 : 1);
+                            int numExtraStingers = death ? (phase6 ? 4 : 2) : (phase6 ? 2 : 1);
                             for (int i = 0; i < numExtraStingers; i++)
                             {
-                                projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation + Main.rand.NextVector2CircularEdge(16f, 16f) * (i + 1), stingerVelocity * (0.75f * (i * 0.2f + 1)), type, Main.zenithWorld ? 25 : npc.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, (Main.zenithWorld && phase3) ? Main.player[npc.target].position.Y : 0f);
-                                Main.projectile[projectile].timeLeft = 600;
+                                projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation + Main.rand.NextVector2CircularEdge(16f, 16f) * (i + 1), stingerVelocity * MathHelper.Lerp(0.75f, 1f, i / (float)numExtraStingers), type, Main.zenithWorld ? 25 : npc.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, (Main.zenithWorld && phase3) ? Main.player[npc.target].position.Y : 0f);
+                                Main.projectile[projectile].timeLeft = 1200;
                                 Main.projectile[projectile].extraUpdates = 1;
                             }
                         }
@@ -672,77 +639,12 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 }
 
                 // Movement calculations
-                float stingerAttackAccel = phase5 ? 0.09375f : 0.075f;
-                stingerAttackAccel += 0.1f * enrageScale;
-                if (!Collision.CanHit(new Vector2(stingerSpawnLocation.X, stingerSpawnLocation.Y - 30f), 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                {
-                    stingerAttackAccel = phase5 ? 0.125f : 0.1f;
-                    if (enrageScale > 0f)
-                        stingerAttackAccel = MathHelper.Lerp(phase5 ? 0.15625f : 0.125f, phase5 ? 0.3125f : 0.25f, enrageScale / maxEnrageScale);
-
-                    stingerQueenBeeLocation = stingerSpawnLocation;
-                    stingerAttackTargetX = Main.player[npc.target].position.X + (Main.player[npc.target].width / 2) - stingerQueenBeeLocation.X;
-                    stingerAttackTargetY = Main.player[npc.target].position.Y + (Main.player[npc.target].height / 2) - stingerQueenBeeLocation.Y;
-
-                    if (npc.velocity.X < stingerAttackTargetX)
-                    {
-                        npc.velocity.X += stingerAttackAccel;
-                        if (npc.velocity.X < 0f && stingerAttackTargetX > 0f)
-                            npc.velocity.X += stingerAttackAccel;
-                    }
-                    else if (npc.velocity.X > stingerAttackTargetX)
-                    {
-                        npc.velocity.X -= stingerAttackAccel;
-                        if (npc.velocity.X > 0f && stingerAttackTargetX < 0f)
-                            npc.velocity.X -= stingerAttackAccel;
-                    }
-                    if (npc.velocity.Y < stingerAttackTargetY)
-                    {
-                        npc.velocity.Y += stingerAttackAccel;
-                        if (npc.velocity.Y < 0f && stingerAttackTargetY > 0f)
-                            npc.velocity.Y += stingerAttackAccel;
-                    }
-                    else if (npc.velocity.Y > stingerAttackTargetY)
-                    {
-                        npc.velocity.Y -= stingerAttackAccel;
-                        if (npc.velocity.Y > 0f && stingerAttackTargetY < 0f)
-                            npc.velocity.Y -= stingerAttackAccel;
-                    }
-                }
-                else if (stingerAttackTargetDist > 100f)
-                {
-                    float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
-                    npc.direction = playerLocation < 0 ? 1 : -1;
-                    npc.spriteDirection = npc.direction;
-
-                    if (npc.velocity.X < stingerAttackTargetX)
-                    {
-                        npc.velocity.X += stingerAttackAccel;
-                        if (npc.velocity.X < 0f && stingerAttackTargetX > 0f)
-                            npc.velocity.X += stingerAttackAccel * 2f;
-                    }
-                    else if (npc.velocity.X > stingerAttackTargetX)
-                    {
-                        npc.velocity.X -= stingerAttackAccel;
-                        if (npc.velocity.X > 0f && stingerAttackTargetX < 0f)
-                            npc.velocity.X -= stingerAttackAccel * 2f;
-                    }
-                    if (npc.velocity.Y < stingerAttackTargetY)
-                    {
-                        npc.velocity.Y += stingerAttackAccel;
-                        if (npc.velocity.Y < 0f && stingerAttackTargetY > 0f)
-                            npc.velocity.Y += stingerAttackAccel * 2f;
-                    }
-                    else if (npc.velocity.Y > stingerAttackTargetY)
-                    {
-                        npc.velocity.Y -= stingerAttackAccel;
-                        if (npc.velocity.Y > 0f && stingerAttackTargetY < 0f)
-                            npc.velocity.Y -= stingerAttackAccel * 2f;
-                    }
-                }
+                if (Vector2.Distance(stingerSpawnLocation, hoverDestination) > 40f || !canHitTarget)
+                    npc.SimpleFlyMovement(idealVelocity, stingerAttackAccel);
 
                 // Go to a random phase
-                if (npc.ai[1] > stingerAttackTimer * 15f && !phase5)
+                float numStingerShots = phase6 ? 7f : phase2 ? 10f : 15f;
+                if (npc.ai[1] > stingerAttackTimer * numStingerShots)
                 {
                     npc.ai[0] = -1f;
                     npc.ai[1] = 3f;
@@ -752,6 +654,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
             else if (npc.ai[0] == 4f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.localAI[0] = 1f;
                 float despawnVelMult = 14f;
 
@@ -771,6 +676,83 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 {
                     npc.ai[0] = -1f;
                     npc.localAI[0] = 0f;
+                }
+            }
+
+            // Stinger arcs above the player, followed by a dash
+            else if (npc.ai[0] == 5f)
+            {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
+                // Direction
+                float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
+                npc.direction = playerLocation < 0 ? 1 : -1;
+                npc.spriteDirection = npc.direction;
+
+                // Get target location and shoot spreads from ass
+                float stingerAttackSpeed = 20f + enrageScale * 4f;
+                float stingerAttackAccel = phase6 ? 0.7f : 0.5f;
+                if (enrageScale > 0f)
+                    stingerAttackAccel = MathHelper.Lerp(phase6 ? 0.9f : 0.7f, phase6 ? 2.4f : 1.8f, enrageScale / maxEnrageScale);
+
+                int numStingerArcs = phase6 ? 3 : phase5 ? 2 : 1;
+                if (death)
+                    numStingerArcs++;
+
+                float phaseLimit = phase6 ? 180f : phase5 ? 150f : 120f;
+                if (death)
+                    phaseLimit *= 1.5f;
+
+                float stingerAttackTimer = (float)Math.Ceiling(phaseLimit / (numStingerArcs + 1));
+
+                float maxDistance = 480f;
+                float xLocationScale = MathHelper.Lerp(-maxDistance, maxDistance, npc.ai[1] / phaseLimit) * npc.ai[2];
+                Vector2 stingerSpawnLocation = new Vector2(npc.Center.X + (Main.rand.Next(20) * npc.direction), npc.position.Y + npc.height * 0.8f);
+                bool canHitTarget = Collision.CanHit(new Vector2(stingerSpawnLocation.X, stingerSpawnLocation.Y - 30f), 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
+                Vector2 hoverDestination = Main.player[npc.target].Center + Vector2.UnitX * xLocationScale * (death ? 1.5f : 1.25f) - Vector2.UnitY * maxDistance;
+                Vector2 idealVelocity = npc.SafeDirectionTo(hoverDestination) * stingerAttackSpeed;
+
+                // Fire stingers
+                bool canFireStingers = stingerSpawnLocation.Y < Main.player[npc.target].Top.Y - maxDistance * 0.8f || !canHitTarget;
+                if (canFireStingers)
+                {
+                    npc.ai[1] += 1f;
+                    if (npc.ai[1] % stingerAttackTimer == 0f && npc.ai[1] != 0f && npc.ai[1] != phaseLimit)
+                    {
+                        SoundEngine.PlaySound(SoundID.Item17, stingerSpawnLocation);
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            float stingerSpeed = (phase6 ? 5f : 4f) + enrageScale;
+                            Vector2 projectileVelocity = Vector2.Normalize(Main.player[npc.target].Center - npc.Center) * stingerSpeed;
+                            int type = Main.zenithWorld ? ModContent.ProjectileType<PlagueStingerGoliathV2>() : ProjectileID.QueenBeeStinger;
+                            int numProj = phase6 ? 5 : phase5 ? 10 : 15;
+                            int spread = phase6 ? 30 : phase5 ? 50 : 60;
+                            float rotation = MathHelper.ToRadians(spread);
+                            for (int i = 0; i < numProj; i++)
+                            {
+                                Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                                int projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation + Vector2.Normalize(perturbedSpeed) * 10f, perturbedSpeed, type, Main.zenithWorld ? 25 : npc.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, Main.player[npc.target].position.Y);
+                                Main.projectile[projectile].timeLeft = 1200;
+                                Main.projectile[projectile].extraUpdates = 1;
+
+                                if (!Main.zenithWorld)
+                                    Main.projectile[projectile].tileCollide = false;
+                            }
+                        }
+                    }
+                }
+
+                // Movement calculations
+                npc.SimpleFlyMovement(idealVelocity, stingerAttackAccel);
+
+                // Go to a random phase
+                if (npc.ai[1] >= phaseLimit)
+                {
+                    npc.ai[0] = -1f;
+                    npc.ai[1] = 4f;
+                    npc.ai[2] = 0f;
+                    npc.netUpdate = true;
                 }
             }
 

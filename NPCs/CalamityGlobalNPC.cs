@@ -167,9 +167,6 @@ namespace CalamityMod.NPCs
         // Used to change the Expert Mode coin drop multiplier
         private const double NPCValueMultiplier_ExpertCalamity = 1.5;
 
-        // Max velocity used in contact damage scaling
-        public float maxVelocity = 0f;
-
         // Dash damage immunity timer
         public const int maxPlayerImmunities = Main.maxPlayers + 1;
         public int[] dashImmunityTime = new int[maxPlayerImmunities];
@@ -386,8 +383,6 @@ namespace CalamityMod.NPCs
             myClone.canBreakPlayerDefense = canBreakPlayerDefense;
 
             myClone.miscDefenseLoss = miscDefenseLoss;
-
-            myClone.maxVelocity = maxVelocity;
 
             myClone.dashImmunityTime = new int[maxPlayerImmunities];
             for (int i = 0; i < maxPlayerImmunities; ++i)
@@ -917,7 +912,7 @@ namespace CalamityMod.NPCs
             // Dragonfire
             if (dragonFire > 0)
             {
-                int baseDragonFireDoTValue = (int)(760 * heatDamageMult);
+                int baseDragonFireDoTValue = (int)(960 * heatDamageMult);
                 ApplyDPSDebuff(baseDragonFireDoTValue, baseDragonFireDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
@@ -1077,8 +1072,8 @@ namespace CalamityMod.NPCs
             if (miracleBlight > 0)
                 ApplyDPSDebuff(2500, 500, ref npc.lifeRegen, ref damage);
 
-            // Reduce DoT on worm bosses by 75%.
-            if (wormBoss && npc.lifeRegen < 0)
+            // Reduce DoT on worm bosses and Creepers by 75%.
+            if ((wormBoss || npc.type == NPCID.Creeper) && npc.lifeRegen < 0)
             {
                 npc.lifeRegen /= 4;
                 if (npc.lifeRegen > -1)
@@ -1415,17 +1410,17 @@ namespace CalamityMod.NPCs
             }
             else if ((npc.type == NPCID.Bee || npc.type == NPCID.BeeSmall) && CalamityPlayer.areThereAnyDamnBosses)
             {
-                npc.lifeMax = (int)(npc.lifeMax * 2.5);
+                npc.lifeMax = (int)(npc.lifeMax * 1.5);
                 npc.scale *= 1.25f;
             }
             else if (npc.type == NPCID.BrainofCthulhu)
             {
-                npc.lifeMax = (int)(npc.lifeMax * 1.1);
+                npc.lifeMax = (int)(npc.lifeMax * 1.65);
                 npc.npcSlots = 12f;
             }
             else if (npc.type == NPCID.Creeper)
             {
-                npc.lifeMax = (int)(npc.lifeMax * 1.1);
+                npc.lifeMax = (int)(npc.lifeMax * 1.4);
             }
             else if (CalamityLists.EaterofWorldsIDs.Contains(npc.type))
             {
@@ -2263,6 +2258,11 @@ namespace CalamityMod.NPCs
                     npc.coldDamage = true;
                     break;
 
+                // These go through walls and are very annoying with the new tombstone breaking spawning them mechanic in 1.4
+                case NPCID.Ghost:
+                    npc.lifeMax = (int)(npc.lifeMax * 0.5);
+                    break;
+
                 case NPCID.PirateGhost:
                     npc.lifeMax = (int)(npc.lifeMax * 0.33);
                     break;
@@ -2820,12 +2820,6 @@ namespace CalamityMod.NPCs
             {
                 if (dashImmunityTime[i] > 0)
                     dashImmunityTime[i]--;
-            }
-
-            if (CalamityPlayer.areThereAnyDamnBosses)
-            {
-                if (npc.velocity.Length() > maxVelocity)
-                    maxVelocity = npc.velocity.Length();
             }
 
             if (KillTime > 0 || npc.type == NPCType<Draedon>())
@@ -4325,6 +4319,11 @@ namespace CalamityMod.NPCs
 
             switch (npc.type)
             {
+                case NPCID.VileSpitEaterOfWorlds:
+                case NPCID.VileSpit:
+                    target.AddBuff(BuffType<BrainRot>(), 240);
+                    break;
+
                 case NPCID.ShadowFlameApparition:
                     target.AddBuff(BuffType<Shadowflame>(), 180);
                     break;
@@ -5808,8 +5807,141 @@ namespace CalamityMod.NPCs
 
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
+                // Create additional afterimages in the cardinal directions in Rev+
+                if (npc.type == NPCID.BrainofCthulhu)
+                {
+                    float secondAfterimageSetHealthValue = (int)(npc.lifeMax * 0.8f);
+                    if (npc.life < secondAfterimageSetHealthValue)
+                    {
+                        Color currentColor = npc.GetAlpha(drawColor);
+                        float opacityScale = 1f - npc.life / (float)secondAfterimageSetHealthValue;
+                        float opacity = Main.getGoodWorld ? 1f : opacityScale;
+
+                        opacity = MathHelper.Clamp(opacity, 0f, 1f);
+                        currentColor.R = (byte)((float)(int)currentColor.R * opacity);
+                        currentColor.G = (byte)((float)(int)currentColor.G * opacity);
+                        currentColor.B = (byte)((float)(int)currentColor.B * opacity);
+                        currentColor.A = (byte)((float)(int)currentColor.A * opacity);
+                        int totalAfterimages = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 12 : 4;
+                        for (int i = 0; i < totalAfterimages; i++)
+                        {
+                            Vector2 position = npc.position;
+                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
+                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
+                            if (i > 3)
+                            {
+                                currentColor *= 0.5f;
+                                distanceFromTargetX *= 0.5f;
+                                distanceFromTargetY *= 0.5f;
+                            }
+
+                            switch (i)
+                            {
+                                case 0:
+                                case 4:
+                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
+                                    position.Y = Main.player[Main.myPlayer].Center.Y;
+                                    break;
+
+                                case 1:
+                                case 5:
+                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                    position.X = Main.player[Main.myPlayer].Center.X;
+                                    break;
+
+                                case 2:
+                                case 6:
+                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
+                                    position.Y = Main.player[Main.myPlayer].Center.Y;
+                                    break;
+
+                                case 3:
+                                case 7:
+                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                    position.X = Main.player[Main.myPlayer].Center.X;
+                                    break;
+
+                                case 8:
+                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
+                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                    break;
+
+                                case 9:
+                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
+                                    position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                                    break;
+
+                                case 10:
+                                    position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
+                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                    break;
+
+                                case 11:
+                                    position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
+                                    position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                                    break;
+
+                                default:
+                                    break;
+                            }
+
+                            position.X -= npc.width / 2;
+                            position.Y -= npc.height / 2;
+
+                            Vector2 halfSize = npc.frame.Size() / 2;
+                            SpriteEffects spriteEffects = SpriteEffects.None;
+                            if (npc.spriteDirection == 1)
+                                spriteEffects = SpriteEffects.FlipHorizontally;
+
+                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)TextureAssets.Npc[npc.type].Width() * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)TextureAssets.Npc[npc.type].Height() * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                        }
+                    }
+                }
+
+                // Telegraph for charge and blood shots
+                else if (npc.type == NPCID.Creeper)
+                {
+                    float beginTelegraphGateValue = BrainOfCthulhuAI.TimeBeforeCreeperAttack - BrainOfCthulhuAI.CreeperTelegraphTime;
+                    if (npc.ai[1] > beginTelegraphGateValue || npc.ai[0] == 1f)
+                    {
+                        float colorScale = npc.ai[0] == 1f ? 1f : MathHelper.Clamp((npc.ai[1] - beginTelegraphGateValue) / BrainOfCthulhuAI.CreeperTelegraphTime, 0f, 1f);
+                        Color drawColor2 = new Color(150, 30, 30, 0) * colorScale;
+                        Vector2 halfSize = npc.frame.Size() / 2;
+                        SpriteEffects spriteEffects = SpriteEffects.None;
+                        if (npc.spriteDirection == 1)
+                            spriteEffects = SpriteEffects.FlipHorizontally;
+
+                        for (int i = 0; i < 2; i++)
+                        {
+                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame,
+                                drawColor2, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                        }
+                    }
+                }
+
+                // Telegraph for slaps
+                else if (npc.type == NPCID.SkeletronHand)
+                {
+                    float beginTelegraphGateValue = SkeletronAI.HandSlapGateValue - SkeletronAI.HandSlapTelegraphTime;
+                    if (npc.ai[3] > beginTelegraphGateValue)
+                    {
+                        float colorScale = MathHelper.Clamp((npc.ai[3] - beginTelegraphGateValue) / SkeletronAI.HandSlapTelegraphTime, 0f, 1f);
+                        Color drawColor2 = new Color(150, 150, 150, 0) * colorScale;
+                        Vector2 halfSize = npc.frame.Size() / 2;
+                        SpriteEffects spriteEffects = SpriteEffects.None;
+                        if (npc.spriteDirection == 1)
+                            spriteEffects = SpriteEffects.FlipHorizontally;
+
+                        for (int i = 0; i < 2; i++)
+                        {
+                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame,
+                                drawColor2, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                        }
+                    }
+                }
+
                 // His afterimages I can't get to work, so fuck it
-                if (npc.type == NPCID.SkeletronPrime)
+                else if (npc.type == NPCID.SkeletronPrime)
                 {
                     Texture2D npcTexture = TextureAssets.Npc[npc.type].Value;
                     int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
