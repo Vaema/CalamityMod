@@ -1362,6 +1362,11 @@ AuricDisplay: {
 	Tooltip: ""
 }
 
+AuricLandMine: {
+	DisplayName: Auric Land Mine
+	Tooltip: "Explodes when stepped on..."
+}
+
 AuricPanel: {
 	DisplayName: Auric Panel
 	Tooltip: ""

@@ -1,0 +1,125 @@
+﻿using System.Collections.Generic;
+using CalamityMod.NPCs.ExoMechs.Ares;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.ModLoader;
+namespace CalamityMod.Projectiles.Typeless
+{
+    public class AuricLandMineExplosion : ModProjectile, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Projectiles.Typeless";
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public List<List<Vector2>> lightningTrails = new List<List<Vector2>>();
+        public static int lightningCount = 15;
+        public static int totalPoints = 50;
+
+        public override void SetDefaults()
+        {
+            Projectile.width = 500;
+            Projectile.height = 500;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 20;
+            Projectile.tileCollide = false;
+            Projectile.hostile = true;
+            Projectile.friendly = true;
+        }
+
+        public override void AI()
+        {
+            lightningCount = 15;
+            totalPoints = 10;
+            if (Projectile.ai[0] % 2 == 0)
+            {
+                SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound);
+                lightningTrails.Clear();
+                //if (lightningTrails.Count <= 0)
+                {
+                    for (int i = 0; i < lightningCount; i++)
+                    {
+                        List<Vector2> points = new List<Vector2>();
+                        for (int j = 0; j < totalPoints; j++)
+                        {
+                            float radians = MathHelper.TwoPi / lightningCount;
+                            if (j == 0)
+                            {
+                                points.Add(Projectile.Center + Main.rand.NextVector2Circular(20, 20));
+                            }
+                            else
+                            {
+                                Vector2 newPoint = new Vector2();
+                                Vector2 jtolookfor = j > 1 ? points[j - 2] : Projectile.Center;
+                                float baseDist = j == totalPoints - 1 ? 20 : Main.rand.Next(60, 120) * (1 + (20 - Projectile.timeLeft) / 15);
+                                newPoint = points[j - 1] + (jtolookfor.DirectionTo(points[j - 1]) * baseDist).RotatedByRandom(MathHelper.PiOver2);
+                                points.Add(newPoint);
+                            }
+                        }
+                        lightningTrails.Add(points);
+                    }
+                }
+            }
+            Projectile.ai[0]++;
+            Projectile.damage = 40000; // fixed damage 
+            Projectile.CritChance = 0;
+
+            // D O Y O U L I K E D U S T B O Y O 
+            for (int l = 0; l < 20; l++)
+            {
+                Vector2 rand = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi);
+                int extraDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.Electric, 0, 0, 150, default, 1.2f);
+                Main.dust[extraDust].velocity = rand * Main.rand.NextFloat(-40, 40f);
+            }
+        }
+
+        public override bool CanHitPlayer(Player target)
+        {
+            var yeetVec = Vector2.Normalize(target.Center - Projectile.Center);
+            target.velocity += yeetVec * (target.noKnockback ? 20f : 40f);
+            return true;
+        }
+        public PrimitiveTrail LightningDrawer;
+
+        public PrimitiveTrail LightningBackgroundDrawer;
+        internal float WidthFunction(float completionRatio)
+        {
+            return MathHelper.Clamp(completionRatio * 2, 0.4f, 1f);
+        }
+
+        internal Color ColorFunction(float completionRatio)
+        {
+            return new Color(174, 227, 244); 
+        }
+        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 2f;
+
+        internal Color BackgroundColorFunction(float completionRatio)
+        {
+            return new Color(92, 144, 245) * 0.6f;
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Main.spriteBatch.EnterShaderRegion();
+            if (LightningDrawer is null)
+                LightningDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, GameShaders.Misc["CalamityMod:TeslaTrail"]);
+            if (LightningBackgroundDrawer is null)
+                LightningBackgroundDrawer = new PrimitiveTrail(BackgroundWidthFunction, BackgroundColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, GameShaders.Misc["CalamityMod:TeslaTrail"]);
+            GameShaders.Misc["CalamityMod:TeslaTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ZapTrail"));
+
+
+            if (lightningTrails.Count <= 0)
+                return false;
+            foreach (List<Vector2> points in lightningTrails)
+            {
+                LightningBackgroundDrawer.Draw(points, -Main.screenPosition, 60);
+                LightningDrawer.Draw(points, -Main.screenPosition, 60);
+            }
+
+            Main.spriteBatch.ExitShaderRegion();
+            return false;
+        }
+    }
+}
