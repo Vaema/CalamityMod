@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Magic
                                         break;
                                     default:
                                         projType = ModContent.ProjectileType<HadalUrnIsopod>();
-                                        projDamage = (int)(projDamage * 1.5f);
+                                        projDamage = (int)(projDamage * 1.75f);
                                         speedscale = speedscale * 1.5f;
                                         break;
                                 }
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Magic
                                 }
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shotSpeed, projType, projDamage, Projectile.knockBack, player.whoAmI, ai);
                             }
-                            Projectile.ai[0] = 12;
+                            Projectile.ai[0] = 16;
                         }
                         else
                         {

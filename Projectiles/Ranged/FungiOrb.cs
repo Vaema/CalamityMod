@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int f = 0; f < 3; f++)
                 {
-                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 60f, 85f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<FungiOrb2>(), (int)(Projectile.damage * 0.4), 0f, Projectile.owner);
                 }
             }

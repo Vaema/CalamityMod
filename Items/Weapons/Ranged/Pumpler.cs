@@ -14,10 +14,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public const int MaxPumpkins = 5;
         public override void SetDefaults()
         {
-            Item.damage = 24;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 72;
             Item.height = 34;
+            Item.damage = 24;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;

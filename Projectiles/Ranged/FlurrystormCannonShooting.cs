@@ -64,20 +64,12 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 fireRate++;
             }
-            if (Projectile.ai[0] >= 360f)
+            if (Projectile.ai[0] >= 360f) // Full speed after 6 seconds
             {
                 fireRate++;
             }
-            if (Projectile.ai[0] >= 420f)
-            {
-                fireRate++;
-            }
-            if (Projectile.ai[0] >= 480f) //full speed after 8 seconds
-            {
-                fireRate++;
-            }
-            int initialRate = 24;
-            int fireRateMult = 2;
+            int initialRate = 26;
+            int fireRateMult = 3;
             Projectile.ai[1] -= 1f;
             bool shouldShoot = false;
             if (Projectile.ai[1] <= 0f)
@@ -134,8 +126,8 @@ namespace CalamityMod.Projectiles.Ranged
                         snowballVel = -Vector2.UnitY;
                     }
                     Vector2 sourceS = source + Utils.RandomVector2(Main.rand, -5f, 5f);
-                    snowballVel.X += Main.rand.NextFloat(-2.25f, 2.25f);
-                    snowballVel.Y += Main.rand.NextFloat(-2.25f, 2.25f);
+                    snowballVel.X += Main.rand.NextFloat(-2f, 2f);
+                    snowballVel.Y += Main.rand.NextFloat(-2f, 2f);
                     int snowball = Projectile.NewProjectile(Projectile.GetSource_FromThis(), sourceS, snowballVel, projType, dmg, kBack, Projectile.owner);
                     if (snowball.WithinBounds(Main.maxProjectiles))
                     {

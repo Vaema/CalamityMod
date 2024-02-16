@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.Leviathan
         {
             Main.npcFrameCount[NPC.type] = 7;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.X += 25;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
@@ -83,6 +83,9 @@ namespace CalamityMod.NPCs.Leviathan
                 NPC.netUpdate = true;
                 return;
             }
+
+            // Avoid cheap bullshit
+            NPC.damage = 0;
 
             bool bossRush = BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || bossRush;
@@ -197,6 +200,9 @@ namespace CalamityMod.NPCs.Leviathan
                 }
                 else
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     Vector2 npcCenterAgain = NPC.Center;
                     Vector2 targetCenterAgain = Main.player[NPC.target].Center;
                     Vector2 vec2 = targetCenterAgain - npcCenterAgain;

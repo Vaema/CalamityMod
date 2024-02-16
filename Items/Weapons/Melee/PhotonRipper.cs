@@ -13,6 +13,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
+            Item.width = 134;
+            Item.height = 54;
             Item.damage = 3725;
             Item.knockBack = 12f;
             Item.useTime = 5;
@@ -23,8 +25,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.axe = 3000 / 5;
             // Photon Ripper's axe power is entirely for show. Its projectiles instantly one shot trees.
 
-            Item.height = 134;
-            Item.width = 54;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.noUseGraphic = true;

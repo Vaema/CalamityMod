@@ -13,8 +13,9 @@ namespace CalamityMod.Items.Weapons.Typeless
         public new string LocalizationCategory => "Items.Weapons.Typeless";
         public override void SetDefaults()
         {
-            Item.DamageType = AverageDamageClass.Instance;
             Item.width = 60;
+            Item.height = 36;
+            Item.DamageType = AverageDamageClass.Instance;
             Item.damage = 9;
             Item.value = CalamityGlobalItem.Rarity4BuyPrice;
             Item.rare = ItemRarityID.LightRed;
@@ -25,7 +26,6 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.UseSound = CommonCalamitySounds.LaserCannonSound;
             Item.autoReuse = true;
             Item.noMelee = true;
-            Item.height = 36;
             Item.shoot = ModContent.ProjectileType<LunicBeam>();
             Item.shootSpeed = 12f;
         }

@@ -1804,10 +1804,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             acceleration *= 1.15f;
                         }
 
-                        // Reduce acceleration if target is holding a true melee weapon
-                        if (player.HoldingTrueMeleeWeapon())
-                            acceleration *= 0.5f;
-
                         // This is where SCal should be
                         Vector2 destination = new Vector2(player.Center.X, player.Center.Y - 550f);
 
@@ -2019,10 +2015,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             acceleration *= 1.15f;
                         }
 
-                        // Reduce acceleration if target is holding a true melee weapon
-                        if (player.HoldingTrueMeleeWeapon())
-                            acceleration *= 0.5f;
-
                         int posX = 1;
                         if (NPC.position.X + (NPC.width / 2) < player.position.X + player.width)
                             posX = -1;
@@ -2104,10 +2096,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             velocity *= 1.15f;
                             acceleration *= 1.15f;
                         }
-
-                        // Reduce acceleration if target is holding a true melee weapon
-                        if (player.HoldingTrueMeleeWeapon())
-                            acceleration *= 0.5f;
 
                         int posX = 1;
                         if (NPC.position.X + (NPC.width / 2) < player.position.X + player.width)
@@ -2367,10 +2355,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             acceleration *= 1.15f;
                         }
 
-                        // Reduce acceleration if target is holding a true melee weapon
-                        if (player.HoldingTrueMeleeWeapon())
-                            acceleration *= 0.5f;
-
                         // This is where SCal should be
                         Vector2 destination = new Vector2(player.Center.X, player.Center.Y - 550f);
 
@@ -2553,10 +2537,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             acceleration *= 1.15f;
                         }
 
-                        // Reduce acceleration if target is holding a true melee weapon
-                        if (player.HoldingTrueMeleeWeapon())
-                            acceleration *= 0.5f;
-
                         int posX = 1;
                         if (NPC.position.X + (NPC.width / 2) < player.position.X + player.width)
                             posX = -1;
@@ -2639,10 +2619,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             velocity *= 1.15f;
                             acceleration *= 1.15f;
                         }
-
-                        // Reduce acceleration if target is holding a true melee weapon
-                        if (player.HoldingTrueMeleeWeapon())
-                            acceleration *= 0.5f;
 
                         int posX = 1;
                         if (NPC.position.X + (NPC.width / 2) < player.position.X + player.width)
@@ -3462,6 +3438,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         break;
                     case 19:
                         target.AddBuff(ModContent.BuffType<WhiteWineBuff>(), MaxCirrusAlcoholDebuffDuration);
+                        break;
+                    case 20:
+                        target.AddBuff(ModContent.BuffType<OldFashionedBuff>(), MaxCirrusAlcoholDebuffDuration);
                         break;
                 }
             }

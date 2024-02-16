@@ -16,11 +16,11 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
-            Item.damage = 26;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 5;
             Item.width = 46;
             Item.height = 44;
+            Item.damage = 22;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 5;
             Item.useTime = 23;
             Item.useAnimation = 23;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<FlamingPumpkin>();
-            Item.shootSpeed = 10f;
+            Item.shootSpeed = 13f;
             Item.scale = 0.9f;
         }
 

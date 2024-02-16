@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using System;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.width = 26;
             Item.height = 16;
             Item.damage = 14;
-            Item.DamageType = DamageClass.Throwing;
+            Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useTime = 25;
@@ -28,7 +28,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<SnapClamProj>();
             Item.shootSpeed = 12f;
-            Item.DamageType = RogueDamageClass.Instance;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

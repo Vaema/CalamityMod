@@ -45,8 +45,6 @@ namespace CalamityMod.Projectiles.Rogue
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.SourceDamage *= 1.2f;
-            if (Main.rand.NextBool(10))
-                modifiers.SetCrit();
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

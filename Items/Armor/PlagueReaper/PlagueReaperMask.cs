@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Audio;
+using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.Items.Armor.PlagueReaper
 {
@@ -60,6 +61,8 @@ namespace CalamityMod.Items.Armor.PlagueReaper
                     if (player.miscCounter % 10 == 0)
                     {
                         var damage = (int)player.GetTotalDamage<RangedDamageClass>().ApplyTo(40);
+                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
+
                         var cinder = CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 22f, ModContent.ProjectileType<TheSyringeCinder>(), damage, 4f, player.whoAmI);
                         if (cinder.whoAmI.WithinBounds(Main.maxProjectiles))
                             cinder.DamageType = DamageClass.Generic;

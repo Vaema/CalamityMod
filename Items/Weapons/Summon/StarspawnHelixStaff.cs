@@ -13,16 +13,14 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
+            Item.width = 54;
+            Item.height = 52;
             Item.damage = 75;
             Item.knockBack = 1.25f;
             Item.mana = 10;
 
             Item.shoot = ModContent.ProjectileType<AstralProbeSummon>();
-
-            Item.width = 54;
-            Item.height = 52;
             Item.useTime = Item.useAnimation = 20;
-
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item44;

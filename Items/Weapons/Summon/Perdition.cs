@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 56;
             Item.damage = 375;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<PerditionBeacon>();
@@ -22,7 +23,6 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.useTime = Item.useAnimation = 10; // 9 because of useStyle 1.
             Item.mana = 10;
-            Item.width = Item.height = 56;
             Item.noMelee = true;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;

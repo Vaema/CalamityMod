@@ -480,6 +480,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             bool bossRush = BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || bossRush;
 
+            // Avoid cheap bullshit
+            npc.damage = 0;
+
             // Despawn
             if (Main.wofNPCIndex < 0)
             {

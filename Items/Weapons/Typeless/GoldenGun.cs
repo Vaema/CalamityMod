@@ -12,9 +12,9 @@ namespace CalamityMod.Items.Weapons.Typeless
         public new string LocalizationCategory => "Items.Weapons.Typeless";
         public override void SetDefaults()
         {
-            Item.damage = 5;
             Item.width = 78;
             Item.height = 36;
+            Item.damage = 5;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Shoot;

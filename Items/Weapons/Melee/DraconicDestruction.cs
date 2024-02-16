@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 90;
+            Item.height = 90;
             Item.damage = 250;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 24;
@@ -24,7 +25,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 90;
             Item.shoot = ModContent.ProjectileType<DracoBeam>();
             Item.shootSpeed = 14f;
 

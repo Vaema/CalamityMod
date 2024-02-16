@@ -13,6 +13,8 @@ namespace CalamityMod.Items.Tools
         public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
+            Item.width = 36;
+            Item.height = 18;
             Item.damage = 6;
             Item.ArmorPenetration = 10;
             Item.knockBack = 0f;
@@ -21,8 +23,6 @@ namespace CalamityMod.Items.Tools
             Item.hammer = 40;
 
             Item.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
-            Item.width = 36;
-            Item.height = 18;
             Item.channel = true;
             Item.noUseGraphic = true;
             Item.noMelee = true;

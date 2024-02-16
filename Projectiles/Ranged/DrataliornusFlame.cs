@@ -234,8 +234,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.immune[Projectile.owner] = 0;
-
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 240);
 
             if (Projectile.ai[0] != 0f && Projectile.owner == Main.myPlayer) //if empowered

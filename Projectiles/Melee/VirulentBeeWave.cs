@@ -30,6 +30,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.extraUpdates = 3;
             Projectile.timeLeft = 150;
             Projectile.alpha = 100;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 8;
         }
 
         public override void AI()
@@ -118,11 +120,7 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.immune[Projectile.owner] = 8;
-            target.AddBuff(ModContent.BuffType<Plague>(), 180);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 180);
 
         public override bool PreDraw(ref Color lightColor)
         {

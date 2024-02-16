@@ -12,6 +12,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 28;
+            Item.height = 30;
             Item.damage = 46;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -21,7 +22,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6.5f;
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;
-            Item.height = 30;
             Item.value = CalamityGlobalItem.Rarity5BuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<SkyfinNuke>();

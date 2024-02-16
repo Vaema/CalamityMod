@@ -85,7 +85,7 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.height = 88;
             NPC.defense = 15;
             NPC.DR_NERD(0.3f);
-            NPC.LifeMaxNERB(30000, 36000, 300000);
+            NPC.LifeMaxNERB(40000, 48000, 300000);
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
@@ -220,9 +220,6 @@ namespace CalamityMod.NPCs.Cryogen
             SoundStyle frostSound = Main.zenithWorld ? SoundID.Item20 : SoundID.Item28;
             NPC.HitSound = Main.zenithWorld ? SoundID.NPCHit41 : HitSound;
             NPC.DeathSound = Main.zenithWorld ? SoundID.NPCDeath14 : DeathSound;
-
-            // Reset damage
-            NPC.damage = NPC.defDamage;
 
             if ((int)NPC.ai[0] + 1 > currentPhase)
                 HandlePhaseTransition((int)NPC.ai[0] + 1);
@@ -360,6 +357,9 @@ namespace CalamityMod.NPCs.Cryogen
 
             if (NPC.ai[0] == 0f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 NPC.rotation = NPC.velocity.X * 0.1f;
 
                 NPC.localAI[0] += 1f;
@@ -417,6 +417,9 @@ namespace CalamityMod.NPCs.Cryogen
             }
             else if (NPC.ai[0] == 1f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 if (NPC.ai[1] < chargePhaseGateValue)
                 {
                     NPC.ai[1] += 1f;
@@ -540,6 +543,9 @@ namespace CalamityMod.NPCs.Cryogen
                 }
                 else
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     if (NPC.ai[1] == chargeGateValue)
                     {
                         float chargeVelocity = Vector2.Distance(NPC.Center, player.Center) / chargeDuration * 2f;
@@ -593,6 +599,9 @@ namespace CalamityMod.NPCs.Cryogen
             }
             else if (NPC.ai[0] == 2f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 if (NPC.ai[1] < chargePhaseGateValue)
                 {
                     NPC.ai[1] += 1f;
@@ -688,6 +697,9 @@ namespace CalamityMod.NPCs.Cryogen
                 }
                 else
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     if (NPC.ai[1] == chargeGateValue)
                     {
                         float chargeVelocity = Vector2.Distance(NPC.Center, player.Center) / chargeDuration * 2f;
@@ -748,6 +760,9 @@ namespace CalamityMod.NPCs.Cryogen
             }
             else if (NPC.ai[0] == 3f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 NPC.rotation = NPC.velocity.X * 0.1f;
 
                 NPC.localAI[0] += 1f;
@@ -842,9 +857,6 @@ namespace CalamityMod.NPCs.Cryogen
                 }
                 else if (NPC.ai[1] == 1f)
                 {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
                     Vector2 position = new Vector2(teleportLocationX * 16f - (NPC.width / 2), calamityGlobalNPC.newAI[2] * 16f - (NPC.height / 2));
                     for (int m = 0; m < 5; m++)
                     {
@@ -902,9 +914,6 @@ namespace CalamityMod.NPCs.Cryogen
                 }
                 else if (NPC.ai[1] == 2f)
                 {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
                     NPC.Opacity += 0.2f;
                     if (NPC.Opacity >= 1f)
                     {
@@ -943,6 +952,9 @@ namespace CalamityMod.NPCs.Cryogen
             }
             else if (NPC.ai[0] == 4f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 if (phase6)
                 {
                     if (NPC.ai[1] == 60f)
@@ -1006,7 +1018,12 @@ namespace CalamityMod.NPCs.Cryogen
                         NPC.rotation = NPC.velocity.X * 0.15f;
                     }
                     else
+                    {
+                        // Set damage
+                        NPC.damage = NPC.defDamage;
+
                         NPC.rotation += NPC.direction * 0.5f;
+                    }
 
                     return;
                 }
@@ -1027,6 +1044,9 @@ namespace CalamityMod.NPCs.Cryogen
 
                 if (playerDistance < chargeStartDistance || calamityGlobalNPC.newAI[2] > 0f)
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     if (playerDistance < chargeStartDistance)
                         calamityGlobalNPC.newAI[2] = chargeCooldown;
 
@@ -1062,6 +1082,9 @@ namespace CalamityMod.NPCs.Cryogen
             }
             else
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 NPC.rotation = NPC.velocity.X * 0.1f;
 
                 calamityGlobalNPC.newAI[3] += 1f;

@@ -4,6 +4,7 @@ using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
+using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -42,10 +43,13 @@ namespace CalamityMod.Items.Accessories
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<BrimstoneElementalMinion>()] < 1)
                 {
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(60);
+                    // 08DEC2023: Ozzatron: Brimstone Elementals spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(60);
+                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+
                     int p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<BrimstoneElementalMinion>(), damage, 2f, Main.myPlayer, 0f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 60;
+                        Main.projectile[p].originalDamage = baseDamage;
                 }
             }
         }
@@ -63,10 +67,13 @@ namespace CalamityMod.Items.Accessories
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<BrimstoneElementalMinion>()] < 1)
                 {
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(60);
+                    // 08DEC2023: Ozzatron: Brimstone Elementals spawned with... Hold on a second. Why the fuck are we doing damage calculations when the accessory is in vanity?!
+                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(60);
+                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+
                     int p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<BrimstoneElementalMinion>(), damage, 2f, Main.myPlayer, 0f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 60;
+                        Main.projectile[p].originalDamage = baseDamage;
                 }
             }
         }

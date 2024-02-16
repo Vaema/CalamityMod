@@ -15,11 +15,11 @@ namespace CalamityMod.Items.Weapons.Rogue
         }
         public override void SetDefaults()
         {
+            Item.width = 28;
+            Item.height = 20;
             Item.damage = 17;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<Brick>();
-            Item.width = 28;
-            Item.height = 20;
             Item.useTime = Item.useAnimation = 35;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5f;

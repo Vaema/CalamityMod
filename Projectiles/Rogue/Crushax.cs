@@ -22,6 +22,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.localNPCHitCooldown = 12;
             AIType = ProjectileID.ThrowingKnife;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 7;
         }
 
         public override void AI()
@@ -57,15 +59,8 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.immune[Projectile.owner] = 7;
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
     }
 }

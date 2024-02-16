@@ -23,6 +23,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
+            Projectile.tileCollide = false;
             Projectile.light = 0.15f;
             Projectile.extraUpdates = 1;
             AIType = ProjectileID.WoodenArrowFriendly;
@@ -61,12 +62,6 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Plague>(), 120);
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            if (Projectile.owner == Main.myPlayer)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<Sickness>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
         }
     }
 }

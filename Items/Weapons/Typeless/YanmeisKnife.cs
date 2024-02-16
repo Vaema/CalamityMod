@@ -17,8 +17,8 @@ namespace CalamityMod.Items.Weapons.Typeless
         
         public override void SetDefaults()
         {
-            Item.height = 44;
             Item.width = 48;
+            Item.height = 44;
             Item.damage = 8;
             Item.noMelee = true;
             Item.noUseGraphic = true;

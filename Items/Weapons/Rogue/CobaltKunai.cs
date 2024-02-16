@@ -16,7 +16,8 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 14;
-            Item.damage = 52;
+            Item.height = 38;
+            Item.damage = 58;
             Item.noMelee = true;
             Item.consumable = true;
             Item.noUseGraphic = true;
@@ -25,20 +26,18 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 2.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 38;
             Item.maxStack = 9999;
             Item.value = 900;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<CobaltKunaiProjectile>();
-            Item.shootSpeed = 12f;
+            Item.shootSpeed = 14f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
         public override float StealthDamageMultiplier => 1.85f;
-
         public override float StealthVelocityMultiplier => 0.9f;
-
         public override float StealthKnockbackMultiplier => 0.5f;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable())

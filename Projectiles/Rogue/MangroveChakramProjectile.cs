@@ -22,6 +22,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 600;
             AIType = ProjectileID.WoodenBoomerang;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 6;
         }
 
         public override void AI()
@@ -55,11 +57,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.immune[Projectile.owner] = 6;
-            target.AddBuff(BuffID.Venom, 120);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Venom, 120);
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Venom, 120);
     }

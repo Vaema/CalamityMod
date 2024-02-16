@@ -13,6 +13,8 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class DeusMine : ModProjectile, ILocalizedModType
     {
+        public static readonly SoundStyle ExplodeSound = new("CalamityMod/Sounds/Custom/AstrumDeus/DeusMineExplode");
+
         public new string LocalizationCategory => "Projectiles.Boss";
         private const int MaxTimeLeft = 600;
         private const int FadeTime = 85;
@@ -96,7 +98,7 @@ namespace CalamityMod.Projectiles.Boss
             // Explode and split into accelerating lasers
             if (Projectile.ai[0] == 1f)
             {
-                SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
+                SoundEngine.PlaySound(ExplodeSound, Projectile.Center);
                 Projectile.position = Projectile.Center;
                 Projectile.width = Projectile.height = 96;
                 Projectile.position.X = Projectile.position.X - (Projectile.width / 2);

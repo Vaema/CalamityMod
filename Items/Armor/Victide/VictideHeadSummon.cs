@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -45,8 +46,10 @@ namespace CalamityMod.Items.Armor.Victide
                 var source = player.GetSource_ItemUse(Item);
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<VictideSeaSnail>()] < 1)
                 {
-                    var baseDamage = 7;
+                    // 08DEC2023: Ozzatron: Victide Sea Snails spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                    var baseDamage = player.ApplyArmorAccDamageBonusesTo(7);
                     var minionDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+
                     var p = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<VictideSeaSnail>(), minionDamage, 0f, Main.myPlayer, 0f, 0f);
                     if (Main.projectile.IndexInRange(p))
                         Main.projectile[p].originalDamage = baseDamage;

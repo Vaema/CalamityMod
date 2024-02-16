@@ -39,6 +39,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
+            Item.width = 170;
+            Item.height = 56;
             Item.damage = 777;
             Item.knockBack = 9f;
             Item.useTime = 30;
@@ -48,8 +50,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.useTurn = true;
             Item.autoReuse = true;
-            Item.width = 170;
-            Item.height = 56;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useAmmo = AmmoID.Coin;
             Item.shootSpeed = 24f;

@@ -18,12 +18,12 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = 66;
+            Item.height = 68;
             Item.damage = 128;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
             Item.mana = 10;
-            Item.width = 66;
-            Item.height = 68;
             Item.useTime = Item.useAnimation = 14;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;

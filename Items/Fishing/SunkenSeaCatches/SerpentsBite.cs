@@ -12,12 +12,12 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
         {
             // Instead of copying these values, we can clone and modify the ones we want to copy
             Item.CloneDefaults(ItemID.AmethystHook);
+            Item.width = 30;
+            Item.height = 32;
             Item.shootSpeed = SerpentsBiteHook.LaunchSpeed; // how quickly the hook is shot.
             Item.shoot = ProjectileType<SerpentsBiteHook>();
             Item.value = CalamityGlobalItem.Rarity4BuyPrice;
             Item.rare = ItemRarityID.LightRed;
-            Item.width = 30;
-            Item.height = 32;
         }
     }
 }

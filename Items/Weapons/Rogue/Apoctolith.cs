@@ -14,11 +14,11 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
+            Item.width = 66;
+            Item.height = 64;
             Item.damage = 220;
             Item.shootSpeed = 18f;
             Item.shoot = ModContent.ProjectileType<ApoctolithProj>();
-            Item.width = 66;
-            Item.height = 64;
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;

@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 107, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-35, 36) * 0.2f, Main.rand.Next(-35, 36) * 0.2f, ModContent.ProjectileType<SicknessRound2>(),
-                    (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.5f, Main.myPlayer);
+                    (int)(Projectile.damage * 0.66), Projectile.knockBack * 0.5f, Main.myPlayer);
                 }
             }
         }

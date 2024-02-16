@@ -30,10 +30,10 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.damage = Damage;
-            Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.width = 26;
             Item.height = 26;
+            Item.damage = Damage;
+            Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.useTime = 24;
             Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;

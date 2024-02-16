@@ -3,8 +3,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Audio;
+
 namespace CalamityMod.Projectiles.Pets
 {
     public class KendraPet : ModProjectile, ILocalizedModType
@@ -22,6 +24,9 @@ namespace CalamityMod.Projectiles.Pets
         {
             Main.projFrames[Projectile.type] = 31;
             Main.projPet[Projectile.type] = true;
+
+            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, 13, 6)
+            .WithOffset(-30f, 0f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
         public override void SetDefaults()

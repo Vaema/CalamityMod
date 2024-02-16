@@ -20,12 +20,12 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = 18;
             Projectile.height = 18;
             Projectile.friendly = true;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 5;
             Projectile.alpha = 255;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.timeLeft = 600;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 45;
+            Projectile.localNPCHitCooldown = 60;
         }
 
         public override void AI()
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(5);
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(4);
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {

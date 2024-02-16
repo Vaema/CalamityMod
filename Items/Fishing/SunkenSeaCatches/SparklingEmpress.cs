@@ -18,14 +18,14 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
 
         public override void SetDefaults()
         {
+            Item.width = 44;
+            Item.height = 44;
             Item.damage = BaseDamage;
             Item.noMelee = true;
             Item.DamageType = DamageClass.Magic;
             Item.channel = true; //Channel so that you can hold the weapon [Important]
             Item.rare = ItemRarityID.Green;
             Item.mana = 5;
-            Item.width = 44;
-            Item.height = 44;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.UseSound = SoundID.Item13;

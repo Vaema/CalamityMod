@@ -92,8 +92,8 @@ namespace CalamityMod.NPCs.HiveMind
             Main.npcFrameCount[NPC.type] = 16;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.TrailCacheLength[NPC.type] = NPC.oldPos.Length;
-            NPCID.Sets.BossBestiaryPriority.Add(Type); 
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.BossBestiaryPriority.Add(Type);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.4f,
                 PortraitPositionYOverride = 3f
@@ -111,7 +111,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.width = 178;
             NPC.height = 122;
             NPC.defense = 8;
-            NPC.LifeMaxNERB(8500, 10200, 350000);
+            NPC.LifeMaxNERB(7700, 9200, 350000);
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
@@ -454,7 +454,7 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.scale = 1f;
                     NPC.alpha = 0;
                     NPC.dontTakeDamage = false;
-                    NPC.damage = NPC.defDamage;
+                    NPC.damage = 0;
                     NPC.netSpam = 0;
                     NPC.netUpdate = true;
                 }
@@ -463,6 +463,9 @@ namespace CalamityMod.NPCs.HiveMind
             }
             else
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 CalamityGlobalNPC.hiveMind = NPC.whoAmI;
 
                 if (!player.active || player.dead)
@@ -564,7 +567,6 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.scale = 1f;
                     NPC.alpha = 0;
                     NPC.dontTakeDamage = false;
-                    NPC.damage = NPC.defDamage;
                 }
                 else if (burrowTimer < -60)
                 {
@@ -639,24 +641,18 @@ namespace CalamityMod.NPCs.HiveMind
                     {
                         NPC.TargetClosest();
                         NPC.dontTakeDamage = true;
-                        NPC.damage = 0;
                     }
                 }
 
                 return;
             }
 
-            if (NPC.alpha != 0)
-            {
-                if (NPC.damage != 0)
-                    NPC.damage = 0;
-            }
-            else
-                NPC.damage = NPC.defDamage;
-
             switch (state)
             {
                 case 0: // Slowdrift
+
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
 
                     if (NPC.alpha > 0)
                         NPC.alpha -= 3;
@@ -768,6 +764,9 @@ namespace CalamityMod.NPCs.HiveMind
 
                 case 1: // Reelback and teleport
 
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.alpha += reelbackFade + 2 * (int)enrageScale;
                     NPC.velocity -= deceleration;
 
@@ -808,6 +807,9 @@ namespace CalamityMod.NPCs.HiveMind
 
                 case 2: // Reelback for lunge + death legacy
 
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.alpha += reelbackFade + 2 * (int)enrageScale;
                     NPC.velocity -= deceleration;
 
@@ -838,6 +840,9 @@ namespace CalamityMod.NPCs.HiveMind
 
                 case 3: // Lunge
 
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.netUpdate = true;
                     NPC.netSpam = 0;
                     if (NPC.alpha > 0)
@@ -857,6 +862,9 @@ namespace CalamityMod.NPCs.HiveMind
                         {
                             if (phase2timer <= 0)
                             {
+                                // Set damage
+                                NPC.damage = NPC.defDamage;
+
                                 phase2timer = lungeTime - 4 * (int)enrageScale;
                                 NPC.velocity = player.Center + (bossRush ? player.velocity * 20f : Vector2.Zero) - NPC.Center;
                                 NPC.velocity.Normalize();
@@ -874,8 +882,14 @@ namespace CalamityMod.NPCs.HiveMind
                         }
                         else
                         {
+                            // Set damage
+                            NPC.damage = NPC.defDamage;
+
                             if (phase2timer <= 0)
                             {
+                                // Avoid cheap bullshit
+                                NPC.damage = 0;
+
                                 state = 6;
                                 phase2timer = 0;
                                 deceleration = NPC.velocity / decelerationTime;
@@ -886,6 +900,9 @@ namespace CalamityMod.NPCs.HiveMind
                     break;
 
                 case 4: // Enemy spawn arc
+
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
 
                     if (NPC.alpha > 0)
                     {
@@ -945,6 +962,9 @@ namespace CalamityMod.NPCs.HiveMind
 
                 case 5: // Rain dash
 
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     if (NPC.alpha > 0)
                     {
                         NPC.alpha -= 5;
@@ -997,6 +1017,9 @@ namespace CalamityMod.NPCs.HiveMind
                     break;
 
                 case 6: // Deceleration
+
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
 
                     NPC.velocity -= deceleration;
                     phase2timer++;

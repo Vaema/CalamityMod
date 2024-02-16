@@ -64,6 +64,7 @@ namespace CalamityMod.NPCs
         {
             "Dazren",
             "Johnny Test", // <@!589966747977777197> (konorango)
+            "Bling Bling Boy", // <@!522970788203069442> (phallguy)
         };
         private static readonly string[] ArmsDealerNames =
         {
@@ -89,6 +90,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] DemolitionistNames =
         {
             "Tavish DeGroot", // <@!442447226992721930> (magicoal)
+            "Fimmy", // <@!407348617079160832> (darkmega5)
         };
         private static readonly string[] DryadNames =
         {
@@ -130,7 +132,7 @@ namespace CalamityMod.NPCs
             "Alfred Rend", // <@!606301806481375255> (Deadsqurp300#0907)
             "Leeman", // <@!281999243168841728> (Tweee#5831)
             "Mihai", // <@!373941893467209730> (cmihaii.)
-            "Aka Retribution", // <@!302318734633205761> (azurr_nihilo)
+            "Cooler Kevin", // <@!614126424751603714> (exellent.)
         };
         private static readonly string[] MechanicNames =
         {

@@ -34,22 +34,19 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (Projectile.ai[1] < 510f && Projectile.ai[1] != -1f)
-                Projectile.ai[1] += 1f;
+            Player Owner = Main.player[Projectile.owner];
+            if (Projectile.ai[1] < 480f && Projectile.ai[1] != -1f)
+                Projectile.ai[1]++;
 
             if (Main.myPlayer == Projectile.owner)
             {
-                if (!Main.player[Projectile.owner].channel)
-                {
+                if (!Owner.channel)
                     Projectile.ai[1] = -1f;
-                    Projectile.damage = Projectile.originalDamage;
-                }
             }
 
-            if (Projectile.ai[1] >= 255f)
-                Projectile.damage = 2 * Projectile.originalDamage;
+            Projectile.damage = (int)(Owner.GetTotalDamage(Projectile.DamageType).ApplyTo(Projectile.originalDamage) * (1f + Utils.GetLerpValue(0f, 300f, Projectile.ai[1], true)));
 
-            red = 64 + (int)(Projectile.ai[1] * 0.75f);
+            red = 30 + (int)(Projectile.ai[1] * 0.75f);
             if (red > 255)
                 red = 255;
 
@@ -58,8 +55,8 @@ namespace CalamityMod.Projectiles.Melee
             Main.dust[dust].noGravity = true;
 
             Vector2 projDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
-            float x = Main.player[Projectile.owner].position.X + (float)(Main.player[Projectile.owner].width / 2) - projDirection.X;
-            float y = Main.player[Projectile.owner].position.Y + (float)(Main.player[Projectile.owner].height / 2) - projDirection.Y;
+            float x = Owner.position.X + (float)(Owner.width / 2) - projDirection.X;
+            float y = Owner.position.Y + (float)(Owner.height / 2) - projDirection.Y;
             float distanceFromOwner = (float)Math.Sqrt((double)(x * x + y * y));
 
             float speed = 25f;
@@ -68,7 +65,7 @@ namespace CalamityMod.Projectiles.Melee
             if (speed < 2f)
                 speed = 2f;
 
-            if (speed <= 2f || Projectile.ai[1] >= 510f || Projectile.ai[1] == -1f)
+            if (speed <= 2f || Projectile.ai[1] >= 480f || Projectile.ai[1] == -1f)
             {
                 float returnSpeedMax = 30f;
                 float returnSpeed = 6f;
@@ -104,20 +101,20 @@ namespace CalamityMod.Projectiles.Melee
                 if (Main.myPlayer == Projectile.owner)
                 {
                     Rectangle rectangle = new Rectangle((int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height);
-                    Rectangle playerPos = new Rectangle((int)Main.player[Projectile.owner].position.X, (int)Main.player[Projectile.owner].position.Y, Main.player[Projectile.owner].width, Main.player[Projectile.owner].height);
+                    Rectangle playerPos = new Rectangle((int)Owner.position.X, (int)Owner.position.Y, Owner.width, Owner.height);
                     if (rectangle.Intersects(playerPos))
                         Projectile.Kill();
                 }
             }
             else if (Main.myPlayer == Projectile.owner && Projectile.ai[0] <= 0f)
             {
-                if (Main.player[Projectile.owner].channel)
+                if (Owner.channel)
                 {
                     Vector2 projTravel = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
                     float mouseDestX = (float)Main.mouseX + Main.screenPosition.X - projTravel.X;
                     float mouseDestY = (float)Main.mouseY + Main.screenPosition.Y - projTravel.Y;
 
-                    if (Main.player[Projectile.owner].gravDir == -1f)
+                    if (Owner.gravDir == -1f)
                         mouseDestY = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - projTravel.Y;
 
                     if (Projectile.ai[0] < 0f)
@@ -162,13 +159,13 @@ namespace CalamityMod.Projectiles.Melee
                     float miceX = (float)Main.mouseX + Main.screenPosition.X - projDirect.X;
                     float miceY = (float)Main.mouseY + Main.screenPosition.Y - projDirect.Y;
 
-                    if (Main.player[Projectile.owner].gravDir == -1f)
+                    if (Owner.gravDir == -1f)
                         miceY = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - projDirect.Y;
 
                     float miceDistancing = (float)Math.Sqrt((double)(miceX * miceX + miceY * miceY));
                     if (miceDistancing == 0f || Projectile.ai[0] < 0f)
                     {
-                        projDirect = new Vector2(Main.player[Projectile.owner].position.X + (float)(Main.player[Projectile.owner].width / 2), Main.player[Projectile.owner].position.Y + (float)(Main.player[Projectile.owner].height / 2));
+                        projDirect = new Vector2(Owner.position.X + (float)(Owner.width / 2), Owner.position.Y + (float)(Owner.height / 2));
                         miceX = Projectile.position.X + (float)Projectile.width * 0.5f - projDirect.X;
                         miceY = Projectile.position.Y + (float)Projectile.height * 0.5f - projDirect.Y;
                         miceDistancing = (float)Math.Sqrt((double)(miceX * miceX + miceY * miceY));

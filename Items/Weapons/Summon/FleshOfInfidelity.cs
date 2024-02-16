@@ -14,6 +14,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = 42;
+            Item.height = 42;
             Item.damage = 15;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<FleshBallMinion>();
@@ -21,8 +23,6 @@ namespace CalamityMod.Items.Weapons.Summon
             
             Item.useTime = Item.useAnimation = 10;
             Item.mana = 10;
-            Item.width = 42;
-            Item.height = 42;
             Item.noMelee = true;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.Rarity3BuyPrice;

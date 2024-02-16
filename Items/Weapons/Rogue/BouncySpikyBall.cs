@@ -17,6 +17,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 14;
+            Item.height = 14;
             Item.damage = 10;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -28,7 +29,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.autoReuse = true;
             Item.consumable = true;
             Item.maxStack = 9999;
-            Item.height = 14;
             Item.value = Item.buyPrice(0, 0, 1, 0);
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<BouncyBol>();

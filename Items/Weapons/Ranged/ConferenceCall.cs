@@ -12,12 +12,12 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 36;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 66;
             Item.height = 26;
-            Item.useTime = 32;
-            Item.useAnimation = 32;
+            Item.damage = 53;
+            Item.DamageType = DamageClass.Ranged;
+            Item.useTime = 42;
+            Item.useAnimation = 42;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Main.projectile[proj].extraUpdates += 2;
             }
 
-            int maxTargets = 12;
+            int maxTargets = 7;
             int[] targets = new int[maxTargets];
             int targetArrayIndex = 0;
             Rectangle rectangle = new Rectangle((int)player.Center.X - 960, (int)player.Center.Y - 540, 1920, 1080);
@@ -79,19 +79,19 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (targetArrayIndex == 0)
                 return false;
 
-            Vector2 vector2;
+            Vector2 targetPosition;
             int extraBulletDamage = (int)(damage * 0.8);
 
             for (int j = 0; j < targetArrayIndex; j++)
             {
-                vector2 = new Vector2(player.position.X + player.width * 0.5f + (Main.rand.Next(201) * -(float)player.direction) + (Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                vector2.X = (vector2.X + player.Center.X) / 2f + Main.rand.Next(-200, 201);
-                vector2.Y -= 100 * j;
+                targetPosition = new Vector2(player.position.X + player.width * 0.5f + (Main.rand.Next(201) * -(float)player.direction) + (Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
+                targetPosition.X = (targetPosition.X + player.Center.X) / 2f + Main.rand.Next(-200, 201);
+                targetPosition.Y -= 100 * j;
 
-                Vector2 velocity2 = CalamityUtils.CalculatePredictiveAimToTarget(vector2, Main.npc[targets[j]], Item.shootSpeed);
+                Vector2 extraBulletVel = Vector2.Normalize(Main.npc[targets[j]].Center - targetPosition) * Item.shootSpeed;
 
-                int proj = Projectile.NewProjectile(source, vector2, velocity2, type, extraBulletDamage, knockback, player.whoAmI);
-                Main.projectile[proj].extraUpdates += 2;
+                int proj = Projectile.NewProjectile(source, targetPosition, extraBulletVel, type, extraBulletDamage, knockback, player.whoAmI);
+                Main.projectile[proj].extraUpdates += 14;
                 Main.projectile[proj].tileCollide = false;
                 Main.projectile[proj].timeLeft /= 2;
             }
@@ -104,14 +104,14 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 int randomTarget = Main.rand.Next(targetArrayIndex);
 
-                vector2 = new Vector2(player.position.X + player.width * 0.5f + (Main.rand.Next(201) * -(float)player.direction) + (Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                vector2.X = (vector2.X + player.Center.X) / 2f + Main.rand.Next(-200, 201);
-                vector2.Y -= 100 * randomTarget;
+                targetPosition = new Vector2(player.position.X + player.width * 0.5f + (Main.rand.Next(201) * -(float)player.direction) + (Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
+                targetPosition.X = (targetPosition.X + player.Center.X) / 2f + Main.rand.Next(-200, 201);
+                targetPosition.Y -= 100 * randomTarget;
 
-                Vector2 velocity2 = Vector2.Normalize(Main.npc[targets[randomTarget]].Center - vector2) * Item.shootSpeed;
+                Vector2 extraBulletVel = Vector2.Normalize(Main.npc[targets[randomTarget]].Center - targetPosition) * Item.shootSpeed;
 
-                int proj = Projectile.NewProjectile(source, vector2, velocity2, type, extraBulletDamage, knockback, player.whoAmI);
-                Main.projectile[proj].extraUpdates += 2;
+                int proj = Projectile.NewProjectile(source, targetPosition, extraBulletVel, type, extraBulletDamage, knockback, player.whoAmI);
+                Main.projectile[proj].extraUpdates += 14;
                 Main.projectile[proj].tileCollide = false;
                 Main.projectile[proj].timeLeft /= 2;
             }

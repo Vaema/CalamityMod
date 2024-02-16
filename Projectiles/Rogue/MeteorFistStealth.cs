@@ -151,7 +151,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             target.AddBuff(BuffID.OnFire, 120);
             int boom = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FuckYou>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0.85f + Main.rand.NextFloat() * 1.15f);
-            Projectile.damage /= 2;
+            Projectile.damage = (int)(Projectile.damage * 0.6666);
             float minDist = 999f;
             int index = 0;
             // Get the closest enemy to the fist

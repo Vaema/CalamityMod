@@ -18,10 +18,10 @@ namespace CalamityMod.Items.Ammo
 
         public override void SetDefaults()
         {
-            Item.damage = 28;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 22;
             Item.height = 22;
+            Item.damage = 28;
+            Item.DamageType = DamageClass.Ranged;
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 3f;

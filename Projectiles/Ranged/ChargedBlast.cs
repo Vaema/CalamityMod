@@ -62,13 +62,13 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item62, Projectile.position);
-            int projectiles = Main.rand.Next(2, 5);
+            int projectiles = Main.rand.Next(2, 3 + 1);
             if (Projectile.owner == Main.myPlayer)
             {
                 for (int k = 0; k < projectiles; k++)
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, (float)Main.rand.Next(-10, 11) * 2f, (float)Main.rand.Next(-10, 11) * 2f, ModContent.ProjectileType<ChargedBlast2>(),
-                    (int)((double)Projectile.damage * 0.85), (float)(int)((double)Projectile.knockBack * 0.5), Main.myPlayer, 0f, 0f);
+                    (int)((double)Projectile.damage * 0.45), (float)(int)((double)Projectile.knockBack * 0.5), Main.myPlayer, 0f, 0f);
                 }
             }
         }

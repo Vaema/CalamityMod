@@ -26,13 +26,13 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.width = 34;
             Projectile.height = 34;
             Projectile.friendly = true;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 3;
             Projectile.aiStyle = ProjAIStyleID.ThrownProjectile;
             Projectile.timeLeft = 600;
             AIType = ProjectileID.ThrowingKnife;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 30;
         }
 
         public override void AI()

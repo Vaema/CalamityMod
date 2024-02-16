@@ -11,9 +11,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
-            Item.damage = 90;
             Item.width = 74;
             Item.height = 86;
+            Item.damage = 90;
             Item.scale = 1.5f;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 22;
@@ -25,11 +25,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.Rarity10BuyPrice;
             Item.rare = ItemRarityID.Red;
-        }
-
-        public override void ModifyHitNPC(Player player, NPC target, ref NPC.HitModifiers modifiers)
-        {
-            modifiers.CritDamage *= 0.5f;
         }
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {

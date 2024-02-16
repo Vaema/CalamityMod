@@ -15,8 +15,9 @@ namespace CalamityMod.Items.Weapons.Typeless
         public new string LocalizationCategory => "Items.Weapons.Typeless";
         public override void SetDefaults()
         {
-            Item.DamageType = AverageDamageClass.Instance;
             Item.width = 58;
+            Item.height = 58;
+            Item.DamageType = AverageDamageClass.Instance;
             Item.damage = 8;
             Item.useAnimation = 25;
             Item.useTime = 25;
@@ -24,7 +25,6 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
-            Item.height = 58;
 
             Item.value = CalamityGlobalItem.Rarity3BuyPrice;
             Item.rare = ItemRarityID.Orange;

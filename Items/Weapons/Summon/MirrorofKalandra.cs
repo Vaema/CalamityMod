@@ -25,17 +25,17 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public static float Purple_MinRamSpeed = 40f;
         public static float Purple_MaxRamSpeed = 60f;
-        public static int Purple_IFrames = 15;
-        public static float Purple_BlastDMGModifier = 3f;
-        public static float Purple_BlastFireRate = 180f; // In frames.
+        public static int Purple_IFrames = 23;
+        public static float Purple_BlastDMGModifier = 2.25f;
+        public static float Purple_BlastFireRate = 240f; // In frames.
         public static int Purple_BlastSize = 300;
         public static int Purple_BlastChargeTime = 10;
         public static float Purple_SpinSpeed = 25f; // In degrees per frame.
 
-        public static int Scimitar_IFrames = 15;
+        public static int Scimitar_IFrames = 36; // Note that the effective iframes are half of this number, since the weapon is given an extra update while attacking.
 
         public static int Wind_BowChargeTime = 5; // Therefore, the higher the time, the slower the fire rate will be, and viceversa.
-        public static float Wind_ArrowSpeed = 35f;
+        public static float Wind_ArrowSpeed = 40f;
 
         public static int Vile_BowChargeTime = 8;
         public static float Vile_ArrowSpeed = 35f;
@@ -45,14 +45,14 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 380;
+            Item.width = 58;
+            Item.height = 50;
+            Item.damage = 317;
             Item.useTime = Item.useAnimation = 30;
             Item.knockBack = 4f;
             Item.mana = 10;
             Item.shoot = ModContent.ProjectileType<AtzirisDisfavor>();
 
-            Item.width = 58;
-            Item.height = 50;
             Item.autoReuse = true;
             Item.noMelee = true;
             Item.Calamity().donorItem = true;

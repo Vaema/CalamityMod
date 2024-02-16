@@ -21,9 +21,9 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 2;
+            Projectile.penetrate = -1;
             Projectile.aiStyle = ProjAIStyleID.StickProjectile;
-            Projectile.timeLeft = 180;
+            Projectile.timeLeft = 60;
             AIType = ProjectileID.BoneJavelin;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
@@ -36,17 +36,18 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ai[1] += 1f;
             if (Projectile.ai[1] == 40f)
             {
-                int numProj = 4;
+                int numProj = 3;
                 int numSpecProj = 0;
+                int numStealthProj = 5;
                 float rotation = MathHelper.ToRadians(50);
                 if (Projectile.owner == Main.myPlayer)
                 {
                     if (!Projectile.Calamity().stealthStrike)
                     {
-                        for (int i = 0; i < numProj + 1; i++)
+                        for (int i = 0; i < numProj; i++)
                         {
                             Vector2 velocity = CalamityUtils.RandomVelocity(50f, 30f, 60f, 0.2f);
-                            if (numSpecProj < 2 && !hitEnemy)
+                            if (numSpecProj < 1 && !hitEnemy)
                             {
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<Prismalline3>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
                                 ++numSpecProj;
@@ -59,10 +60,10 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     else //stealth strike
                     {
-                        for (int j = 0; j < 5; j++)
+                        for (int j = 0; j < 4; j++)
                         {
                             Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                            int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AquashardSplit>(), Projectile.damage / 2, 0f, Projectile.owner);
+                            int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AquashardSplit>(), Projectile.damage / 2, 0f, Projectile.owner, 0f, 1f);
                             if (shard.WithinBounds(Main.maxProjectiles))
                             {
                                 Main.projectile[shard].DamageType = RogueDamageClass.Instance;
@@ -70,7 +71,7 @@ namespace CalamityMod.Projectiles.Rogue
                                 Main.projectile[shard].localNPCHitCooldown = 10;
                             }
                         }
-                        for (int i = 0; i < numProj + 1; i++)
+                        for (int i = 0; i < numStealthProj + 1; i++)
                         {
                             Vector2 velocity = CalamityUtils.RandomVelocity(50f, 30f, 60f, 0.2f);
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<Prismalline3>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f, 0f);

@@ -1,7 +1,9 @@
 ﻿using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Pets
 {
     public class Astrophage : ModProjectile, ILocalizedModType
@@ -13,6 +15,9 @@ namespace CalamityMod.Projectiles.Pets
         {
             Main.projFrames[Projectile.type] = 5;
             Main.projPet[Projectile.type] = true;
+
+            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Projectile.type], 6)
+            .WithOffset(-10f, 0f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
         public override void SetDefaults()

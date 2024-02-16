@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 82;
+            Item.height = 82;
             Item.damage = 531;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -25,7 +26,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 82;
             Item.maxStack = 1;
             Item.shoot = ModContent.ProjectileType<NightsGazeProjectile>();
             Item.shootSpeed = 30f;

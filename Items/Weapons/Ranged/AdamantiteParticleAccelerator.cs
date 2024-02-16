@@ -15,10 +15,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly Color[] LightColors = new Color[] { new Color(235, 40, 121), new Color(49, 161, 246) }; //beam colors
         public override void SetDefaults()
         {
-            Item.damage = 65;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 54;
             Item.height = 52;
+            Item.damage = 65;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = ChargeFrames + CooldownFrames;
             Item.useAnimation = ChargeFrames + CooldownFrames;
             Item.useStyle = ItemUseStyleID.Shoot;

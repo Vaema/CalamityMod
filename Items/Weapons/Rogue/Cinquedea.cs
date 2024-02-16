@@ -9,26 +9,23 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Cinquedea : RogueWeapon
     {
-        public static int BaseDamage = 36;
-        public static float Knockback = 5f;
-        public static float Speed = 8f;
 
         public override void SetDefaults()
         {
-            Item.damage = BaseDamage;
+            Item.width = 32;
+            Item.height = 32;
+            Item.damage = 36;
             Item.rare = ItemRarityID.Orange;
-            Item.knockBack = Knockback;
+            Item.knockBack = 5;
             Item.autoReuse = true;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.width = 32;
-            Item.height = 32;
             Item.UseSound = SoundID.Item1;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.shoot = ModContent.ProjectileType<CinquedeaProj>();
-            Item.shootSpeed = Speed;
+            Item.shootSpeed = 8;
             Item.value = CalamityGlobalItem.Rarity3BuyPrice;
             Item.DamageType = RogueDamageClass.Instance;
         }

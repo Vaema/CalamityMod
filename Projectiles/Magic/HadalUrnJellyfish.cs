@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Magic
                     Bloom.Position = Projectile.Center;
 
                     Projectile.penetrate = -1;
-                    Projectile.localNPCHitCooldown = 6;
+                    Projectile.localNPCHitCooldown = 10;
                 }
             }
             //Once the aura dies, shrink back to normal size and disappear (it ran out of juice)

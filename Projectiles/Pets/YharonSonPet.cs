@@ -2,7 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Pets
 {
     public class YharonSonPet : ModProjectile, ILocalizedModType
@@ -28,6 +30,11 @@ namespace CalamityMod.Projectiles.Pets
         public override void SetStaticDefaults()
         {
             Main.projPet[Projectile.type] = true;
+
+            //i cannot be bothered to figure out why it keeps flickering everytime it repeats the animation
+            //as a "solution" i have set the frame counter to an obnoxiously high number so it probably wont be noticed by players
+            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(1, 1, int.MaxValue)
+            .WithOffset(-55f, 2f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
         public override void SetDefaults()

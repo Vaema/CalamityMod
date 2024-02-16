@@ -64,8 +64,8 @@ namespace CalamityMod.Projectiles.Melee
         public float ThrowTimer => MaxThrowTime - Projectile.timeLeft;
         public float ThrowCompletion => ThrowTimer / MaxThrowTime;
 
-        const float SnapWindowStart = 0.4f;
-        const float SnapWindowEnd = 0.6f;
+        const float SnapWindowStart = 0.25f;
+        const float SnapWindowEnd = 0.75f;
         public float SnapEndTime => (MaxThrowTime - (MaxThrowTime * SnapWindowEnd));
         public float SnapEndCompletion => (SnapEndTime - Projectile.timeLeft) / SnapEndTime;
         public ref float ChanceMissed => ref Projectile.localAI[1];
@@ -224,7 +224,7 @@ namespace CalamityMod.Projectiles.Melee
 
             //Make the owner look like theyre holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;
-            Owner.direction = Math.Sign(Projectile.velocity.X);
+            Owner.ChangeDir(Math.Sign(Projectile.velocity.X));
             Owner.itemRotation = Projectile.rotation;
             if (Owner.direction != 1)
             {
@@ -251,16 +251,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             if (Combo == 3f)
-            {
                 SoundEngine.PlaySound(CommonCalamitySounds.ScissorGuillotineSnapSound with { Volume = CommonCalamitySounds.ScissorGuillotineSnapSound.Volume * 1.3f }, Projectile.Center);
-
-                if (Charge <= 1)
-                {
-                    ArkoftheElements sword = (Owner.HeldItem.ModItem as ArkoftheElements);
-                    if (sword != null)
-                        sword.Charge = 2f;
-                }
-            }
         }
 
         public override void OnKill(int timeLeft)

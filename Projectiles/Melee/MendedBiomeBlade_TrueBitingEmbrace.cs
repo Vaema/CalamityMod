@@ -116,7 +116,6 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.width = Projectile.height = 100;
                         Projectile.width = Projectile.height = 100;
                         SoundEngine.PlaySound(SoundID.DD2_OgreSpit, Projectile.Center);
-                        Projectile.damage = (int)(Projectile.damage * TrueBiomeBlade.ColdAttunement_SecondSwingBoost);
                         break;
                     case 2:
                         Projectile.width = Projectile.height = 170;
@@ -175,7 +174,7 @@ namespace CalamityMod.Projectiles.Melee
 
             //Make the owner look like theyre holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;
-            Owner.direction = Math.Sign(rotation.ToRotationVector2().X);
+            Owner.ChangeDir(Math.Sign(rotation.ToRotationVector2().X));
             Owner.itemRotation = rotation;
             if (Owner.direction != 1)
             {

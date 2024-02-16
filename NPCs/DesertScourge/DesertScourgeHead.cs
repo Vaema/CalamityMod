@@ -42,7 +42,7 @@ namespace CalamityMod.NPCs.DesertScourge
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.75f,
                 PortraitScale = 0.6f,
@@ -65,7 +65,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.width = 32;
             NPC.height = 80;
 
-            NPC.LifeMaxNERB(2500, 3000, 1650000);
+            NPC.LifeMaxNERB(4200, 5000, 1650000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
 
@@ -136,6 +136,19 @@ namespace CalamityMod.NPCs.DesertScourge
             bool expertMode = Main.expertMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
+
+            // Calculate contact damage based on velocity
+            float minimalContactDamageVelocity = 4f;
+            float minimalDamageVelocity = 8f;
+            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
+            {
+                NPC.damage = (int)(NPC.defDamage * 0.5f);
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp(NPC.defDamage * 0.5f, NPC.defDamage, velocityDamageScalar);
+            }
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -726,10 +739,10 @@ namespace CalamityMod.NPCs.DesertScourge
                 // Weapons and accessories
                 int[] items = new int[]
                 {
-                    ModContent.ItemType<AquaticDischarge>(),
+                    ModContent.ItemType<SaharaSlicers>(),
                     ModContent.ItemType<Barinade>(),
-                    ModContent.ItemType<StormSpray>(),
-                    ModContent.ItemType<SeaboundStaff>(),
+                    ModContent.ItemType<SandstreamScepter>(),
+                    ModContent.ItemType<BrittleStarStaff>(),
                     ModContent.ItemType<ScourgeoftheDesert>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, items));

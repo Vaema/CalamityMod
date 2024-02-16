@@ -17,6 +17,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 44;
+            Item.height = 42;
             Item.damage = 36;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.noMelee = true;
@@ -28,7 +29,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 42;
             Item.value = CalamityGlobalItem.Rarity3BuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<SausageMakerSpear>();

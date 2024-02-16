@@ -13,10 +13,10 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
-            Item.damage = 105;
-            Item.DamageType = DamageClass.Melee;
             Item.width = 58;
             Item.height = 58;
+            Item.damage = 75;
+            Item.DamageType = DamageClass.Melee;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -30,10 +30,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 3f;
         }
 
-        public override void ModifyHitNPC(Player player, NPC target, ref NPC.HitModifiers modifiers)
-        {
-            modifiers.CritDamage *= 0.5f;
-        }
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Frostburn2, 300);

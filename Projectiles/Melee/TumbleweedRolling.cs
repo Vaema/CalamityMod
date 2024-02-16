@@ -19,6 +19,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = 8;
             Projectile.timeLeft = 300;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 5;
         }
 
         public override void AI()
@@ -38,12 +40,6 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity.Y = Projectile.velocity.Y * -0.5f;
             }
             Projectile.rotation += Projectile.velocity.X * 0.05f;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            // TODO -- Make this use proper i-frame variables.
-            target.immune[Projectile.owner] = 5;
         }
 
         public override void OnKill(int timeLeft)

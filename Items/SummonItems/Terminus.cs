@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Projectiles.Typeless;
-using CalamityMod.World;
+﻿using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -15,9 +13,9 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetDefaults()
         {
-            Item.rare = ItemRarityID.Blue;
             Item.width = Main.zenithWorld ? 54 : 28;
             Item.height = Main.zenithWorld ? 78 : 28;
+            Item.rare = ItemRarityID.Blue;
             Item.useAnimation = 45;
             Item.useTime = 45;
             Item.channel = true;
@@ -58,10 +56,10 @@ namespace CalamityMod.Items.SummonItems
                 return true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			// The wiki classifies Boss Rush as an event
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            // The wiki classifies Boss Rush as an event
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
+        }
     }
 }

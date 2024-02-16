@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -29,6 +29,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = 300;
             Projectile.ignoreWater = true;
             AIType = ProjectileID.DeathSickle;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 2;
         }
 
         public override void AI()
@@ -73,7 +75,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.immune[Projectile.owner] = 2;
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
             if (target.life <= 0)
             {

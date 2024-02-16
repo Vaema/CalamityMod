@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 56;
+            Item.height = 56;
             Item.damage = 50;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.noMelee = true;
@@ -27,7 +28,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 56;
             Item.value = CalamityGlobalItem.Rarity5BuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<BrimlanceProj>();

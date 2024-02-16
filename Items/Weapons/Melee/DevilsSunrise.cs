@@ -12,13 +12,13 @@ namespace CalamityMod.Items.Weapons.Melee
     public class DevilsSunrise : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public static int BaseDamage = 480;
+        public static int BaseDamage = 420;
 
         public override void SetDefaults()
         {
             Item.width = 66;
             Item.height = 66;
-            Item.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
+            Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;
@@ -42,8 +42,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<DevilsSunriseProj>(), damage, knockback, player.whoAmI, 0f, 0f);
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<DevilsSunriseCyclone>(), damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DevilsSunriseCyclone>(), damage, knockback, player.whoAmI);
             return false;
         }
 

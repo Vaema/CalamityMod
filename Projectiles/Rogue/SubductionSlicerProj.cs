@@ -19,13 +19,15 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 30;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 5;
             Projectile.aiStyle = ProjAIStyleID.Boomerang;
             Projectile.extraUpdates = 1;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 360;
             Projectile.alpha = 55;
             AIType = ProjectileID.WoodenBoomerang;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 15;
         }
 
         public override void AI()
@@ -52,7 +54,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.immune[Projectile.owner] = 6;
             target.AddBuff(BuffID.OnFire3, 240);
             OnHitEffects(target.Center);
         }
@@ -67,17 +68,14 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Projectile.owner == Main.myPlayer)
             {
-                int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, Vector2.Zero, ModContent.ProjectileType<FuckYou>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0.85f + Main.rand.NextFloat() * 1.15f);
+                int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, Vector2.Zero, ModContent.ProjectileType<FuckYou>(), (int)(Projectile.damage * 0.8f), Projectile.knockBack, Projectile.owner, 0f, 0.85f + Main.rand.NextFloat() * 1.15f);
                 if (proj.WithinBounds(Main.maxProjectiles))
                     Main.projectile[proj].DamageType = RogueDamageClass.Instance;
                 if (Projectile.Calamity().stealthStrike && Projectile.localAI[0] <= 0f)
                 {
-                    Point result;
-                    if (WorldUtils.Find(Projectile.Top.ToTileCoordinates(), Searches.Chain((GenSearch)new Searches.Down(80), (GenCondition)new Conditions.IsSolid()), out result))
-                    {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), result.ToVector2() * 16f, Vector2.Zero, ModContent.ProjectileType<SubductionFlameburst>(), (int)(Projectile.damage * 1.5f), 2f, Projectile.owner, 1f);
-                        Projectile.localAI[0] = 30f;
-                    }
+                    Vector2 spawnPos = new Vector2(position.X, position.Y + 30);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPos, Vector2.Zero, ModContent.ProjectileType<SubductionFlameburst>(), (int)(Projectile.damage * 1.2f), 2f, Projectile.owner, 1f);
+                    Projectile.localAI[0] = 300f; // DO NOT.
                 }
             }
         }

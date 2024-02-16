@@ -8,6 +8,7 @@ using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,6 +17,8 @@ namespace CalamityMod.NPCs.SulphurousSea
 {
     public class BelchingCoral : ModNPC
     {
+        public static readonly SoundStyle SAXOPHONE = new("CalamityMod/Sounds/Item/Saxophone/Sax", 6);
+
         public const float CheckDistance = 480f;
         public override void SetStaticDefaults()
         {
@@ -66,6 +69,16 @@ namespace CalamityMod.NPCs.SulphurousSea
                 {
                     Vector2 velocity = new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-11f, -6f));
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Top + new Vector2(0f, 6f), velocity, ModContent.ProjectileType<BelchingCoralSpike>(), 27, 3f);
+                }
+            }
+
+            if (Main.zenithWorld)
+            {
+                NPC.ai[1]++;
+                if (NPC.ai[1] > 27)
+                {
+                    SoundEngine.PlaySound(SAXOPHONE, NPC.Center);
+                    NPC.ai[1] = 0;
                 }
             }
         }

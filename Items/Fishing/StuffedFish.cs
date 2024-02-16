@@ -15,10 +15,10 @@ namespace CalamityMod.Items.Fishing
 
         public override void SetDefaults()
         {
-            Item.maxStack = 9999;
-            Item.consumable = true;
             Item.width = 34;
             Item.height = 30;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Green;
             Item.value = Item.sellPrice(silver: 50);
         }

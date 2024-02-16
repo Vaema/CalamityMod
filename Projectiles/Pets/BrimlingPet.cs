@@ -3,7 +3,9 @@ using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Pets
 {
     public class BrimlingPet : ModProjectile, ILocalizedModType
@@ -13,6 +15,9 @@ namespace CalamityMod.Projectiles.Pets
         {
             Main.projFrames[Projectile.type] = 8;
             Main.projPet[Projectile.type] = true;
+
+            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, 4, 5)
+            .WithOffset(-25f, 0f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
         public override void SetDefaults()

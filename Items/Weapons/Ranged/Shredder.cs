@@ -18,13 +18,13 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
-            Item.damage = 27;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 56;
             Item.height = 24;
+            Item.damage = 30;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
-            Item.useAnimation = 32;
-            Item.reuseDelay = 12;
+            Item.useAnimation = 24;
+            Item.reuseDelay = 20;
             Item.useLimitPerAnimation = 8;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -63,8 +63,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 {
                     float SpeedX = velocity.X + Main.rand.Next(-30, 31) * 0.05f;
                     float SpeedY = velocity.Y + Main.rand.Next(-30, 31) * 0.05f;
-                    int shredderBoltDamage = (int)(0.85f * damage);
-                    int shot = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<ChargedBlast>(), shredderBoltDamage, knockback, player.whoAmI, 0f, 0f);
+                    int shot = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0f, 0f);
                     Main.projectile[shot].timeLeft = 180;
                 }
                 return false;

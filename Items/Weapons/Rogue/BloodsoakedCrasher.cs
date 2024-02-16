@@ -13,6 +13,8 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
+            Item.width = 66;
+            Item.height = 64;
             Item.damage = 245;
             Item.knockBack = 3f;
             Item.autoReuse = true;
@@ -21,8 +23,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<BloodsoakedCrashax>();
 
-            Item.width = 66;
-            Item.height = 64;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;

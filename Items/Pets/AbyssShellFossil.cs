@@ -13,9 +13,9 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.damage = 0;
             Item.width = 42;
             Item.height = 30;
+            Item.damage = 0;
             Item.useAnimation = 20;
             Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;

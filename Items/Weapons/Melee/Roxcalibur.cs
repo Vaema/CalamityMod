@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
@@ -18,13 +18,13 @@ namespace CalamityMod.Items.Weapons.Melee
 		public static int BaseUseTime = 40;
 		public override void SetDefaults()
 		{
-			Item.damage = 180;
+            Item.width = 100;
+            Item.height = 100;
+            Item.damage = 180;
 			Item.knockBack = 13f;
             Item.DamageType = DamageClass.Melee;
 			Item.useStyle = ItemUseStyleID.Shoot;
 			Item.UseSound = SoundID.NPCHit42;
-			Item.width = 100;
-			Item.height = 100;
             Item.useAnimation = Item.useTime = BaseUseTime;
 			Item.reuseDelay = 10;
 			Item.shoot = ModContent.ProjectileType<RoxcaliburProj>();

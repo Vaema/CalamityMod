@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 4;
+            Projectile.penetrate = 3;
             Projectile.MaxUpdates = 4;
             Projectile.timeLeft = 30 * Projectile.MaxUpdates; // 30 effectively, 120 total
             Projectile.usesLocalNPCImmunity = true;

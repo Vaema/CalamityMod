@@ -13,8 +13,9 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
-            Item.damage = 333;
             Item.width = 44;
+            Item.height = 44;
+            Item.damage = 333;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 31;
@@ -23,7 +24,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 44;
             Item.maxStack = 1;
             Item.value = CalamityGlobalItem.Rarity12BuyPrice;
             Item.shoot = ModContent.ProjectileType<AlphaVirusProjectile>();

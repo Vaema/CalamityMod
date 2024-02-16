@@ -25,7 +25,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.defense = 6;
             NPC.DR_NERD(0.05f);
 
-            NPC.LifeMaxNERB(2500, 3000, 1650000);
+            NPC.LifeMaxNERB(4200, 5000, 1650000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
 
@@ -69,6 +69,20 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void AI()
         {
+            // Calculate contact damage based on velocity
+            float minimalContactDamageVelocity = 4f;
+            float minimalDamageVelocity = 8f;
+            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            {
+                NPC.damage = 0;
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
+            }
+
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 

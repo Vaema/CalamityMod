@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
@@ -33,6 +34,8 @@ namespace CalamityMod.Items.Accessories
                     if (player.whoAmI == Main.myPlayer)
                     {
                         int damage = (int)player.GetBestClassDamage().ApplyTo(60);
+                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
+
                         Projectile rain = CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 22f, ModContent.ProjectileType<AuraRain>(), damage, 2f, player.whoAmI);
                         if (rain.whoAmI.WithinBounds(Main.maxProjectiles))
                         {

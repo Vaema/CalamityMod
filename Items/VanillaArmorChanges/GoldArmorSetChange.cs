@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,6 +24,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public const float GoldDropChanceFromEnemies = 0.04f;
         public const int GoldFromBosses = 3;
         public const float SetBonusCritPerGoldCoin = 0.2f; // 5 gold coins = +1% crit chance
+        public const float MaximumCritBonus = 10f;
 
         public override void ApplyHeadPieceEffect(Player player) => player.GetDamage<GenericDamageClass>() += HeadDamage;
 
@@ -32,9 +34,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override void UpdateSetBonusText(ref string setBonusText)
         {
-            StringBuilder sb = new StringBuilder(256);
-            sb.Append("\nAll enemies have a 4% chance to drop 1 gold. All bosses killed drop 3 gold\nYou gain 1% critical strike chance for every 5 gold in your inventory, capped at 10%");
-            setBonusText += sb.ToString();
+            setBonusText += $"\n{CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}")}";
         }
 
         public override void ApplyArmorSetBonus(Player player)
@@ -45,11 +45,13 @@ namespace CalamityMod.Items.VanillaArmorChanges
             // Give the crit chance from gold in inventory.
             // If you have any platinum, this guarantees the max boost.
             if (player.InventoryHas(ItemID.PlatinumCoin))
-                critFromGold = 10f;
+                critFromGold = MaximumCritBonus;
             else
             {
+                // 13FEB2024: Ozzatron: this function doesn't cap at its second argument, it just stops counting if it exceeds that number
+                // so this can give up to 100 gold coins
                 int goldCoins = player.CountItem(ItemID.GoldCoin, 50);
-                critFromGold = goldCoins * SetBonusCritPerGoldCoin;
+                critFromGold = Math.Max(goldCoins * SetBonusCritPerGoldCoin, MaximumCritBonus);
             }
 
             player.GetCritChance<GenericDamageClass>() += critFromGold;

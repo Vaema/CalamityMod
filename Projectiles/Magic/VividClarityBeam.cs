@@ -20,6 +20,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = 10;
             Projectile.extraUpdates = 100;
             Projectile.timeLeft = 300;
+            Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
         }
@@ -27,6 +28,10 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Vector2 rotateVector = new Vector2(5f, 10f);
+            if (Projectile.position.Y > Main.player[Projectile.owner].position.Y - 50f)
+            {
+                Projectile.tileCollide = true;
+            }
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] == 48f)
             {
@@ -47,10 +52,10 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             Projectile.localAI[1] += 1f;
-            if (Projectile.localAI[1] >= 29f && Projectile.owner == Main.myPlayer)
+            if (Projectile.localAI[1] >= 49f && Projectile.owner == Main.myPlayer)
             {
                 Projectile.localAI[1] = 0f;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<VividOrb>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<VividOrb>(), (int)(Projectile.damage * 0.66f), Projectile.knockBack, Projectile.owner, 0f, 0f);
             }
 
             Projectile.localAI[0] += 1f;

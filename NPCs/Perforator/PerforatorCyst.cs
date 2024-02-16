@@ -5,11 +5,14 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Perforator
 {
     public class PerforatorCyst : ModNPC
     {
+        public static readonly SoundStyle HiveSpawn = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveSpawn");
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 4;
@@ -115,6 +118,8 @@ namespace CalamityMod.NPCs.Perforator
             }
             if (NPC.life <= 0)
             {
+                SoundEngine.PlaySound(HiveSpawn, NPC.Center);
+
                 for (int k = 0; k < 20; k++)
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);

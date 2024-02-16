@@ -17,6 +17,8 @@ namespace CalamityMod.Items.Placeables.Ores
 
         public override void SetDefaults()
         {
+            Item.width = 13;
+            Item.height = 10;
             Item.createTile = ModContent.TileType<ExodiumOre>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -24,8 +26,6 @@ namespace CalamityMod.Items.Placeables.Ores
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 13;
-            Item.height = 10;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 1, silver: 60);
             Item.rare = ItemRarityID.Red;

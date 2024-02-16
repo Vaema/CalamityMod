@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,7 +17,8 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 28;
-            Item.damage = 55;
+            Item.height = 58;
+            Item.damage = 52;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useTime = Item.useAnimation = 14;
@@ -25,7 +26,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 58;
             Item.shoot = ModContent.ProjectileType<MalachiteProj>();
             Item.shootSpeed = 10f;
             Item.DamageType = RogueDamageClass.Instance;
@@ -62,8 +62,6 @@ namespace CalamityMod.Items.Weapons.Rogue
                 return 1f;
             return 2f;
         }
-
-		public override float StealthDamageMultiplier => 1.3f;
 
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
 		{

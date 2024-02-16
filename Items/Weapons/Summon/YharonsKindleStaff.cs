@@ -17,11 +17,11 @@ namespace CalamityMod.Items.Weapons.Summon
         public const float ReboundRamDamageFactor = 2f;
         public override void SetDefaults()
         {
+            Item.width = 80;
+            Item.height = 74;
             Item.damage = Damage;
             Item.mana = 10;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.width = 80;
-            Item.height = 74;
             Item.useTime = Item.useAnimation = 10;
             Item.noMelee = true;
             Item.knockBack = 7f;

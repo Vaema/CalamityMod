@@ -66,12 +66,12 @@ namespace CalamityMod.Projectiles.Ranged
             return new Color(1f, 1f, 1f, 0f);
         }
 
-        // Ignores 25% of armor
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.ScalingArmorPenetration += 0.25f;
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => modifiers.ScalingArmorPenetration += 0.25f;
+        // Ignores 20% of armor
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.ScalingArmorPenetration += 0.2f;
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => modifiers.ScalingArmorPenetration += 0.2f;
 
-        // Inflicts Plague for 3 seconds
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 180);
+        // Inflicts Plague for 0.75 seconds
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 45);
 
         public override void OnKill(int timeLeft)
         {

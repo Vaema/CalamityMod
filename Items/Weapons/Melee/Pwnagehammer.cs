@@ -14,6 +14,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 66;
+            Item.height = 66;
             Item.damage = 210;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -23,7 +24,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 10f;
             Item.UseSound = SoundID.Item1;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.height = 66;
             Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<PwnagehammerProj>();

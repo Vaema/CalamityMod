@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             set => Projectile.ai[1] = value;
         }
 
-        public const int LaserFireRate = 300;
+        public const int LaserFireRate = 125;
 
         public const float OffsetDistanceFromPlayer = 60f;
 

@@ -14,6 +14,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 38;
+            Item.height = 22;
             Item.damage = 85;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -21,7 +22,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 22;
             Item.value = CalamityGlobalItem.Rarity7BuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<Crushax>();

@@ -20,6 +20,8 @@ namespace CalamityMod.Items.Tools
 
         public override void SetDefaults()
         {
+            Item.width = 58;
+            Item.height = 54;
             Item.damage = 55;
             Item.knockBack = 5f;
             Item.useTime = 15;
@@ -27,8 +29,6 @@ namespace CalamityMod.Items.Tools
             Item.axe = AxePower;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.DamageType = DamageClass.Melee;
-            Item.width = 58;
-            Item.height = 54;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.value = CalamityGlobalItem.Rarity4BuyPrice;

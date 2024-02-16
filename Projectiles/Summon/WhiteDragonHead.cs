@@ -134,7 +134,7 @@ namespace CalamityMod.Projectiles.Summon
             float distanceFromDestination = Projectile.Distance(destination);
 
             // Get a swerve effect if somewhat far from the target.
-            if (Projectile.Distance(destination) > 425f)
+            if (Projectile.Distance(destination) > 400f)
             {
                 Projectile.ai[2] = 0;
                 destination += (Projectile.ai[0] % 30f / 30f * MathHelper.TwoPi).ToRotationVector2() * 145f;

@@ -12,8 +12,9 @@ namespace CalamityMod.Items.Weapons.Typeless
         public new string LocalizationCategory => "Items.Weapons.Typeless";
         public override void SetDefaults()
         {
-            Item.DamageType = AverageDamageClass.Instance;
             Item.width = 80;
+            Item.height = 50;
+            Item.DamageType = AverageDamageClass.Instance;
             Item.damage = 32;
             Item.rare = ItemRarityID.Cyan;
             Item.useAnimation = 20;
@@ -23,7 +24,6 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.UseSound = CommonCalamitySounds.LaserCannonSound;
             Item.autoReuse = true;
             Item.noMelee = true;
-            Item.height = 50;
             Item.value = CalamityGlobalItem.Rarity9BuyPrice;
             Item.shoot = ModContent.ProjectileType<MagnusBeam>();
             Item.shootSpeed = 12f;

@@ -86,7 +86,6 @@ namespace CalamityMod.Projectiles.Rogue
         {
             target.AddBuff(BuffID.Frostburn2, 180);
             target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
-            target.immune[Projectile.owner] = 0;
             Projectile.ai[0] = 1f;
             Projectile.ai[1] = target.whoAmI;
             Projectile.velocity = target.Center - Projectile.Center;

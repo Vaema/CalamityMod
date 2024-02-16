@@ -1,11 +1,10 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,15 +16,15 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void SetDefaults()
         {
+            Item.width = 32;
+            Item.height = 46;
             Item.damage = 89;
             Item.knockBack = 12;
-            Item.DamageType = DamageClass.Throwing;
+            Item.DamageType = RogueDamageClass.Instance;
             Item.value = CalamityGlobalItem.Rarity7BuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.useTime = 21;
             Item.useAnimation = 21;
-            Item.width = 32;
-            Item.height = 46;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -33,13 +32,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shoot = ModContent.ProjectileType<ValariBoomerang>();
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.DamageType = RogueDamageClass.Instance;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 16;
 
-		public override float StealthDamageMultiplier => 0.35f;
+        public override float StealthDamageMultiplier => 0.35f;
         public override float StealthKnockbackMultiplier => 0.3333f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

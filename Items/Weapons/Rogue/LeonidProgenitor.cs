@@ -20,6 +20,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void SetDefaults()
         {
+            Item.width = 32;
+            Item.height = 48;
             Item.damage = 64;
             Item.DamageType = RogueDamageClass.Instance;
             Item.knockBack = 3f;
@@ -28,8 +30,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shoot = ModContent.ProjectileType<LeonidProgenitorBombshell>();
             Item.shootSpeed = 12f;
 
-            Item.width = 32;
-            Item.height = 48;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;

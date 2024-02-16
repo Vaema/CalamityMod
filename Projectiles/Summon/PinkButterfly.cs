@@ -194,10 +194,10 @@ namespace CalamityMod.Projectiles.Summon
 
             // Projectile fire timer
             if (Projectile.ai[1] > 0f)
-                Projectile.ai[1] += (float)Main.rand.Next(1, 3);
+                Projectile.ai[1] += (float)Main.rand.Next(1, 2+1);
 
             // Reset timer
-            if (Projectile.ai[1] > 300f)
+            if (Projectile.ai[1] > 240f)
             {
                 Projectile.ai[1] = 0f;
                 Projectile.netUpdate = true;
@@ -210,7 +210,7 @@ namespace CalamityMod.Projectiles.Summon
             // Fire projectiles
             if (Projectile.ai[0] == 0f)
             {
-                float velocity = 8f;
+                float velocity = 10f;
                 int projectileType = ModContent.ProjectileType<SakuraBullet>();
                 if (canAttack && Projectile.ai[1] == 0f && Projectile.localAI[0] >= 120f)
                 {
@@ -223,10 +223,10 @@ namespace CalamityMod.Projectiles.Summon
                         projDirectionAgain *= velocity;
                         int numProj = 2;
                         float rotation = MathHelper.ToRadians(4);
-                        for (int i = 0; i < numProj + 1; i++)
+                        for (int i = 0; i < numProj; i++)
                         {
                             Vector2 perturbedSpeed = projDirectionAgain.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numProj - 1)));
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, projectileType, Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner, targetIndex, 0f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, projectileType, (int)(Projectile.damage * 0.8f), Projectile.knockBack * 0.5f, Projectile.owner, targetIndex, 0f);
                         }
                         Projectile.netUpdate = true;
                     }

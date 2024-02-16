@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
@@ -15,6 +15,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 200;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.friendly = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -24,5 +26,7 @@ namespace CalamityMod.Projectiles.Magic
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 64, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
         }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int DamageDone) => target.AddBuff(BuffID.OnFire, 60);
     }
 }

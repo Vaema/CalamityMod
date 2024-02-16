@@ -26,23 +26,26 @@ namespace CalamityMod.Particles
         private static List<Particle> batchedNonPremultipliedParticles;
         private static List<Particle> batchedAdditiveBlendParticles;
 
-        public static void LoadModParticleInstances(Mod mod)
+        public static void LoadModParticleInstances()
         {
             Type baseParticleType = typeof(Particle);
-            foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
+            foreach (Mod mod in ModLoader.Mods)
             {
-                if (type.IsSubclassOf(baseParticleType) && !type.IsAbstract && type != baseParticleType)
+                foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
                 {
-                    int ID = particleTypes.Count; //Get the ID of the particle
-                    particleTypes[type] = ID;
+                    if (type.IsSubclassOf(baseParticleType) && !type.IsAbstract && type != baseParticleType)
+                    {
+                        int ID = particleTypes.Count; //Get the ID of the particle
+                        particleTypes[type] = ID;
 
-                    Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
-                    particleInstances.Add(instance);
+                        Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
+                        particleInstances.Add(instance);
 
-                    string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
-                    if (instance.Texture != "")
-                        texturePath = instance.Texture;
-                    particleTextures[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
+                        string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
+                        if (instance.Texture != "")
+                            texturePath = instance.Texture;
+                        particleTextures[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
+                    }
                 }
             }
         }
@@ -58,8 +61,6 @@ namespace CalamityMod.Particles
             batchedAlphaBlendParticles = new List<Particle>();
             batchedNonPremultipliedParticles = new List<Particle>();
             batchedAdditiveBlendParticles = new List<Particle>();
-
-            LoadModParticleInstances(CalamityMod.Instance);
         }
 
         internal static void Unload()

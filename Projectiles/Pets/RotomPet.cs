@@ -2,7 +2,9 @@ using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Pets
 {
     public class RotomPet : ModProjectile, ILocalizedModType
@@ -26,6 +28,9 @@ namespace CalamityMod.Projectiles.Pets
         {
             Main.projFrames[Projectile.type] = 4;
             Main.projPet[Projectile.type] = true;
+
+            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Projectile.type], 6)
+            .WithOffset(-10f, 0f).WithSpriteDirection(1).WhenNotSelected(0, 0);
         }
 
         public override void SetDefaults()

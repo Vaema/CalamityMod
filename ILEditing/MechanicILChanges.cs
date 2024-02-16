@@ -37,6 +37,7 @@ using Terraria.Graphics;
 using Terraria.Graphics.Light;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI.Gamepad;
 
@@ -50,6 +51,8 @@ namespace CalamityMod.ILEditing
         private static int aLabDoorClosed = -1;
         private static int exoDoorOpen = -1;
         private static int exoDoorClosed = -1;
+        // Cached for use in ChangeWaterQuadColors.
+        private static CustomLavaStyle cachedLavaStyle = default;
 
         // Holds the vanilla game function which spawns town NPCs, wrapped in a delegate for reflection purposes.
         // This function is (optionally) invoked manually in an IL edit to enable NPCs to spawn at night.
@@ -297,8 +300,8 @@ namespace CalamityMod.ILEditing
                 self.velocity = Collision.AdvancedTileCollision(TileID.Sets.ForAdvancedCollision.ForSandshark, cPosition, self.velocity, cWidth, cHeight, fall, fall, 1);
                 return;
             }
-
-            if (self.active && self.Calamity().ShouldFallThroughPlatforms)
+            var isNpcValid = self.TryGetGlobalNPC(out CalamityGlobalNPC npc); //why the fuck this errors is anybody's guess, it absolutely shouldn't and yet it does
+            if (isNpcValid && self.active && npc.ShouldFallThroughPlatforms)
                 fall = true;
 
             orig(self, fall, cPosition, cWidth, cHeight);
@@ -493,10 +496,53 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Mana Sickness Replacement for Chaos Stone
-        private static void ConditionallyReplaceManaSickness(ILContext il)
+        #region Chaos Stone and Chalice of the Blood God
+        private static void ManaSicknessAndChaliceBufferHeal(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
+
+            //
+            // The following section enables Chalice of the Blood God's feature of healing potions clearing 50% of its bleedout buffer.
+            //
+
+            // Start by finding the moment where health is restored from a healing item.
+            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchStfld<Player>("statLife")))
+            {
+                LogFailure("Chalice of the Blood God Bleedout Heal", "Could not locate the player's health being restored");
+                return;
+            }
+
+            // Load the player onto the stack for use in the following delegate.
+            cursor.Emit(OpCodes.Ldarg_0);
+
+            // Insert a delegate which applies Chalice of the Blood God's function as appropriate.
+            cursor.EmitDelegate<Action<Player>>(player =>
+            {
+                if (!player.active || player.dead)
+                    return;
+
+                CalamityPlayer modPlayer = player.Calamity();
+                if (modPlayer is null)
+                    return;
+
+                if (modPlayer.chaliceOfTheBloodGod && modPlayer.chaliceBleedoutBuffer > 0D)
+                {
+                    int amountOfBleedToClear = (int)(modPlayer.chaliceBleedoutBuffer * (1f - ChaliceOfTheBloodGod.HealingPotionBufferClear));
+                    modPlayer.chaliceBleedoutBuffer -= amountOfBleedToClear;
+
+                    // Display text indicating that damage was transferred to bleedout.
+                    if (Main.netMode != NetmodeID.Server)
+                    {
+                        string text = $"(+{amountOfBleedToClear})";
+                        Rectangle location = new Rectangle((int)player.position.X + 4, (int)player.position.Y - 3, player.width - 4, player.height - 4);
+                        CombatText.NewText(location, ChaliceOfTheBloodGod.BleedoutBufferDamageTextColor, Language.GetTextValue(text), dot: true);
+                    }
+                }
+            });
+
+            //
+            // The following section enables Mana Burn for Chaos Stone by conditionally replacing Mana Sickness.
+            //
 
             // Start by finding the vanilla code which applies Mana Sickness (buff ID 94).
             if (!cursor.TryGotoNext(c => c.MatchLdcI4(BuffID.ManaSickness)))
@@ -721,6 +767,25 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Custom Lava Visuals
+
+        private static void CacheLavaStyle(Terraria.On_Main.orig_RenderWater orig, Main self)
+        {
+            // Immediately cache the lava drawing style.
+            // This will pay off in SPADES when we go to draw the tiles.
+            foreach (CustomLavaStyle style in CustomLavaManagement.CustomLavaStyles)
+            {
+                if (style.ChooseLavaStyle())
+                {
+                    cachedLavaStyle = style;
+                    orig(self);
+                    return;
+                }
+            }
+
+            cachedLavaStyle = default;
+            orig(self);
+        }
+        
         private static void DrawCustomLava(Terraria.GameContent.Drawing.On_TileDrawing.orig_DrawPartialLiquid orig, TileDrawing self, bool behindBlocks, Tile tileCache, ref Vector2 position, ref Rectangle liquidSize, int liquidType, ref VertexColors colors)
         {
             if (liquidType != 1)
@@ -730,7 +795,7 @@ namespace CalamityMod.ILEditing
             }
 
             int slope = (int)tileCache.Slope;
-            colors = SelectLavaQuadColor(TextureAssets.LiquidSlope[liquidType].Value, ref colors, liquidType == 1);
+            colors = SelectLavaQuadColor(TextureAssets.LiquidSlope[liquidType].Value, ref colors, true);
             if (!TileID.Sets.BlocksWaterDrawingBehindSelf[tileCache.TileType] || behindBlocks || slope == 0)
             {
                 Texture2D liquidTexture = SelectLavaTexture(liquidType == 1 ? CustomLavaManagement.LavaBlockTexture : TextureAssets.Liquid[liquidType].Value, LiquidTileType.Block);
@@ -791,20 +856,36 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldloc, 8);
             cursor.Emit(OpCodes.Ldloc, 3);
             cursor.Emit(OpCodes.Ldloc, 4);
+            
+            // Caching these values can save a LOT of overhead at runtime.
+            ModWaterStyle basaltWater = ModContent.GetInstance<BasaltGullyWater>();
+            ModWaterStyle burrowsWater = ModContent.GetInstance<SunkenSeaBurrowsWater>();
+            ModWaterStyle polypWater = ModContent.GetInstance<SunkenSeaPolypWater>();
+            ModWaterStyle reefsWater = ModContent.GetInstance<SunkenSeaReefsWater>();
+            ModWaterStyle shoresWater = ModContent.GetInstance<SunkenSeaShoresWater>();
+            ModWaterStyle sulphuricWater = ModContent.GetInstance<SulphuricWater>();
+            ModWaterStyle sulphuricDepthsWater = ModContent.GetInstance<SulphuricDepthsWater>();
+            ModWaterStyle upperAbyssWater = ModContent.GetInstance<UpperAbyssWater>();
+            ModWaterStyle middleAbyssWater = ModContent.GetInstance<MiddleAbyssWater>();
+            ModWaterStyle voidWater = ModContent.GetInstance<VoidWater>();
+            
             cursor.EmitDelegate<Func<VertexColors, Texture2D, int, int, int, VertexColors>>((initialColor, initialTexture, liquidType, x, y) =>
             {
-                initialColor = SelectLavaQuadColor(initialTexture, ref initialColor, liquidType == 1);
-
-                if (liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/BasaltGullyWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaBurrowsWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaPolypWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaReefsWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaShoresWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/UpperAbyssWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/MiddleAbyssWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/VoidWater").Slot)
+                // Don't bother changing the color if the cached drawing style is null.
+                if (cachedLavaStyle != default)
+                {
+                    initialColor = SelectLavaQuadColor(initialTexture, ref initialColor, liquidType == 1);
+                }
+                if (liquidType == burrowsWater.Slot ||
+                liquidType == basaltWater.Slot ||
+                liquidType == polypWater.Slot ||
+                liquidType == shoresWater.Slot ||
+                liquidType == reefsWater.Slot ||
+                liquidType == sulphuricWater.Slot ||
+                liquidType == sulphuricDepthsWater.Slot ||
+                liquidType == upperAbyssWater.Slot ||
+                liquidType == middleAbyssWater.Slot ||
+                liquidType == voidWater.Slot)
                 {
                     SelectSulphuricWaterColor(x, y, ref initialColor);
                 }

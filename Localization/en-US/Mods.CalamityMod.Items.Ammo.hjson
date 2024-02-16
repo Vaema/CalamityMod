@@ -26,8 +26,9 @@ BloodfireBullet: {
 	DisplayName: Bloodfire Bullet
 	Tooltip:
 		'''
-		Accelerates your life regeneration on hit
-		Deals bonus damage based on your current life regeneration
+		Accelerates your natural life regen on hit
+		Deals bonus damage based on your current life regen and natural life regen
+		This damage caps at 25
 		'''
 }
 
@@ -44,19 +45,14 @@ BubonicRound: {
 	DisplayName: Bubonic Round
 	Tooltip:
 		'''
-		Bursts into virulent plague on contact
-		Ignores 25% of enemy defense
+		Spreads the plague on hit
+		Ignores 20% of enemy defense
 		'''
 }
 
 ElysianArrow: {
 	DisplayName: Elysian Arrow
 	Tooltip: Summons meteors from the sky on death
-}
-
-EnhancedNanoRound: {
-	DisplayName: Enhanced Nano Round
-	Tooltip: Confuses enemies and releases a cloud of nanites when enemies die
 }
 
 FlashRound: {
@@ -115,7 +111,8 @@ MortarRound: {
 	DisplayName: Mortar Round
 	Tooltip:
 		'''
-		Large blast radius. Will destroy tiles
+		Specialized high explosive rounds with a large blast radius
+		Will destroy tiles
 		Used by normal guns
 		'''
 }
@@ -129,7 +126,7 @@ RubberMortarRound: {
 	DisplayName: Rubber Mortar Round
 	Tooltip:
 		'''
-		Large blast radius
+		Specialized high explosive rounds with a large blast radius
 		Will destroy tiles on each bounce
 		Used by normal guns
 		'''

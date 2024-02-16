@@ -95,11 +95,6 @@ namespace CalamityMod
         // Boss Kill Time data structure
         public static SortedDictionary<int, int> bossKillTimes;
 
-        // Boss velocity scaling data structure
-        public static SortedDictionary<int, float> bossVelocityDamageScaleValues;
-        public const float velocityScaleMin = 0.5f;
-        public const float bitingEnemeyVelocityScale = 0.8f;
-
         // Life steal cap
         public const int lifeStealCap = 10;
 
@@ -115,6 +110,7 @@ namespace CalamityMod
         // Please keep this in alphabetical order so it's easy to read
         internal Mod ancientsAwakened = null;
         internal Mod bossChecklist = null;
+        internal Mod coloredDamageTypes = null;
         internal Mod crouchMod = null;
         internal Mod dialogueTweak = null;
         internal Mod fargos = null;
@@ -145,6 +141,8 @@ namespace CalamityMod
             ModLoader.TryGetMod("AAMod", out ancientsAwakened);
             bossChecklist = null;
             ModLoader.TryGetMod("BossChecklist", out bossChecklist);
+            coloredDamageTypes = null;
+            ModLoader.TryGetMod("ColoredDamageTypes", out coloredDamageTypes);
             crouchMod = null;
             ModLoader.TryGetMod("CrouchMod", out crouchMod);
             dialogueTweak = null;
@@ -210,7 +208,6 @@ namespace CalamityMod
             VanillaArmorChangeManager.Load();
             SetupVanillaDR();
             SetupBossKillTimes();
-            SetupBossVelocityScalingValues();
             SchematicManager.Load();
             CustomLavaManagement.Load();
             Attunement.Load();
@@ -246,9 +243,6 @@ namespace CalamityMod
 
             Filters.Scene["CalamityMod:Leviathan"] = new Filter(new LevScreenShaderData("FilterMiniTower").UseColor(0f, 0f, 0.5f).UseOpacity(0.5f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityMod:Leviathan"] = new LevSky();
-
-            Filters.Scene["CalamityMod:Providence"] = new Filter(new ProvScreenShaderData("FilterMiniTower").UseColor(0.45f, 0.4f, 0.2f).UseOpacity(0.5f), EffectPriority.VeryHigh);
-            SkyManager.Instance["CalamityMod:Providence"] = new ProvSky();
 
             Filters.Scene["CalamityMod:SupremeCalamitas"] = new Filter(new SCalScreenShaderData("FilterMiniTower").UseColor(1.1f, 0.3f, 0.3f).UseOpacity(0.65f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityMod:SupremeCalamitas"] = new SCalSky();
@@ -330,7 +324,6 @@ namespace CalamityMod
                 return Color.Lerp(player.hairColor, new Color(186, 85, 211), stealthInterpolant);
             }));
 
-            PopupGUIManager.LoadGUIs();
             InvasionProgressUIManager.LoadGUIs();
         }
         #endregion
@@ -342,6 +335,7 @@ namespace CalamityMod
 
             ancientsAwakened = null;
             bossChecklist = null;
+            coloredDamageTypes = null;
             crouchMod = null;
             dialogueTweak = null;
             fargos = null;
@@ -361,8 +355,6 @@ namespace CalamityMod
             DRValues = null;
             bossKillTimes?.Clear();
             bossKillTimes = null;
-            bossVelocityDamageScaleValues?.Clear();
-            bossVelocityDamageScaleValues = null;
 
             BalancingChangesManager.Unload();
             Attunement.Unload();
@@ -572,12 +564,12 @@ namespace CalamityMod
                 //
                 // VANILLA BOSSES
                 //
-                { NPCID.KingSlime, 3600 }, // 1:00 (60 seconds)
+                { NPCID.KingSlime, 5400 }, // 1:30 (90 seconds)
                 { NPCID.EyeofCthulhu, 5400 }, // 1:30 (90 seconds)
                 { NPCID.EaterofWorldsHead, 7200 }, // 2:00 (120 seconds)
                 { NPCID.EaterofWorldsBody, 7200 },
                 { NPCID.EaterofWorldsTail, 7200 },
-                { NPCID.BrainofCthulhu, 5400 }, // 1:30 (90 seconds, total length of fight including Creepers phase)
+                { NPCID.BrainofCthulhu, 7200 }, // 2:00 (120 seconds, total length of fight including Creepers phase)
                 { NPCID.Creeper, 1800 }, // 0:30 (30 seconds, length of Creepers phase)
                 { NPCID.Deerclops, 5400 }, // 1:30 (90 seconds)
                 { NPCID.QueenBee, 7200 }, // 2:00 (120 seconds)
@@ -604,9 +596,9 @@ namespace CalamityMod
                 //
                 // CALAMITY BOSSES
                 //
-                { ModContent.NPCType<DesertScourgeHead>(), 3600 }, // 1:00 (60 seconds)
-                { ModContent.NPCType<DesertScourgeBody>(), 3600 },
-                { ModContent.NPCType<DesertScourgeTail>(), 3600 },
+                { ModContent.NPCType<DesertScourgeHead>(), 5400 }, // 1:30 (90 seconds)
+                { ModContent.NPCType<DesertScourgeBody>(), 5400 },
+                { ModContent.NPCType<DesertScourgeTail>(), 5400 },
                 { ModContent.NPCType<Crabulon>(), 5400 }, // 1:30 (90 seconds)
                 { ModContent.NPCType<HiveMind>(), 7200 }, // 2:00 (120 seconds)
                 { ModContent.NPCType<PerforatorHive>(), 7200 }, // 2:00 (120 seconds)
@@ -658,126 +650,6 @@ namespace CalamityMod
                 { ModContent.NPCType<ThanatosTail>(), 21600 },
                 { ModContent.NPCType<SupremeCalamitas>(), 18000 }, // 5:00 (300 seconds)
                 { ModContent.NPCType<PrimordialWyrmHead>(), 18000 } // 5:00 (300 seconds)
-            };
-        }
-        #endregion
-
-        #region Boss Velocity Contact Damage Scale Values
-        private void SetupBossVelocityScalingValues()
-        {
-            bossVelocityDamageScaleValues = new SortedDictionary<int, float> {
-                { NPCID.KingSlime, velocityScaleMin },
-                { NPCID.EyeofCthulhu, velocityScaleMin }, // Increases in phase 2
-                { NPCID.EaterofWorldsHead, bitingEnemeyVelocityScale },
-                { NPCID.EaterofWorldsBody, velocityScaleMin },
-                { NPCID.EaterofWorldsTail, velocityScaleMin },
-                { NPCID.Creeper, velocityScaleMin },
-                { NPCID.BrainofCthulhu, velocityScaleMin },
-                { NPCID.QueenBee, velocityScaleMin },
-                { NPCID.SkeletronHead, velocityScaleMin },
-                { NPCID.SkeletronHand, velocityScaleMin },
-                { NPCID.TheHungry, bitingEnemeyVelocityScale },
-                { NPCID.TheHungryII, bitingEnemeyVelocityScale },
-                { NPCID.LeechHead, bitingEnemeyVelocityScale },
-                { NPCID.LeechBody, velocityScaleMin },
-                { NPCID.LeechTail, velocityScaleMin },
-                { NPCID.QueenSlimeBoss, velocityScaleMin },
-                { NPCID.Spazmatism, velocityScaleMin }, // Increases in phase 2
-                { NPCID.Retinazer, velocityScaleMin },
-                { NPCID.TheDestroyer, bitingEnemeyVelocityScale },
-                { NPCID.TheDestroyerBody, velocityScaleMin },
-                { NPCID.TheDestroyerTail, velocityScaleMin },
-                { NPCID.SkeletronPrime, velocityScaleMin },
-                { NPCID.PrimeCannon, velocityScaleMin },
-                { NPCID.PrimeLaser, velocityScaleMin },
-                { NPCID.PrimeSaw, velocityScaleMin },
-                { NPCID.PrimeVice, velocityScaleMin },
-                { NPCID.Plantera, velocityScaleMin }, // Increases in phase 2
-                { NPCID.PlanterasTentacle, bitingEnemeyVelocityScale },
-                { ModContent.NPCType<PlanterasFreeTentacle>(), bitingEnemeyVelocityScale },
-                { NPCID.HallowBoss, velocityScaleMin },
-                { NPCID.Golem, velocityScaleMin },
-                { NPCID.GolemFistLeft, velocityScaleMin },
-                { NPCID.GolemFistRight, velocityScaleMin },
-                { NPCID.GolemHead, velocityScaleMin },
-                { NPCID.DukeFishron, velocityScaleMin },
-                { ModContent.NPCType<DesertScourgeHead>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<DesertScourgeBody>(), velocityScaleMin },
-                { ModContent.NPCType<DesertScourgeTail>(), velocityScaleMin },
-                { ModContent.NPCType<DesertNuisanceHead>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<DesertNuisanceBody>(), velocityScaleMin },
-                { ModContent.NPCType<DesertNuisanceTail>(), velocityScaleMin },
-                { ModContent.NPCType<Crabulon>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<HiveMind>(), velocityScaleMin },
-                { ModContent.NPCType<PerforatorHive>(), velocityScaleMin },
-                { ModContent.NPCType<PerforatorHeadLarge>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<PerforatorBodyLarge>(), velocityScaleMin },
-                { ModContent.NPCType<PerforatorTailLarge>(), velocityScaleMin },
-                { ModContent.NPCType<PerforatorHeadMedium>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<PerforatorBodyMedium>(), velocityScaleMin },
-                { ModContent.NPCType<PerforatorTailMedium>(), velocityScaleMin },
-                { ModContent.NPCType<PerforatorHeadSmall>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<PerforatorBodySmall>(), velocityScaleMin },
-                { ModContent.NPCType<PerforatorTailSmall>(), velocityScaleMin },
-                { ModContent.NPCType<SlimeGodCore>(), velocityScaleMin },
-                { ModContent.NPCType<EbonianPaladin>(), velocityScaleMin },
-                { ModContent.NPCType<CrimulanPaladin>(), velocityScaleMin },
-                { ModContent.NPCType<SplitEbonianPaladin>(), velocityScaleMin },
-                { ModContent.NPCType<SplitCrimulanPaladin>(), velocityScaleMin },
-                { ModContent.NPCType<CorruptSlimeSpawn>(), velocityScaleMin },
-                { ModContent.NPCType<Cryogen>(), velocityScaleMin },
-                { ModContent.NPCType<AquaticScourgeHead>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<AquaticScourgeBody>(), velocityScaleMin },
-                { ModContent.NPCType<AquaticScourgeBodyAlt>(), velocityScaleMin },
-                { ModContent.NPCType<AquaticScourgeTail>(), velocityScaleMin },
-                { ModContent.NPCType<BrimstoneElemental>(), velocityScaleMin },
-                { ModContent.NPCType<Cataclysm>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<Catastrophe>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<CalamitasClone>(), velocityScaleMin },
-                { ModContent.NPCType<Leviathan>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<Anahita>(), velocityScaleMin },
-                { ModContent.NPCType<AstrumAureus>(), velocityScaleMin },
-                { ModContent.NPCType<AstrumDeusHead>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<AstrumDeusBody>(), velocityScaleMin },
-                { ModContent.NPCType<AstrumDeusTail>(), velocityScaleMin },
-                { ModContent.NPCType<PlaguebringerGoliath>(), velocityScaleMin },
-                { ModContent.NPCType<RavagerBody>(), velocityScaleMin },
-                { ModContent.NPCType<RavagerClawLeft>(), velocityScaleMin },
-                { ModContent.NPCType<RavagerClawRight>(), velocityScaleMin },
-                { ModContent.NPCType<RavagerLegLeft>(), velocityScaleMin },
-                { ModContent.NPCType<RavagerLegRight>(), velocityScaleMin },
-                { ModContent.NPCType<RockPillar>(), velocityScaleMin },
-                { ModContent.NPCType<ProfanedGuardianCommander>(), velocityScaleMin },
-                { ModContent.NPCType<ProfanedGuardianDefender>(), velocityScaleMin },
-                { ModContent.NPCType<ProfanedGuardianHealer>(), velocityScaleMin },
-                { ModContent.NPCType<ProfanedRocks>(), velocityScaleMin },
-                { ModContent.NPCType<Bumblefuck>(), velocityScaleMin },
-                { ModContent.NPCType<Bumblefuck2>(), velocityScaleMin },
-                { ModContent.NPCType<CeaselessVoid>(), velocityScaleMin },
-                { ModContent.NPCType<DarkEnergy>(), velocityScaleMin },
-                { ModContent.NPCType<StormWeaverHead>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<StormWeaverBody>(), velocityScaleMin },
-                { ModContent.NPCType<StormWeaverTail>(), velocityScaleMin },
-                { ModContent.NPCType<Signus>(), velocityScaleMin },
-                { ModContent.NPCType<CosmicLantern>(), velocityScaleMin },
-                { ModContent.NPCType<Polterghast>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<PolterPhantom>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<OldDuke>(), velocityScaleMin },
-                { ModContent.NPCType<DevourerofGodsHead>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<DevourerofGodsBody>(), velocityScaleMin },
-                { ModContent.NPCType<DevourerofGodsTail>(), velocityScaleMin },
-                { ModContent.NPCType<CosmicGuardianHead>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<CosmicGuardianBody>(), velocityScaleMin },
-                { ModContent.NPCType<CosmicGuardianTail>(), velocityScaleMin },
-                { ModContent.NPCType<Yharon>(), velocityScaleMin },
-                { ModContent.NPCType<SupremeCalamitas>(), velocityScaleMin },
-                { ModContent.NPCType<Apollo>(), velocityScaleMin }, // Increases in phase 2
-                { ModContent.NPCType<Artemis>(), velocityScaleMin },
-                { ModContent.NPCType<ThanatosHead>(), bitingEnemeyVelocityScale },
-                { ModContent.NPCType<ThanatosBody1>(), velocityScaleMin },
-                { ModContent.NPCType<ThanatosBody2>(), velocityScaleMin },
-                { ModContent.NPCType<ThanatosTail>(), velocityScaleMin },
-                { ModContent.NPCType<PrimordialWyrmHead>(), bitingEnemeyVelocityScale }
             };
         }
         #endregion

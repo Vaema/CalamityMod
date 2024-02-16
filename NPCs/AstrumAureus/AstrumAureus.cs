@@ -35,8 +35,12 @@ namespace CalamityMod.NPCs.AstrumAureus
     public class AstrumAureus : ModNPC
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/AureusHit", 4);
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/AureusDeath");
+        public static readonly SoundStyle LaserSound = new("CalamityMod/Sounds/Custom/AstrumAureus/AureusShoot");
+        public static readonly SoundStyle FlameCrystalSound = new("CalamityMod/Sounds/Custom/AstrumAureus/AureusShootCrystal");
         public static readonly SoundStyle StompSound = new("CalamityMod/Sounds/Custom/AstrumAureus/LegStomp");
         public static readonly SoundStyle JumpSound = new("CalamityMod/Sounds/Custom/AstrumAureus/AureusJump");
+        public static readonly SoundStyle TeleportSound = new("CalamityMod/Sounds/Custom/AstrumAureus/AureusTeleport");
 
         private bool stomping = false;
         public int slimeProjCounter = 0;
@@ -75,7 +79,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.knockBackResist = 0f;
             NPC.value = Item.buyPrice(0, 60, 0, 0);
             NPC.boss = true;
-            NPC.DeathSound = SoundID.NPCDeath14;
+            NPC.DeathSound = DeathSound;
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Calamity().VulnerableToHeat = true;

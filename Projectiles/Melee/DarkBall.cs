@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.netUpdate = true;
                     }
                 }
-                Projectile.velocity.Y = Projectile.velocity.Y + 0.2f;
+                Projectile.velocity.Y = Projectile.velocity.Y + 0.18f;
             }
             Projectile.rotation += Projectile.velocity.X * 0.1f;
         }

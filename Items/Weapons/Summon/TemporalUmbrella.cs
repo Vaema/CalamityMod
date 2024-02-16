@@ -16,6 +16,8 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
+            Item.width = 74;
+            Item.height = 72;
             Item.damage = 193;
             Item.knockBack = 1f;
             Item.mana = 99;
@@ -25,8 +27,6 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<MagicHat>();
 
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.width = 74;
-            Item.height = 72;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item68;
             Item.value = CalamityGlobalItem.Rarity16BuyPrice;

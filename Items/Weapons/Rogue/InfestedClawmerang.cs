@@ -14,6 +14,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 26;
+            Item.height = 50;
             Item.damage = 18;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -23,7 +24,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 50;
             Item.rare = ItemRarityID.Green;
             Item.value = CalamityGlobalItem.Rarity2BuyPrice;
             Item.shoot = ModContent.ProjectileType<InfestedClawmerangProj>();

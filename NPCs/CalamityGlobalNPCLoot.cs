@@ -772,7 +772,7 @@ namespace CalamityMod.NPCs
                             ItemID.LaserMachinegun,
                             ItemID.ElectrosphereLauncher,
                             ItemID.InfluxWaver,
-                            ModContent.ItemType<NullificationRifle>()
+                            ModContent.ItemType<NullificationPistol>()
                         };
 
                         npcLoot.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, saucerItems));
@@ -1446,8 +1446,13 @@ namespace CalamityMod.NPCs
                         // Remove the vanilla loot rule for Fishron Wings because it's part of the Calamity Style set.
                         npcLoot.RemoveWhere((rule) => rule is ItemDropWithConditionRule conditionalRule && conditionalRule.itemId == ItemID.FishronWings);
 
+                        // 02JAN2024: Ozzatron: Fixed silent breakage of Duke Fishron's weapon drops alteration caused by the 1.4.4 port and the Remix seed.
                         var dukeRootRules = npcLoot.Get(false);
-                        IItemDropRule notExpert = dukeRootRules.Find((rule) => rule is LeadingConditionRule dukeLCR && dukeLCR.condition is Conditions.NotExpert);
+                        IItemDropRule notRemix = dukeRootRules.Find((rule) => rule is LeadingConditionRule dukeLCR && dukeLCR.condition is Conditions.NotRemixSeed);
+                        if (notRemix is not LeadingConditionRule LCR_NotRemix)
+                            goto DukeEditFailed;
+                        var chain = notRemix.ChainedRules.Find((chain) => chain.RuleToChain is LeadingConditionRule dukeLCR2 && dukeLCR2.condition is Conditions.NotExpert);
+                        IItemDropRule notExpert = chain.RuleToChain;
                         if (notExpert is LeadingConditionRule LCR_NotExpert)
                         {
                             LCR_NotExpert.ChainedRules.RemoveAll((chainAttempt) =>
@@ -1469,6 +1474,7 @@ namespace CalamityMod.NPCs
                         }
                     }
                     catch (ArgumentNullException) { }
+                    DukeEditFailed:
 
                     // Expert+ drops are also available on Normal
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.ShrimpyTruffle));
@@ -1783,12 +1789,10 @@ namespace CalamityMod.NPCs
                     // First kill: Notify of Abyss chests being unlocked.
                     if (!NPC.downedBoss3)
                     {
-                        if (Main.netMode != NetmodeID.MultiplayerClient) //Only the server should do this to prevent already unlocked chests from attempting to be unlocked
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            World.Abyss.AbleToUnlockChests = true;
                             World.Abyss.UnlockAllAbyssChests();
                         }
-
                         string keysk = "Mods.CalamityMod.Status.Progression.SkeletronAbyssChestNotification";
                         CalamityUtils.DisplayLocalizedText(keysk, new Color(76, 181, 76));
                     }

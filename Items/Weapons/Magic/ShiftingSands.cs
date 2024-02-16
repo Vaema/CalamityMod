@@ -11,6 +11,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = Item.height = 58;
             Item.damage = 76;
             Item.knockBack = 5f;
             Item.useTime = Item.useAnimation = 30;
@@ -21,7 +22,6 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 7f;
             Item.shoot = ModContent.ProjectileType<ShiftingSandsProj>();
 
-            Item.width = Item.height = 58;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item20;

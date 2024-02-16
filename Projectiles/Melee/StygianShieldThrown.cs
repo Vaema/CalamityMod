@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
 
             // Swiftly move back towards the player
-            Projectile.velocity = Projectile.SafeDirectionTo(Owner.Center) * 15f;
+            Projectile.velocity = Projectile.SafeDirectionTo(Owner.Center) * 20f;
 
             // Delete the projectile if it touches its owner or too far away.
             if (Projectile.Hitbox.Intersects(Owner.Hitbox) || Vector2.Distance(Projectile.Center, Owner.Center) >= 3000f)

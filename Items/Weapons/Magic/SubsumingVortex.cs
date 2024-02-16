@@ -45,6 +45,8 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = 86;
+            Item.height = 104;
             Item.damage = 466;
             Item.DamageType = DamageClass.Magic;
             Item.useTime = Item.useAnimation = 20;
@@ -53,9 +55,6 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 5f;
 
             Item.shoot = ModContent.ProjectileType<EnormousConsumingVortex>();
-
-            Item.width = 86;
-            Item.height = 104;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item84;
             Item.rare = ModContent.RarityType<Violet>();

@@ -22,8 +22,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.tileCollide = false;
             Projectile.timeLeft = 300;
             Projectile.alpha = 255;
+            Projectile.penetrate = 2;
             Projectile.scale = 1.1f;
             AIType = ProjectileID.RainFriendly;
+            Projectile.extraUpdates = 1;
             Projectile.DamageType = DamageClass.Summon;
         }
 

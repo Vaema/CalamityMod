@@ -15,13 +15,13 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
+            Item.width = 36;
+            Item.height = 30;
             Item.damage = 0;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
-            Item.width = 36;
-            Item.height = 30;
             Item.UseSound = SoundID.Item3;
             Item.shoot = ModContent.ProjectileType<ThirdSage>();
             Item.buffType = ModContent.BuffType<ThirdSageBuff>();

@@ -35,34 +35,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
             else
             {
-                Projectile.extraUpdates = 1;
-
-                Vector2 center = Projectile.Center;
-                float maxDistance = 500f;
-                bool homeIn = false;
-
-                for (int i = 0; i < Main.maxNPCs; i++)
-                {
-                    if (Main.npc[i].CanBeChasedBy(Projectile, false))
-                    {
-                        float extraDistance = (float)(Main.npc[i].width / 2) + (float)(Main.npc[i].height / 2);
-
-                        if (Vector2.Distance(Main.npc[i].Center, Projectile.Center) < (maxDistance + extraDistance) && Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1))
-                        {
-                            center = Main.npc[i].Center;
-                            homeIn = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (homeIn)
-                {
-                    Vector2 moveDirection = Projectile.SafeDirectionTo(center, Vector2.UnitY);
-                    Projectile.velocity = (Projectile.velocity * 20f + moveDirection * 12f) / (21f);
-                }
-                else
-                    Projectile.Kill();
+                CalamityUtils.HomeInOnNPC(Projectile, true, 500f, 12f, 20f);
             }
 
             Lighting.AddLight(Projectile.Center, Main.DiscoR * 0.075f / 255f, Main.DiscoR * 0.1f / 255f, Main.DiscoR * 0.125f / 255f);

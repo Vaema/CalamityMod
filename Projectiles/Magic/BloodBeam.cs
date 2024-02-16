@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.friendly = true;
-            Projectile.tileCollide = true;
+            Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 3;
@@ -24,6 +24,10 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0.35f, 0f, 0f);
+            if (Projectile.position.Y > Main.player[Projectile.owner].position.Y - 160f)
+            {
+                Projectile.tileCollide = true;
+            }
             if (Projectile.ai[0] > 7f)
             {
                 float scalar = 1f;

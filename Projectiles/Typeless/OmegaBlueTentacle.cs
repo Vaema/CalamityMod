@@ -203,13 +203,34 @@ namespace CalamityMod.Projectiles.Typeless
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
             GameShaders.Armor.ApplySecondary(Main.player[Projectile.owner].cBody, Main.player[Projectile.owner], new DrawData?());
-            Projectile.rotation = (Projectile.Center - segment[5]).ToRotation();
             Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            Texture2D segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment").Value;
-            for (int i = 0; i < 6; i++)
+            Texture2D segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment1").Value;
+            for (int i = 0; i < 5; i++)
             {
-                Main.spriteBatch.Draw(segmentSprite, segment[i] - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), segmentSprite.Bounds, Projectile.GetAlpha(lightColor), 0f, segmentSprite.Bounds.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+                Projectile.rotation = (Projectile.Center - segment[i]).ToRotation();
+                switch (i)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment2").Value;
+                        break;
+                    case 2:
+                        segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment3").Value;
+                        break;
+                    case 3:
+                        segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment4").Value;
+                        break;
+                    case 4:
+                        segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment5").Value;
+                        break;
+                    default:
+                        break;
+
+                }
+                Main.spriteBatch.Draw(segmentSprite, segment[i] - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), segmentSprite.Bounds, Projectile.GetAlpha(lightColor), Projectile.rotation, segmentSprite.Bounds.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             }
+            Projectile.rotation = (Projectile.Center - segment[5]).ToRotation();
             Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), texture2D13.Bounds, Projectile.GetAlpha(lightColor), Projectile.rotation, texture2D13.Bounds.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
 
             Main.spriteBatch.End();

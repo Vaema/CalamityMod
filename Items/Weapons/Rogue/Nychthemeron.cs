@@ -13,6 +13,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 18;
+            Item.height = 18;
             Item.damage = 60;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -22,7 +23,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 18;
             Item.value = CalamityGlobalItem.Rarity6BuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<NychthemeronProjectile>();

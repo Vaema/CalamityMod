@@ -19,13 +19,13 @@ namespace CalamityMod.Items.Tools
 
         public override void SetDefaults()
         {
+            Item.width = 30;
+            Item.height = 38;
             Item.useTime = Item.useAnimation = 8;
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<WulfrumDiggingTurtleProjectile>();
-            Item.width = 30;
-            Item.height = 38;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;

@@ -12,13 +12,13 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
+            Item.width = 26;
+            Item.height = 28;
             Item.mana = 10;
             Item.damage = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<CausticStaffSummon>();
-            Item.width = 26;
-            Item.height = 28;
             Item.UseSound = SoundID.Item77;
             Item.useAnimation = Item.useTime = 25;
 

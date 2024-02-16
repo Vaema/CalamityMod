@@ -31,6 +31,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = 24;
+            Item.height = 26;
             Item.damage = 275;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<MutatedTruffleMinion>();
@@ -38,8 +40,6 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.useTime = Item.useAnimation = 10;
             Item.mana = 10;
-            Item.width = 24;
-            Item.height = 26;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.NPCHit14;

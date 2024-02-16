@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Accessories
             player.buffImmune[ModContent.BuffType<AstralInfectionDebuff>()] = true;
             modPlayer.hideOfDeus = true;
             if (modPlayer.hideOfDeusMeleeBoostTimer > 0)
-                player.GetDamage<TrueMeleeDamageClass>() += 0.5f;
+                player.GetDamage<TrueMeleeDamageClass>() += 0.3f;
             player.buffImmune[BuffID.CursedInferno] = true;
             player.buffImmune[BuffID.OnFire] = true;
             player.buffImmune[BuffID.Frostburn] = true;

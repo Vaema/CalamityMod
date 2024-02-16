@@ -343,6 +343,7 @@ namespace CalamityMod
                 { ModContent.NPCType<MorayEel>(), abyss },
                 { ModContent.NPCType<OarfishHead>(), abyss },
                 { ModContent.NPCType<OarfishBody>(), abyss },
+                { ModContent.NPCType<SlabCrab>(), abyss },
                 { ModContent.NPCType<OarfishTail>(), abyss },
                 { ModContent.NPCType<ToxicMinnow>(), abyss },
                 { ModContent.NPCType<Viperfish>(), abyss },

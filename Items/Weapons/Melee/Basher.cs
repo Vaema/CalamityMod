@@ -14,10 +14,10 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 56;
             Item.height = 60;
-            Item.damage = 30;
-            Item.scale = 1.05f;
+            Item.damage = 41;
+            Item.scale = 1.15f;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = Item.useTime = 26;
+            Item.useAnimation = Item.useTime = 40;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
@@ -30,6 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), 300);
+            target.AddBuff(BuffID.Poisoned, 60);
         }
 
         public override void AddRecipes()

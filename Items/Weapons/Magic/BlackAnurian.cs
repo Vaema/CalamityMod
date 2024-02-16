@@ -12,13 +12,13 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
-            Item.damage = 21;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 10;
             Item.width = 58;
             Item.height = 38;
-            Item.useTime = 14;
-            Item.useAnimation = 14;
+            Item.damage = 21;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 9;
+            Item.useTime = 18;
+            Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.75f;
@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Magic
             {
                 float SpeedX = velocity.X + (float)Main.rand.Next(-25, 26) * 0.05f;
                 float SpeedY = velocity.Y + (float)Main.rand.Next(-25, 26) * 0.05f;
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<BlackAnurianPlankton>(), damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<BlackAnurianPlankton>(), (int)(damage * 0.75f), knockback, player.whoAmI);
             }
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             return false;

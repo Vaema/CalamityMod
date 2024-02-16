@@ -17,6 +17,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
+            Item.width = 158;
+            Item.height = 60;
             Item.damage = 192;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 26;
@@ -27,8 +29,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.Calamity().canFirePointBlankShots = true;
 
-            Item.width = 158;
-            Item.height = 60;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item38;
             Item.useStyle = ItemUseStyleID.Shoot;

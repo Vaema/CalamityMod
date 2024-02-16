@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.BaseItems;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -25,11 +26,11 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
         public override void SetDefaults()
         {
+            Item.width = 34;
+            Item.height = 42;
             Item.damage = 6;
             Item.ArmorPenetration = 10;
             Item.DamageType = DamageClass.Summon;
-            Item.width = 34;
-            Item.height = 42;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2;
@@ -79,6 +80,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
             velocity = velocity.RotatedByRandom(MathHelper.PiOver4 * 0.1f);
+
+            // This weapon is acquired through usage of an armor set bonus and thus counts as armor. This function must be used.
+            damage = player.ApplyArmorAccDamageBonusesTo(damage);
         }
 
         public override bool CanUseItem(Player player)

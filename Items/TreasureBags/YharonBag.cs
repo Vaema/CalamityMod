@@ -31,10 +31,10 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void SetDefaults()
         {
-            Item.maxStack = 9999;
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
         }
@@ -72,7 +72,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<DragonsBreath>(),
                 ModContent.ItemType<PhoenixFlameBarrage>(),
                 ModContent.ItemType<YharonsKindleStaff>(),
-                ModContent.ItemType<FinalDawn>(),
+                ModContent.ItemType<TheFinalDawn>(),
                 ModContent.ItemType<Wrathwing>(),
             }));
             itemLoot.Add(ModContent.ItemType<YharimsCrystal>(), 10);

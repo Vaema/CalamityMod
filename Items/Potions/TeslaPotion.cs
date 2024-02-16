@@ -3,6 +3,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Ores;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,12 +12,17 @@ namespace CalamityMod.Items.Potions
     public class TeslaPotion : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
-        public override void SetStaticDefaults() => Item.ResearchUnlockCount = 20;
+        public override void SetStaticDefaults()
+	{
+	    Item.ResearchUnlockCount = 20;
+	    Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 14));
+            ItemID.Sets.AnimatesAsSoul[Type] = true;
+	}
 
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 26;
+            Item.width = 32;
+            Item.height = 32;
             Item.useTurn = true;
             Item.maxStack = 9999;
             Item.rare = ItemRarityID.Orange;

@@ -17,6 +17,8 @@ namespace CalamityMod.Items.Placeables.Plates
 
         public override void SetDefaults()
         {
+            Item.width = 13;
+            Item.height = 10;
             Item.createTile = ModContent.TileType<Tiles.Plates.Elumplate>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -24,8 +26,6 @@ namespace CalamityMod.Items.Placeables.Plates
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 13;
-            Item.height = 10;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 3);
             Item.rare = ItemRarityID.Orange;

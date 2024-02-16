@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Rogue
         internal PrimitiveTrail TrailRenderer;
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/FishboneBoomerang";
 
-        public static int ChargeupTime = 20;
+        public static int ChargeupTime = 10;
         public static int Lifetime = 240;
         public float OverallProgress => 1 - Projectile.timeLeft / (float)Lifetime;
         public float ThrowProgress => 1 - Projectile.timeLeft / (float)(Lifetime);
@@ -103,12 +103,12 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.numHits = 0;
             }
 
-            if (Returning == 0f && Bouncing == 0f && Projectile.velocity.Length() > 2f)
+            if (Returning == 0f && Bouncing == 0f && Projectile.velocity.Length() > 2f && Projectile.timeLeft < (205 + ChargeupTime))
             {
-                Projectile.velocity *= 0.97f;
+                Projectile.velocity *= 0.88f;
             }
 
-            if (Returning == 1f && Projectile.velocity.Length() < 17f)
+            if (Returning == 1f && Projectile.velocity.Length() < 20f)
             {
                 Projectile.velocity *= 1.1f;
             }

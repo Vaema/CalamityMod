@@ -11,11 +11,11 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = 28;
+            Item.height = 30;
             Item.damage = 80;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 33;
-            Item.width = 28;
-            Item.height = 30;
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.rare = ItemRarityID.Yellow;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ForbiddenSunProjectile>();
-            Item.shootSpeed = 9f;
+            Item.shootSpeed = 13f;
         }
 
         public override void AddRecipes()

@@ -181,7 +181,6 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            Projectile.damage = 0;
             Projectile.velocity = Vector2.Zero;
             Projectile.timeLeft = ProjectileID.Sets.TrailCacheLength[Projectile.type];
             Projectile.netUpdate = true;

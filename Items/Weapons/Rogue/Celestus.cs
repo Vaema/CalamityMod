@@ -18,6 +18,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void SetDefaults()
         {
+            Item.width = 150;
+            Item.height = 132;
             Item.damage = 280;
             Item.DamageType = RogueDamageClass.Instance;
             Item.useAnimation = Item.useTime = 22;
@@ -25,9 +27,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
 
             Item.shoot = ModContent.ProjectileType<CelestusProj>();
-            
-            Item.width = 150;
-            Item.height = 132;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
             Item.rare = ModContent.RarityType<Violet>();

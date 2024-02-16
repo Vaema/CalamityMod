@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
@@ -23,6 +23,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.penetrate = 1;
             Projectile.extraUpdates = 100;
             Projectile.timeLeft = 600;
+            Projectile.ArmorPenetration = 10;
         }
 
         public override void AI()

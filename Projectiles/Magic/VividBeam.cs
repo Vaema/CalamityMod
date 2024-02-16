@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles.Magic
             switch (Projectile.ai[1])
             {
                 case 0f:
-                    CalamityUtils.ProjectileRain(source, Projectile.Center, 400f, 100f, 500f, 800f, 6f, ModContent.ProjectileType<VividClarityBeam>(), (int)(Projectile.damage * 0.7), Projectile.knockBack, Projectile.owner);
+                    CalamityUtils.ProjectileRain(source, Projectile.Center, 320f, 100f, 400f, 640f, 6f, ModContent.ProjectileType<VividClarityBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     break;
 
                 case 1f:

@@ -26,6 +26,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
+            Item.width = 112;
+            Item.height = 112;
             Item.damage = BaseDamage;
             Item.useAnimation = 14;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -35,8 +37,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.width = 112;
-            Item.height = 112;
             Item.value = CalamityGlobalItem.Rarity16BuyPrice;
             Item.shoot = ModContent.ProjectileType<GayBeam>();
             Item.shootSpeed = 6f;
@@ -133,8 +133,8 @@ namespace CalamityMod.Items.Weapons.Melee
                         break;
                 }
 
-                Dust dust24 = Main.dust[Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 267, 0f, 0f, alpha, color, 1.2f)];
-                dust24.noGravity = true;
+                Dust swingDust = Main.dust[Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 267, 0f, 0f, alpha, color, 1.2f)];
+                swingDust.noGravity = true;
             }
         }
 

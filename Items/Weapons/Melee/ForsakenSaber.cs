@@ -13,15 +13,15 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 46;
-            Item.damage = 65;
+            Item.height = 56;
+            Item.damage = 80;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = Item.useTime = 18;
+            Item.useAnimation = Item.useTime = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
             Item.knockBack = 6;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 56;
             Item.value = CalamityGlobalItem.Rarity5BuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<SandBlade>();

@@ -14,11 +14,11 @@ namespace CalamityMod.Items.Ammo
         }
         public override void SetDefaults()
         {
+            Item.width = 14;
+            Item.height = 20;
             Item.damage = 10;
             Item.DamageType = DamageClass.Ranged;
             Item.consumable = true;
-            Item.width = 14;
-            Item.height = 20;
             Item.knockBack = 2f;
             Item.value = Item.buyPrice(0, 0, 0, 80);
             Item.rare = ItemRarityID.LightPurple;

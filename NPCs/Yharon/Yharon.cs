@@ -2929,7 +2929,7 @@ namespace CalamityMod.NPCs.Yharon
                     ModContent.ItemType<PhoenixFlameBarrage>(),
                     ModContent.ItemType<YharonsKindleStaff>(), // Yharon Kindle Staff
                     ModContent.ItemType<Wrathwing>(), // Infernal Spear
-                    ModContent.ItemType<FinalDawn>(),
+                    ModContent.ItemType<TheFinalDawn>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
                 normalOnly.Add(ModContent.ItemType<YharimsCrystal>(), 10);

@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.Items.Armor.Mollusk
 {
@@ -51,8 +52,12 @@ namespace CalamityMod.Items.Armor.Mollusk
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<Shellfish>()] < 2)
                 {
-                    Projectile clam = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<Shellfish>(), 140, 0f, player.whoAmI);
-                    clam.originalDamage = 140;
+                    // 08DEC2023: Ozzatron: Clams spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(140);
+                    // wait why does this not scale with summon damage
+
+                    Projectile clam = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<Shellfish>(), baseDamage, 0f, player.whoAmI);
+                    clam.originalDamage = baseDamage;
                 }
             }
             player.Calamity().wearingRogueArmor = true;

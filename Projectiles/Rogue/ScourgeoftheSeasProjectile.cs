@@ -3,7 +3,7 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -52,19 +52,19 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Venom, 180);
+            target.AddBuff(BuffID.Poisoned, 180);
             if (Projectile.Calamity().stealthStrike) //stealth strike attack
             {
-                target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+                target.AddBuff(BuffID.Venom, 90);
             }
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Venom, 180);
+            target.AddBuff(BuffID.Poisoned, 180);
             if (Projectile.Calamity().stealthStrike) //stealth strike attack
             {
-                target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+                target.AddBuff(BuffID.Venom, 90);
             }
         }
 

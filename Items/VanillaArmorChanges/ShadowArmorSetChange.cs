@@ -20,7 +20,6 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public const float ArmorPieceDamage = 0.05f;
         public const float ArmorPieceJumpBoost = 0.07f;
-        public const float SetBonusTrueMoveSpeed = 0.15f;
 
         private void ApplyAnyPieceEffect(Player player)
         {
@@ -37,17 +36,5 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public override void ApplyBodyPieceEffect(Player player) => ApplyAnyPieceEffect(player);
 
         public override void ApplyLegPieceEffect(Player player) => ApplyAnyPieceEffect(player);
-
-        public override void UpdateSetBonusText(ref string setBonusText) => setBonusText = "Set bonus: 15% increased max movement speed and acceleration";
-
-        public override void ApplyArmorSetBonus(Player player)
-        {
-            // Remove the vanilla move speed boost
-            player.moveSpeed -= 0.15f;
-
-            // Replace it with max move speed and acceleration
-            player.runAcceleration *= (1f + SetBonusTrueMoveSpeed);
-            player.maxRunSpeed *= (1f + SetBonusTrueMoveSpeed);
-        }
     }
 }

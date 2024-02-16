@@ -57,16 +57,16 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.rotation = (Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi)) + (MathHelper.ToRadians(180)*Projectile.direction);
 
             //Dust
-            float dfreq = Projectile.Calamity().stealthStrike ? 4f : 2f;
+            float dfreq = Projectile.Calamity().stealthStrike ? 8f : 4f;
             if (Projectile.ai[0] == dfreq)
             {
                 Vector2 dustspeed = Projectile.velocity * Main.rand.NextFloat(0.5f,0.8f);
-                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, dustspeed.X, dustspeed.Y, 0, new Color(38, 30, 43), 1.4f);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 54, dustspeed.X, dustspeed.Y, 0, new Color(38, 30, 43), 1.4f);
                 Main.dust[d].velocity = dustspeed;
                 if (Projectile.Calamity().stealthStrike)
                 {
                     Vector2 dustspeed2 = new Vector2 (Main.rand.NextFloat(-3f,3f),Main.rand.NextFloat(-3f,3f));
-                    int d2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, dustspeed2.X, dustspeed2.Y, 0, new Color(38, 30, 43), 1.3f);
+                    int d2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 54, dustspeed2.X, dustspeed2.Y, 0, new Color(38, 30, 43), 1.3f);
                     Main.dust[d2].velocity = dustspeed2;
                 }
                 Projectile.ai[0] = 0f;
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Rogue
             for (int i = 0; i < maxDust; i++)
             {
                 Vector2 dustspeed = new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-6f, 6f));
-                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, dustspeed.X, dustspeed.Y, 0, new Color(38, 30, 43), 1.6f);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 54, dustspeed.X, dustspeed.Y, 0, new Color(38, 30, 43), 1.6f);
             }
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.width = 110;

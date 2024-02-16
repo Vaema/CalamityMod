@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,6 +15,8 @@ namespace CalamityMod.Items.Placeables.Ores
 
         public override void SetDefaults()
         {
+            Item.width = 12;
+            Item.height = 10;
             Item.createTile = ModContent.TileType<Tiles.Ores.PerennialOre>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -22,8 +24,6 @@ namespace CalamityMod.Items.Placeables.Ores
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 12;
-            Item.height = 10;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 18);
             Item.rare = ItemRarityID.Lime;

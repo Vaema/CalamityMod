@@ -13,6 +13,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 60;
+            Item.height = 60;
             Item.damage = 85;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 23;
@@ -21,7 +22,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 60;
             Item.value = CalamityGlobalItem.Rarity6BuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<CatastropheClaymoreSparkle>();

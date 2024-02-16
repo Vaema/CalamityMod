@@ -359,7 +359,8 @@ namespace CalamityMod.Projectiles.Summon
             
             // Dynamically update stats here, originalDamage can be found in MiscEffects
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.localNPCHitCooldown = (SpawnedFromPSC ? 6 : 9);
+            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
+            Projectile.localNPCHitCooldown = SpawnedFromPSC ? 6 : 9;
 
             var currentAIState = getAiState;
 

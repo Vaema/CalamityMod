@@ -16,11 +16,11 @@ namespace CalamityMod.Items.Placeables
 
 		public override void SetDefaults()
 		{
-			Item.useTurn = true;
+            Item.width = 16;
+            Item.height = 16;
+            Item.useTurn = true;
 			Item.autoReuse = true;
 			Item.consumable = true;
-            Item.width = 16;
-			Item.height = 16;
 			Item.useTime = 10;
 			Item.useAnimation = 15;
 			Item.useStyle = ItemUseStyleID.Swing;

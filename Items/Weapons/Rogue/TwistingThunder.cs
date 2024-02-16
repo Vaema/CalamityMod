@@ -14,11 +14,10 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
-            Item.damage = 466;
-            Item.knockBack = 10f;
-
             Item.width = 56;
             Item.height = 56;
+            Item.damage = 466;
+            Item.knockBack = 10f;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;

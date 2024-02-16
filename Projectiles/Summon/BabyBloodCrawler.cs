@@ -9,9 +9,8 @@ namespace CalamityMod.Projectiles.Summon
     public class BabyBloodCrawler : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
+        public static int bloodCooldown = 0;
         public float dust = 0f;
-        public int spiderCount = 0;
-        public bool countedAlready = false;
 
         public override void SetStaticDefaults()
         {
@@ -35,6 +34,9 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.tileCollide = false;
             AIType = ProjectileID.VenomSpider;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.MaxUpdates = 2;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 33 * Projectile.MaxUpdates;
         }
 
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
@@ -45,6 +47,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
+            if (bloodCooldown > 0)
+                bloodCooldown--;
+
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
 
@@ -56,7 +61,6 @@ namespace CalamityMod.Projectiles.Summon
                     continue;
                 if (proj.type == Projectile.type)
                 {
-                    spiderCount += (int)proj.minionSlots;
 					proj.Calamity().lineColor = 2;
                 }
             }
@@ -95,29 +99,20 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            //1 spider = 15 frames, 5 spiders, 10 frames
-            int immuneTime = 16 - spiderCount;
-            if (immuneTime < 5)
-                immuneTime = 5; //cap to prevent potential insanity
-            target.immune[Projectile.owner] = immuneTime;
-
-            OnHitEffects(target.Center);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects(target.Center);
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => OnHitEffects(target.Center);
 
         private void OnHitEffects(Vector2 targetPos)
         {
-            if (Main.rand.NextBool())
+            if (bloodCooldown == 0)
             {
-                int projAmt = Main.rand.Next(1, 3);
+                bloodCooldown = 17;
+                int projAmt = 2;
                 var source = Projectile.GetSource_FromThis();
                 for (int n = 0; n < projAmt; n++)
                 {
-                    float damageFactor = Main.rand.NextFloat(0.7f, 1f);
-                    CalamityUtils.ProjectileRain(source, targetPos, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<BloodRain>(), (int)(Projectile.damage * damageFactor), Projectile.knockBack * Main.rand.NextFloat(0.7f, 1f), Projectile.owner);
+                    CalamityUtils.ProjectileRain(source, targetPos, 400f, 100f, 400f, 700f, 29f, ModContent.ProjectileType<BloodRain>(), Projectile.damage, Projectile.knockBack * Main.rand.NextFloat(0.7f, 1f), Projectile.owner);
                 }
             }
         }

@@ -71,7 +71,6 @@ namespace CalamityMod.Projectiles.Summon
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), RustyBeaconPrototype.IrradiatedDebuffTime);
-            target.AddBuff(BuffID.Poisoned, RustyBeaconPrototype.PoisonedDebuffTime);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

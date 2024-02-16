@@ -86,6 +86,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     int explode = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BileExplosion>(), (int)(Projectile.damage * 0.4), Projectile.knockBack * 0.4f, Projectile.owner, 1f);
                     Main.projectile[explode].usesLocalNPCImmunity = true;
+                    Main.projectile[explode].usesIDStaticNPCImmunity = false;
                     Main.projectile[explode].localNPCHitCooldown = 30;
                 }
             }

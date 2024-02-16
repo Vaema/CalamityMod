@@ -16,10 +16,10 @@ namespace CalamityMod.Items.Weapons.Summon
         public const int BaseDamage = 100; // originally 325
         public override void SetDefaults()
         {
-            Item.damage = BaseDamage;
-            Item.mana = 10;
             Item.width = 68;
             Item.height = 68;
+            Item.damage = BaseDamage;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 10; // 9 because of useStyle 1
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;

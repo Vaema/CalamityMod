@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 58;
+            Item.height = 60;
             Item.damage = 90;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 20;
@@ -24,7 +25,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.75f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 60;
             Item.value = CalamityGlobalItem.Rarity8BuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<VolcanicFireball>();

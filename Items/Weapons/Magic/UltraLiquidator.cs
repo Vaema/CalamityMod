@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 70;
             Item.damage = 120;
             Item.knockBack = 5f;
             Item.useTime = 3;
@@ -29,7 +30,6 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 16f;
             Item.shoot = ModContent.ProjectileType<LiquidBlade>();
 
-            Item.width = Item.height = 70;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item9;

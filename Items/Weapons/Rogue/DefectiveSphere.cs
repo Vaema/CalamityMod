@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class DefectiveSphere : RogueWeapon
     {
-        public static int BaseDamage = 130;
+        public static int BaseDamage = 116;
         public static float Speed = 15f;
 
         public override void SetDefaults()
@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
         }
 
-		public override float StealthDamageMultiplier => 0.625f;
+		public override float StealthDamageMultiplier => 0.9f;
 
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
 		{

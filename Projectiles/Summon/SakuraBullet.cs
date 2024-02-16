@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.netImportant = true;
-            Projectile.timeLeft = 150;
+            Projectile.timeLeft = 210;
             Projectile.extraUpdates = 1;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Summon;

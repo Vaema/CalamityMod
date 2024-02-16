@@ -11,6 +11,8 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
+            Item.width = 64;
+            Item.height = 66;
             Item.damage = 56;
             Item.knockBack = 3.5f;
             Item.useAnimation = Item.useTime = 24;
@@ -18,9 +20,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
             Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<ScourgeoftheSeasProjectile>();
-
-            Item.width = 64;
-            Item.height = 66;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;

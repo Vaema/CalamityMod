@@ -1,4 +1,5 @@
-﻿using CalamityMod.World;
+﻿using CalamityMod.Events;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -32,6 +33,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+
             if (Projectile.velocity.Y > 0f)
             {
                 if (Projectile.Opacity < 1f)
@@ -67,12 +71,13 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.frame > 3)
                 Projectile.frame = 0;
 
-            if (Projectile.position.Y > Projectile.ai[1])
+            if (Projectile.position.Y > Projectile.ai[1] && Projectile.velocity.Y > 0f)
                 Projectile.tileCollide = true;
 
             Lighting.AddLight(Projectile.Center, 0f, 0.15f, 0.3f);
 
-            Projectile.velocity.X *= 0.995f;
+            float xVelocityMultiplier = death ? 0.999f : expertMode ? 0.9975f : 0.995f;
+            Projectile.velocity.X *= xVelocityMultiplier;
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
@@ -113,7 +118,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 4; i++)
             {
-                int shroomDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 56, 0f, 0f, 100, default, 2f);
+                int shroomDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 56, 0f, 0f, 100, default, 1.5f);
                 Main.dust[shroomDust].velocity *= 1.5f;
                 if (Main.rand.NextBool())
                 {
@@ -123,10 +128,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int j = 0; j < 12; j++)
             {
-                int shroomDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 56, 0f, 0f, 100, default, 3f);
+                int shroomDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 56, 0f, 0f, 100, default, 2f);
                 Main.dust[shroomDust2].noGravity = true;
                 Main.dust[shroomDust2].velocity *= 2f;
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 56, 0f, 0f, 100, default, 2f);
+                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 56, 0f, 0f, 100, default, 1.5f);
             }
         }
     }

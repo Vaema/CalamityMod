@@ -34,6 +34,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = 46;
+            Item.height = 48;
             Item.damage = 58;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<PlantationStaffSummon>();
@@ -41,8 +43,6 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.mana = 10;
             Item.useTime = Item.useAnimation = 20;
-            Item.width = 46;
-            Item.height = 48;
             Item.noMelee = true;
             Item.value = CalamityGlobalItem.Rarity8BuyPrice;
             Item.rare = ItemRarityID.Yellow;

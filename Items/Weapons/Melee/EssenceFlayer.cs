@@ -17,6 +17,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 100;
+            Item.height = 78;
             Item.damage = 225;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 19;
@@ -26,7 +27,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
-            Item.height = 78;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.shoot = ModContent.ProjectileType<EssenceScythe>();
             Item.shootSpeed = 21f;

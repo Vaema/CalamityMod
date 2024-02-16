@@ -21,6 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 120;
+            Item.height = 108;
             Item.damage = 250;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -32,7 +33,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8.5f;
             Item.UseSound = SoundID.DD2_GhastlyGlaivePierce;
             Item.autoReuse = true;
-            Item.height = 108;
             Item.shoot = ModContent.ProjectileType<BansheeHookProj>();
             Item.shootSpeed = 42f;
 
@@ -49,27 +49,27 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float num82 = (float)Main.mouseX + Main.screenPosition.X - position.X;
-            float num83 = (float)Main.mouseY + Main.screenPosition.Y - position.Y;
+            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - position.X;
+            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - position.Y;
             if (player.gravDir == -1f)
             {
-                num83 = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - position.Y;
+                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - position.Y;
             }
-            float num84 = (float)Math.Sqrt((double)(num82 * num82 + num83 * num83));
-            if ((float.IsNaN(num82) && float.IsNaN(num83)) || (num82 == 0f && num83 == 0f))
+            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
+            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
             {
-                num82 = (float)player.direction;
-                num83 = 0f;
-                num84 = Item.shootSpeed;
+                mouseXDist = (float)player.direction;
+                mouseYDist = 0f;
+                mouseDistance = Item.shootSpeed;
             }
             else
             {
-                num84 = Item.shootSpeed / num84;
+                mouseDistance = Item.shootSpeed / mouseDistance;
             }
-            num82 *= num84;
-            num83 *= num84;
+            mouseXDist *= mouseDistance;
+            mouseYDist *= mouseDistance;
             float ai4 = Main.rand.NextFloat() * Item.shootSpeed * 0.75f * (float)player.direction;
-            velocity = new Vector2(num82, num83);
+            velocity = new Vector2(mouseXDist, mouseYDist);
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, ai4, 0.0f);
             return false;
         }

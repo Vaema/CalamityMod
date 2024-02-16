@@ -13,11 +13,11 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = 74;
+            Item.height = 28;
             Item.damage = 70;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 4;
-            Item.width = 74;
-            Item.height = 28;
             Item.useTime = 4;
             Item.useAnimation = 4;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -36,10 +36,9 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 0f);
-            int num6 = 3;
             float SpeedX = velocity.X + (float)Main.rand.Next(-20, 21) * 0.05f;
             float SpeedY = velocity.Y + (float)Main.rand.Next(-20, 21) * 0.05f;
-            for (int index = 0; index < num6; ++index)
+            for (int index = 0; index < 3; ++index)
             {
                 int projectile = Projectile.NewProjectile(source, position.X, position.Y, SpeedX * 1.05f, SpeedY * 1.05f, ProjectileID.LaserMachinegunLaser, (int)(damage * 0.65), knockback * 0.6f, player.whoAmI, 0f, 0f);
                 Main.projectile[projectile].timeLeft = 120;

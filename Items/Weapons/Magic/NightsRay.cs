@@ -17,11 +17,11 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
-            Item.damage = 17;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 10;
             Item.width = 58;
             Item.height = 54;
+            Item.damage = 20;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 10;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.Vilethorn).
                 AddIngredient(ItemID.MagicMissile).
-                AddIngredient(ItemID.WandofSparking).
+                AddIngredient(ItemID.WandofFrosting).
                 AddIngredient(ItemID.AmberStaff).
                 AddIngredient<PurifiedGel>(10).
                 AddTile(TileID.DemonAltar).
@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.CrimsonRod).
                 AddIngredient(ItemID.MagicMissile).
-                AddIngredient(ItemID.WandofSparking).
+                AddIngredient(ItemID.WandofFrosting).
                 AddIngredient(ItemID.AmberStaff).
                 AddIngredient<PurifiedGel>(10).
                 AddTile(TileID.DemonAltar).

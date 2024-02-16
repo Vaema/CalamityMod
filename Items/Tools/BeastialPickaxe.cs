@@ -11,6 +11,8 @@ namespace CalamityMod.Items.Tools
         public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
+            Item.width = 48;
+            Item.height = 46;
             Item.damage = 35;
             Item.knockBack = 4.5f;
             Item.useTime = 5;
@@ -18,8 +20,6 @@ namespace CalamityMod.Items.Tools
             Item.pick = 200;
 
             Item.DamageType = DamageClass.Melee;
-            Item.width = 48;
-            Item.height = 46;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.value = CalamityGlobalItem.Rarity7BuyPrice;

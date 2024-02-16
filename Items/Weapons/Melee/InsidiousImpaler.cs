@@ -17,6 +17,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 66;
+            Item.height = 70;
             Item.damage = 320;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
@@ -27,7 +28,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 70;
             Item.shoot = ModContent.ProjectileType<InsidiousImpalerProj>();
             Item.shootSpeed = 5f;
 

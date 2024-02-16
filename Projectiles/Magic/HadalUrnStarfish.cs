@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Vector2 velocity = new Vector2(0f, 10f);
                 velocity = velocity.RotatedBy(variance * i + Projectile.rotation);
-                int p = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, velocity, ModContent.ProjectileType<HadalUrnStarfishShard>(), (int)(0.33f * Projectile.damage), 0, Projectile.owner);
+                int p = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, velocity, ModContent.ProjectileType<HadalUrnStarfishShard>(), (int)(0.25f * Projectile.damage), 0, Projectile.owner);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Projectile.originalDamage;
             }

@@ -186,14 +186,14 @@ namespace CalamityMod.UI.CalamitasEnchants
                     "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Resentful",
                     null,
                     player => player.Calamity().farProximityRewardEnchant = true,
-                    item => item.IsEnchantable() && item.damage > 0 && item.shoot > ProjectileID.None && !item.IsTrueMelee() && item.type != ModContent.ItemType<FinalDawn>()),
+                    item => item.IsEnchantable() && item.damage > 0 && item.shoot > ProjectileID.None && !item.IsTrueMelee() && item.type != ModContent.ItemType<TheFinalDawn>()),
 
                 new Enchantment(CalamityUtils.GetText("UI.Bloodthirsty.DisplayName"), CalamityUtils.GetText("UI.Bloodthirsty.Description"),
                     500,
                     "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Bloodthirsty",
                     null,
                     player => player.Calamity().closeProximityRewardEnchant = true,
-                    item => item.IsEnchantable() && item.damage > 0 && item.shoot > ProjectileID.None && !item.IsTrueMelee() && item.type != ModContent.ItemType<FinalDawn>()),
+                    item => item.IsEnchantable() && item.damage > 0 && item.shoot > ProjectileID.None && !item.IsTrueMelee() && item.type != ModContent.ItemType<TheFinalDawn>()),
 
                 new Enchantment(CalamityUtils.GetText("UI.Ephemeral.DisplayName"), CalamityUtils.GetText("UI.Ephemeral.Description"),
                     600,

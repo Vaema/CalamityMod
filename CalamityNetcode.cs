@@ -108,10 +108,20 @@ namespace CalamityMod
                             AndroombaFriendly.SwapSolution(index, solType);
                         break;
                     case CalamityModMessageType.SyncAndroombaAI:
-                        int idx = reader.ReadInt32();
-                        int phase = reader.ReadInt32();
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                            AndroombaFriendly.ChangeAI(idx, phase);
+                        {
+                            int idx = reader.ReadInt32();
+                            int phase = reader.ReadInt32();
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                                AndroombaFriendly.ChangeAI(idx, phase);
+                        }
+                        break;
+                    case CalamityModMessageType.SyncSlabCrabAI:
+                        {
+                            int idx = reader.ReadInt32();
+                            int phase = reader.ReadInt32();
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                                AndroombaFriendly.ChangeAI(idx, phase);
+                        }
                         break;
                     case CalamityModMessageType.ServersideSpawnOldDuke:
                         byte playerIndex2 = reader.ReadByte();
@@ -162,6 +172,9 @@ namespace CalamityMod
                     // Tile Entities
                     //
 
+                    case CalamityModMessageType.UnlockAbyssChests:
+                        Abyss.UnlockAllAbyssChests();
+                        break;
                     case CalamityModMessageType.PowerCellFactory:
                         TEPowerCellFactory.ReadSyncPacket(mod, reader);
                         break;
@@ -341,6 +354,7 @@ namespace CalamityMod
         DeleteAllSuperDummies,
         SyncAndroombaSolution,
         SyncAndroombaAI,
+        SyncSlabCrabAI,
         ServersideSpawnOldDuke,
         ArmoredDiggerCountdownSync, // TODO -- remove this mechanic entirely
         ProvidenceDyeConditionSync, // TODO -- this packetstorms if you hit Provi with spam weapons. It should ONLY send a packet if the status changes.
@@ -359,6 +373,7 @@ namespace CalamityMod
         UpdateCodebreakerConstituents,
         UpdateCodebreakerContainedStuff,
         UpdateCodebreakerDecryptCountdown,
+        UnlockAbyssChests,
 
         // Draedon Summoner
         CodebreakerSummonStuff,

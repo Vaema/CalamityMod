@@ -25,10 +25,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 10;
+            Projectile.extraUpdates = 15;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 5;
-            Projectile.timeLeft = 300;
+            Projectile.timeLeft = 450;
             Projectile.tileCollide = false;
             Projectile.coldDamage = true;
             Projectile.DamageType = DamageClass.Summon;

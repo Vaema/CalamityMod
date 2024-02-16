@@ -1,5 +1,6 @@
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.FurnitureAshen;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
@@ -9,8 +10,8 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 26;
+            Item.width = 30;
+            Item.height = 28;
             Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
@@ -34,6 +35,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
                 AddIngredient<SmoothBrimstoneSlag>(10).
                 AddIngredient<UnholyCore>(10).
                 AddTile(TileID.Anvils).
+                AddDecraftCondition(Condition.DownedMechBossAny).
                 Register();
         }
     }

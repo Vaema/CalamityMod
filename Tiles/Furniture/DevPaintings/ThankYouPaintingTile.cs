@@ -15,6 +15,7 @@ namespace CalamityMod.Tiles.Furniture.DevPaintings
         {
 			Main.tileFrameImportant[Type] = true;
 			Main.tileLavaDeath[Type] = true;
+			Main.tileSpelunker[Type] = true;
 			Main.tileWaterDeath[Type] = false;
 			TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3Wall);
 			TileObjectData.newTile.Width = 6;

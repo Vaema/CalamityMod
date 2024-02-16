@@ -16,10 +16,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public bool fireShot = true;
         public override void SetDefaults()
         {
-            Item.damage = 5;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 60;
             Item.height = 28;
+            Item.damage = 5;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 2;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;

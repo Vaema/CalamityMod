@@ -15,6 +15,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
+            Item.width = 150;
+            Item.height = 48;
             Item.damage = 2000;
             Item.knockBack = 9.5f;
             Item.DamageType = DamageClass.Ranged;
@@ -25,12 +27,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Bullet;
             Item.autoReuse = true;
 
-            Item.width = 150;
-            Item.height = 48;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.UseSound = CommonCalamitySounds.LargeWeaponFireSound;
-
             Item.value = CalamityGlobalItem.Rarity15BuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
@@ -41,6 +40,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 35;
 
         public override Vector2? HoldoutOffset() => new Vector2(-28, 0);
+
+        public override void HoldItem(Player player) => player.scope = true;
 
         public override void AddRecipes()
         {

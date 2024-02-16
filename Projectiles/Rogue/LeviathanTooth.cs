@@ -51,9 +51,29 @@ namespace CalamityMod.Projectiles.Rogue
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(6);
         public override bool? CanDamage() => Projectile.ai[0] == 1f ? false : base.CanDamage();
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Venom, 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.Venom, 180);
+            if (Projectile.Calamity().stealthStrike)
+            {
+                int toothBlast = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BrackishWaterBlast>(), (int)(Projectile.damage * 0.6f), Projectile.knockBack, Projectile.owner, 0f, 0f);
+                Main.projectile[toothBlast].usesLocalNPCImmunity = true;
+                Main.projectile[toothBlast].usesIDStaticNPCImmunity = false;
+                Main.projectile[toothBlast].localNPCHitCooldown = -1;
+            }
+        }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Venom, 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(BuffID.Venom, 180);
+            if (Projectile.Calamity().stealthStrike)
+            {
+                int toothBlast = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BrackishWaterBlast>(), (int)(Projectile.damage * 0.6f), Projectile.knockBack, Projectile.owner, 0f, 0f);
+                Main.projectile[toothBlast].usesLocalNPCImmunity = true;
+                Main.projectile[toothBlast].usesIDStaticNPCImmunity = false;
+                Main.projectile[toothBlast].localNPCHitCooldown = -1;
+            }
+        }
 
         public override bool PreDraw(ref Color lightColor)
         {

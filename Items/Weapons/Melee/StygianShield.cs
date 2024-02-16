@@ -22,6 +22,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(HeldDefense, (DisableDashDuration / 60D).ToString("N1"));
 
+        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+
         public override void SetDefaults()
         {
             Item.width = 74;
@@ -30,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.damage = 250;
+            Item.damage = 180;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.useAnimation = Item.useTime = 40; // This is only for the "Very slow" tooltip. The real use time should be faster
             Item.shoot = ModContent.ProjectileType<StygianShieldAttack>();
@@ -42,8 +44,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = null;
         }
 
-        // Can only throw a shield if none is active
-        public override bool AltFunctionUse(Player player) => player.ownedProjectileCounts[ThrownShieldID] <= 0;
+        // Can only throw a shield if there's two or less
+        public override bool AltFunctionUse(Player player) => player.ownedProjectileCounts[ThrownShieldID] <= 1;
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 

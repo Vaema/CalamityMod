@@ -20,9 +20,9 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 
         public override void SetDefaults()
         {
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Blue;
         }
 

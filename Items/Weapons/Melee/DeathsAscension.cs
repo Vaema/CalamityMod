@@ -19,14 +19,14 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
+            Item.width = 70;
+            Item.height = 70;
             Item.damage = 1200;
             Item.knockBack = 9f;
             Item.useTime = Item.useAnimation = 24;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.channel = true;
-            Item.width = 70;
-            Item.height = 70;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<DeathsAscensionSwing>();

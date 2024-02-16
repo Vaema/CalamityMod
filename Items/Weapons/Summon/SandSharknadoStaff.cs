@@ -21,16 +21,14 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = 48;
+            Item.height = 56;
             Item.damage = 94;
             Item.knockBack = 2f;
             Item.mana = 10;
 
             Item.shoot = ModContent.ProjectileType<SandnadoMinion>();
-
-            Item.width = 48;
-            Item.height = 56;
             Item.useTime = Item.useAnimation = 20;
-
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item44;

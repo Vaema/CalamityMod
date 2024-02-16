@@ -15,6 +15,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void SetDefaults()
         {
+            Item.width = 24;
+            Item.height = 22;
             Item.DamageType = RogueDamageClass.Instance;
             Item.damage = BaseDamage;
             Item.knockBack = Knockback;
@@ -22,8 +24,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 26;
             Item.useAnimation = 26;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.width = 24;
-            Item.height = 22;
             Item.UseSound = SoundID.Item1;
             Item.noMelee = true;
             Item.noUseGraphic = true;

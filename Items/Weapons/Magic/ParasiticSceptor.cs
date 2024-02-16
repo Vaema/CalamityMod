@@ -19,6 +19,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 52;
             Item.damage = 12;
             Item.knockBack = 3f;
             Item.mana = 10;
@@ -28,7 +29,6 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<WaterLeechProj>();
 
-            Item.width = Item.height = 52;
             Item.UseSound = SoundID.Item46;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.Shoot;

@@ -15,10 +15,10 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 16;
-            Item.mana = 10;
             Item.width = 28;
             Item.height = 20;
+            Item.damage = 16;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 34;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;

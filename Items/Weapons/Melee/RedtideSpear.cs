@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 56;
+            Item.height = 56;
             Item.damage = 25;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
@@ -30,7 +31,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 5f;
             Item.UseSound = null;
             Item.autoReuse = true;
-            Item.height = 56;
             Item.value = CalamityGlobalItem.Rarity2BuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<RedtideSpearProjectile>();

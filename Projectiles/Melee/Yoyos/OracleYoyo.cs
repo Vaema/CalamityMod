@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 {
     public class OracleYoyo : ModProjectile
     {
-        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Oracle>();
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheOracle>();
         public int AuraFrame;
 
         // projectile.localAI[1] is the Aura Charge of the red lightning aura
@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 {
                     // The aura's direct damage scales with its charge and with melee stats.
                     float chargeRatio = AuraCharge / MaxCharge;
-                    int auraDamage = Oracle.AuraBaseDamage + (int)(chargeRatio * (Oracle.AuraMaxDamage - Oracle.AuraBaseDamage));
+                    int auraDamage = TheOracle.AuraBaseDamage + (int)(chargeRatio * (TheOracle.AuraMaxDamage - TheOracle.AuraBaseDamage));
                     DealAuraDamage(auraRadius, auraDamage);
                 }
             }

@@ -13,10 +13,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public const int MaxBolts = 6;
         public override void SetDefaults()
         {
-            Item.damage = 770;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 48;
             Item.height = 96;
+            Item.damage = 770;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;

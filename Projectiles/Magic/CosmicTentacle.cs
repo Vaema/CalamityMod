@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System;
 using Terraria;
 using Terraria.ModLoader;
@@ -18,6 +18,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = 5;
             Projectile.MaxUpdates = 3;
             Projectile.DamageType = DamageClass.Magic;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 5;
         }
 
         public override void AI()
@@ -87,11 +89,6 @@ namespace CalamityMod.Projectiles.Magic
                     scaleLoopCheck++;
                 }
             }
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.immune[Projectile.owner] = 5;
         }
     }
 }

@@ -42,7 +42,8 @@ namespace CalamityMod.Items.Armor.Sulphurous
         {
             player.GetDamage<ThrowingDamageClass>() += 0.04f;
             player.GetCritChance<ThrowingDamageClass>() += 2;
-            player.gills = true;
+            if (player.IsUnderwater())
+                player.gills = true;
         }
 
         public override void AddRecipes()

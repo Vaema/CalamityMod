@@ -42,6 +42,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
+            Item.width = 50;
+            Item.height = 50;
             Item.damage = 699;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = Item.useAnimation = 13;
@@ -53,8 +55,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.width = 50;
-            Item.height = 50;
             Item.shoot = ModContent.ProjectileType<PrismaticBeam>();
             Item.shootSpeed = 14f;
             Item.value = CalamityGlobalItem.Rarity14BuyPrice;

@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -15,9 +16,9 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetDefaults()
         {
-            Item.defense = 30;
             Item.width = 20;
             Item.height = 22;
+            Item.defense = 30;
             Item.accessory = true;
             Item.value = CalamityGlobalItem.Rarity15BuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
@@ -36,6 +37,8 @@ namespace CalamityMod.Items.Accessories
                     if (player.whoAmI == Main.myPlayer)
                     {
                         int damage = (int)player.GetBestClassDamage().ApplyTo(175);
+                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
+
                         int projectile1 = Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<DragonDust>(), damage, 5f, player.whoAmI, 0f, 0f);
                         Main.projectile[projectile1].timeLeft = 60;
                     }
@@ -53,6 +56,8 @@ namespace CalamityMod.Items.Accessories
                     if (player.whoAmI == Main.myPlayer)
                     {
                         int damage = (int)player.GetBestClassDamage().ApplyTo(375);
+                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
+
                         CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 22f, ModContent.ProjectileType<SkyFlareFriendly>(), damage, 9f, player.whoAmI);
                     }
                 }

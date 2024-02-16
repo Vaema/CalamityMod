@@ -17,13 +17,13 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
+            Item.width = 122;
+            Item.height = 50;
             Item.damage = 135;
             Item.knockBack = 15f;
             Item.shootSpeed = 16f;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useTime = Item.useAnimation = 27;
-            Item.width = 122;
-            Item.height = 50;
             Item.UseSound = SoundID.Item92;
             Item.shoot = ModContent.ProjectileType<StarfleetMK2Gun>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;

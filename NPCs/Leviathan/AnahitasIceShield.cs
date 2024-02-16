@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Events;
+using CalamityMod.Projectiles.Boss;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
@@ -9,6 +11,16 @@ namespace CalamityMod.NPCs.Leviathan
 {
     public class AnahitasIceShield : ModNPC
     {
+        public bool WaitingForLeviathan
+        {
+            get
+            {
+                if (Main.npc.IndexInRange(CalamityGlobalNPC.leviathan) && Main.npc[CalamityGlobalNPC.leviathan].life / (float)Main.npc[CalamityGlobalNPC.leviathan].lifeMax >= ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.7f : 0.4f))
+                    return true;
+
+                return CalamityUtils.FindFirstProjectile(ModContent.ProjectileType<LeviathanSpawner>()) != -1;
+            }
+        }
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
@@ -62,7 +74,7 @@ namespace CalamityMod.NPCs.Leviathan
                 if (NPC.alpha > 100 && NPC.ai[1] == 0f)
                     NPC.alpha -= 2;
 
-                if (Main.npc[anahitaID].damage == 0)
+                if (WaitingForLeviathan)
                     NPC.ai[1] = 1f;
                 else
                     NPC.ai[1] = 0f;
@@ -70,7 +82,7 @@ namespace CalamityMod.NPCs.Leviathan
                 if (NPC.ai[1] == 1f)
                     NPC.alpha = Main.npc[anahitaID].alpha;
 
-                NPC.dontTakeDamage = Main.npc[anahitaID].damage == 0;
+                NPC.dontTakeDamage = WaitingForLeviathan;
                 NPC.rotation = Main.npc[anahitaID].rotation;
                 NPC.spriteDirection = Main.npc[anahitaID].direction;
                 NPC.velocity = Vector2.Zero;

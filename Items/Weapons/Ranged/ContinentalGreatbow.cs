@@ -13,10 +13,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 34;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 18;
             Item.height = 36;
+            Item.damage = 34;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 24;
             Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -53,8 +53,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 {
                     type = ProjectileID.FireArrow;
                 }
-                int num121 = Projectile.NewProjectile(spawnSource, source + offset, velocity, type, damage, knockback, player.whoAmI);
-                Main.projectile[num121].noDropItem = true;
+                int baseArrow = Projectile.NewProjectile(spawnSource, source + offset, velocity, type, damage, knockback, player.whoAmI);
+                Main.projectile[baseArrow].noDropItem = true;
             }
             for (int i = 0; i < 2; i++)
             {

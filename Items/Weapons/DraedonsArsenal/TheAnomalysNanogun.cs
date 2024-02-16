@@ -27,12 +27,12 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
+            Item.width = 102;
+            Item.height = 44;
             Item.damage = 1850;
             Item.knockBack = 4.5f;
             Item.useTime = Item.useAnimation = AnomalysNanogunHoldout.PlasmaFireTimer;
             Item.shootSpeed = 5f;
-            Item.width = 102;
-            Item.height = 44;
             Item.DamageType = DamageClass.Ranged;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.shoot = ModContent.ProjectileType<AnomalysNanogunHoldout>();

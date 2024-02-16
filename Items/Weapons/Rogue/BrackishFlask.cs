@@ -12,6 +12,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 28;
+            Item.height = 30;
             Item.damage = 60;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -21,7 +22,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6.5f;
             Item.UseSound = SoundID.Item106;
             Item.autoReuse = true;
-            Item.height = 30;
             Item.value = CalamityGlobalItem.Rarity7BuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<BrackishFlaskProj>();

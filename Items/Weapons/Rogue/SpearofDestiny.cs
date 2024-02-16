@@ -18,16 +18,16 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 52;
+            Item.height = 52;
             Item.damage = 50;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 45;
+            Item.useAnimation = 40;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 45;
+            Item.useTime = 40;
             Item.knockBack = 2f;
             Item.UseSound = ThrowSound;
             Item.autoReuse = true;
-            Item.height = 52;
             Item.value = CalamityGlobalItem.Rarity6BuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<SpearofDestinyProjectile>();

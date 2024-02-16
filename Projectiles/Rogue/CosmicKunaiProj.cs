@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
-            Projectile.alpha += 17;
+            Projectile.alpha += (Projectile.Calamity().stealthStrike ? 11 : 17);
             if (Projectile.alpha >= 255)
             {
                 Projectile.Kill();

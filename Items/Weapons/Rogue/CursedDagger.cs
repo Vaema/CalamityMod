@@ -14,15 +14,14 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static readonly SoundStyle ThrowSound = new("CalamityMod/Sounds/Item/CursedDaggerThrow") { Volume = 0.3f, PitchVariance = 0.4f };
         public override void SetDefaults()
         {
+            Item.width = 14;
+            Item.height = 48;
             Item.damage = 45;
             Item.useAnimation = Item.useTime = 18;
             Item.shootSpeed = 19f;
             Item.knockBack = 4.5f;
 
             Item.shoot = ModContent.ProjectileType<CursedDaggerProj>();
-
-            Item.width = 14;
-            Item.height = 48;
             Item.DamageType = RogueDamageClass.Instance;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = ThrowSound;

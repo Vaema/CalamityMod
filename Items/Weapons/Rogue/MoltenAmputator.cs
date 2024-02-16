@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 60;
+            Item.height = 60;
             Item.damage = 166;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -24,7 +25,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 18;
             Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
-            Item.height = 60;
             Item.value = CalamityGlobalItem.Rarity12BuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<MoltenAmputatorProj>();

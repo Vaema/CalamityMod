@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
+using CalamityMod.Events;
+using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static Terraria.Player;
 
 namespace CalamityMod
@@ -21,6 +21,30 @@ namespace CalamityMod
         {
             CalamityPlayer mp = player.Calamity();
             return player.statDefense + (accountForDefenseDamage ? 0 : mp.CurrentDefenseDamage);
+        }
+
+        public static int GetDefenseDamageFloor()
+        {
+            if (BossRushEvent.BossRushActive)
+                return BalancingConstants.DefenseDamageFloor_BossRush;
+            else if (NPC.downedMoonlord)
+            {
+                return CalamityWorld.death ? BalancingConstants.DefenseDamageFloor_DeathPML
+                    : CalamityWorld.revenge ? BalancingConstants.DefenseDamageFloor_RevPML
+                    : BalancingConstants.DefenseDamageFloor_NormalPML;
+            }
+            else if (Main.hardMode)
+            {
+                return CalamityWorld.death ? BalancingConstants.DefenseDamageFloor_DeathHM
+                    : CalamityWorld.revenge ? BalancingConstants.DefenseDamageFloor_RevHM
+                    : BalancingConstants.DefenseDamageFloor_NormalHM;
+            }
+            else
+            {
+                return CalamityWorld.death ? BalancingConstants.DefenseDamageFloor_DeathPHM
+                    : CalamityWorld.revenge ? BalancingConstants.DefenseDamageFloor_RevPHM
+                    : BalancingConstants.DefenseDamageFloor_NormalPHM;
+            }
         }
 
         public static float CalcDamage<T>(this Player player, float baseDamage) where T : DamageClass => player.GetTotalDamage<T>().ApplyTo(baseDamage);
@@ -101,6 +125,20 @@ namespace CalamityMod
             // Add the best typical damage stat, then return the full modifier.
             ret += best - 1f;
             return ret;
+        }
+
+        /// <summary>
+        /// Extension method which calculates the player's current multiplicative boost to armor set bonus and accessory damage.<br />
+        /// This is currently only used by the Old Fashioned drink.
+        /// </summary>
+        /// <param name="player">The player whose armor / accessory damage bonus should be applied.</param>
+        /// <param name="damage">The damage to apply the bonus to.</param>
+        /// <returns>Boosted damage. If no boosts are applicable, returns the damage parameter that was passed in.</returns>
+        public static int ApplyArmorAccDamageBonusesTo(this Player player, float damage)
+        {
+            if (!player.Calamity().oldFashioned)
+                return (int)damage;
+            return (int)(damage * OldFashioned.AccessoryAndSetBonusDamageMultiplier);
         }
 
         public static float GetRangedAmmoCostReduction(this Player player)
@@ -375,6 +413,25 @@ namespace CalamityMod
 
         #region Immunity Frames
         /// <summary>
+        /// Checks whether the player has any kind of immunity frames (or "iframes" for short) available.
+        /// </summary>
+        /// <param name="player">The player whose immunity frames should be checked.</param>
+        /// <returns>Whether or not they are currently in any immunity frames.</returns>
+        public static bool HasIFrames(this Player player)
+        {
+            // Check old school iframes first (aka "cooldown timer -1". Regular hits, falling damage, etc.)
+            if (player.immune || player.immuneTime > 0)
+                return true;
+
+            // Check more particular iframes. This primarily comes from traps, lava, and bosses.
+            for (int i = 0; i < player.hurtCooldowns.Length; i++)
+                if (player.hurtCooldowns[i] > 0)
+                    return true;
+
+            return false;
+        }
+
+        /// <summary>
         /// Gives the player the specified number of immunity frames (or "iframes" for short).<br />If the player already has more iframes than you want to give them, this function does nothing.
         /// </summary>
         /// <param name="player">The player who should be given immunity frames.</param>
@@ -394,6 +451,7 @@ namespace CalamityMod
                 return false;
 
             // Apply iframes thoroughly.
+            // Player.AddImmuneTime does exist, but is equivalent to the below code.
             player.immune = true;
             player.immuneNoBlink = !blink;
             player.immuneTime = frames;
@@ -654,7 +712,7 @@ namespace CalamityMod
         }
         #endregion
 
-        #region visual layers
+        #region Visual Layers
         public static void HideAccessories(this Player player, bool hideHeadAccs = true, bool hideBodyAccs = true, bool hideLegAccs = true,  bool hideShield = true)
         {
             if (hideHeadAccs)

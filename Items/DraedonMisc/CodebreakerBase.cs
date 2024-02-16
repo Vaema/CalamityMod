@@ -11,14 +11,14 @@ namespace CalamityMod.Items.DraedonMisc
         public new string LocalizationCategory => "Items.DraedonItems";
         public override void SetDefaults()
         {
+            Item.width = 42;
+            Item.height = 32;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
             Item.useAnimation = 15;
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 42;
-            Item.height = 32;
             Item.maxStack = 9999;
             Item.rare = ItemRarityID.Orange;
             Item.createTile = ModContent.TileType<CodebreakerTile>();

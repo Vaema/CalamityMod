@@ -28,6 +28,8 @@ namespace CalamityMod.Items.Tools
 
         public override void SetDefaults()
         {
+            Item.width = 70;
+            Item.height = 70;
             Item.damage = 400;
             Item.knockBack = 9f;
             Item.useTime = 1;
@@ -37,8 +39,6 @@ namespace CalamityMod.Items.Tools
 
             Item.DamageType = DamageClass.Melee;
             Item.channel = true;
-            Item.width = 70;
-            Item.height = 70;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shootSpeed = LaserSpeed;
             Item.UseSound = SoundID.Item1;

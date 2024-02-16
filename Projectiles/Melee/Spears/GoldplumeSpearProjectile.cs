@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             {
                 Projectile.localAI[0] = 0f;
                 if (Main.myPlayer == Projectile.owner)
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Projectile.velocity, Projectile.velocity, ModContent.ProjectileType<Feather>(), (int)(Projectile.damage * 0.4), 0f, Projectile.owner, 0f, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Projectile.velocity, Projectile.velocity * 2, ModContent.ProjectileType<Feather>(), (int)(Projectile.damage * 0.5), 0f, Projectile.owner, 0f, 0f);
             }
         }
     }

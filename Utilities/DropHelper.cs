@@ -286,7 +286,8 @@ namespace CalamityMod
         /// Adds all the common potions for fishing crates, alongside scaling mana and regen potions
         /// </summary>
         /// <param name="loot">The ILoot interface for the loot table.</param>
-        public static void AddCratePotionRules(this ILoot loot)
+        /// <param name="hardMode">Whether or not the crate is considered a hardmode crate.</param>
+        public static void AddCratePotionRules(this ILoot loot, bool hardMode = true)
         {
             loot.Add(ItemID.ObsidianSkinPotion, 10, 1, 3);
             loot.Add(ItemID.SwiftnessPotion, 10, 1, 3);
@@ -311,14 +312,23 @@ namespace CalamityMod
             var lcrRegularPotion = new LeadingConditionRule(If(() => NPC.downedBoss3));
 
             // Actually chain all the LCRs together
-            lcrSupremePotion.Add(supremePots);
-            lcrSupremePotion.OnFailedConditions(lcrSuperPotion);
-            lcrSuperPotion.Add(superPots);
-            lcrSuperPotion.OnFailedConditions(lcrGreaterPotion);
-            lcrGreaterPotion.Add(greaterPots);
-            lcrGreaterPotion.OnFailedConditions(lcrRegularPotion);
+            // Greater potions upwards are only chained if the crate is marked as Hardmode
+            if (hardMode)
+            {
+                lcrSupremePotion.Add(supremePots);
+                lcrSupremePotion.OnFailedConditions(lcrSuperPotion);
+                lcrSuperPotion.Add(superPots);
+                lcrSuperPotion.OnFailedConditions(lcrGreaterPotion);
+                lcrGreaterPotion.Add(greaterPots);
+                lcrGreaterPotion.OnFailedConditions(lcrRegularPotion);
+            }
             lcrRegularPotion.Add(regularPots);
             lcrRegularPotion.OnFailedConditions(lesserPots);
+            // Add the chain starting from regular potions if marked as a Pre-Hardmode crate
+            if (!hardMode)
+            {
+                loot.Add(lcrRegularPotion);
+            }
         }
         #endregion
 

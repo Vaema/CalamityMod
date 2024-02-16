@@ -1,12 +1,12 @@
-﻿using CalamityMod.NPCs.Providence;
+﻿using System;
+using CalamityMod.Items.Accessories;
+using CalamityMod.NPCs.Providence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using CalamityMod.Items.Accessories;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -33,6 +33,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Player owner = Main.player[Projectile.owner];
             Projectile.damage = (int)owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
+            Projectile.damage = owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
             
             if (Projectile.ai[0] < 240f)
             {

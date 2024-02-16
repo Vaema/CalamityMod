@@ -17,12 +17,13 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.friendly = true;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 3;
             Projectile.aiStyle = ProjAIStyleID.StickProjectile;
             Projectile.timeLeft = 600;
+            Projectile.MaxUpdates = 2;
             AIType = ProjectileID.BoneJavelin;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 15 * Projectile.MaxUpdates;
             Projectile.usesLocalNPCImmunity = true;
         }
 
@@ -34,7 +35,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Projectile.Calamity().stealthStrike || Projectile.owner != Main.myPlayer || Projectile.Calamity().lineColor >= 2)
                 return;
             Projectile.localAI[0]++;
-            if (Projectile.localAI[0] >= 15f)
+            if (Projectile.localAI[0] >= 12f)
             {
                 Vector2 vector2 = new Vector2(20f, 20f);
                 for (int index1 = 0; index1 < 10; ++index1)
@@ -48,8 +49,8 @@ namespace CalamityMod.Projectiles.Rogue
                     Dust.NewDust(Projectile.Center - vector2 / 2f, (int) vector2.X, (int) vector2.Y, 144, 0f, 0f, 0, default, 1f);
                 }
 
-                int javelin = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedBy(MathHelper.ToRadians(5f)), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner);
-                int javelin2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedBy(MathHelper.ToRadians(-5f)), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                int javelin = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedBy(MathHelper.ToRadians(3f)), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                int javelin2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedBy(MathHelper.ToRadians(-3f)), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner);
                 if (javelin.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[javelin].Calamity().lineColor = Projectile.Calamity().lineColor + 1;

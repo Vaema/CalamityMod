@@ -88,6 +88,17 @@ BorealisBomber: {
 		'''
 }
 
+BrittleStarStaff: {
+	DisplayName: Brittle Star Staff
+	Tooltip:
+		'''
+		Summons a small brittle starfish that will dash through enemies until it shatters
+		Starfish will quickly regenerate after shattering
+		Holding right click will swap starfish between dashing and circling you
+		When the starfish are circling, each one provides you with 3 defense
+		'''
+}
+
 CadaverousCarrion: {
 	DisplayName: Cadaverous Carrion
 	Tooltip: Summons a gross, shark-puking Old Duke head on the ground
@@ -512,7 +523,7 @@ Perdition: {
 		'''
 		Summons a beacon at the position of the mouse
 		When a target is manually selected via right click it releases torrents of souls from below onto the target
-		Only one beacon may exist at a time
+		Requires 5 minion slots to summon and only one beacon may exist at a time
 		'''
 }
 
@@ -550,7 +561,7 @@ RustyBeaconPrototype: {
 	Tooltip:
 		'''
 		Summons a long-abandoned drone to support you
-		The drone hovers in place and releases toxic waves that inflict irradiated and poisoned
+		The drone hovers in place and releases toxic waves that irradiate hit enemies
 		'''
 }
 
@@ -578,11 +589,6 @@ SarosPossession: {
 ScabRipper: {
 	DisplayName: Scab Ripper
 	Tooltip: Summons a baby blood crawler to protect you
-}
-
-SeaboundStaff: {
-	DisplayName: Seabound Staff
-	Tooltip: Summons a brittle star to fight for you
 }
 
 ShellfishStaff: {

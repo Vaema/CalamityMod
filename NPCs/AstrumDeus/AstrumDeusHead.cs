@@ -34,10 +34,12 @@ namespace CalamityMod.NPCs.AstrumDeus
     [AutoloadBossHead]
     public class AstrumDeusHead : ModNPC
     {
-        public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/AstrumDeusSpawn");
-        public static readonly SoundStyle LaserSound = new("CalamityMod/Sounds/Custom/AstrumDeusLaser");
-        public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AstrumDeusMine");
-        public static readonly SoundStyle SplitSound = new("CalamityMod/Sounds/Custom/AstrumDeusSplit");
+        public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusSpawn");
+        public static readonly SoundStyle LaserSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusLaser");
+        public static readonly SoundStyle GodRaySound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusGodRay");
+        public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusMine");
+        public static readonly SoundStyle SplitSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusSplit");
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/AstrumDeusHit", 2) { Volume = 1.25f };
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/AstrumDeusDeath");
 
         public override void SetStaticDefaults()
@@ -87,7 +89,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit4;
+            NPC.HitSound = HitSound;
             NPC.DeathSound = DeathSound;
             NPC.netAlways = true;
             NPC.Calamity().VulnerableToHeat = true;
@@ -316,7 +318,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             {
                 GFBOnly.Add(ItemID.Worm, 1, 1, 9999, true);
                 GFBOnly.Add(ItemID.CanOfWorms, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.GummyWorm, 1, 1, 9999);
+                GFBOnly.Add(ItemID.GummyWorm, 1, 1, 9999, true);
                 GFBOnly.Add(ItemID.TruffleWorm, 1, 1, 9999, true);
                 GFBOnly.Add(ItemID.EnchantedNightcrawler, 1, 1, 9999, true);
                 GFBOnly.Add(ItemID.Spaghetti, 1, 1, 9999, true);

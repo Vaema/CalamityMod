@@ -14,11 +14,11 @@ namespace CalamityMod.Items.Weapons.Magic
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/ArtAttackCast");
         public override void SetDefaults()
         {
+            Item.width = 70;
+            Item.height = 70;
             Item.damage = 80;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 20;
-            Item.width = 70;
-            Item.height = 70;
             Item.useTime = Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;

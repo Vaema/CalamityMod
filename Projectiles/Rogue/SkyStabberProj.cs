@@ -11,8 +11,6 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SkyStabber";
 
-        private static int Lifetime = 1200;
-
         public override void SetDefaults()
         {
             Projectile.width = 15;
@@ -20,8 +18,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.tileCollide = true;
-            Projectile.penetrate = 20;
-            Projectile.timeLeft = Lifetime;
+            Projectile.penetrate = 10;
+            Projectile.timeLeft = 1000;
 
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30;

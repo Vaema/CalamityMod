@@ -20,6 +20,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
+            Item.width = 96;
+            Item.height = 34;
             Item.damage = 695;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 30;
@@ -29,8 +31,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 7.5f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.width = 96;
-            Item.height = 34;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.UseSound = CommonCalamitySounds.PlasmaBlastSound;
@@ -58,6 +58,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
+
+        public override void HoldItem(Player player) => player.scope = true;
 
         public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= 50;
 

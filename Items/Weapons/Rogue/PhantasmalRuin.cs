@@ -14,11 +14,10 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
-            Item.damage = 145;
-            Item.knockBack = 8f;
-
             Item.width = 108;
             Item.height = 114;
+            Item.damage = 152;
+            Item.knockBack = 8f;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -34,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ItemRarityID.Lime;
         }
 
-		public override float StealthDamageMultiplier => 1.85f;
+		public override float StealthDamageMultiplier => 1.2f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

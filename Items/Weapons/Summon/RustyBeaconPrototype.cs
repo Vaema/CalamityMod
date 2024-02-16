@@ -17,13 +17,11 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const int IrradiatedDebuffTime = 120;
 
-        public const int PoisonedDebuffTime = 240;
-
         public override void SetDefaults()
         {
-            Item.mana = 10;
             Item.width = 28;
             Item.height = 20;
+            Item.mana = 10;
             Item.damage = 8;
             Item.useTime = Item.useAnimation = 34;
             Item.useStyle = ItemUseStyleID.HoldUp;

@@ -68,11 +68,11 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 36;
             Item.mana = 80;
             Item.damage = 625;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noUseGraphic = true;
-            Item.width = Item.height = 36;
             Item.useTime = Item.useAnimation = 9;
             Item.noMelee = true;
             Item.knockBack = 1f;
@@ -89,7 +89,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frameI, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/AresExoskeleton").Value;
-            if (ArmExists(Main.LocalPlayer))
+            if (!Main.gameMenu && ArmExists(Main.LocalPlayer))
             {
                 texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/AresExoskeletonRemote").Value;
                 position.X += scale * 6f;

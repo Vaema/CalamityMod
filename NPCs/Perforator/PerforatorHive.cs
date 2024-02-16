@@ -36,6 +36,12 @@ namespace CalamityMod.NPCs.Perforator
     [AutoloadBossHead]
     public class PerforatorHive : ModNPC
     {
+        public static readonly SoundStyle GeyserShoot = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveShoot", 3);
+        public static readonly SoundStyle IchorShoot = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveIchorShoot");
+        public static readonly SoundStyle WormSpawn = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveWormSpawn");
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PerfHiveHit", 3);
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfHiveDeath");
+
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private bool small = false;
         private bool medium = false;
@@ -46,7 +52,7 @@ namespace CalamityMod.NPCs.Perforator
         {
             Main.npcFrameCount[NPC.type] = 10;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
 			NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
@@ -59,7 +65,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.width = 110;
             NPC.height = 100;
             NPC.defense = 4;
-            NPC.LifeMaxNERB(5000, 6000, 270000);
+            NPC.LifeMaxNERB(6000, 7200, 270000);
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
@@ -69,8 +75,8 @@ namespace CalamityMod.NPCs.Perforator
             NPC.boss = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit13;
-            NPC.DeathSound = SoundID.NPCDeath19;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
@@ -126,16 +132,6 @@ namespace CalamityMod.NPCs.Perforator
             // Variables for ichor blob phase
             float blobPhaseGateValue = bossRush ? 450f : 600f;
             bool floatAboveToFireBlobs = NPC.ai[2] >= blobPhaseGateValue - 120f;
-
-            // Don't deal damage for 3 seconds after spawning or while firing blobs
-            NPC.damage = NPC.defDamage;
-            if (NPC.ai[1] < 180f || floatAboveToFireBlobs)
-            {
-                if (NPC.ai[1] < 180f)
-                    NPC.ai[1] += 1f;
-
-                NPC.damage = 0;
-            }
 
             Player player = Main.player[NPC.target];
 
@@ -274,7 +270,7 @@ namespace CalamityMod.NPCs.Perforator
 
                         NPC.TargetClosest();
 
-                        SoundEngine.PlaySound(SoundID.NPCDeath23, NPC.Center);
+                        SoundEngine.PlaySound(WormSpawn, NPC.Center);
 
                         for (int i = 0; i < 16; i++)
                         {
@@ -327,7 +323,7 @@ namespace CalamityMod.NPCs.Perforator
                         {
                             NPC.ai[2] = 0f;
 
-                            SoundEngine.PlaySound(SoundID.NPCDeath23, NPC.Center);
+                            SoundEngine.PlaySound(IchorShoot, NPC.Center);
 
                             for (int i = 0; i < 32; i++)
                             {
@@ -377,6 +373,9 @@ namespace CalamityMod.NPCs.Perforator
             // When firing blobs, float above the target and don't call any other projectile firing or movement code
             if (floatAboveToFireBlobs)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 if (revenge)
                     Movement(player, 6f + velocityEnrageIncrease, 0.3f, 450f);
                 else
@@ -391,7 +390,7 @@ namespace CalamityMod.NPCs.Perforator
                 if (NPC.localAI[0] >= (revenge ? 200f : 250f) + wormsAlive * 150f && NPC.position.Y + NPC.height < player.position.Y && Vector2.Distance(player.Center, NPC.Center) > 80f)
                 {
                     NPC.localAI[0] = 0f;
-                    SoundEngine.PlaySound(SoundID.NPCHit20, NPC.Center);
+                    SoundEngine.PlaySound(GeyserShoot, NPC.Center);
 
                     for (int i = 0; i < 8; i++)
                     {
@@ -438,6 +437,10 @@ namespace CalamityMod.NPCs.Perforator
                 switch (wormsAlive)
                 {
                     case 0:
+
+                        // Set damage
+                        NPC.damage = NPC.defDamage;
+
                         if (large || death)
                             Movement(player, 11f + velocityEnrageIncrease, death ? 0.1125f : 0.0975f, 20f);
                         else if (medium)
@@ -446,23 +449,44 @@ namespace CalamityMod.NPCs.Perforator
                             Movement(player, 9f + velocityEnrageIncrease, death ? 0.0975f : 0.0825f, 40f);
                         else
                             Movement(player, 8f + velocityEnrageIncrease, death ? 0.09f : 0.075f, 50f);
+
                         break;
 
                     case 1:
+
+                        // Avoid cheap bullshit
+                        NPC.damage = 0;
+
                         Movement(player, 6f + velocityEnrageIncrease, 0.15f, 350f);
+
                         break;
 
                     case 2:
+
+                        // Avoid cheap bullshit
+                        NPC.damage = 0;
+
                         Movement(player, 6f + velocityEnrageIncrease, 0.15f, 275f);
+
                         break;
 
                     case 3:
+
+                        // Avoid cheap bullshit
+                        NPC.damage = 0;
+
                         Movement(player, 6f + velocityEnrageIncrease, 0.15f, 200f);
+
                         break;
                 }
             }
             else
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 Movement(player, 6f + velocityEnrageIncrease, 0.075f, 350f);
+            }
         }
 
         private void Movement(Player target, float velocity, float acceleration, float y)

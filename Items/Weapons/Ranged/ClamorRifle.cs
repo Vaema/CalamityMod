@@ -13,10 +13,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 36;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 64;
             Item.height = 30;
+            Item.damage = 36;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Shoot;

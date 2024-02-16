@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
 using Terraria.Audio;
@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.velocity.Y += 0.01f;
 
             if (Projectile.timeLeft < 150)
-                CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 6f, 20f);
+                CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, Projectile.ai[1] == 1f ? 8f : 6f, 20f);
         }
 
         public override void OnKill(int timeLeft)

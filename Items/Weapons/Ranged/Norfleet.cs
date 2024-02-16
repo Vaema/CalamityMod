@@ -13,14 +13,14 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
+            Item.width = 140;
+            Item.height = 42;
             Item.damage = 354;
             Item.knockBack = 15f;
             Item.shootSpeed = 30f;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useAnimation = 75;
             Item.useTime = 75;
-            Item.width = 140;
-            Item.height = 42;
             Item.UseSound = SoundID.Item92;
             Item.shoot = ModContent.ProjectileType<NorfleetCannon>();
             Item.value = CalamityGlobalItem.Rarity14BuyPrice;

@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = Lifetime;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 30;
         }
 
         //Throwing Knive code sucks, so doing it manually so I can increase its range

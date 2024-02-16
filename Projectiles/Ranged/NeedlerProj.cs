@@ -15,8 +15,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.alpha = 255;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 3;
-            Projectile.alpha = 255;
+            Projectile.penetrate = -1;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 2;
             Projectile.aiStyle = ProjAIStyleID.Nail;
@@ -33,20 +32,29 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.alpha = 0;
             }
             Projectile.localAI[1] += 1f;
-            if (Projectile.localAI[1] > 4f)
+            if (Projectile.localAI[1] > 6f && Projectile.numHits < 1)
             {
-                for (int i = 0; i < 2; i++)
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 207 : 256, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f));
+                dust.scale = Main.rand.NextFloat(0.6f, 0.9f);
+                dust.noGravity = true;
+            }
+            if (Projectile.localAI[1] == 4f)
+            {
+                for (int i = 0; i <= 8; i++)
                 {
-                    int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 46, 0f, 0f, 100, default, 0.75f);
-                    Main.dust[dusty].noGravity = true;
-                    Main.dust[dusty].velocity *= 0f;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 40 : 207, (Projectile.velocity * Main.rand.NextFloat(0.1f, 0.65f)).RotatedByRandom(0.4f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.9f, 1.6f);
                 }
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Venom, 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.Venom, 90);
+        }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Venom, 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Venom, 90);
 
         public override void OnKill(int timeLeft)
         {
@@ -54,23 +62,20 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.width = Projectile.height = 48;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            for (int j = 0; j < 3; j++)
+            for (int j = 0; j < 4; j++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 46, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
-                Main.dust[dust].velocity *= 3f;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, 46, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.3f));
+                dust.noGravity = false;
+                dust.scale = Main.rand.NextFloat(0.8f, 1.8f);
                 if (Main.rand.NextBool())
-                {
-                    Main.dust[dust].scale = 0.5f;
-                    Main.dust[dust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
-                }
+                    dust.fadeIn = 0.5f;
             }
-            for (int k = 0; k < 5; k++)
+            for (int k = 0; k < 9; k++)
             {
-                int dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 39, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
-                Main.dust[dust2].noGravity = true;
-                Main.dust[dust2].velocity *= 5f;
-                dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 44, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
-                Main.dust[dust2].velocity *= 2f;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? 44 : 39, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.3f));
+                dust.noGravity = false;
+                dust.scale = Main.rand.NextFloat(0.8f, 1.8f);
+                dust.fadeIn = 0.5f;
             }
         }
     }

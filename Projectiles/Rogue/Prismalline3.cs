@@ -46,11 +46,11 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (Projectile.ai[0] == 1f)
             {
-                int shardCount = Main.rand.Next(1,4);
+                int shardCount = Main.rand.Next(1, 2 + 1);
                 for (int s = 0; s < shardCount; s++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                    int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AquashardSplit>(), Projectile.damage / 3, 0f, Projectile.owner);
+                    int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AquashardSplit>(), Projectile.damage / 3, 0f, Projectile.owner, 0f, 1f);
                     if (shard.WithinBounds(Main.maxProjectiles))
                     {
                         Main.projectile[shard].DamageType = RogueDamageClass.Instance;

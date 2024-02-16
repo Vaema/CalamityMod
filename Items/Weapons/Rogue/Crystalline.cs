@@ -12,6 +12,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 48;
+            Item.height = 48;
             Item.damage = 16;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -21,7 +22,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 48;
             Item.value = CalamityGlobalItem.Rarity2BuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<CrystallineProj>();

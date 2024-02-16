@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,7 +17,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = 1;
-            Projectile.aiStyle = ProjAIStyleID.Arrow;
             Projectile.timeLeft = 180;
         }
 
@@ -31,9 +30,6 @@ namespace CalamityMod.Projectiles.Ranged
 
             Lighting.AddLight(Projectile.Center, new Vector3(0, 244, 252) * (1.2f / 255));
 
-            Projectile.velocity.Y += 0.1f;
-            Projectile.velocity.X *= 0.95f;
-
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
@@ -42,9 +38,14 @@ namespace CalamityMod.Projectiles.Ranged
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity = dspeed;
             }
-
+            bool isHoming = false;
             if (Projectile.timeLeft < 150)
-                CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 6f, 20f);
+            {
+                isHoming = true;
+                CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 6.5f, 20f);
+            }
+            if (!isHoming)
+                Projectile.velocity.Y += 0.14f;
         }
 
         public override void OnKill(int timeLeft)

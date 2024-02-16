@@ -27,9 +27,6 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             bool phase3 = lifeRatio <= 0.4f;
             bool phase4 = lifeRatio <= 0.2f;
 
-            // Reset damage
-            npc.damage = npc.defDamage;
-
             // Spawn settings
             if (npc.localAI[0] == 0f)
             {
@@ -168,6 +165,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             {
                 // Phase switch phase
                 case 0:
+
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
 
                     if (phase2)
                     {
@@ -341,6 +341,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     npc.rotation = 0f;
                     if (npc.velocity.Y == 0f)
                     {
+                        // Avoid cheap bullshit
+                        npc.damage = 0;
+
                         npc.velocity.X *= 0.8f;
                         if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
                             npc.velocity.X = 0f;
@@ -354,6 +357,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                         if (!(npc.ai[1] >= 0f))
                             break;
+
+                        // Set damage
+                        npc.damage = npc.defDamage;
 
                         float distanceBelowTarget = npc.position.Y - (Main.player[npc.target].position.Y + 80f);
                         float speedMult = 1f;
@@ -432,6 +438,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 // Release a massive eruption of crystals in phase 3 and the case is 6
                 case 4:
                 case 6:
+
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
 
                     npc.rotation *= 0.9f;
                     npc.noTileCollide = true;
@@ -525,6 +534,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                                 break;
                             }
 
+                            // Set damage
+                            npc.damage = npc.defDamage;
+
                             npc.velocity.Y += bossRush ? 2f : death ? 1.75f : 1.5f;
                             float slamVelocity = bossRush ? 15.99f : death ? 15.5f : 15f;
                             if (Main.getGoodWorld)
@@ -609,6 +621,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                 // Fire spread of gel projectiles
                 case 5:
+
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
 
                     npc.rotation *= 0.9f;
                     npc.noTileCollide = true;

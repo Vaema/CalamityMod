@@ -281,17 +281,7 @@ namespace CalamityMod.Projectiles.Summon
                         for (int i = 0; i < Main.rand.Next(1,4); i++)
                         {
                             Vector2 sparkS = new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f));
-                            int spark = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, sparkS, ModContent.ProjectileType<Spark>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                            if (spark.WithinBounds(Main.maxProjectiles))
-                            {
-                                Main.projectile[spark].DamageType = DamageClass.Summon;
-                                Main.projectile[spark].originalDamage = Projectile.originalDamage;
-                                Main.projectile[spark].timeLeft = 120;
-                                Main.projectile[spark].penetrate = 3;
-                                Main.projectile[spark].usesIDStaticNPCImmunity = true;
-                                Main.projectile[spark].idStaticNPCHitCooldown = 10;
-                                Main.projectile[spark].usesLocalNPCImmunity = false;
-                            }
+                            int spark = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, sparkS, ModContent.ProjectileType<StormjawSpark>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                         }
                         sparkCounter = 0;
                     }

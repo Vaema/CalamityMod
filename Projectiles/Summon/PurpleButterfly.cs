@@ -34,6 +34,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.timeLeft *= 5;
             Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 8;
         }
 
         public override void AI()
@@ -69,7 +71,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame = 0;
             }
             Lighting.AddLight(Projectile.Center, 0.3f, 0f, 0.5f);
-            Projectile.ChargingMinionAI(1200f, 1500f, 2400f, 150f, 0, 30f, 18f, 9f, new Vector2(0f, -60f), 30f, 12f, true, true);
+            Projectile.ChargingMinionAI(1200f, 1500f, 2400f, 150f, 0, 25f, 20f, 9f, new Vector2(0f, -60f), 30f, 15f, true, true);
             bool isMinion = Projectile.type == ModContent.ProjectileType<PurpleButterfly>();
             player.AddBuff(ModContent.BuffType<ResurrectionButterflyBuff>(), 3600);
             if (isMinion)
@@ -93,11 +95,6 @@ namespace CalamityMod.Projectiles.Summon
             int y6 = framing * Projectile.frame;
             Main.EntitySpriteDraw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, spriteEffects, 0);
             return false;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.immune[Projectile.owner] = 8;
         }
     }
 }

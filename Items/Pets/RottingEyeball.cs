@@ -14,13 +14,13 @@ namespace CalamityMod.Items.Pets
         {
             /*item.DefaultToVanitypet(ModContent.ProjectileType<MiniHiveMind>(), ModContent.BuffType<HiveMindPet>());
             item.rare = -13;*/
+            Item.width = 16;
+            Item.height = 30;
             Item.value = Item.buyPrice(0, 4, 0, 0);
             Item.damage = 0;
             Item.useTime = Item.useAnimation = 20;
             Item.useStyle = 1;
             Item.noMelee = true;
-            Item.width = 16;
-            Item.height = 30;
             Item.UseSound = SoundID.NPCHit2;
             Item.rare = 3;
             Item.shoot = ModContent.ProjectileType<MiniHiveMind>();

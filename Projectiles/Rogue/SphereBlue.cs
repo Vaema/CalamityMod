@@ -55,6 +55,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
+            Projectile.damage /= 2;
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.NPCDeath37, Projectile.position);
             if (Main.netMode != NetmodeID.Server)

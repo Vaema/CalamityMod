@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -17,6 +18,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
+            Item.width = 100;
+            Item.height = 102;
             Item.damage = 182;
             Item.knockBack = 4f;
             Item.useAnimation = Item.useTime = 20;
@@ -26,9 +29,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 4f;
 
             Item.shoot = ModContent.ProjectileType<Razorwind>();
-
-            Item.width = 100;
-            Item.height = 102;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
 
@@ -69,13 +69,9 @@ namespace CalamityMod.Items.Weapons.Melee
             if (Main.rand.NextBool(3))
                 Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 187, 0f, 0f, 100, new Color(53, Main.DiscoG, 255));
         }
-
-        public override void ModifyHitNPC(Player player, NPC target, ref NPC.HitModifiers modifiers)
-        {
-            modifiers.CritDamage *= 0.5f;
-        }
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
             var source = player.GetSource_ItemUse(Item);
             if (player.ownedProjectileCounts[ModContent.ProjectileType<BrinySpout>()] == 0)
                 Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<BrinyTyphoonBubble>(), Item.damage, Item.knockBack, player.whoAmI);
@@ -83,6 +79,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
+            target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
             var source = player.GetSource_ItemUse(Item);
             if (player.ownedProjectileCounts[ModContent.ProjectileType<BrinySpout>()] == 0)
                 Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<BrinyTyphoonBubble>(), Item.damage, Item.knockBack, player.whoAmI);

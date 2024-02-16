@@ -10,6 +10,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
+            Item.width = 128;
+            Item.height = 140;
             Item.damage = 1075;
             Item.knockBack = 7.5f;
             Item.useAnimation = Item.useTime = 25;
@@ -20,8 +22,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 14f;
             Item.shoot = ModContent.ProjectileType<DragonRageStaff>();
 
-            Item.width = 128;
-            Item.height = 140;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.DD2_SkyDragonsFurySwing;

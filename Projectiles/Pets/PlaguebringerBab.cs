@@ -1,6 +1,8 @@
 using CalamityMod.CalPlayer;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Pets
 {
     public class PlaguebringerBab : ModProjectile, ILocalizedModType
@@ -10,6 +12,9 @@ namespace CalamityMod.Projectiles.Pets
         {
             Main.projFrames[Projectile.type] = 6;
             Main.projPet[Projectile.type] = true;
+
+            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, 4, 6)
+            .WithOffset(-25f, -20f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
         public override void SetDefaults()

@@ -15,6 +15,8 @@ namespace CalamityMod.Items.Placeables
 
         public override void SetDefaults()
         {
+            Item.width = 16;
+            Item.height = 16;
             Item.createTile = ModContent.TileType<Tiles.AstralSnow.AstralIce>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -22,8 +24,6 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 16;
-            Item.height = 16;
             Item.maxStack = 9999;
         }
 

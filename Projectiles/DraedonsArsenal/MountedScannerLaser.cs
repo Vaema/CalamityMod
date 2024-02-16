@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.alpha = 255;
-            Projectile.localNPCHitCooldown = 15;
+            Projectile.localNPCHitCooldown = 20;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.DamageType = DamageClass.Summon;
         }
@@ -92,16 +92,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     dust.noGravity = true;
                 }
             }
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            Projectile.damage = (int)(Projectile.damage * 0.6);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            Projectile.damage = (int)(Projectile.damage * 0.6);
         }
     }
 }

@@ -11,9 +11,9 @@ namespace CalamityMod.Items
         public new string LocalizationCategory => "Items.Misc";
         public override void SetDefaults()
         {
-            Item.damage = 0;
             Item.width = 20;
             Item.height = 30;
+            Item.damage = 0;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;

@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.Leviathan
         {
             Main.npcFrameCount[NPC.type] = 6;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.5f
             };
@@ -183,8 +183,6 @@ namespace CalamityMod.NPCs.Leviathan
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 bubbleVelocity *= 2f;
 
-            NPC.damage = NPC.defDamage;
-
             Vector2 vector = NPC.Center;
 
             // Phases
@@ -197,6 +195,9 @@ namespace CalamityMod.NPCs.Leviathan
             {
                 if (!HasBegunSummoningLeviathan && !Main.zenithWorld)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     // Use charging frames.
                     NPC.ai[0] = 3f;
 
@@ -295,6 +296,9 @@ namespace CalamityMod.NPCs.Leviathan
             // Hover near the target, invisible if the Leviathan is present and not sufficiently injured.
             if ((phase3 || death) && WaitingForLeviathan && !Main.zenithWorld)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 ChargeRotation(player, vector);
                 ChargeLocation(player, vector, false, true);
 
@@ -314,7 +318,6 @@ namespace CalamityMod.NPCs.Leviathan
                 }
 
                 NPC.dontTakeDamage = true;
-                NPC.damage = 0;
 
                 if (NPC.ai[0] != -1f)
                 {
@@ -329,12 +332,9 @@ namespace CalamityMod.NPCs.Leviathan
             }
 
             // Alpha
-            if (NPC.damage != 0)
-            {
-                NPC.alpha -= 5;
-                if (NPC.alpha <= 0)
-                    NPC.alpha = 0;
-            }
+            NPC.alpha -= 5;
+            if (NPC.alpha <= 0)
+                NPC.alpha = 0;
 
             // Play sound
             float extrapitch = Main.zenithWorld ? -0.5f : 0;
@@ -419,6 +419,9 @@ namespace CalamityMod.NPCs.Leviathan
             // Get in position for bubble spawn
             else if (NPC.ai[0] == 0f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 NPC.rotation = NPC.velocity.X * 0.02f;
                 NPC.spriteDirection = NPC.direction;
 
@@ -481,6 +484,9 @@ namespace CalamityMod.NPCs.Leviathan
             // Bubble spawn
             else if (NPC.ai[0] == 1f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 NPC.rotation = NPC.velocity.X * 0.02f;
                 Vector2 bubbleSpawnPos = new Vector2(NPC.position.X + (NPC.width / 2) + (15 * NPC.direction * NPC.scale), NPC.position.Y + 30 * NPC.scale);
                 Vector2 restingPos = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
@@ -584,6 +590,9 @@ namespace CalamityMod.NPCs.Leviathan
             // Fly near target and summon projectiles
             else if (NPC.ai[0] == 2f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 NPC.rotation = NPC.velocity.X * 0.02f;
 
                 float basey = Main.zenithWorld ? -100 : -350;
@@ -716,6 +725,9 @@ namespace CalamityMod.NPCs.Leviathan
             // Set up charge
             else if (NPC.ai[0] == 3f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 ChargeLocation(player, vector, leviAlive && !phase4, revenge);
 
                 NPC.ai[1] += 1f;

@@ -178,17 +178,16 @@ namespace CalamityMod.Projectiles.Boss
                 default:
                     break;
             }
-            Color baseColor = new Color(red, green, blue, 255);
+            Color baseColor = new Color(red, green, blue, 0);
 
-            Color halfBaseColor = baseColor * 0.5f;
-            halfBaseColor.A = 0;
+            Color baseColor2 = baseColor;
             Vector2 projDirection = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Vector2 halfTextureSize = drawTexture.Size() / 2f;
-            Color halfOfHalfBaseColor = halfBaseColor * 0.5f;
+            Color halfOfHalfBaseColor = baseColor2 * 0.5f;
             float timeLeftColorScale = Utils.GetLerpValue(15f, 30f, Projectile.timeLeft, clamped: true) * Utils.GetLerpValue(240f, 200f, Projectile.timeLeft, clamped: true) * (1f + 0.2f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 30f / 0.5f * ((float)Math.PI * 2f) * 3f)) * 0.8f;
             Vector2 timeLeftDrawEffect = new Vector2(1f, 1.5f) * timeLeftColorScale;
             Vector2 timeLeftDrawEffect2 = new Vector2(0.5f, 1f) * timeLeftColorScale;
-            halfBaseColor *= timeLeftColorScale;
+            baseColor2 *= timeLeftColorScale;
             halfOfHalfBaseColor *= timeLeftColorScale;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
@@ -200,7 +199,7 @@ namespace CalamityMod.Projectiles.Boss
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {
                     Vector2 drawPos = Projectile.oldPos[i] + projDirection;
-                    Color baseColorAlpha = Projectile.GetAlpha(halfBaseColor) * ((Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
+                    Color baseColorAlpha = Projectile.GetAlpha(baseColor2) * ((Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
                     Main.spriteBatch.Draw(drawTexture, drawPos, null, baseColorAlpha, Projectile.rotation, halfTextureSize, timeLeftDrawEffect, SpriteEffects.None, 0);
                     Main.spriteBatch.Draw(drawTexture, drawPos, null, baseColorAlpha, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, SpriteEffects.None, 0);
 
@@ -210,8 +209,8 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
 
-            Main.EntitySpriteDraw(drawTexture, projDirection, null, halfBaseColor, Projectile.rotation, halfTextureSize, timeLeftDrawEffect, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, projDirection, null, halfBaseColor, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, projDirection, null, baseColor2, Projectile.rotation, halfTextureSize, timeLeftDrawEffect, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, projDirection, null, baseColor2, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, spriteEffects, 0);
             Main.EntitySpriteDraw(drawTexture, projDirection, null, halfOfHalfBaseColor, Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
             Main.EntitySpriteDraw(drawTexture, projDirection, null, halfOfHalfBaseColor, Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
 

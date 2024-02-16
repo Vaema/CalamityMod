@@ -21,12 +21,12 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
+            Item.width = 42;
+            Item.height = 36;
             Item.damage = 45;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.width = 42;
-            Item.height = 36;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.autoReuse = true;

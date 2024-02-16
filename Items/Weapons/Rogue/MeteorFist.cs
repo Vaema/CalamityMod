@@ -12,17 +12,17 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 22;
+            Item.height = 28;
             Item.damage = 15;
             Item.noMelee = true;
             Item.useTurn = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 15;
+            Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = 15;
+            Item.useTime = 18;
             Item.knockBack = 5.75f;
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;
-            Item.height = 28;
             Item.value = CalamityGlobalItem.Rarity2BuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<MeteorFistProj>();
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 3.6f;
+        public override float StealthDamageMultiplier => 3.15f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

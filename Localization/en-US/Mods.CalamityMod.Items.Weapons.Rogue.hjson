@@ -9,7 +9,7 @@ AcidicRainBarrel: {
 
 AdamantiteThrowingAxe: {
 	DisplayName: Adamantite Throwing Axe
-	Tooltip: Stealth strikes summon lightning bolts on enemy hits
+	Tooltip: Stealth strikes ignore gravity and rain down lightning on enemy hits
 }
 
 AlphaVirus: {
@@ -204,7 +204,7 @@ CosmicKunai: {
 	Tooltip:
 		'''
 		Fires a rapid stream of short-range kunai
-		Stealth strikes spawn 5 Cosmic Scythes which home and explode
+		Stealth strikes make kunai travel farther and spawn 5 homing Cosmic Scythes
 		'''
 }
 
@@ -391,9 +391,8 @@ Exorcism: {
 	DisplayName: Exorcism
 	Tooltip:
 		'''
-		Throws a hallowed cross which explodes into a flash of light that damages nearby enemies, closer enemies receiving more damage
-		As the cross travels downwards, the damage inflicted by both the cross and flash increases constantly
-		Stealth strikes cause the cross to be thrown with full damage immediately. Hallowed stars fall when the cross explodes
+		Throws a hallowed cross which explodes into a flash of light that damages nearby enemies
+		Stealth strikes create larger flashes and rain stars infused with holy light
 		'''
 }
 
@@ -413,18 +412,6 @@ FeatherKnife: {
 		'''
 		Throws a knife which summons homing feathers
 		Stealth strike throws a volley of knives
-		'''
-}
-
-FinalDawn: {
-	DisplayName: The Final Dawn
-	Tooltip:
-		'''
-		Attack enemies with a giant scythe swing to replenish stealth
-		Press up and attack to throw the scythe 
-		Stealth strikes perform a horizontal swing that leaves a lingering fire aura
-		Stealth strikes performed while pressing up fling yourself at the enemy and slice through them, causing homing fireballs to emerge
-		'We shall ride into the sunrise once more'
 		'''
 }
 
@@ -490,7 +477,7 @@ GildedDagger: {
 	Tooltip:
 		'''
 		Throws a shiny blade that ricochets towards another enemy on hit
-		Stealth strikes cause the blade to home in after ricocheting, with each ricochet dealing 20% more damage
+		Stealth strikes cause the blade to home in after ricocheting, with each ricochet dealing 5% more damage
 		Stealth strikes also have increased piercing
 		'''
 }
@@ -509,7 +496,7 @@ GleamingDagger: {
 	Tooltip:
 		'''
 		Throws a shiny blade that ricochets towards another enemy on hit
-		Stealth strikes cause the blade to home in after ricocheting, with each ricochet dealing 20% more damage
+		Stealth strikes cause the blade to home in after ricocheting, with each ricochet dealing 5% more damage
 		Stealth strikes also have increased piercing
 		'''
 }
@@ -542,8 +529,7 @@ HardenedHoneycomb: {
 	Tooltip:
 		'''
 		Fires a honeycomb that shatters into fragments
-		Grants the honey buff to players it touches
-		Stealth strikes can bounce off walls and enemies
+		Stealth strikes grant the honey buff on hit and spawn bees
 		'''
 }
 
@@ -679,8 +665,8 @@ LeviathanTeeth: {
 	DisplayName: Leviathan Teeth
 	Tooltip:
 		'''
-		Rapidly throws a variety of poisonous fangs that stick to enemies
-		Stealth strikes cause 6 very fast teeth to be thrown, ignoring gravity and inflicting extreme knockback
+		Rapidly throws a spread of venomous teeth that stick to enemies
+		Stealth strikes cause 6 very fast teeth to be thrown, ignoring gravity and spawning water blasts on hit
 		'''
 }
 
@@ -708,7 +694,7 @@ LunarKunai: {
 		'''
 		Throws out a set of three kunai that ignore gravity and slightly home in on enemies
 		After traveling enough distance, the kunai supercharge with lunar energy, homing in far more aggressively and exploding on impact
-		Stealth strikes instantly throw eight supercharged Kunai
+		Stealth strikes instantly throw nine supercharged Kunai
 		'''
 }
 
@@ -847,18 +833,7 @@ PhantasmalRuin: {
 	Tooltip:
 		'''
 		Fires a large ghost lance that explodes into spirits on enemy hits
-		Stealth strikes pierce and summon many spirits from the depths on enemy hits
-		'''
-}
-
-PhantomLance: {
-	DisplayName: Phantom Lance
-	Tooltip:
-		'''
-		Fires a spectral javelin that rapidly releases lost souls
-		Fades away and slows down over time
-		Lost souls released later deal less damage
-		Stealth strikes don't slow down and souls always deal full damage
+		Stealth strikes pierce twice and summon many spirits from the depths on the first hit
 		'''
 }
 
@@ -977,8 +952,8 @@ ScourgeoftheDesert: {
 	DisplayName: Scourge of the Desert
 	Tooltip:
 		'''
-		Gains velocity over time
-		Stealth strikes gain damage as they damage enemies
+		A javelin that will burrow through the ground and launch itself at enemies
+		Stealth strikes throw three javelins that will burrow multiple times
 		'''
 }
 
@@ -986,8 +961,8 @@ ScourgeoftheSeas: {
 	DisplayName: Scourge of the Seas
 	Tooltip:
 		'''
-		Snaps apart into a venomous cloud upon striking an enemy
-		Stealth strikes are coated with vile toxins, afflicting enemies with a powerful debuff
+		Snaps apart into poisonous clouds upon striking an enemy
+		Stealth strikes are additionally coated with venomous toxins
 		'''
 }
 
@@ -1183,7 +1158,7 @@ SubductionSlicer: {
 	Tooltip:
 		'''
 		Throws a scythe that explodes on enemy hits
-		Stealth strikes also summon an orange pillar of fire on enemy hits
+		Stealth strikes also summon a pillar of fire on enemy hits
 		'''
 }
 
@@ -1230,6 +1205,18 @@ TheAtomSplitter: {
 		'''
 		Throws a quantum-superimposed javelin that strikes from numerous timelines at once
 		Stealth strikes perform far more simultaneous strikes
+		'''
+}
+
+TheFinalDawn: {
+	DisplayName: The Final Dawn
+	Tooltip:
+		'''
+		Attack enemies with a giant scythe swing to replenish stealth
+		Press up and attack to throw the scythe 
+		Stealth strikes perform a horizontal swing that leaves a lingering fire aura
+		Stealth strikes performed while pressing up fling yourself at the enemy and slice through them, causing homing fireballs to emerge
+		'We shall ride into the sunrise once more'
 		'''
 }
 

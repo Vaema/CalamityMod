@@ -14,6 +14,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
+            Item.width = 48;
+            Item.height = 62;
             Item.damage = 100;
             Item.knockBack = 5.5f;
             Item.useAnimation = Item.useTime = 15;
@@ -23,8 +25,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<VirulentWave>();
 
-            Item.width = 48;
-            Item.height = 62;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
             Item.value = CalamityGlobalItem.Rarity8BuyPrice;

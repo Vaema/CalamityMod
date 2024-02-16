@@ -13,6 +13,7 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.NPCs.Abyss
 {
@@ -120,22 +121,22 @@ namespace CalamityMod.NPCs.Abyss
                 
                 if (boomTimer >= (dyingDuration - 20)) //home for the first 20 frames, not beyond that 
                 {
-                    float num543 = player.position.X + (float)(player.width / 2);
-                    float num544 = player.position.Y + (float)(player.height / 2);
-                    float num550 = 30f;
-                    Vector2 vector43 = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-                    float num551 = num543 - vector43.X;
-                    float num552 = num544 - vector43.Y;
-                    float num553 = (float)Math.Sqrt((double)(num551 * num551 + num552 * num552));
-                    if (num553 < 100f)
+                    float targetXDirection = player.position.X + (float)(player.width / 2);
+                    float targetYDirection = player.position.Y + (float)(player.height / 2);
+                    float homingSpeed = 30f;
+                    Vector2 npcPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
+                    float targetXDist = targetXDirection - npcPosition.X;
+                    float targetYDist = targetYDirection - npcPosition.Y;
+                    float targetDistance = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
+                    if (targetDistance < 100f)
                     {
-                        num550 = 10f; //5
+                        homingSpeed = 10f; //5
                     }
-                    num553 = num550 / num553;
-                    num551 *= num553;
-                    num552 *= num553;
-                    NPC.velocity.X = (NPC.velocity.X * 5f + num551) / 6f;
-                    NPC.velocity.Y = (NPC.velocity.Y * 5f + num552) / 6f;
+                    targetDistance = homingSpeed / targetDistance;
+                    targetXDist *= targetDistance;
+                    targetYDist *= targetDistance;
+                    NPC.velocity.X = (NPC.velocity.X * 5f + targetXDist) / 6f;
+                    NPC.velocity.Y = (NPC.velocity.Y * 5f + targetYDist) / 6f;
 
                     NPC.velocity *= 0.9f; //slow it down a bit to be fair
                 
@@ -250,14 +251,14 @@ namespace CalamityMod.NPCs.Abyss
             }
             Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
             var texture = TextureAssets.Npc[NPC.type];
-            Vector2 vector11 = new Vector2((float)(texture.Value.Width / 2), (float)(texture.Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 halfSizeTexture = new Vector2((float)(texture.Value.Width / 2), (float)(texture.Value.Height / Main.npcFrameCount[NPC.type] / 2));
             Vector2 vector = center - screenPos;
             var glowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/CannonballJellyfishGlow");
             vector -= new Vector2((float)glowTexture.Value.Width, (float)(glowTexture.Value.Height / Main.npcFrameCount[NPC.type])) * 1f / 2f;
-            vector += vector11 * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
+            vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
             Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(new Color(67, 218, 166));
             Main.spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/CannonballJellyfishGlow").Value, vector,
-                new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, vector11, 1f, spriteEffects, 0f);
+                new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
         }
 
         private void Explode()
@@ -280,7 +281,11 @@ namespace CalamityMod.NPCs.Abyss
             NPC.netUpdate = true;
         }
 
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => target.AddBuff(BuffID.Poisoned, 60 * (this.shouldTarget ? 10 : 5)); //10 sec for explosion, 5 sec for non explosion
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+        {
+            target.AddBuff(BuffID.Poisoned, 60 * (this.shouldTarget ? 4 : 2)); //4 sec for explosion, 2 sec for non explosion
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 60 * (this.shouldTarget ? 4 : 2)); //4 sec for explosion, 2 sec for non explosion
+        }
 
         public override bool CheckDead()
         {

@@ -1,4 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -40,18 +42,26 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public virtual float MinionSlots => 1f;
 
         /// <summary>
-        /// The distance in which the minion can detect an enemy, in pixels.<br/>
+        /// The max distance in which the minion can detect an enemy, in pixels.<br/>
         /// <see cref="ProjectileID.Sets.DrawScreenCheckFluff"/> is set to this value.<br/>
         /// Defaults to 1200f (75 tiles).
         /// </summary>
         public virtual float EnemyDistanceDetection => 1200f;
 
         /// <summary>
+        /// The min distance in which the minion can detect an enemy before it goes to its correspondent enemy distance detection.
+        /// Defaults to 960f (60 tiles), the radius of a 1080p monitor at max zoom.
+        /// </summary>
+        public virtual float MinEnemyDistanceDetection => 960f;
+
+        private float AdaptiveEnemyDistanceDetection => Target == null ? MinEnemyDistanceDetection : EnemyDistanceDetection;
+
+        /// <summary>
         /// The amount of local I-Frames this minion has.<br/>
-        /// Multiplied by <see cref="Projectile.MaxUpdates"/> so changing <see cref="Projectile.extraUpdates"/> won't affect this.<br/>
+        /// Multiplied by <see cref="Projectile.MaxUpdates"/> so changing the updates won't affect this.<br/>
         /// Defaults to 10.
         /// </summary>
-        public int IFrames { get => Projectile.localNPCHitCooldown / Projectile.MaxUpdates; set => Projectile.localNPCHitCooldown = value * Projectile.MaxUpdates; }
+        public int IFrames { get; set; } = 10;
 
         /// <summary>
         /// If <see langword="true"/>, makes the minion only be able to detect and attack enemies through tiles only when there are any bosses alive.<br/>
@@ -64,6 +74,44 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// Defaults to <see langword="true"/>.
         /// </summary>
         public virtual bool PreventTargettingUntilTargetHit => true;
+
+        /// <summary>
+        /// If <see langword="true"/>, the minion will be considered grounded, this will turn on some features that are neccesary for grounded minions.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public virtual bool Grounded => false;
+
+        /// <summary>
+        /// The speed at which the minion falls.<br/>
+        /// It'll take the absolute value of whatever you input, to ensure that it's on Terraria's coordinate system.<br/>
+        /// This is intended to use for grounded minions.<br/>
+        /// Defaults to 0.4f.
+        /// </summary>
+        public float Gravity
+        {
+            get => _gravity;
+            set => _gravity = MathF.Abs(value);
+        }
+        private float _gravity = 0.4f;
+
+        /// <summary>
+        /// The max speed at which the minion falls.<br/>
+        /// It'll take the absolute value of whatever you input, to ensure that it's on Terraria's coordinate system.<br/>
+        /// This is intended to use for grounded minions.<br/>
+        /// Defaults to 20f.
+        /// </summary>
+        public float MaxGravity
+        {
+            get => _maxGravity;
+            set => _maxGravity = MathF.Abs(value);
+        }
+        private float _maxGravity = 20f;
+
+        /// <summary>
+        /// The amount of animation frames this minion has.<br/>
+        /// Defaults to 1 frame.
+        /// </summary>
+        public virtual int AnimationFrames => 1;
 
         /// <summary>
         /// The frames that it takes to go to the next frame of animation.<br/>
@@ -83,14 +131,15 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         public int TrailCacheLength { get; set; } = 5;
 
-        public Player Owner => Main.player[Projectile.owner];
-        public CalamityPlayer ModdedOwner => Owner.Calamity();
+        public Player Owner { get; set; }
+        public CalamityPlayer ModdedOwner { get; set; }
         public NPC Target { get; set; }
 
         #endregion
 
         public override void SetStaticDefaults()
         {
+            Main.projFrames[Type] = AnimationFrames;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = TrailingMode;
             ProjectileID.Sets.TrailCacheLength[Type] = TrailCacheLength;
@@ -104,7 +153,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.penetrate = -1;
 
             Projectile.friendly = true;
-            Projectile.tileCollide = false;
+            Projectile.tileCollide = Grounded;
             Projectile.ignoreWater = true;
             Projectile.minion = true;
             Projectile.usesLocalNPCImmunity = true;
@@ -119,11 +168,14 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public override void AI()
         {
+            Projectile.localNPCHitCooldown = IFrames * Projectile.MaxUpdates;
+            SetOwnerTarget();
             CheckMinionExistence();
             DoAnimation();
-            ChooseTarget();
             MinionAI();
         }
+
+        public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
         #region AI Methods
 
@@ -166,9 +218,157 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         }
 
         /// <summary>
-        /// Where the null property <see cref="Target"/> is set to a valid target, a non-null value.
+        /// Where the null property <see cref="Target"/>, <see cref="Owner"/> and <see cref="ModdedOwner"/> is set to a non-null value.
         /// </summary>
-        public virtual void ChooseTarget() => Target = Owner.Center.MinionHoming(EnemyDistanceDetection, Owner, !PreHardmodeMinionTileVision || CalamityPlayer.areThereAnyDamnBosses);
+        public virtual void SetOwnerTarget()
+        {
+            Owner = Main.player[Projectile.owner];
+            ModdedOwner = Owner.Calamity();
+            Target = Owner.Center.MinionHoming(AdaptiveEnemyDistanceDetection, Owner, !PreHardmodeMinionTileVision || CalamityPlayer.areThereAnyDamnBosses);
+
+            // When minions are grounded, they are affected by tiles, meaning they have a much limited movement.
+            // Pre-Hardmode minions are affected the most since they can't see through walls.
+            // In consequence, some targets that may seem valid, aren't detected due to this.
+            // If the minion hasn't detected any targets with the center being the player, we give them a second chance with the center being the minion itself.
+            // If there are bosses on the world, we don't do this check because if there wasn't any targets with tile X-Ray, this won't do anything.
+            if (Grounded && Target is null && PreHardmodeMinionTileVision && !CalamityPlayer.areThereAnyDamnBosses)
+                Target = Projectile.Center.MinionHoming(AdaptiveEnemyDistanceDetection, Owner, false);
+        }
+
+        #endregion
+
+        #region Grounded Minion Utilities
+
+        /// <summary>
+        /// A quick method to apply gravity to grounded minions.<br/>
+        /// You can choose to not use it and make your own if a simple one does not fit your need.
+        /// </summary>
+        public void DoGravity()
+        {
+            float speedY = Projectile.velocity.Y;
+            if (speedY < _maxGravity)
+                speedY = MathF.Min(speedY + _gravity, _maxGravity);
+            Projectile.velocity.Y = speedY;
+        }
+
+        /// <summary>
+        /// Checks whether there's a tile between two vectors vertically.<br/>
+        /// This method has many shorthand variants.<br/>
+        /// Useful for grounded minion behavior.
+        /// </summary>
+        /// <param name="startVector">The starter vector. Its X component will be the one used, so put here the vector from where you want to check.</param>
+        /// <param name="endVector">The ending vector.</param>
+        /// <param name="platformCheckDownwards">Whether you want to check for platforms when <paramref name="endVector"/> is below <paramref name="startVector"/></param>
+        /// <returns>Returns <see langword="true"/> if there's a tile between <paramref name="startVector"/> and <paramref name="endVector"/>, the X coordinate being the one from <paramref name="startVector"/>; otherwise <see langword="false"/>.</returns>
+        public bool IsTileBetweenTwoVectorsVertically(Vector2 startVector, Vector2 endVector, bool platformCheckDownwards = false)
+        {
+            Point startPoint = CalamityUtils.ToSafeTileCoordinates(startVector);
+            Point endPoint = CalamityUtils.ToSafeTileCoordinates(endVector);
+
+            if (endVector.Y > startVector.Y)
+            {
+                for (int coordY = endPoint.Y; coordY >= startPoint.Y; coordY--)
+                {
+                    if (Main.tile[startPoint.X, coordY].IsTileSolidGround())
+                        return true;
+                }
+            }
+            else
+            {
+                for (int coordY = endPoint.Y; coordY <= startPoint.Y; coordY++)
+                {
+                    if (platformCheckDownwards)
+                    {
+                        if (Main.tile[startPoint.X, coordY].IsTileSolidGround())
+                            return true;
+                    }
+                    else if (Main.tile[startPoint.X, coordY].IsTileSolid())
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool IsTileBetweenOwnerAndVectorVertically(Vector2 vector, bool platformCheckDownwards = false) => IsTileBetweenTwoVectorsVertically(Owner.Center, vector, platformCheckDownwards);
+
+        public bool IsTileBetweenTargetAndVectorVertically(Vector2 vector, bool platformCheckDownwards = false) => IsTileBetweenTwoVectorsVertically(Target.Center, vector, platformCheckDownwards);
+
+        public bool IsTileBetweenVectorAndMinionVertically(Vector2 vector, bool platformCheckDownwards = false) => IsTileBetweenTwoVectorsVertically(vector, Projectile.Center, platformCheckDownwards);
+
+        public bool IsTileBetweenOwnerAndMinionVertically(bool platformCheckDownwards = false) => IsTileBetweenTwoVectorsVertically(Owner.Center, Projectile.Center, platformCheckDownwards);
+
+        public bool IsTileBetweenTargetAndMinionVertically(bool platformCheckDownwards = false) => IsTileBetweenTwoVectorsVertically(Target.Center, Projectile.Center, platformCheckDownwards);
+
+        /// <summary>
+        /// Checks if the minion has a tile in front of him, at their left or right.
+        /// </summary>
+        /// <param name="leftFluff">The extra distance it'll check at the left, not all minions are perfectly sized 1 tile, so you'll need to tweak this. Defaults to 0.</param>
+        /// <param name="rightFluff">The extra distance it'll check at the right, not all minions are perfectly sized 1 tile, so you'll need to tweak this. Defaults to 0.</param>
+        /// <returns><see langword="true"/> if there's a tile at the left or right, otherwise <see langword="false"/></returns>
+        public bool IsMinionFacingTile(int leftFluff = 0, int rightFluff = 0)
+        {
+            Point topLeft = CalamityUtils.ToSafeTileCoordinates(Projectile.TopLeft);
+            Point bottomLeft = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomLeft);
+            for (int coordY = topLeft.Y; coordY < bottomLeft.Y; coordY++)
+            {
+                if (Main.tile[topLeft.X - leftFluff, coordY].IsTileSolid())
+                    return true;
+            }
+
+            Point topRight = CalamityUtils.ToSafeTileCoordinates(Projectile.TopRight);
+            Point bottomRight = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomRight);
+            for (int coordY = topRight.Y; coordY <= bottomRight.Y; coordY++)
+            {
+                if (Main.tile[topRight.X + rightFluff, coordY].IsTileSolid())
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks whether the minion is standing on a tile or not.
+        /// </summary>
+        /// <returns><see langword="true"/> if the minion's standing on a tile, otherwise <see langword="false"/></returns>
+        public bool IsMinionStandingOnTile()
+        {
+            Point minionPointLeft = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomLeft);
+            Point minionPointRight = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomRight);
+            for (int coordX = minionPointLeft.X; coordX <= minionPointRight.X; coordX++)
+            {
+                if (Main.tile[coordX, minionPointLeft.Y].IsTileSolidGround())
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks whether the minion is inside a tile or not.<br/>
+        /// It checks if there's tiles in the diagonals of the minion's hitbox.
+        /// </summary>
+        /// <returns><see langword="true"/> if there's a tile inside the minion, otherwise <see langword="false"/></returns>
+        public bool IsMinionInsideTile()
+        {
+            Point topLeft = CalamityUtils.ToSafeTileCoordinates(Projectile.TopLeft);
+            Point bottomRight = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomRight);
+            for (int coordX = topLeft.X; coordX <= bottomRight.X; coordX++)
+            {
+                if (Main.tile[coordX, (int)Utils.Remap(coordX, topLeft.X, bottomRight.X, topLeft.Y, bottomRight.Y)].IsTileSolid())
+                    return true;
+            }
+
+            Point topRight = CalamityUtils.ToSafeTileCoordinates(Projectile.TopRight);
+            Point bottomLeft = CalamityUtils.ToSafeTileCoordinates(Projectile.BottomLeft);
+            for (int coordX = bottomLeft.X; coordX >= topRight.X; coordX--)
+            {
+                if (Main.tile[coordX, (int)Utils.Remap(coordX, bottomLeft.X, topRight.X, bottomLeft.Y, bottomRight.Y)].IsTileSolid())
+                    return true;
+            }
+
+            return false;
+        }
 
         #endregion
     }

@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 60;
+            Item.height = 60;
             Item.damage = 90;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
@@ -27,7 +28,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 60;
             Item.value = CalamityGlobalItem.Rarity5BuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<EarthenPikeSpear>();

@@ -58,6 +58,11 @@ MoscowMuleBuff: {
 	Description: Damage, critical strike chance, and knockback increased, life regen reduced
 }
 
+OldFashionedBuff: {
+	DisplayName: Old Fashioned
+	Description: Accessory and set bonus damage multiplied, damage reduced
+}
+
 RedWineBuff: {
 	DisplayName: Red Wine
 	Description: Life regen reduced
@@ -667,15 +672,6 @@ BloodflareBloodFrenzy: {
 	Description: Contact damage is reduced and melee stats are greatly increased
 }
 
-BloodyBoost: {
-	DisplayName: Bloody Boost
-	Description:
-		'''
-		Increased offensive and defensive stats
-		Healing potions grant more health
-		'''
-}
-
 BossEffects: {
 	DisplayName: Boss Effects
 	Description:
@@ -757,6 +753,11 @@ HallowedRuneRegeneration: {
 	Description: Regenerating life
 }
 
+Haste: {
+	DisplayName: Haste
+	Description: Increased movement speed and acceleration
+}
+
 IceShieldBuff: {
 	DisplayName: Ice Shield
 	Description: Absorbs 20% damage from the next hit you take, then shatters
@@ -789,11 +790,6 @@ PhantomicShield: {
 		Defense increased by 10 and damage reduction increased by 5%
 		An ephemeral bulwark protects you
 		'''
-}
-
-PolarisBuff: {
-	DisplayName: Polaris Boost
-	Description: The Northern Star empowers your life regeneration
 }
 
 ProfanedCrystalBuff: {

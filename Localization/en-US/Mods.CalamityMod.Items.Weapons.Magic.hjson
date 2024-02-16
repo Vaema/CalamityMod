@@ -106,7 +106,7 @@ AstralachneaStaff: {
 
 AstralStaff: {
 	DisplayName: Astral Staff
-	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact.
+	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact
 }
 
 Atlantis: {
@@ -237,7 +237,11 @@ DivineRetribution: {
 
 Downpour: {
 	DisplayName: Downpour
-	Tooltip: Fires a spray of water that drips extra trails of water
+	Tooltip:
+		'''
+		Fires an explosive stream of sand that falls after hitting an enemy
+		The explosion only occurs when the projectile expires
+		'''
 }
 
 Effervescence: {
@@ -643,6 +647,15 @@ RougeSlash: {
 	Tooltip: Fires a wave of 3 rouge air slashes
 }
 
+SandstreamScepter: {
+	DisplayName: Sandstream Scepter
+	Tooltip:
+		'''
+		Fires an explosive stream of sand that falls after hitting an enemy
+		The explosion only occurs when the projectile expires
+		'''
+}
+
 SanguineFlare: {
 	DisplayName: Sanguine Flare
 	Tooltip: Fires a blast of sanguine flares that drain enemy life
@@ -655,10 +668,14 @@ SeethingDischarge: {
 
 Serpentine: {
 	DisplayName: Serpentine
-	Tooltip: Casts a serpent that follows the mouse cursor
+	Tooltip:
+		'''
+		Casts a serpent that follows the mouse cursor
+		Ignores 15 points of enemy Defense
+		'''
 }
 
-ShadecrystalTome: {
+ShadecrystalBarrage: {
 	DisplayName: Shadecrystal Barrage
 	Tooltip: Summons rapid fire shadecrystals, can shoot two crystals at once
 }
@@ -701,7 +718,11 @@ SlitheringEels: {
 
 SnowstormStaff: {
 	DisplayName: Snowstorm Staff
-	Tooltip: Fires a snowflake that follows the mouse cursor
+	Tooltip:
+		'''
+		Fires snowflakes that follows the mouse cursor
+		Snowflakes split into ice stars on enemy hits
+		'''
 }
 
 SoulPiercer: {
@@ -717,11 +738,6 @@ StaffofBlushie: {
 StarShower: {
 	DisplayName: Star Shower
 	Tooltip: Casts a spread of astral stars at the mouse cursor
-}
-
-StormSpray: {
-	DisplayName: Storm Spray
-	Tooltip: Fires a spray of water that drips extra trails of water
 }
 
 SubsumingVortex: {
@@ -759,6 +775,18 @@ TerraRay: {
 		'''
 }
 
+Teslastaff: {
+	DisplayName: Teslastaff
+	Tooltip:
+		'''
+		Fires a channeled beam of pinpoint-accurate lightning
+		The beam has limited turning speed capability
+		Each successive hit on the same enemy increases damage per hit
+		The damage increases 10% per hit to a maximum of 500% damage
+		This damage will rapidly decrease after the enemy stops being hit
+		'''
+}
+
 TheDanceofLight: {
 	DisplayName: The Dance of Light
 	Tooltip:
@@ -792,7 +820,7 @@ ThornBlossom: {
 	DisplayName: Thorn Blossom
 	Tooltip:
 		'''
-		Casts a beaming flower that explodes into homing petals alongisde a deadly thorn
+		Casts a beaming flower that explodes into homing petals alongside a deadly thorn
 		Costs 3 HP to fire
 		'Every rose has its thorn'
 		'''

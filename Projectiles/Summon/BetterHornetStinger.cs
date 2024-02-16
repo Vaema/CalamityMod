@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.PotionSickness, 180);
+            target.AddBuff(BuffID.Poisoned, 180);
 
             if (!Main.dedServ)
             {

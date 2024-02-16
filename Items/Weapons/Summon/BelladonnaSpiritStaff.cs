@@ -26,14 +26,13 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = 40;
+            Item.height = 42;
             Item.damage = 22;
             Item.knockBack = 1f;
             Item.mana = 10;
 
             Item.shoot = ModContent.ProjectileType<BelladonnaSpirit>();
-
-            Item.width = 40;
-            Item.height = 42;
             Item.useTime = Item.useAnimation = 35;
 
             Item.DamageType = DamageClass.Summon;

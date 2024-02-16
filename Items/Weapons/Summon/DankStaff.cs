@@ -13,10 +13,10 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 9;
-            Item.mana = 10;
             Item.width = 58;
             Item.height = 58;
+            Item.damage = 9;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 30;
             Item.scale = 0.85f;
             Item.useStyle = ItemUseStyleID.Swing;

@@ -278,10 +278,10 @@ GemTechHeadgear: {
 	GeneralGemInfo:
 		'''
 		A gem is lost when you take more than {0} damage in a single hit.
-		The type of gem lost is the same as the class of the previous when you used
+		The type of gem lost is the same as the class of the most recently used weapon
 		If said gem has already been lost, the base gem is lost instead
 		When a gem is lost, it breaks off and homes towards the nearest enemy or boss, if one is present, dealing a base of {1} damage
-		Gems have a {2} second delay before they appear again"
+		Gems have a {2} second delay before they appear again
 		'''
 	RedGemInfo: "[i:Ruby] The red gem grants {0} maximum stealth, increased rogue stats, and makes stealth only consumable by rogue weapons"
 	YellowGemInfo: "[i:Topaz] The yellow gem provides increased melee stats and makes melee attacks release shards on hit with a cooldown. This cooldown is shorter for true melee attacks"

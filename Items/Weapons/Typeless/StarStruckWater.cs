@@ -17,13 +17,13 @@ namespace CalamityMod.Items.Weapons.Typeless
 
         public override void SetDefaults()
         {
+            Item.width = 18;
+            Item.height = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shootSpeed = 14f;
             Item.rare = ItemRarityID.Orange;
             Item.damage = 20;
             Item.shoot = ModContent.ProjectileType<StarStruckWaterBottle>();
-            Item.width = 18;
-            Item.height = 20;
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 3f;

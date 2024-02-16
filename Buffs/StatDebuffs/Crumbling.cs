@@ -9,7 +9,7 @@ namespace CalamityMod.Buffs.StatDebuffs
         public static int DefenseReduction = 10;
         public static float MultiplicativeDamageReductionPlayer = 0.55f;
         //12% dr reduction
-        public static float MultiplicativeDamageReductionEnemy = 0.88f;
+        public static float MultiplicativeDamageReductionEnemy = 0.9f;
 
         public override void SetStaticDefaults()
         {

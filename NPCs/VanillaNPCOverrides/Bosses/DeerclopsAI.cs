@@ -1,8 +1,4 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Events;
-using CalamityMod.World;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,13 +7,23 @@ using Terraria.Graphics.CameraModifiers;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Audio;
-using CalamityMod.Projectiles.Boss;
-using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.World;
+using CalamityMod.Events;
 
 namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 {
     public static class DeerclopsAI
     {
+        public static bool shouldDrawEnrageBorder = true;
+        public static bool hasTargetBeenInRange = true;
+        public const float increaseDRTriggerDistance = 450f;
+        public const float maxDRIncreaseDistance = 900f;
+        public static float borderDelay = 10f * 60f;
+        public static float innerBorder = 450f;
+        public static float outerBorder = 900f;
+        public static float borderScalar = 0f;
+        public static Vector2 lastDeerclopsPosition;
+
         public static bool BuffedDeerclopsAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -28,7 +34,8 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             float lifeRatio = (float)npc.life / (float)npc.lifeMax;
 
             // Difficulty bools
-            bool expertMode = Main.expertMode;
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || bossRush;
 
             // Projectile types and damage
             int rubble = ProjectileID.DeerclopsRangedProjectile;
@@ -38,6 +45,12 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             int shadowHand = ProjectileID.InsanityShadowHostile;
             int shadowHandDamage = npc.GetProjectileDamage(shadowHand);
 
+            if (npc.target.WithinBounds(Main.player.Length) && Main.player[npc.target].dead)
+            {
+                hasTargetBeenInRange = false;
+                borderScalar = 0.9f;
+            }
+
             // Target data
             NPCAimedTarget targetData = npc.GetTargetData();
 
@@ -46,14 +59,16 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             bool goHome = false;
 
             // Damage resistance based on distance from target
-            float increaseDRTriggerDistance = 450f;
-            float maxDRIncreaseDistance = 900f;
             float distanceFromTarget = npc.Distance(targetData.Center);
             bool triggerDRIncrease = distanceFromTarget >= increaseDRTriggerDistance;
             float resistDamageAmount = MathHelper.Clamp((distanceFromTarget - increaseDRTriggerDistance) / (maxDRIncreaseDistance - increaseDRTriggerDistance), 0f, 1f);
             npc.localAI[3] = MathHelper.Lerp(0f, 30f, resistDamageAmount);
             float dustAndDRScalar = Utils.Remap(npc.localAI[3], 0f, 30f, 0f, 1f);
             calamityGlobalNPC.DR = MathHelper.Lerp(0.05f, 0.9f, dustAndDRScalar);
+
+            if (borderDelay > 0f)
+                borderDelay -= 1f;
+
             if (dustAndDRScalar > 0f)
             {
                 float invincibleDustAmount = Main.rand.NextFloat() * dustAndDRScalar * 3f;
@@ -63,6 +78,33 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     Dust.NewDustDirect(npc.position, npc.width, npc.height, 109, 0f, -3f, 0, default(Color), 1.4f).noGravity = true;
                 }
             }
+            else if (!hasTargetBeenInRange && npc.target.WithinBounds(Main.player.Length) && !Main.player[npc.target].dead)
+            {
+                // Target entered the border for the first time
+                hasTargetBeenInRange = true;
+                if (borderDelay > 120f)
+                    borderDelay = 120f;
+            }
+            if (innerBorder != increaseDRTriggerDistance || maxDRIncreaseDistance != outerBorder)
+            {
+                // Adjust the border IF the new value is lower (helps prevent jumping if you enter the border early while it's on screen but not finished zooming in)
+                var LerpValue = Utils.GetLerpValue(hasTargetBeenInRange ? 120f : 180f, 0f, borderDelay, true);
+                var newInner = MathHelper.Lerp(maxDRIncreaseDistance * 5f, increaseDRTriggerDistance, LerpValue);
+                if (newInner < innerBorder)
+                    innerBorder = newInner;
+                var newOuter = MathHelper.Lerp(maxDRIncreaseDistance * 5f, maxDRIncreaseDistance, LerpValue);
+                if (newOuter < outerBorder)
+                    outerBorder = newOuter;
+            }
+            if ((hasTargetBeenInRange && borderScalar < 1f) || borderDelay > 0f)
+            {
+                // Fade in, with full opacity only available after being inside the border for the first time
+                borderScalar = MathHelper.Clamp(borderScalar + 0.015f, 0f, hasTargetBeenInRange ? 1f : 0.9f);
+            }
+            shouldDrawEnrageBorder = CalamityWorld.revenge || CalamityWorld.death;
+
+            // Set the last deerclops position (used only for post-death border shenanigans)
+            lastDeerclopsPosition = npc.Center;
 
             // Spawn settings
             if (npc.homeTileX == -1 && npc.homeTileY == -1)
@@ -87,7 +129,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
             // Spawn Shadow Hands
             if (Main.netMode != NetmodeID.MultiplayerClient)
-                SpawnPassiveShadowHands(npc, lifeRatio, shadowHand, shadowHandDamage);
+                SpawnPassiveShadowHands(npc, lifeRatio, shadowHand, shadowHandDamage, death);
 
             // AI states
             switch ((int)npc.ai[0])
@@ -112,8 +154,14 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                         npc.netUpdate = true;
                         break;
                     }
+                    else
+                    {
+                        if (npc.timeLeft < 86400)
+                            npc.timeLeft = 86400;
+                    }
 
-                    npc.ai[1] += 1f;
+                    float attackRate = bossRush ? 3f : death ? 2f : 1f;
+                    npc.ai[1] += attackRate;
                     Vector2 relativeCenter = npc.Bottom + new Vector2(0f, -32f);
                     Vector2 closestTargetPoint = targetData.Hitbox.ClosestPointInRect(relativeCenter);
                     Vector2 distanceFromTarget2 = closestTargetPoint - relativeCenter;
@@ -191,9 +239,10 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                     npc.ai[1] += 1f;
                     haltMovement = true;
-                    MakeSpikesForward(npc, 1, targetData, iceSpike, iceSpikeDamage);
+                    MakeSpikesForward(npc, 1, targetData, iceSpike, iceSpikeDamage, lifeRatio, death);
 
-                    if (npc.ai[1] >= 80f)
+                    float iceSpikePhaseGateValue = death ? 40f : 80f;
+                    if (npc.ai[1] >= iceSpikePhaseGateValue)
                     {
                         npc.ai[0] = 0f;
                         npc.ai[1] = 0f;
@@ -217,9 +266,8 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[1] >= (float)scoopRubbleGateValue)
                     {
                         Point sourceTileCoords = npc.Top.ToTileCoordinates();
-                        int numRubble = 20;
-                        int distancedByThisManyTiles = 5;
-                        float upBiasPerRubble = 200f;
+                        int numRubble = death ? 40 : 20;
+                        int distancedByThisManyTiles = death ? 4 : 5;
                         sourceTileCoords.X += npc.direction * 3;
                         sourceTileCoords.Y -= 10;
                         int screenShakeGateValue = (int)npc.ai[1] - scoopRubbleGateValue;
@@ -235,7 +283,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                             rubbleLimit = rubbleStart;
 
                         for (int rubbleIndex = rubbleStart; rubbleIndex < rubbleLimit && rubbleIndex < numRubble; rubbleIndex++)
-                            ShootRubbleUp(npc, ref targetData, ref sourceTileCoords, numRubble, distancedByThisManyTiles, upBiasPerRubble, rubbleIndex, rubble, rubbleDamage);
+                            ShootRubbleUp(npc, ref sourceTileCoords, numRubble, distancedByThisManyTiles, rubbleIndex, rubble, rubbleDamage, lifeRatio, death);
                     }
 
                     if (npc.ai[1] >= 60f)
@@ -266,14 +314,16 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                         npc.TargetClosest();
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int totalProjectiles = 9;
-                            float radians = MathHelper.TwoPi / totalProjectiles;
-                            float velocity = 9f;
+                            int totalProjectiles = 5 + (int)MathHelper.Lerp(0f, 11f, 1f - lifeRatio);
+                            float velocityMultIncrement = ((totalProjectiles + 1) / (float)totalProjectiles) - 1f;
+                            float randomRadialOffset = MathHelper.ToRadians(MathHelper.Lerp(0f, 180f, 1f - lifeRatio));
+                            float radians = MathHelper.TwoPi / totalProjectiles + randomRadialOffset;
+                            float velocity = 7f + MathHelper.Lerp(0f, 3.5f, 1f - lifeRatio);
                             Vector2 spinningPoint = new Vector2(0f, -velocity);
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 actualVelocity = spinningPoint.RotatedBy(radians * k);
-                                float velocityMultiplier = 1f - k * 0.1f;
+                                float velocityMultiplier = 1f - k * velocityMultIncrement;
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), Main.player[npc.target].Center + Vector2.Normalize(actualVelocity) * 450f, actualVelocity * velocityMultiplier * -1f, shadowHand, shadowHandDamage, 0f, Main.myPlayer);
                             }
                         }
@@ -294,9 +344,10 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                     npc.ai[1] += 1f;
                     haltMovement = true;
                     npc.TargetClosest();
-                    MakeSpikesBothSides(npc, 1, targetData, iceSpike, iceSpikeDamage);
+                    MakeSpikesBothSides(npc, 1, targetData, iceSpike, iceSpikeDamage, lifeRatio, death);
 
-                    if (npc.ai[1] >= 90f)
+                    float doubleIceSpikePhaseGateValue = death ? 60f : 90f;
+                    if (npc.ai[1] >= doubleIceSpikePhaseGateValue)
                     {
                         npc.ai[0] = 0f;
                         npc.ai[1] = 0f;
@@ -324,7 +375,8 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                         npc.TargetClosest();
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            for (int i = 0; i < 6; i++)
+                            int handAmount = (int)MathHelper.Lerp(3f, 10f, 1f - lifeRatio);
+                            for (int i = 0; i < handAmount; i++)
                             {
                                 RandomizeInsanityShadowFor(Main.player[npc.target], isHostile: true, out var spawnposition, out var spawnvelocity, out var ai, out var ai2);
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), spawnposition, spawnvelocity, shadowHand, shadowHandDamage, 0f, Main.myPlayer, ai, ai2);
@@ -346,6 +398,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
                     npc.TargetClosest(faceTarget: false);
                     targetData = npc.GetTargetData();
+
+                    if (npc.timeLeft > 300)
+                        npc.timeLeft = 300;
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -462,7 +517,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             }
 
             // Movement
-            Movement(npc, lifeRatio, haltMovement, goHome);
+            Movement(npc, lifeRatio, haltMovement, goHome, death);
 
             return false;
         }
@@ -486,9 +541,9 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             return false;
         }
 
-        private static void SpawnPassiveShadowHands(NPC npc, float lifeRatio, int shadowHand, int shadowHandDamage)
+        private static void SpawnPassiveShadowHands(NPC npc, float lifeRatio, int shadowHand, int shadowHandDamage, bool death)
         {
-            int shadowHandSpawnRate = (int)Utils.Remap(lifeRatio, 1f, 0f, 80f, 40f);
+            int shadowHandSpawnRate = (int)Utils.Remap(lifeRatio, 1f, 0f, death ? 60f : 80f, death ? 30f : 40f);
             npc.localAI[2] += 1f;
             int shadowHandTimer = (int)npc.localAI[2];
             if (shadowHandTimer % shadowHandSpawnRate != 0)
@@ -523,7 +578,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
 
         private static void RandomizeInsanityShadowFor(Entity targetEntity, bool isHostile, out Vector2 spawnPosition, out Vector2 spawnVelocity, out float ai0, out float ai1)
         {
-            int spawnDirection = Main.rand.Next(2) * 2 - 1;
+            int spawnDirection = Main.rand.NextBool() ? 1 : -1;
             int shadowHandType = Main.rand.Next(4);
             float spawnDistance = (isHostile ? 450f : 225f);
             float velocityDivisor = (isHostile ? 30 : 20);
@@ -578,7 +633,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             }
         }
 
-        private static void ShootRubbleUp(NPC npc, ref NPCAimedTarget targetData, ref Point sourceTileCoords, int howMany, int distancedByThisManyTiles, float upBiasPerRubble, int whichOne, int rubble, int rubbleDamage)
+        private static void ShootRubbleUp(NPC npc, ref Point sourceTileCoords, int howMany, int distancedByThisManyTiles, int whichOne, int rubble, int rubbleDamage, float lifeRatio, bool death)
         {
             // Loop to spawn rubble
             // The rubble attempts are used to offset the Y coordinates of the rubble spawns to make sure they can spawn in non-solid tiles
@@ -588,22 +643,25 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             {
                 int posX = sourceTileCoords.X + rubbleSpawnLocation * npc.direction;
                 int posY = sourceTileCoords.Y + rubbleSpawnAttempts;
-                if (WorldGen.SolidTile(posX, posY))
+                if (WorldGen.ActiveAndWalkableTile(posX, posY))
                 {
-                    Vector2 vector = targetData.Center + new Vector2(rubbleSpawnLocation * npc.direction * 20, (0f - upBiasPerRubble) * (float)howMany + (float)rubbleSpawnLocation * upBiasPerRubble / (float)distancedByThisManyTiles);
-                    Vector2 vector2 = new Vector2(posX * 16 + 8, posY * 16 + 8);
-                    Vector2 rubbleVelocity = (vector - vector2).SafeNormalize(-Vector2.UnitY);
-                    rubbleVelocity = new Vector2(0f, -1f).RotatedBy((float)(whichOne * npc.direction) * 0.7f * ((float)Math.PI / 4f / (float)howMany));
-                    int ai1_FrameToUse = Main.rand.Next(Main.projFrames[rubble] * 4);
-                    ai1_FrameToUse = 6 + Main.rand.Next(6);
-                    float ai2_DelayBeforeGoingUp = whichOne * 20f;
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), new Vector2(posX * 16 + 8, posY * 16 - 8), rubbleVelocity * 0.01f, rubble, rubbleDamage, 0f, Main.myPlayer, 0f, ai1_FrameToUse, ai2_DelayBeforeGoingUp);
+                    SpawnRubble(npc, posX, posY, howMany, whichOne, rubble, rubbleDamage, lifeRatio, death);
                     break;
                 }
             }
         }
 
-        private static void MakeSpikesForward(NPC npc, int AISLOT_PhaseCounter, NPCAimedTarget targetData, int iceSpike, int iceSpikeDamage)
+        private static void SpawnRubble(NPC npc, int posX, int posY, int howMany, int whichOne, int rubble, int rubbleDamage, float lifeRatio, bool death)
+        {
+            Vector2 rubbleVelocity = new Vector2(0f, -1f).RotatedBy((float)(whichOne * npc.direction) * 0.7f * ((float)Math.PI / 4f / (float)howMany));
+            int ai1_FrameToUse = Main.rand.Next(Main.projFrames[rubble] * 4);
+            ai1_FrameToUse = 6 + Main.rand.Next(6);
+            float delay = (int)MathHelper.Lerp(death ? 8f : 10f, death ? 16f : 20f, lifeRatio);
+            float ai2_DelayBeforeGoingUp = whichOne * delay;
+            Projectile.NewProjectile(npc.GetSource_FromAI(), new Vector2(posX * 16 + 8, posY * 16 - 8), rubbleVelocity * 0.01f, rubble, rubbleDamage, 0f, Main.myPlayer, 0f, ai1_FrameToUse, ai2_DelayBeforeGoingUp);
+        }
+
+        private static void MakeSpikesForward(NPC npc, int AISLOT_PhaseCounter, NPCAimedTarget targetData, int iceSpike, int iceSpikeDamage, float lifeRatio, bool death)
         {
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
@@ -612,7 +670,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             if (!(npc.ai[AISLOT_PhaseCounter] < (float)iceSpikeGateValue))
             {
                 Point sourceTileCoords = npc.Bottom.ToTileCoordinates();
-                int numIceSpikes = 20;
+                int numIceSpikes = lifeRatio < 0.5f ? 15 : 20;
                 int xOffsetMult = 1;
                 sourceTileCoords.X += npc.direction * 3;
                 int screenShakeGateValue = (int)npc.ai[AISLOT_PhaseCounter] - iceSpikeGateValue;
@@ -630,12 +688,14 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 for (int i = iceSpikeStart; i < iceSpikeLimit && i < numIceSpikes; i++)
                 {
                     int xOffset = i * xOffsetMult;
-                    TryMakingSpike(npc, ref sourceTileCoords, npc.direction, numIceSpikes, i, xOffset, iceSpike, iceSpikeDamage);
+                    TryMakingSpike(npc, ref sourceTileCoords, npc.direction, numIceSpikes, i, xOffset, iceSpike, iceSpikeDamage, lifeRatio, death);
+                    if (lifeRatio < 0.5f)
+                        TryMakingSpike(npc, ref sourceTileCoords, npc.direction, numIceSpikes, i, xOffset * 2, iceSpike, iceSpikeDamage, lifeRatio, death);
                 }
             }
         }
 
-        private static void MakeSpikesBothSides(NPC npc, int AISLOT_PhaseCounter, NPCAimedTarget targetData, int iceSpike, int iceSpikeDamage)
+        private static void MakeSpikesBothSides(NPC npc, int AISLOT_PhaseCounter, NPCAimedTarget targetData, int iceSpike, int iceSpikeDamage, float lifeRatio, bool death)
         {
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
@@ -644,7 +704,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             if (!(npc.ai[AISLOT_PhaseCounter] < (float)iceSpikeGateValue))
             {
                 Point sourceTileCoords = npc.Bottom.ToTileCoordinates();
-                int numIceSpikes = 15;
+                int numIceSpikes = lifeRatio < 0.5f ? 12 : 15;
                 int xOffsetMult = 1;
                 int screenShakeGateValue = (int)npc.ai[AISLOT_PhaseCounter] - iceSpikeGateValue;
                 if (screenShakeGateValue == 0)
@@ -661,13 +721,18 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
                 for (int iceSpikeIndex = iceSpikeStart; iceSpikeIndex >= 0 && iceSpikeIndex < iceSpikeLimit && iceSpikeIndex < numIceSpikes; iceSpikeIndex++)
                 {
                     int xOffset = iceSpikeIndex * xOffsetMult;
-                    TryMakingSpike(npc, ref sourceTileCoords, npc.direction, numIceSpikes, -iceSpikeIndex, xOffset, iceSpike, iceSpikeDamage);
-                    TryMakingSpike(npc, ref sourceTileCoords, -npc.direction, numIceSpikes, -iceSpikeIndex, xOffset, iceSpike, iceSpikeDamage);
+                    TryMakingSpike(npc, ref sourceTileCoords, npc.direction, numIceSpikes, -iceSpikeIndex, xOffset, iceSpike, iceSpikeDamage, lifeRatio, death);
+                    TryMakingSpike(npc, ref sourceTileCoords, -npc.direction, numIceSpikes, -iceSpikeIndex, xOffset, iceSpike, iceSpikeDamage, lifeRatio, death);
+                    if (lifeRatio < 0.5f)
+                    {
+                        TryMakingSpike(npc, ref sourceTileCoords, npc.direction, numIceSpikes, -iceSpikeIndex, xOffset * 2, iceSpike, iceSpikeDamage, lifeRatio, death);
+                        TryMakingSpike(npc, ref sourceTileCoords, -npc.direction, numIceSpikes, -iceSpikeIndex, xOffset * 2, iceSpike, iceSpikeDamage, lifeRatio, death);
+                    }
                 }
             }
         }
 
-        private static void TryMakingSpike(NPC npc, ref Point sourceTileCoords, int dir, int howMany, int whichOne, int xOffset, int iceSpike, int iceSpikeDamage)
+        private static void TryMakingSpike(NPC npc, ref Point sourceTileCoords, int dir, int howMany, int whichOne, int xOffset, int iceSpike, int iceSpikeDamage, float lifeRatio, bool death)
         {
             int posX = sourceTileCoords.X + xOffset * dir;
             int posY = FindBestY(npc, ref sourceTileCoords, posX);
@@ -734,14 +799,13 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             return bestY;
         }
 
-        private static void Movement(NPC npc, float lifeRatio, bool haltMovement, bool goHome)
+        private static void Movement(NPC npc, float lifeRatio, bool haltMovement, bool goHome, bool death)
         {
-            float moveSpeedMultiplier = 1f - lifeRatio;
-            float moveSpeed = 3.5f + 1f * moveSpeedMultiplier;
+            float moveSpeed = MathHelper.Lerp(death ? 4f : 3.5f, death ? 6f : 5f, 1f - lifeRatio);
             float moveSpeedDivisor = 4f;
-            float yVelocityIncrease = -0.4f;
-            float yVelocityMin = -8f;
-            float yVelocityIncrease2 = 0.4f;
+            float yVelocityIncrease = death ? -0.5f : -0.4f;
+            float yVelocityMin = death ? -12f : -8f;
+            float yVelocityIncrease2 = death ? 0.5f : 0.4f;
             Rectangle targetHitbox = npc.GetTargetData().Hitbox;
 
             if (goHome)
@@ -787,7 +851,7 @@ namespace CalamityMod.NPCs.VanillaNPCOverrides.Bosses
             bool insideTiles = Collision.SolidCollision(npcCenter, npcCenterXOffset, npcCenterYOffset, acceptTopSurfaces);
             bool insideTiles2 = Collision.SolidCollision(npcCenter, npcCenterXOffset, npcCenterYOffset - 4, acceptTopSurfaces);
             bool moveUp = !Collision.SolidCollision(npcCenter + new Vector2(npcCenterXOffset * npc.direction, 0f), 16, 80, acceptTopSurfaces);
-            float yVelocity = -8f;
+            float yVelocity = death ? -12f : -8f;
 
             if (insideTiles || insideTiles2)
                 npc.localAI[0] = 0f;

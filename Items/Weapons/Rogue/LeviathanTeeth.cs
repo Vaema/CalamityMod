@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 36;
             Item.height = 38;
-            Item.damage = 66;
+            Item.damage = 64;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 15;
@@ -40,15 +40,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
             else
             {
-                teethCount = Main.rand.Next(1, 3);
+                teethCount = Main.rand.Next(2, 3 + 1);
             }
-
-            float spreadAngle = MathHelper.ToRadians(10);
 
             for (int i = 0; i < teethCount; i++)
             {
-                float offsetSpeedX = velocity.X + Main.rand.NextFloat(-4f, 4f);
-                float offsetSpeedY = velocity.Y + Main.rand.NextFloat(-4f, 4f);
+                float offsetSpeedX = velocity.X + Main.rand.NextFloat(-2f, 2f);
+                float offsetSpeedY = velocity.Y + Main.rand.NextFloat(-2f, 2f);
 
                 if (stealthStrike)
                 {

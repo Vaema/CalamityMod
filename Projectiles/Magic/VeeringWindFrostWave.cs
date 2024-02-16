@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = Projectile.height = 48;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 2;
             Projectile.timeLeft = 90;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.usesIDStaticNPCImmunity = true;
@@ -35,6 +35,14 @@ namespace CalamityMod.Projectiles.Magic
         {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Lighting.AddLight(Projectile.Center, Color.Blue.ToVector3() * 0.6f);
+        }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.5);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
 
         public override bool PreDraw(ref Color lightColor) // Photoviscerator ball drawcode, slightly edited.
