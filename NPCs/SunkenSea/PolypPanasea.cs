@@ -18,17 +18,17 @@ namespace CalamityMod.NPCs.SunkenSea
     {
         #region Textures
         // Welcome to the fish texture wall, have a nice stay, or just collapse this region, either works
-        public static Texture2D DeluxeTexture;
+        public static Texture2D RadiantTexture;
         public static Texture2D GreenTexture;
         public static Texture2D PurpleTexture;
         public static Texture2D TurquoiseTexture;
-        public static Texture2D RadiantTexture;
+        public static Texture2D GoldTexture;
         public static Texture2D TextureCoated;
-        public static Texture2D DeluxeTextureCoated;
+        public static Texture2D RadiantTextureCoated;
         public static Texture2D GreenTextureCoated;
         public static Texture2D PurpleTextureCoated;
         public static Texture2D TurquoiseTextureCoated;
-        public static Texture2D RadiantTextureCoated;
+        public static Texture2D GoldTextureCoated;
         #endregion
         public ref float Variant => ref NPC.ai[1];
         public enum FishColor
@@ -37,28 +37,28 @@ namespace CalamityMod.NPCs.SunkenSea
             Turquoise = 1,
             Green = 2,
             Purple = 3,
-            Radiant = 4,
-            Deluxe = 5
+            Gold = 4,
+            Radiant = 5
         }
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
             if (!Main.dedServ)
             {
-                DeluxeTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaDeluxe", AssetRequestMode.ImmediateLoad).Value;
                 RadiantTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaRadiant", AssetRequestMode.ImmediateLoad).Value;
+                GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaGold", AssetRequestMode.ImmediateLoad).Value;
                 GreenTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaGreen", AssetRequestMode.ImmediateLoad).Value;
                 PurpleTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaPurple", AssetRequestMode.ImmediateLoad).Value;
                 TurquoiseTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaTurquoise", AssetRequestMode.ImmediateLoad).Value;
                 TextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaRedCoated", AssetRequestMode.ImmediateLoad).Value;
-                DeluxeTextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaDeluxeCoated", AssetRequestMode.ImmediateLoad).Value;
                 RadiantTextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaRadiantCoated", AssetRequestMode.ImmediateLoad).Value;
+                GoldTextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaGoldCoated", AssetRequestMode.ImmediateLoad).Value;
                 GreenTextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaGreenCoated", AssetRequestMode.ImmediateLoad).Value;
                 PurpleTextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaPurpleCoated", AssetRequestMode.ImmediateLoad).Value;
                 TurquoiseTextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaTurquoiseCoated", AssetRequestMode.ImmediateLoad).Value;
             }
-            //Main.npcCatchable[NPC.type] = true;
-            //NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            Main.npcCatchable[NPC.type] = true;
+            NPCID.Sets.CountsAsCritter[NPC.type] = true;
         }
 
         public override void SetDefaults()
@@ -113,11 +113,11 @@ namespace CalamityMod.NPCs.SunkenSea
                 case (int)FishColor.Turquoise:
                     NPC.catchItem = ModContent.ItemType<PolypPanaseaTurquoiseItem>();
                     break;
+                case (int)FishColor.Gold:
+                    NPC.catchItem = ModContent.ItemType<PolypPanaseaGoldItem>();
+                    break;
                 case (int)FishColor.Radiant:
                     NPC.catchItem = ModContent.ItemType<PolypPanaseaRadiantItem>();
-                    break;
-                case (int)FishColor.Deluxe:
-                    NPC.catchItem = ModContent.ItemType<PolypPanaseaDeluxeItem>();
                     break;
             }
         }
@@ -141,7 +141,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 NPC.ai[2]--;
             }
-            if (Variant == (int)FishColor.Radiant)
+            if (Variant == (int)FishColor.Gold)
             {
                 NPC.position += NPC.netOffset;
                 Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
@@ -206,11 +206,11 @@ namespace CalamityMod.NPCs.SunkenSea
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             switch (Variant)
             {
-                case (int)FishColor.Deluxe:
-                    texture = NPC.ai[2] >= 61 ? DeluxeTextureCoated : DeluxeTexture;
-                    break;
                 case (int)FishColor.Radiant:
                     texture = NPC.ai[2] >= 61 ? RadiantTextureCoated : RadiantTexture;
+                    break;
+                case (int)FishColor.Gold:
+                    texture = NPC.ai[2] >= 61 ? GoldTextureCoated : GoldTexture;
                     break;
                 case (int)FishColor.Purple:
                     texture = NPC.ai[2] >= 61 ? PurpleTextureCoated : PurpleTexture;

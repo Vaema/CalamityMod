@@ -19,7 +19,22 @@ BabyFlakCrabItem: {
 }
 
 BabyGhostBellItem: {
-	DisplayName: "{$Mods.CalamityMod.NPCs.BabyGhostBell.DisplayName}"
+	DisplayName: Blue Baby Ghost Bell
+	Tooltip: ""
+}
+
+BabyGhostBellGreenItem: {
+	DisplayName: Green Baby Ghost Bell
+	Tooltip: ""
+}
+
+BabyGhostBellRadiantItem: {
+	DisplayName: Radiant Baby Ghost Bell
+	Tooltip: ""
+}
+
+BabyGhostBellRedItem: {
+	DisplayName: Red Baby Ghost Bell
 	Tooltip: ""
 }
 
@@ -43,8 +58,8 @@ NanodroidPlagueRedItem: {
 	Tooltip: ""
 }
 
-PolypPanaseaDeluxeItem: {
-	DisplayName: Deluxe Polyp Panasea
+PolypPanaseaGoldItem: {
+	DisplayName: Gold Polyp Panasea
 	Tooltip: ""
 }
 

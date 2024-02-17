@@ -55,13 +55,13 @@ namespace CalamityMod.Items.Critters
                     {
                         colorType = (int)PolypPanasea.FishColor.Purple;
                     }
-                    if (item.type == ModContent.ItemType<PolypPanaseaDeluxeItem>())
-                    {
-                        colorType = (int)PolypPanasea.FishColor.Deluxe;
-                    }
                     if (item.type == ModContent.ItemType<PolypPanaseaRadiantItem>())
                     {
                         colorType = (int)PolypPanasea.FishColor.Radiant;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaGoldItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Gold;
                     }
                     player.ApplyItemTime(item);
                     int n = NPC.ReleaseNPC(mouseX, mouseY, item.makeNPC, item.placeStyle, player.whoAmI);
