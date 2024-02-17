@@ -2,20 +2,44 @@
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Critters;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
+using Terraria.DataStructures;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public abstract class LostShoal : ModNPC
+    public class LostShoal : ModNPC
     {
-        public abstract Color LightColor { get; }
+        public static Texture2D RedTexture;
+        public static Texture2D BlueTexture;
+
+        public ref float Variant => ref NPC.ai[1];
+        public ref float Leader => ref NPC.ai[2];
+        public ref float Role => ref NPC.ai[3];
+
+        public enum ShoalColor
+        {
+            Red = 0,
+            Blue = 1,
+            Green = 2
+        }
+
+        public override void SetStaticDefaults()
+        {
+            Main.npcFrameCount[NPC.type] = 8;
+            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalRed", AssetRequestMode.ImmediateLoad).Value;
+                BlueTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalBlue", AssetRequestMode.ImmediateLoad).Value;
+            }
+        }
         public override void SetDefaults()
         {
             NPC.npcSlots = 0.1f;
@@ -45,10 +69,16 @@ namespace CalamityMod.NPCs.SunkenSea
             });
         }
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            // Randomize the color of the fish
+            NPC.ai[1] = Main.rand.Next(0, 3);
+        }
+
         public override void AI()
         {
             // swim normally if the fish is the leader of the shoal
-            if (NPC.ai[3] != 1)
+            if (Role != 1)
             {
                 LeaderMovement();
                 if (NPC.direction == 0)
@@ -62,9 +92,9 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             else
             {
-                NPC owner = Main.npc[(int)NPC.ai[2]];
+                NPC owner = Main.npc[(int)Leader];
                 // if the owner of the shoal isn't a lost shoal or is dead, find a new shoal to attach to
-                if (!owner.active || !CheckIfShoal(owner))
+                if (!owner.active || owner.type != ModContent.NPCType<LostShoal>())
                 {
                     bool anyShoals = false;
                     for (int k = 0; k < Main.maxNPCs; k++)
@@ -72,13 +102,13 @@ namespace CalamityMod.NPCs.SunkenSea
                         NPC n = Main.npc[k];
                         if (!n.active)
                             continue;
-                        if (CheckIfShoal(n))
+                        if (owner.type == ModContent.NPCType<LostShoal>())
                         {
                             // if a nearby shoal leader is found, go follow it
-                            if (n.ai[3] != 1 && n.Distance(NPC.position) < 1200)
+                            if (Role != 1 && n.Distance(NPC.position) < 1200)
                             {
                                 anyShoals = true;
-                                NPC.ai[2] = n.whoAmI;
+                                Leader = n.whoAmI;
                             }
                         }
                     }
@@ -90,13 +120,13 @@ namespace CalamityMod.NPCs.SunkenSea
                             NPC n = Main.npc[k];
                             if (!n.active)
                                 continue;
-                            if (CheckIfShoal(n))
+                            if (owner.type == ModContent.NPCType<LostShoal>())
                             {
                                 if (n.Distance(NPC.position) < 1200)
                                 {
                                     // the found fish becomes the new leader, and this fish becomes a member of its school
                                     n.ai[3] = 2;
-                                    NPC.ai[2] = n.whoAmI;
+                                    Leader = n.whoAmI;
                                 }
                             }
                         }
@@ -113,7 +143,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     NPC otherFish = Main.npc[k];
                     // Short circuits to make the loop as fast as possible
-                    if (!otherFish.active || k == NPC.whoAmI || !CheckIfShoal(otherFish))
+                    if (!otherFish.active || k == NPC.whoAmI || owner.type != ModContent.NPCType<LostShoal>())
                         continue;
 
                     float taxicabDist = Math.Abs(NPC.position.X - otherFish.position.X) + Math.Abs(NPC.position.Y - otherFish.position.Y);
@@ -230,34 +260,31 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             NPC.noGravity = true;
             // leaders will naturally spawn a school of followers upon spawning
-            if (NPC.ai[3] == 0)
+            if (Role == 0)
             {                
                 // the amount of fish to spawn
                 int fishCount = 5;
                 for (int i = 0; i < fishCount; i++)
                 {
-                    int fishType = Main.rand.Next(3);
-                    switch (fishType)
-                    {
-                        case 0:
-                            fishType = ModContent.NPCType<LostShoalRed>();
-                            break;
-                        case 1:
-                            fishType = ModContent.NPCType<LostShoalGreen>();
-                            break;
-                        case 2:
-                            fishType = ModContent.NPCType<LostShoalBlue>();
-                            break;
-                    }
-                    int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, fishType);
+                    int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<LostShoal>());
                     Main.npc[n].ai[3] = 1; // the 1 means that the spawned fish will not be a leader, and will not spawn even more fish
                     Main.npc[n].ai[2] = NPC.whoAmI; // marks this fish as the owner of the spawned fish
                 }
-                NPC.ai[3] = 2; // don't spawn any more fish
+                Role = 2; // don't spawn any more fish
             }
             // leaders are a tiny bit more brighter
-            float intensity = NPC.ai[3] == 1 ? 0.002f : 0.004f;
-            Lighting.AddLight(NPC.Center, LightColor.R * intensity, LightColor.G * intensity, LightColor.B * intensity);
+            float intensity = Role == 1 ? 0.002f : 0.004f;
+            Color glowColor = new(0.983f, 1f, 0.78f);
+            switch (Variant)
+            {
+                case (int)ShoalColor.Blue:
+                    glowColor = new(0.78f, 0.77f, 0.988f);
+                    break;
+                case (int)ShoalColor.Red:
+                    glowColor = new(1f, 0.83f, 0.819f);
+                    break;
+            }
+            Lighting.AddLight(NPC.Center, glowColor.R * intensity, glowColor.G * intensity, glowColor.B * intensity);
         }
 
         public void LeaderMovement()
@@ -329,15 +356,6 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        public static bool CheckIfShoal(NPC n)
-        {
-            if (n.type == ModContent.NPCType<LostShoalBlue>() || n.type == ModContent.NPCType<LostShoalGreen>() || n.type == ModContent.NPCType<LostShoalRed>())
-            {
-                return true;
-            }
-            return false;
-        }
-
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.075f;
@@ -370,6 +388,15 @@ namespace CalamityMod.NPCs.SunkenSea
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            switch (Variant)
+            {
+                case (int)ShoalColor.Blue:
+                    texture = BlueTexture;
+                    break;
+                case (int)ShoalColor.Red:
+                    texture = RedTexture;
+                    break;
+            }
             Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[NPC.type] / 2));
             Color white = Color.White;
             float colorLerpAmt = 0.5f;
@@ -396,44 +423,6 @@ namespace CalamityMod.NPCs.SunkenSea
             spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
             return false;
-        }
-    }
-
-    public class LostShoalRed : LostShoal
-    {
-        public override Color LightColor => new(1f, 0.83f, 0.819f);
-        public override void SetStaticDefaults()
-        {
-            Main.npcFrameCount[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
-            //Main.npcCatchable[NPC.type] = true;
-            //NPCID.Sets.CountsAsCritter[NPC.type] = true;
-            this.HideFromBestiary();
-        }
-    }
-
-    public class LostShoalBlue : LostShoal
-    {
-        public override Color LightColor => new(0.78f, 0.77f, 0.988f);
-        public override void SetStaticDefaults()
-        {
-            Main.npcFrameCount[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
-            //Main.npcCatchable[NPC.type] = true;
-            //NPCID.Sets.CountsAsCritter[NPC.type] = true;
-            this.HideFromBestiary();
-        }
-    }
-
-    public class LostShoalGreen : LostShoal
-    {
-        public override Color LightColor => new(0.983f, 1f, 0.78f);
-        public override void SetStaticDefaults()
-        {
-            Main.npcFrameCount[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
-            //Main.npcCatchable[NPC.type] = true;
-            //NPCID.Sets.CountsAsCritter[NPC.type] = true;
         }
     }
 }
