@@ -8,6 +8,8 @@ using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.GameContent;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -361,6 +363,40 @@ namespace CalamityMod.NPCs.SunkenSea
                 Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, new Vector2(Main.rand.Next(-10, 11) * 0.2f, Main.rand.Next(-10, 11) * 0.2f), goreType, 0.2f);
             }
         }
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (NPC.spriteDirection == 1)
+                spriteEffects = SpriteEffects.FlipHorizontally;
+
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[NPC.type] / 2));
+            Color white = Color.White;
+            float colorLerpAmt = 0.5f;
+            int afterimageAmt = 7;
+
+            if (CalamityConfig.Instance.Afterimages)
+            {
+                for (int i = 1; i < afterimageAmt; i += 2)
+                {
+                    Color afterimageColor = drawColor;
+                    afterimageColor = Color.Lerp(afterimageColor, white, colorLerpAmt);
+                    afterimageColor = NPC.GetAlpha(afterimageColor);
+                    afterimageColor *= (float)(afterimageAmt - i) / 15f;
+                    Vector2 offset = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
+                    offset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                    offset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                    spriteBatch.Draw(texture, offset, NPC.frame, afterimageColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                }
+            }
+
+            Vector2 npcOffset = NPC.Center - screenPos;
+            npcOffset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+            spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+
+            return false;
+        }
     }
 
     public class LostShoalRed : LostShoal
@@ -369,6 +405,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 8;
+            NPCID.Sets.TrailingMode[NPC.type] = 1;
             //Main.npcCatchable[NPC.type] = true;
             //NPCID.Sets.CountsAsCritter[NPC.type] = true;
             this.HideFromBestiary();
@@ -381,6 +418,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 8;
+            NPCID.Sets.TrailingMode[NPC.type] = 1;
             //Main.npcCatchable[NPC.type] = true;
             //NPCID.Sets.CountsAsCritter[NPC.type] = true;
             this.HideFromBestiary();
@@ -393,6 +431,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 8;
+            NPCID.Sets.TrailingMode[NPC.type] = 1;
             //Main.npcCatchable[NPC.type] = true;
             //NPCID.Sets.CountsAsCritter[NPC.type] = true;
         }
