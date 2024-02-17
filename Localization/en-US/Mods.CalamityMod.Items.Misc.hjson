@@ -333,3 +333,33 @@ NimbleBounder: {
 		[c/842593:'Might be useful for speedrunning']
 		'''
 }
+
+PolypPanaseaDeluxeItem: {
+	DisplayName: Polyp Panasea Deluxe Item
+	Tooltip: ""
+}
+
+PolypPanaseaGreenItem: {
+	DisplayName: Polyp Panasea Green Item
+	Tooltip: ""
+}
+
+PolypPanaseaItem: {
+	DisplayName: Polyp Panasea Item
+	Tooltip: ""
+}
+
+PolypPanaseaPurpleItem: {
+	DisplayName: Polyp Panasea Purple Item
+	Tooltip: ""
+}
+
+PolypPanaseaRadiantItem: {
+	DisplayName: Polyp Panasea Radiant Item
+	Tooltip: ""
+}
+
+PolypPanaseaTurquoiseItem: {
+	DisplayName: Polyp Panasea Turquoise Item
+	Tooltip: ""
+}

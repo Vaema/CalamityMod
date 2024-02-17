@@ -1,17 +1,16 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Critters;
-using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -19,13 +18,13 @@ namespace CalamityMod.NPCs.SunkenSea
     {
         #region Textures
         // Welcome to the fish texture wall, have a nice stay, or just collapse this region, either works
-        public static Texture2D DeluxTexture;
+        public static Texture2D DeluxeTexture;
         public static Texture2D GreenTexture;
         public static Texture2D PurpleTexture;
         public static Texture2D TurquoiseTexture;
         public static Texture2D RadiantTexture;
         public static Texture2D TextureCoated;
-        public static Texture2D DeluxTextureCoated;
+        public static Texture2D DeluxeTextureCoated;
         public static Texture2D GreenTextureCoated;
         public static Texture2D PurpleTextureCoated;
         public static Texture2D TurquoiseTextureCoated;
@@ -39,20 +38,20 @@ namespace CalamityMod.NPCs.SunkenSea
             Green = 2,
             Purple = 3,
             Radiant = 4,
-            Blue = 5
+            Deluxe = 5
         }
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
             if (!Main.dedServ)
             {
-                DeluxTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaDelux", AssetRequestMode.ImmediateLoad).Value;
+                DeluxeTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaDeluxe", AssetRequestMode.ImmediateLoad).Value;
                 RadiantTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaRadiant", AssetRequestMode.ImmediateLoad).Value;
                 GreenTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaGreen", AssetRequestMode.ImmediateLoad).Value;
                 PurpleTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaPurple", AssetRequestMode.ImmediateLoad).Value;
                 TurquoiseTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaTurquoise", AssetRequestMode.ImmediateLoad).Value;
-                TextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaCoated", AssetRequestMode.ImmediateLoad).Value;
-                DeluxTextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaDeluxCoated", AssetRequestMode.ImmediateLoad).Value;
+                TextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaRedCoated", AssetRequestMode.ImmediateLoad).Value;
+                DeluxeTextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaDeluxeCoated", AssetRequestMode.ImmediateLoad).Value;
                 RadiantTextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaRadiantCoated", AssetRequestMode.ImmediateLoad).Value;
                 GreenTextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaGreenCoated", AssetRequestMode.ImmediateLoad).Value;
                 PurpleTextureCoated = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/PolypPanaseaPurpleCoated", AssetRequestMode.ImmediateLoad).Value;
@@ -78,7 +77,7 @@ namespace CalamityMod.NPCs.SunkenSea
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<PolypPanaseaBanner>();
             NPC.chaseable = false;
-            //NPC.catchItem = (short)ModContent.ItemType<SeaMinnowItem>();
+            NPC.catchItem = (short)ModContent.ItemType<PolypPanaseaItem>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
@@ -88,6 +87,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
+            // If the player places one, dont deal with this
+            if (NPC.ai[3] == 1)
+                return;
             // Randomize the color of the fish
             NPC.ai[1] = Main.rand.Next(0, 4);
             // 1 in 30 chance for a rare fish variant (rfv)
@@ -98,7 +100,25 @@ namespace CalamityMod.NPCs.SunkenSea
             // 1 in 5 chance for a Panasea to be coated
             if (Main.rand.NextBool(5))
             {
-                NPC.ai[2] = 121;
+                NPC.ai[2] = 61;
+            }
+            switch (NPC.ai[1])
+            {
+                case (int)FishColor.Purple:
+                    NPC.catchItem = ModContent.ItemType<PolypPanaseaPurpleItem>();
+                    break;
+                case (int)FishColor.Green:
+                    NPC.catchItem = ModContent.ItemType<PolypPanaseaGreenItem>();
+                    break;
+                case (int)FishColor.Turquoise:
+                    NPC.catchItem = ModContent.ItemType<PolypPanaseaTurquoiseItem>();
+                    break;
+                case (int)FishColor.Radiant:
+                    NPC.catchItem = ModContent.ItemType<PolypPanaseaRadiantItem>();
+                    break;
+                case (int)FishColor.Deluxe:
+                    NPC.catchItem = ModContent.ItemType<PolypPanaseaDeluxeItem>();
+                    break;
             }
         }
 
@@ -112,12 +132,12 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
-            NPC.catchItem = NPC.ai[2] > 120 ? ItemID.FlaskofPoison : ModContent.ItemType<SeaMinnowItem>();
             CalamityAI.PassiveSwimmingAI(NPC, Mod, 3, 60f, 0.2f, 0.1f, 4f, 4f, 0.05f);
             NPC.direction = NPC.velocity.X > 0 ? 1 : -1;
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             NPC.noGravity = true;
-            if (NPC.ai[2] <= 120 && NPC.ai[2] > 0)
+            // Assure it cant be caught hen collecting panacea
+            if (NPC.ai[2] <= 60 && NPC.ai[2] > 0)
             {
                 NPC.ai[2]--;
             }
@@ -162,23 +182,23 @@ namespace CalamityMod.NPCs.SunkenSea
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             switch (Variant)
             {
-                case (int)FishColor.Blue:
-                    texture = NPC.ai[2] >= 121 ? DeluxTextureCoated : DeluxTexture;
+                case (int)FishColor.Deluxe:
+                    texture = NPC.ai[2] >= 61 ? DeluxeTextureCoated : DeluxeTexture;
                     break;
                 case (int)FishColor.Radiant:
-                    texture = NPC.ai[2] >= 121 ? RadiantTextureCoated : RadiantTexture;
+                    texture = NPC.ai[2] >= 61 ? RadiantTextureCoated : RadiantTexture;
                     break;
                 case (int)FishColor.Purple:
-                    texture = NPC.ai[2] >= 121 ? PurpleTextureCoated : PurpleTexture;
+                    texture = NPC.ai[2] >= 61 ? PurpleTextureCoated : PurpleTexture;
                     break;
                 case (int)FishColor.Green:
-                    texture = NPC.ai[2] >= 121 ? GreenTextureCoated : GreenTexture;
+                    texture = NPC.ai[2] >= 61 ? GreenTextureCoated : GreenTexture;
                     break;
                 case (int)FishColor.Turquoise:
-                    texture = NPC.ai[2] >= 121 ? TurquoiseTextureCoated : TurquoiseTexture;
+                    texture = NPC.ai[2] >= 61 ? TurquoiseTextureCoated : TurquoiseTexture;
                     break;
                 case (int)FishColor.Red:
-                    texture = NPC.ai[2] >= 121 ? TextureCoated : TextureAssets.Npc[NPC.type].Value;
+                    texture = NPC.ai[2] >= 61 ? TextureCoated : TextureAssets.Npc[NPC.type].Value;
                     break;
             }
             Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[NPC.type] / 2));
@@ -194,10 +214,10 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (NPC.ai[2] > 0)
             {
-                if (NPC.ai[2] > 120)
+                if (NPC.ai[2] > 60)
                 {
-                    Item.NewItem(NPC.GetSource_CatchEntity(NPC), (int)NPC.Center.X, (int)NPC.Center.Y, 1, 1, NPC.catchItem);
-                    NPC.ai[2] = 120;
+                    Item.NewItem(NPC.GetSource_CatchEntity(NPC), (int)NPC.Center.X, (int)NPC.Center.Y, 1, 1, ItemID.FlaskofPoison);
+                    NPC.ai[2] = 60;
                 }
                 return false;
             }            
