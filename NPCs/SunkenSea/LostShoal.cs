@@ -58,6 +58,9 @@ namespace CalamityMod.NPCs.SunkenSea
             //BannerItem = ModContent.ItemType<LostShoalBanner>();
             NPC.chaseable = false;
             //NPC.catchItem = (short)ModContent.ItemType<LostShoalItem>();
+            NPC.Calamity().VulnerableToHeat = false;
+            NPC.Calamity().VulnerableToSickness = false;
+            NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
