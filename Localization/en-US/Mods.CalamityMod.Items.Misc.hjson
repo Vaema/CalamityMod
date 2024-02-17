@@ -43,6 +43,36 @@ NanodroidPlagueRedItem: {
 	Tooltip: ""
 }
 
+PolypPanaseaDeluxeItem: {
+	DisplayName: Deluxe Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaGreenItem: {
+	DisplayName: Green Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaItem: {
+	DisplayName: Red Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaPurpleItem: {
+	DisplayName: Purple Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaRadiantItem: {
+	DisplayName: Radiant Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaTurquoiseItem: {
+	DisplayName: Turquoise Polyp Panasea
+	Tooltip: ""
+}
+
 PiggyItem: {
 	DisplayName: "{$Mods.CalamityMod.NPCs.Piggy.DisplayName}"
 	Tooltip: ""
@@ -332,34 +362,4 @@ NimbleBounder: {
 		Permanently increases acceleration by 10%
 		[c/842593:'Might be useful for speedrunning']
 		'''
-}
-
-PolypPanaseaDeluxeItem: {
-	DisplayName: Polyp Panasea Deluxe Item
-	Tooltip: ""
-}
-
-PolypPanaseaGreenItem: {
-	DisplayName: Polyp Panasea Green Item
-	Tooltip: ""
-}
-
-PolypPanaseaItem: {
-	DisplayName: Polyp Panasea Item
-	Tooltip: ""
-}
-
-PolypPanaseaPurpleItem: {
-	DisplayName: Polyp Panasea Purple Item
-	Tooltip: ""
-}
-
-PolypPanaseaRadiantItem: {
-	DisplayName: Polyp Panasea Radiant Item
-	Tooltip: ""
-}
-
-PolypPanaseaTurquoiseItem: {
-	DisplayName: Polyp Panasea Turquoise Item
-	Tooltip: ""
 }
