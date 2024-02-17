@@ -141,6 +141,30 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 NPC.ai[2]--;
             }
+            if (Variant == (int)FishColor.Radiant)
+            {
+                NPC.position += NPC.netOffset;
+                Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
+                if (color.R > 20 || color.B > 20 || color.G > 20)
+                {
+                    int colorVal = color.R;
+                    if (color.G > colorVal)
+                    {
+                        colorVal = color.G;
+                    }
+                    if (color.B > colorVal)
+                    {
+                        colorVal = color.B;
+                    }
+                    colorVal /= 30;
+                    if (Main.rand.Next(300) < colorVal)
+                    {
+                        int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 43, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
+                        Main.dust[golddust].velocity *= 0f;
+                    }
+                }
+                NPC.position -= NPC.netOffset;
+            }
         }
 
         public override void FindFrame(int frameHeight)

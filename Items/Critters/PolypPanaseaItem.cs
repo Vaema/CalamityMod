@@ -68,6 +68,7 @@ namespace CalamityMod.Items.Critters
                     Main.npc[n].ai[1] = colorType;
                     Main.npc[n].ai[2] = 0;
                     Main.npc[n].ai[3] = 1;
+                    Main.npc[n].catchItem = item.type;
                 }
             }
             else
