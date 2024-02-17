@@ -1,20 +1,19 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Critters;
+using Microsoft.Xna.Framework;
 using System;
+using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
-using System.IO;
-using Microsoft.CodeAnalysis;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
     public abstract class LostShoal : ModNPC
     {
+        public abstract Color LightColor { get; }
         public override void SetDefaults()
         {
             NPC.npcSlots = 0.1f;
@@ -44,21 +43,16 @@ namespace CalamityMod.NPCs.SunkenSea
             });
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            //NPC.Calamity().newAI[0] = reader.ReadSingle();
-        }
-
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            //writer.Write(NPC.Calamity().newAI[0]);
-        }
         public override void AI()
         {
             // swim normally if the fish is the leader of the shoal
             if (NPC.ai[3] != 1)
             {
                 LeaderMovement();
+                if (NPC.direction == 0)
+                {
+                    NPC.direction = Main.rand.NextBool(2) ? 1 : -1;
+                }
                 if (Main.rand.NextBool(1200))
                 {
                     NPC.direction *= -1;
@@ -108,7 +102,11 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
                 // gather behind the leader
                 // basically a pet
-                float SAImovement = 0.05f;
+                // if we want to make the fish scared of players or other predators, then set enemyClose to true. For now this is commented out.
+                //NPC.TargetClosest(false);
+                //bool enemyClose = Main.player[NPC.target] != null && Main.player[NPC.target].active && Main.player[NPC.target].Distance(NPC.position) < 128;
+                bool enemyClose = false;
+                float SAImovement = enemyClose ? 0.02f : 0.05f;
                 for (int k = 0; k < Main.maxNPCs; k++)
                 {
                     NPC otherFish = Main.npc[k];
@@ -139,13 +137,12 @@ namespace CalamityMod.NPCs.SunkenSea
                 Vector2 fischPos = NPC.Center;
                 float xDist = owner.Center.X - fischPos.X;
                 float yDist = owner.Center.Y - fischPos.Y;
-                yDist += Main.rand.NextFloat(-10, 20);
-                xDist += Main.rand.NextFloat(-10, 20);
-                xDist += 20f * -(float)owner.direction;
+                yDist += Main.rand.NextFloat(-10, 20) / (enemyClose ? 2 : 1);
+                xDist += Main.rand.NextFloat(-10, 20) / (enemyClose ? 2 : 1);
+                xDist += 30f * -(float)owner.direction;
                 Vector2 leaderVector = new Vector2(xDist, yDist);
                 float leaderDist = leaderVector.Length();
-                float returnSpeed = 18f;
-
+                float returnSpeed = 8f;
                 //If leader is close enough, resume normal
                 if (leaderDist < range && owner.velocity.Y == 0f &&
                     NPC.Bottom.Y <= owner.Bottom.Y &&
@@ -256,17 +253,17 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
                 NPC.ai[3] = 2; // don't spawn any more fish
             }
+            // leaders are a tiny bit more brighter
+            float intensity = NPC.ai[3] == 1 ? 0.002f : 0.004f;
+            Lighting.AddLight(NPC.Center, LightColor.R * intensity, LightColor.G * intensity, LightColor.B * intensity);
         }
 
         public void LeaderMovement()
         {
-            NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
+            NPC.spriteDirection = (NPC.direction > 0) ? -1 : 1;
 
+            NPC.velocity.X = NPC.velocity.X - (float)NPC.direction * 0.25f;
             NPC.noGravity = true;
-            if (NPC.direction == 0)
-            {
-                NPC.TargetClosest(true);
-            }
             if (NPC.collideX)
             {
                 NPC.velocity.X = NPC.velocity.X * -1f;
@@ -328,9 +325,6 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 NPC.velocity.Y = NPC.velocity.Y * 0.95f;
             }
-            NPC.rotation = NPC.velocity.Y * (float)NPC.direction * 0.65f;
-            float rotationLimit = 2f * 0.65f;
-            NPC.rotation = MathHelper.Clamp(NPC.rotation, -rotationLimit, rotationLimit);
         }
 
         public static bool CheckIfShoal(NPC n)
@@ -354,22 +348,24 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneSunkenSeaShores && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                return 0.125f;
             }
             return 0f;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
-            for (int k = 0; k < 5; k++)
+            for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ghost, hit.HitDirection, -1f, 0, default, 1f);
+                int goreType = Main.rand.Next(11, 14);
+                Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, new Vector2(Main.rand.Next(-10, 11) * 0.2f, Main.rand.Next(-10, 11) * 0.2f), goreType, 0.2f);
             }
         }
     }
 
     public class LostShoalRed : LostShoal
     {
+        public override Color LightColor => new(1f, 0.83f, 0.819f);
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 8;
@@ -381,6 +377,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
     public class LostShoalBlue : LostShoal
     {
+        public override Color LightColor => new(0.78f, 0.77f, 0.988f);
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 8;
@@ -392,6 +389,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
     public class LostShoalGreen : LostShoal
     {
+        public override Color LightColor => new(0.983f, 1f, 0.78f);
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 8;
