@@ -26,7 +26,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         public override void NearbyEffects(int i, int j, bool closer)
         {
             if (!Main.dedServ)
-                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaWater").Slot;
+                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaBurrowsWater").Slot;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
