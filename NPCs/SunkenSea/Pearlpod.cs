@@ -79,7 +79,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             if (NPC.Calamity().newAI[0] == 1)
             {
-                NPC.velocity *= 0.1f;
+                NPC.velocity.X *= 0.1f;
                 if (Main.rand.NextBool(20))
                 {
                     SoundEngine.PlaySound(SoundID.Item2 with { Volume = 0.4f, Pitch = 1.2f }, NPC.Center);

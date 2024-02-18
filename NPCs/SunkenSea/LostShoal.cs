@@ -54,6 +54,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = null;
             NPC.DeathSound = SoundID.NPCDeath6;
             NPC.noTileCollide = true;
+            NPC.alpha = 120;
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<LostShoalBanner>();
             NPC.chaseable = false;
@@ -153,13 +154,16 @@ namespace CalamityMod.NPCs.SunkenSea
                         }
                     }
                 }
+                NPC.velocity = owner.velocity;
+                NPC.direction = owner.direction;
+                NPC.spriteDirection = owner.spriteDirection;
                 // gather behind the leader
                 // basically a pet
                 // if we want to make the fish scared of players or other predators, then set enemyClose to true. For now this is commented out.
                 //NPC.TargetClosest(false);
                 //bool enemyClose = Main.player[NPC.target] != null && Main.player[NPC.target].active && Main.player[NPC.target].Distance(NPC.position) < 128;
                 bool enemyClose = false;
-                float SAImovement = enemyClose ? 0.02f : 0.05f;
+                float SAImovement = enemyClose ? 0.02f : 0.1f;
                 for (int k = 0; k < Main.maxNPCs; k++)
                 {
                     NPC otherFish = Main.npc[k];
@@ -181,103 +185,6 @@ namespace CalamityMod.NPCs.SunkenSea
                             NPC.velocity.Y += SAImovement;
                     }
                 }
-
-                if (!owner.active)
-                    return;
-
-                float passiveMvtFloat = 0.5f;
-                float range = 100f;
-                Vector2 fischPos = NPC.Center;
-                float xDist = owner.Center.X - fischPos.X;
-                float yDist = owner.Center.Y - fischPos.Y;
-                yDist += Main.rand.NextFloat(-10, 20) / (enemyClose ? 2 : 1);
-                xDist += Main.rand.NextFloat(-10, 20) / (enemyClose ? 2 : 1);
-                xDist += 30f * -(float)owner.direction;
-                Vector2 leaderVector = new Vector2(xDist, yDist);
-                float leaderDist = leaderVector.Length();
-                float returnSpeed = 8f;
-                //If leader is close enough, resume normal
-                if (leaderDist < range && owner.velocity.Y == 0f &&
-                    NPC.Bottom.Y <= owner.Bottom.Y &&
-                    !Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
-                {
-                    if (NPC.velocity.Y < -6f)
-                    {
-                        NPC.velocity.Y = -6f;
-                    }
-                }
-
-                //Teleport to leader if too far
-                if (leaderDist > 2000f)
-                {
-                    NPC.position.X = owner.Center.X - NPC.width / 2;
-                    NPC.position.Y = owner.Center.Y - NPC.height / 2;
-                    NPC.netUpdate = true;
-                }
-
-                if (leaderDist < 50f)
-                {
-                    if (Math.Abs(NPC.velocity.X) > 2f || Math.Abs(NPC.velocity.Y) > 2f)
-                    {
-                        NPC.velocity *= 0.99f;
-                    }
-                    passiveMvtFloat = 0.01f;
-                }
-                else
-                {
-                    if (leaderDist < 100f)
-                    {
-                        passiveMvtFloat = 0.1f;
-                    }
-                    if (leaderDist > 300f)
-                    {
-                        passiveMvtFloat = 1f;
-                    }
-                    leaderDist = returnSpeed / leaderDist;
-                    leaderVector.X *= leaderDist;
-                    leaderVector.Y *= leaderDist;
-                }
-                if (NPC.velocity.X < leaderVector.X)
-                {
-                    NPC.velocity.X += passiveMvtFloat;
-                    if (passiveMvtFloat > 0.05f && NPC.velocity.X < 0f)
-                    {
-                        NPC.velocity.X += passiveMvtFloat;
-                    }
-                }
-                if (NPC.velocity.X > leaderVector.X)
-                {
-                    NPC.velocity.X -= passiveMvtFloat;
-                    if (passiveMvtFloat > 0.05f && NPC.velocity.X > 0f)
-                    {
-                        NPC.velocity.X -= passiveMvtFloat;
-                    }
-                }
-                if (NPC.velocity.Y < leaderVector.Y)
-                {
-                    NPC.velocity.Y += passiveMvtFloat;
-                    if (passiveMvtFloat > 0.05f && NPC.velocity.Y < 0f)
-                    {
-                        NPC.velocity.Y += passiveMvtFloat * 2f;
-                    }
-                }
-                if (NPC.velocity.Y > leaderVector.Y)
-                {
-                    NPC.velocity.Y -= passiveMvtFloat;
-                    if (passiveMvtFloat > 0.05f && NPC.velocity.Y > 0f)
-                    {
-                        NPC.velocity.Y -= passiveMvtFloat * 2f;
-                    }
-                }
-                if (NPC.velocity.X >= 0.25f)
-                {
-                    NPC.direction = -1;
-                }
-                else if (NPC.velocity.X < -0.25f)
-                {
-                    NPC.direction = 1;
-                }
-                NPC.spriteDirection = -NPC.direction;
             }
             NPC.noGravity = true;
             // leaders will naturally spawn a school of followers upon spawning
@@ -306,6 +213,27 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
             }
             Lighting.AddLight(NPC.Center, glowColor.R * intensity, glowColor.G * intensity, glowColor.B * intensity);
+            NPC.position += NPC.netOffset;
+            Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
+            if (color.R > 20 || color.B > 20 || color.G > 20)
+            {
+                int colorVal = color.R;
+                if (color.G > colorVal)
+                {
+                    colorVal = color.G;
+                }
+                if (color.B > colorVal)
+                {
+                    colorVal = color.B;
+                }
+                colorVal /= 30;
+                if (Main.rand.Next(300) < colorVal)
+                {
+                    int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.SilverCoin, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
+                    Main.dust[golddust].velocity *= 0f;
+                }
+            }
+            NPC.position -= NPC.netOffset;
         }
 
         public void LeaderMovement()
