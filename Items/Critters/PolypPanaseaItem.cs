@@ -67,7 +67,6 @@ namespace CalamityMod.Items.Critters
                     int n = NPC.ReleaseNPC(mouseX, mouseY, item.makeNPC, item.placeStyle, player.whoAmI);
                     Main.npc[n].ai[1] = colorType;
                     Main.npc[n].ai[2] = 0;
-                    Main.npc[n].ai[3] = 1;
                     Main.npc[n].catchItem = item.type;
                 }
             }

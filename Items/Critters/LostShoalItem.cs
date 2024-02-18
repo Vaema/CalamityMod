@@ -1,16 +1,16 @@
 ﻿using CalamityMod.NPCs.SunkenSea;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ID;
 
 namespace CalamityMod.Items.Critters
 {
-    public class BabyGhostBellItem : ModItem, ILocalizedModType
+    public class LostShoalItem : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
         public override void SetStaticDefaults()
         {
-            On_Player.ItemCheck_ReleaseCritter += ReleaseColoredGhostBell;
+            On_Player.ItemCheck_ReleaseCritter += ReleaseColoredShoal;
             Item.ResearchUnlockCount = 5;
         }
 
@@ -28,14 +28,14 @@ namespace CalamityMod.Items.Critters
             Item.noUseGraphic = true;
             Item.value = Item.buyPrice(0, 0, 30, 0);
             Item.bait = 20;
-            Item.makeNPC = (short)ModContent.NPCType<BabyGhostBell>();
+            Item.makeNPC = (short)ModContent.NPCType<LostShoal>();
             Item.rare = ItemRarityID.Green;
         }
 
         // Since all Polyp Panasea variants are a single NPC type, this needs to be done in order for each item to spawn the correct color
-        public static void ReleaseColoredGhostBell(On_Player.orig_ItemCheck_ReleaseCritter orig, Player player, Item item)
+        public static void ReleaseColoredShoal(On_Player.orig_ItemCheck_ReleaseCritter orig, Player player, Item item)
         {
-            if (item.makeNPC == ModContent.NPCType<BabyGhostBell>())
+            if (item.makeNPC == ModContent.NPCType<LostShoal>())
             {
                 int mouseX = Main.mouseX + (int)Main.screenPosition.X;
                 int mouseY = Main.mouseY + (int)Main.screenPosition.Y;
@@ -43,18 +43,14 @@ namespace CalamityMod.Items.Critters
                 int tileY = mouseY / 16;
                 if (!WorldGen.SolidTile(tileX, tileY))
                 {
-                    int colorType = (int)BabyGhostBell.JellyColor.Blue;
-                    if (item.type == ModContent.ItemType<BabyGhostBellGreenItem>())
+                    int colorType = (int)LostShoal.ShoalColor.Green;
+                    if (item.type == ModContent.ItemType<LostShoalBlueItem>())
                     {
-                        colorType = (int)BabyGhostBell.JellyColor.Green;
+                        colorType = (int)LostShoal.ShoalColor.Blue;
                     }
-                    if (item.type == ModContent.ItemType<BabyGhostBellRedItem>())
+                    if (item.type == ModContent.ItemType<LostShoalRedItem>())
                     {
-                        colorType = (int)BabyGhostBell.JellyColor.Red;
-                    }
-                    if (item.type == ModContent.ItemType<BabyGhostBellRadiantItem>())
-                    {
-                        colorType = (int)BabyGhostBell.JellyColor.Radiant;
+                        colorType = (int)LostShoal.ShoalColor.Red;
                     }
                     player.ApplyItemTime(item);
                     int n = NPC.ReleaseNPC(mouseX, mouseY, item.makeNPC, item.placeStyle, player.whoAmI);

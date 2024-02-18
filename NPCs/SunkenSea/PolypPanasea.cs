@@ -87,9 +87,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            // If the player places one, dont deal with this
-            if (NPC.ai[3] == 1)
+            // Panaseas released by the player do not randomize when spawned
+            if (source is EntitySource_Parent parentSource && parentSource.Entity is Player)
+            {
                 return;
+            }
             // Randomize the color of the fish
             NPC.ai[1] = Main.rand.Next(0, 4);
             // 1 in 30 chance for a rare fish variant (rfv)

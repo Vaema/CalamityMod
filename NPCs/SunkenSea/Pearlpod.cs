@@ -1,7 +1,7 @@
 ﻿using CalamityMod.BiomeManagers;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Tiles.SunkenSea.Ambient;
-using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
 using Terraria.ID;
@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.SunkenSea
     {
         public abstract int PearlType { get; }
         public abstract float SpawnRate { get; }
-        //public abstract int ItemType { get; }
+        public abstract int ItemType { get; }
 
         public override void SetDefaults()
         {
@@ -37,7 +37,7 @@ namespace CalamityMod.NPCs.SunkenSea
             AIType = NPCID.Snail;
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<PearlpodBanner>();
-            //NPC.catchItem = ModContent.ItemType<ItemType>();
+            NPC.catchItem = ItemType;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
@@ -144,6 +144,7 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public override int PearlType => ItemID.WhitePearl;
         public override float SpawnRate => 0.6f;
+        public override int ItemType => ModContent.ItemType<PearlpodItem>();
     }
     public class PearlpodPink : Pearlpod
     {
@@ -152,8 +153,10 @@ namespace CalamityMod.NPCs.SunkenSea
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 6;
         }
+
         public override int PearlType => ItemID.PinkPearl;
         public override float SpawnRate => 0.2f;
+        public override int ItemType => ModContent.ItemType<PearlpodPinkItem>();
     }
     public class PearlpodBlack : Pearlpod
     {
@@ -164,5 +167,6 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public override int PearlType => ItemID.BlackPearl;
         public override float SpawnRate => 0.05f;
+        public override int ItemType => ModContent.ItemType<PearlpodBlackItem>();
     }
 }

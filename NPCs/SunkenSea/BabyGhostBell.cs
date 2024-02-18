@@ -98,8 +98,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            if (NPC.ai[3] == 1)
+            // Bells released by the player do not randomize when spawned
+            if (source is EntitySource_Parent parentSource && parentSource.Entity is Player)
+            {
                 return;
+            }
             Variant = Main.rand.Next(1, 4);
             if (Main.rand.NextBool(30))
             {
