@@ -68,18 +68,22 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void AI()
         {
             Tile vine = Main.tile[(int)NPC.position.X / 16, (int)NPC.position.Y / 16];
+            // Set newAI[0] to 1 if the Pearlpod is inside of a vine
             if (vine.TileType == ModContent.TileType<DepthVines>() && !NPC.justHit)
             {
                 NPC.Calamity().newAI[0] = 1;
             }
+            // Otherwise reset eating-related variables
             else
             {
                 NPC.Calamity().newAI[1] = 0;
                 NPC.Calamity().newAI[0] = 0;
             }
+            // Eating behavior
             if (NPC.Calamity().newAI[0] == 1)
             {
                 NPC.velocity.X *= 0.1f;
+                // Play a crunch sound and spawn some grass dust randomly 
                 if (Main.rand.NextBool(20))
                 {
                     SoundEngine.PlaySound(SoundID.Item2 with { Volume = 0.4f, Pitch = 1.2f }, NPC.Center);
@@ -89,6 +93,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     }
                     NPC.Calamity().newAI[1]++;
                 }
+                // After munching 10 times, the vine is broken and the Pearlpod continues about its day
                 if (NPC.Calamity().newAI[1] == 10)
                 {
                     if (vine.TileType == ModContent.TileType<DepthVines>())

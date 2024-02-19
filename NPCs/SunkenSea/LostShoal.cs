@@ -196,39 +196,30 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
             }
             Lighting.AddLight(NPC.Center, glowColor.R * intensity, glowColor.G * intensity, glowColor.B * intensity);
-            NPC.position += NPC.netOffset;
-            Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
-            if (color.R > 20 || color.B > 20 || color.G > 20)
-            {
-                int colorVal = color.R;
-                if (color.G > colorVal)
-                {
-                    colorVal = color.G;
-                }
-                if (color.B > colorVal)
-                {
-                    colorVal = color.B;
-                }
-                colorVal /= 30;
-                if (Main.rand.Next(300) < colorVal)
-                {
-                    //int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.SilverCoin, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
-                    //Main.dust[golddust].velocity *= 0f;
-                }
-            }
+            // Sprinkle down ash particles
             if (Main.rand.NextBool(120))
             {
-                Particle nanoDust = new SquareParticle(NPC.Center, new Vector2(Main.rand.NextFloat(-1, 2), 4), false, 300, Main.rand.NextFloat(0.65f, 0.9f), Color.White);
-                GeneralParticleHandler.SpawnParticle(nanoDust);
+                Color ashColor = new(40, 48, 41);
+                switch (Variant)
+                {
+                    case (int)ShoalColor.Blue:
+                        ashColor = new(44, 63, 66);
+                        break;
+                    case (int)ShoalColor.Red:
+                        ashColor = new(79, 41, 42);
+                        break;
+                }
+                Particle ash = new SquareAshParticle(NPC.Center, new Vector2(0, 4), 150, Main.rand.NextFloat(0.85f, 1f), ashColor);
+                GeneralParticleHandler.SpawnParticle(ash);
             }
-            NPC.position -= NPC.netOffset;
         }
 
         public void LeaderMovement()
         {
+            // This is just usual swimmer ai with some modifications
             NPC.spriteDirection = (NPC.direction > 0) ? -1 : 1;
 
-            NPC.velocity.X = NPC.velocity.X - (float)NPC.direction * 0.25f;
+            NPC.velocity.X = NPC.velocity.X - (float)NPC.direction * 0.2f;
             NPC.noGravity = true;
             if (NPC.collideX)
             {
@@ -253,8 +244,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
             // No target behavior
-            NPC.velocity.X += (float)NPC.direction * 0.1f;
-            if (NPC.velocity.X < -2.5f || NPC.velocity.X > 2.5f)
+            NPC.velocity.X += (float)NPC.direction * 0.05f;
+            if (NPC.velocity.X < -2f || NPC.velocity.X > 2f)
             {
                 NPC.velocity.X *= 0.95f;
             }
@@ -318,12 +309,32 @@ namespace CalamityMod.NPCs.SunkenSea
                 Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, new Vector2(Main.rand.Next(-10, 11) * 0.2f, Main.rand.Next(-10, 11) * 0.2f), goreType, 0.2f);
             }
         }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
+            // Spooky glowey aura effect
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            Color glowColor = Color.SeaGreen;
+            switch (Variant)
+            {
+                case (int)ShoalColor.Blue:
+                    glowColor = Color.Cyan;
+                    break;
+                case (int)ShoalColor.Red:
+                    glowColor = Color.Pink;
+                    break;
+            }
+            spriteBatch.Draw(bloom, NPC.position - Main.screenPosition + new Vector2(20, 5), null, glowColor * 0.4f, 0f, bloom.Size() / 2f, 0.5f, SpriteEffects.None, 0);
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+
+            // Regular stuff for drawing the actual fish and its afterimages
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             switch (Variant)
             {
