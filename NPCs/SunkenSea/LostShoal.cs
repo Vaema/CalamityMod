@@ -11,6 +11,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameContent;
 using Terraria.DataStructures;
+using CalamityMod.Particles;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -229,9 +230,14 @@ namespace CalamityMod.NPCs.SunkenSea
                 colorVal /= 30;
                 if (Main.rand.Next(300) < colorVal)
                 {
-                    int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.SilverCoin, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
-                    Main.dust[golddust].velocity *= 0f;
+                    //int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.SilverCoin, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
+                    //Main.dust[golddust].velocity *= 0f;
                 }
+            }
+            if (Main.rand.NextBool(120))
+            {
+                Particle nanoDust = new SquareParticle(NPC.Center, new Vector2(Main.rand.NextFloat(-1, 2), 4), false, 300, Main.rand.NextFloat(0.65f, 0.9f), Color.White);
+                GeneralParticleHandler.SpawnParticle(nanoDust);
             }
             NPC.position -= NPC.netOffset;
         }
