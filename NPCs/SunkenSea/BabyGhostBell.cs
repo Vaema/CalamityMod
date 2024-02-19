@@ -1,13 +1,16 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -155,23 +158,60 @@ namespace CalamityMod.NPCs.SunkenSea
                     Main.dust[dust].scale *= 0.5f;
                 }
             }
-            Lighting.AddLight(NPC.Center, 0f, (255 - NPC.alpha) * 1f / 255f, (255 - NPC.alpha) * 1f / 255f);
+            // Quick lil hops in random directions for movement
             if (NPC.wet)
             {
-                NPC.noGravity = true;
-                if (NPC.velocity.Y < 0f)
+                NPC.height = (int)(36 * NPC.scale);
+                if (NPC.velocity.Length() < 0.25f)
                 {
-                    NPC.velocity.Y += 0.1f;
+                    Vector2 direction = Main.rand.NextVector2Circular(30, 30);
+                    direction.Normalize();
+                    NPC.velocity = direction * 4;
                 }
-                if (NPC.velocity.Y > 0f)
-                {
-                    NPC.velocity.Y = 0f;
-                }
+                NPC.velocity *= 0.95f;
+                NPC.rotation = MathHelper.Lerp(NPC.rotation, NPC.velocity.ToRotation() + MathHelper.PiOver2, 0.5f);
             }
             else
             {
-                NPC.noGravity = false;
+                // Height is changed so that the jelly looks like it's actually laying on the ground when rotated
+                NPC.height = (int)(24 * NPC.scale);
+                // Gravy
+                if (NPC.velocity.Y < 10)
+                {
+                    NPC.velocity.Y += 0.5f;
+                }
+                // Once it has hit the ground, fall over
+                if (Math.Abs(NPC.velocity.Y) < 1 && NPC.collideY)
+                {
+                    // Splat
+                    if (NPC.ai[2] == 0)
+                    {
+                        SoundEngine.PlaySound(CnidarianJellyfishOnTheString.SlapSound, NPC.Center);
+                        NPC.ai[2] = 1;
+                    }
+                    NPC.rotation = MathHelper.Lerp(NPC.rotation, MathHelper.PiOver2, 0.7f);
+                }
+                // Reset the splat sound
+                else
+                {
+                    NPC.ai[2] = 0;
+                }
             }
+            // Lite
+            Color lightColor = Color.LightBlue; // Voltaic uses the same light blue
+            switch (Variant)
+            {
+                case (int)JellyColor.Red:
+                    lightColor = Color.Pink;
+                    break;
+                case (int)JellyColor.Green:
+                    lightColor = Color.LightGreen;
+                    break;
+                case (int)JellyColor.Radiant:
+                    lightColor = Color.LightBlue * 1.1f; // Radiant glows brighter
+                    break;
+            }
+            Lighting.AddLight(NPC.Center, (lightColor.R - NPC.alpha) * 1f / 255f, (lightColor.G - NPC.alpha) * 1f / 255f, (lightColor.B - NPC.alpha) * 1f / 255f);
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
@@ -246,9 +286,9 @@ namespace CalamityMod.NPCs.SunkenSea
                     texture = VoltaicTexture;
                     break;
             }
-            Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 origin = new Vector2(texture.Width / 2, texture.Height / Main.npcFrameCount[NPC.type] / 2);
             Vector2 npcOffset = NPC.Center - screenPos;
-            npcOffset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            npcOffset -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 

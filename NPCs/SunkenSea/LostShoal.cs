@@ -40,6 +40,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalRed", AssetRequestMode.ImmediateLoad).Value;
                 BlueTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalBlue", AssetRequestMode.ImmediateLoad).Value;
             }
+            NPCID.Sets.CountsAsCritter[NPC.type] = true;
         }
         public override void SetDefaults()
         {
@@ -59,7 +60,7 @@ namespace CalamityMod.NPCs.SunkenSea
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<LostShoalBanner>();
             NPC.chaseable = false;
-            NPC.catchItem = ItemID.AshBlock;
+            NPC.catchItem = ItemID.AshBlock; // yeah this is intentional
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = false;
