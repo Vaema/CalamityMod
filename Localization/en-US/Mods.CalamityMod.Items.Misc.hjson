@@ -1,4 +1,9 @@
 // Critters
+AlphaSeaMinnowItem: {
+	DisplayName: Alpha Sea Minnow
+	Tooltip: ""
+}
+
 AndroombaItem: {
 	DisplayName: "{$Mods.CalamityMod.NPCs.Androomba.DisplayName}"
 	Tooltip:

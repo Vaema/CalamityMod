@@ -3,6 +3,7 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -49,118 +50,237 @@ namespace CalamityMod.NPCs.SunkenSea
         }
 
         public override void AI()
-        {
-            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 3, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
-            NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
-            NPC.noGravity = true;
-            bool shouldSwimAway = false;
-            if (NPC.direction == 0)
-            {
-                NPC.TargetClosest(true);
-            }
+            NPC owner = Main.npc[(int)NPC.ai[2]];
             if (NPC.wet)
             {
-                NPC.TargetClosest(false);
-                if (Main.player[NPC.target].wet && !Main.player[NPC.target].dead &&
-                    (Main.player[NPC.target].Center - NPC.Center).Length() < 150f)
+                if (owner == null || !owner.active || owner.type != ModContent.NPCType<AlphaSeaMinnow>())
                 {
-                    shouldSwimAway = true;
-                }
-                if ((!Main.player[NPC.target].wet || Main.player[NPC.target].dead) && shouldSwimAway)
-                {
-                    shouldSwimAway = false;
-                }
-                if (!shouldSwimAway)
-                {
-                    if (NPC.collideX || NPC.velocity.X == 0f)
+                    CalamityAI.PassiveSwimmingAI(NPC, Mod, 3, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
+                    NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
+                    NPC.noGravity = true;
+                    bool shouldSwimAway = false;
+                    if (NPC.direction == 0)
                     {
-                        NPC.velocity.X = NPC.velocity.X * -3f;
+                        NPC.TargetClosest(true);
+                    }
+                    NPC.TargetClosest(false);
+                    if (Main.player[NPC.target].wet && !Main.player[NPC.target].dead &&
+                        (Main.player[NPC.target].Center - NPC.Center).Length() < 150f)
+                    {
+                        shouldSwimAway = true;
+                    }
+                    if ((!Main.player[NPC.target].wet || Main.player[NPC.target].dead) && shouldSwimAway)
+                    {
+                        shouldSwimAway = false;
+                    }
+                    if (!shouldSwimAway)
+                    {
+                        if (NPC.collideX || NPC.velocity.X == 0f)
+                        {
+                            NPC.velocity.X = NPC.velocity.X * -3f;
+                            NPC.direction *= -1;
+                            NPC.netUpdate = true;
+                        }
+                        if (NPC.collideY)
+                        {
+                            NPC.netUpdate = true;
+                            if (NPC.velocity.Y > 0f)
+                            {
+                                NPC.velocity.Y = Math.Abs(NPC.velocity.Y) * -3f;
+                                NPC.directionY = -1;
+                                NPC.ai[0] = -1f;
+                            }
+                            else if (NPC.velocity.Y < 0f)
+                            {
+                                NPC.velocity.Y = Math.Abs(NPC.velocity.Y);
+                                NPC.directionY = 1;
+                                NPC.ai[0] = 1f;
+                            }
+                        }
+                    }
+                    if (shouldSwimAway)
+                    {
+                        NPC.TargetClosest(true);
+                        NPC.velocity.X = NPC.velocity.X - (float)NPC.direction * 0.25f;
+                        NPC.velocity.Y = NPC.velocity.Y - (float)NPC.directionY * 0.15f;
+                        if (NPC.velocity.X > 6f)
+                        {
+                            NPC.velocity.X = 6f;
+                        }
+                        if (NPC.velocity.X < -6f)
+                        {
+                            NPC.velocity.X = -6f;
+                        }
+                        if (NPC.velocity.Y > 6f)
+                        {
+                            NPC.velocity.Y = 6f;
+                        }
+                        if (NPC.velocity.Y < -6f)
+                        {
+                            NPC.velocity.Y = -6f;
+                        }
                         NPC.direction *= -1;
-                        NPC.netUpdate = true;
-                    }
-                    if (NPC.collideY)
-                    {
-                        NPC.netUpdate = true;
-                        if (NPC.velocity.Y > 0f)
-                        {
-                            NPC.velocity.Y = Math.Abs(NPC.velocity.Y) * -3f;
-                            NPC.directionY = -1;
-                            NPC.ai[0] = -1f;
-                        }
-                        else if (NPC.velocity.Y < 0f)
-                        {
-                            NPC.velocity.Y = Math.Abs(NPC.velocity.Y);
-                            NPC.directionY = 1;
-                            NPC.ai[0] = 1f;
-                        }
-                    }
-                }
-                if (shouldSwimAway)
-                {
-                    NPC.TargetClosest(true);
-                    NPC.velocity.X = NPC.velocity.X - (float)NPC.direction * 0.25f;
-                    NPC.velocity.Y = NPC.velocity.Y - (float)NPC.directionY * 0.15f;
-                    if (NPC.velocity.X > 6f)
-                    {
-                        NPC.velocity.X = 6f;
-                    }
-                    if (NPC.velocity.X < -6f)
-                    {
-                        NPC.velocity.X = -6f;
-                    }
-                    if (NPC.velocity.Y > 6f)
-                    {
-                        NPC.velocity.Y = 6f;
-                    }
-                    if (NPC.velocity.Y < -6f)
-                    {
-                        NPC.velocity.Y = -6f;
-                    }
-                    NPC.direction *= -1;
-                }
-                else
-                {
-                    NPC.velocity.X = NPC.velocity.X + (float)NPC.direction * 0.1f;
-                    if (NPC.velocity.X < -2.5f || NPC.velocity.X > 2.5f)
-                    {
-                        NPC.velocity.X = NPC.velocity.X * 0.95f;
-                    }
-                    if (NPC.ai[0] == -1f)
-                    {
-                        NPC.velocity.Y = NPC.velocity.Y - 0.01f;
-                        if ((double)NPC.velocity.Y < -0.3)
-                        {
-                            NPC.ai[0] = 1f;
-                        }
                     }
                     else
                     {
-                        NPC.velocity.Y = NPC.velocity.Y + 0.01f;
-                        if ((double)NPC.velocity.Y > 0.3)
+                        NPC.velocity.X = NPC.velocity.X + (float)NPC.direction * 0.1f;
+                        if (NPC.velocity.X < -2.5f || NPC.velocity.X > 2.5f)
+                        {
+                            NPC.velocity.X = NPC.velocity.X * 0.95f;
+                        }
+                        if (NPC.ai[0] == -1f)
+                        {
+                            NPC.velocity.Y = NPC.velocity.Y - 0.01f;
+                            if ((double)NPC.velocity.Y < -0.3)
+                            {
+                                NPC.ai[0] = 1f;
+                            }
+                        }
+                        else
+                        {
+                            NPC.velocity.Y = NPC.velocity.Y + 0.01f;
+                            if ((double)NPC.velocity.Y > 0.3)
+                            {
+                                NPC.ai[0] = -1f;
+                            }
+                        }
+                    }
+                    int npcTileX = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
+                    int npcTileY = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
+                    if (Main.tile[npcTileX, npcTileY - 1].LiquidAmount > 128)
+                    {
+                        if (Main.tile[npcTileX, npcTileY + 1].HasTile)
+                        {
+                            NPC.ai[0] = -1f;
+                        }
+                        else if (Main.tile[npcTileX, npcTileY + 2].HasTile)
                         {
                             NPC.ai[0] = -1f;
                         }
                     }
-                }
-                int npcTileX = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
-                int npcTileY = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
-                if (Main.tile[npcTileX, npcTileY - 1].LiquidAmount > 128)
-                {
-                    if (Main.tile[npcTileX, npcTileY + 1].HasTile)
+                    if ((double)NPC.velocity.Y > 0.4 || (double)NPC.velocity.Y < -0.4)
                     {
-                        NPC.ai[0] = -1f;
-                    }
-                    else if (Main.tile[npcTileX, npcTileY + 2].HasTile)
-                    {
-                        NPC.ai[0] = -1f;
+                        NPC.velocity.Y = NPC.velocity.Y * 0.95f;
                     }
                 }
-                if ((double)NPC.velocity.Y > 0.4 || (double)NPC.velocity.Y < -0.4)
+                else
                 {
-                    NPC.velocity.Y = NPC.velocity.Y * 0.95f;
+                    float SAImovement = 0.05f;
+                    for (int k = 0; k < Main.maxNPCs; k++)
+                    {
+                        NPC otherFish = Main.npc[k];
+                        // Short circuits to make the loop as fast as possible
+                        if (!otherFish.active || k == NPC.whoAmI || (otherFish.type != ModContent.NPCType<SeaMinnow>() && otherFish.type != ModContent.NPCType<AlphaSeaMinnow>()))
+                            continue;
+
+                        float taxicabDist = Math.Abs(NPC.position.X - otherFish.position.X) + Math.Abs(NPC.position.Y - otherFish.position.Y);
+                        if (taxicabDist < NPC.width * 1.5f)
+                        {
+                            if (NPC.position.X < otherFish.position.X)
+                                NPC.velocity.X -= SAImovement;
+                            else
+                                NPC.velocity.X += SAImovement;
+
+                            if (NPC.position.Y < otherFish.position.Y)
+                                NPC.velocity.Y -= SAImovement;
+                            else
+                                NPC.velocity.Y += SAImovement;
+                        }
+                    }
+
+                    if (!owner.active)
+                        return;
+
+                    float passiveMvtFloat = 0.5f;
+                    float range = 100f;
+                    Vector2 fischPos = NPC.Center;
+                    float xDist = owner.Center.X - fischPos.X;
+                    float yDist = owner.Center.Y - fischPos.Y;
+                    yDist += Main.rand.NextFloat(-10, 20);
+                    xDist += Main.rand.NextFloat(-10, 20);
+                    xDist += 30f * -(float)owner.direction;
+                    Vector2 leaderVector = new Vector2(xDist, yDist);
+                    float leaderDist = leaderVector.Length();
+                    float returnSpeed = 8f;
+                    //If leader is close enough, resume normal
+                    if (leaderDist < range && owner.velocity.Y == 0f &&
+                        NPC.Bottom.Y <= owner.Bottom.Y &&
+                        !Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+                    {
+                        if (NPC.velocity.Y < -6f)
+                        {
+                            NPC.velocity.Y = -6f;
+                        }
+                    }
+
+                    if (leaderDist < 50f)
+                    {
+                        if (Math.Abs(NPC.velocity.X) > 2f || Math.Abs(NPC.velocity.Y) > 2f)
+                        {
+                            NPC.velocity *= 0.99f;
+                        }
+                        passiveMvtFloat = 0.01f;
+                    }
+                    else
+                    {
+                        if (leaderDist < 100f)
+                        {
+                            passiveMvtFloat = 0.1f;
+                        }
+                        if (leaderDist > 300f)
+                        {
+                            passiveMvtFloat = 1f;
+                        }
+                        leaderDist = returnSpeed / leaderDist;
+                        leaderVector.X *= leaderDist;
+                        leaderVector.Y *= leaderDist;
+                    }
+                    if (NPC.velocity.X < leaderVector.X)
+                    {
+                        NPC.velocity.X += passiveMvtFloat;
+                        if (passiveMvtFloat > 0.05f && NPC.velocity.X < 0f)
+                        {
+                            NPC.velocity.X += passiveMvtFloat;
+                        }
+                    }
+                    if (NPC.velocity.X > leaderVector.X)
+                    {
+                        NPC.velocity.X -= passiveMvtFloat;
+                        if (passiveMvtFloat > 0.05f && NPC.velocity.X > 0f)
+                        {
+                            NPC.velocity.X -= passiveMvtFloat;
+                        }
+                    }
+                    if (NPC.velocity.Y < leaderVector.Y)
+                    {
+                        NPC.velocity.Y += passiveMvtFloat;
+                        if (passiveMvtFloat > 0.05f && NPC.velocity.Y < 0f)
+                        {
+                            NPC.velocity.Y += passiveMvtFloat * 2f;
+                        }
+                    }
+                    if (NPC.velocity.Y > leaderVector.Y)
+                    {
+                        NPC.velocity.Y -= passiveMvtFloat;
+                        if (passiveMvtFloat > 0.05f && NPC.velocity.Y > 0f)
+                        {
+                            NPC.velocity.Y -= passiveMvtFloat * 2f;
+                        }
+                    }
+                    if (NPC.velocity.X >= 0.25f)
+                    {
+                        NPC.direction = -1;
+                    }
+                    else if (NPC.velocity.X < -0.25f)
+                    {
+                        NPC.direction = 1;
+                    }
+                    NPC.spriteDirection = -NPC.direction;
                 }
             }
             else
+            {
+
             {
                 if (NPC.velocity.Y == 0f)
                 {
