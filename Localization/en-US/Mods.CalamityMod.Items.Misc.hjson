@@ -38,21 +38,6 @@ BabyGhostBellRedItem: {
 	Tooltip: ""
 }
 
-LostShoalBlueItem: {
-	DisplayName: Blue Lost Shoal
-	Tooltip: ""
-}
-
-LostShoalItem: {
-	DisplayName: Green Lost Shoal
-	Tooltip: ""
-}
-
-LostShoalRedItem: {
-	DisplayName: Red Lost Shoal
-	Tooltip: ""
-}
-
 NanodroidDysfunctionalItem: {
 	DisplayName: Dysfunctional Nanodroid
 	Tooltip: ""

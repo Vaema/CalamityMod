@@ -59,7 +59,7 @@ namespace CalamityMod.NPCs.SunkenSea
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<LostShoalBanner>();
             NPC.chaseable = false;
-            NPC.catchItem = (short)ModContent.ItemType<LostShoalItem>();
+            NPC.catchItem = ItemID.AshBlock;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = false;
@@ -76,26 +76,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            // Shoals released by the player do not randomize when spawned
-            if (source is EntitySource_Parent parentSource && parentSource.Entity is Player)
-            {
-                Role = 2;
-                return;
-            }
             // Randomize the color of the fish
             Variant = Main.rand.Next(0, 3);
-            switch (Variant)
-            {
-                case (int)ShoalColor.Red:
-                    NPC.catchItem = ModContent.ItemType<LostShoalRedItem>();
-                    break;
-                case (int)ShoalColor.Blue:
-                    NPC.catchItem = ModContent.ItemType<LostShoalItem>();
-                    break;
-                case (int)ShoalColor.Green:
-                    NPC.catchItem = ModContent.ItemType<LostShoalBlueItem>();
-                    break;
-            }
         }
 
         public override void AI()
