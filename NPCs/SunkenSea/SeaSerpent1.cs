@@ -1,21 +1,54 @@
 ﻿using System;
 using CalamityMod.BiomeManagers;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using System.IO;
 using Terraria;
-using Terraria.GameContent.Bestiary;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.SunkenSea
 {
     public class SeaSerpent1 : ModNPC
     {
-        public const int maxLength = 9;
-        public float speed = 3f;
-        public float turnSpeed = 0.0625f;
-        bool TailSpawned = false;
+        public bool PeekingOut;
+        public bool HasChosenSpotToHideIn => SpotToHideIn != Vector2.Zero;
+        public Point TileCoordsToHideIn
+        {
+            get => SpotToHideIn.ToTileCoordinates();
+            set => SpotToHideIn = value.ToWorldCoordinates();
+        }
+        public Vector2 SpotToHideIn
+        {
+            get => new Vector2(NPC.ai[0], NPC.ai[1]);
+            set
+            {
+                NPC.ai[0] = value.X;
+                NPC.ai[1] = value.Y;
+            }
+        }
+
+        public bool InHidingSpot => NPC.WithinRange(SpotToHideIn, 8f);
+
+        public bool RetreatingToHidingSpot
+        {
+            get => NPC.ai[2] == 1f;
+            set => NPC.ai[2] = value.ToInt();
+        }
+
+        public ref float SnapTimer => ref NPC.ai[3];
+        public ref float SnapCooldown => ref NPC.localAI[0];
+        public ref float InitialSnapDirection => ref NPC.localAI[1];
+        public ref float CurrentSnapDirection => ref NPC.localAI[2];
 
         public override void SetStaticDefaults()
         {
@@ -28,13 +61,17 @@ namespace CalamityMod.NPCs.SunkenSea
             value.Position.Y += 20;
             value.Position.X += 40;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+
+            NPCID.Sets.TrailingMode[NPC.type] = 0;
+            NPCID.Sets.TrailCacheLength[NPC.type] = 60;
+            NPCID.Sets.UsesNewTargetting[NPC.type] = true;
         }
 
         public override void SetDefaults()
         {
             NPC.damage = 50;
-            NPC.width = 50; //42
-            NPC.height = 24; //32
+            NPC.width = 30;
+            NPC.height = 30; //32
             NPC.defense = 10;
             NPC.lifeMax = 3000;
             NPC.aiStyle = -1;
@@ -58,6 +95,8 @@ namespace CalamityMod.NPCs.SunkenSea
             // Scale stats in Expert and Master
             CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
             CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+
+            NPC.waterMovementSpeed = 1f;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -68,238 +107,285 @@ namespace CalamityMod.NPCs.SunkenSea
             });
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(PeekingOut);
+            writer.Write(SnapCooldown);
+            writer.Write(InitialSnapDirection);
+            writer.Write(CurrentSnapDirection);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            PeekingOut = reader.ReadBoolean();
+            SnapCooldown = reader.ReadSingle();
+            InitialSnapDirection = reader.ReadSingle();
+            CurrentSnapDirection = reader.ReadSingle();
+        }
+
         public override void AI()
         {
-            Point point = NPC.Center.ToTileCoordinates();
-            Tile tileSafely = Framing.GetTileSafely(point);
-            bool createDust = tileSafely.HasUnactuatedTile && NPC.Distance(Main.player[NPC.target].Center) < 800f;
-            if (createDust)
+            // Choose an initial tile to hide in.
+            if (Main.netMode != NetmodeID.MultiplayerClient && !HasChosenSpotToHideIn)
             {
-                if (Main.rand.NextBool())
+                int tries;
+                for (tries = 0; tries < 1800; tries++)
                 {
-                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.TreasureSparkle, 0f, 0f, 150, default(Color), 0.3f);
-                    dust.fadeIn = 0.75f;
-                    dust.velocity *= 0.1f;
-                    dust.noLight = true;
+                    int x = (int)(NPC.Center.X / 16f) + Main.rand.Next(-25, 25);
+                    int y = (int)(NPC.Center.Y / 16f) + Main.rand.Next(-25, 25);
+                    Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
+
+                    // Try again if the tile isn't solid or isn't exposed to air.
+                    if (!WorldGen.SolidTile(tile) || !CalamityUtils.IsTileExposedToAir(x, y, out float? angleToOpenAir))
+                        continue;
+
+                    // Try again if there's no open water near the tile.
+                    Vector2 moveDirection = angleToOpenAir.Value.ToRotationVector2();
+                    Vector2 collisionCheckPosition = new Vector2(x * 16f + 8f, y * 16f + 8f) + moveDirection * 16f;
+                    float collisionDistance = CalamityUtils.DistanceToTileCollisionHit(collisionCheckPosition, moveDirection, 20) ?? 20;
+                    if (collisionDistance <= 10)
+                        continue;
+
+                    TileCoordsToHideIn = new Point(x, y);
+                    break;
                 }
-            }
 
-            Lighting.AddLight(NPC.Center, 0f, (255 - NPC.alpha) * 0.3f / 255f, (255 - NPC.alpha) * 0.3f / 255f);
-
-            if (NPC.ai[2] > 0f)
-                NPC.realLife = (int)NPC.ai[2];
-
-            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead)
-                NPC.TargetClosest(true);
-
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                if (!TailSpawned && NPC.ai[0] == 0f)
-                {
-                    int Previous = NPC.whoAmI;
-                    for (int segment = 0; segment < maxLength; segment++)
-                    {
-                        int lol = 0;
-                        if (segment == 0 || segment == 1 || segment == 4 || segment == 5)
-                            lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<SeaSerpent2>(), NPC.whoAmI);
-                        else if (segment == 2 || segment == 3 || segment == 6)
-                            lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<SeaSerpent3>(), NPC.whoAmI);
-                        else if (segment == 7)
-                            lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<SeaSerpent4>(), NPC.whoAmI);
-                        else if (segment == 8)
-                            lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<SeaSerpent5>(), NPC.whoAmI);
-
-                        Main.npc[lol].realLife = NPC.whoAmI;
-                        Main.npc[lol].ai[2] = (float)NPC.whoAmI;
-                        Main.npc[lol].ai[1] = (float)Previous;
-                        Main.npc[Previous].ai[0] = (float)lol;
-                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, lol, 0f, 0f, 0f, 0);
-                        Previous = lol;
-                    }
-
-                    TailSpawned = true;
-                }
-            }
-
-            if (NPC.velocity.X < 0f)
-                NPC.spriteDirection = -1;
-            else if (NPC.velocity.X > 0f)
-                NPC.spriteDirection = 1;
-
-            if (Main.player[NPC.target].dead)
-                NPC.TargetClosest(false);
-
-            NPC.alpha -= 42;
-            if (NPC.alpha < 0)
-                NPC.alpha = 0;
-
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
-            {
-                NPC.TargetClosest(false);
-                if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
+                // Just die if no spot was suitable.
+                if (tries >= 1799)
                     NPC.active = false;
+
+                NPC.Center = SpotToHideIn;
+                NPC.netUpdate = true;
             }
 
-            float currentSpeed = speed;
-            float currentTurnSpeed = turnSpeed;
-            Vector2 segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-            float targetXDist = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2);
-            float targetYDist = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2);
-            if (NPC.life > NPC.lifeMax * 0.99)
+            NPC target = null;
+            for (int i = 0; i < Main.maxNPCs; i++)
             {
-                targetYDist += 300;
-                if (Math.Abs(NPC.Center.X - Main.player[NPC.target].Center.X) < 250f)
+                NPC n = Main.npc[i];
+                if (n == null || !n.active || n.type != ModContent.NPCType<SeaMinnow>())
+                    continue;
+                if (n.Distance(NPC.Center) <= 300)
                 {
-                    if (NPC.velocity.X > 0f)
-                    {
-                        targetXDist = Main.player[NPC.target].Center.X + 300f;
-                    }
-                    else
-                    {
-                        targetXDist = Main.player[NPC.target].Center.X - 300f;
-                    }
+                    target = n;
                 }
             }
-            else
+
+            // Become invulnerable and mostly transparent if hiding in a tile.
+            NPC.dontTakeDamage = InHidingSpot;
+            NPC.Opacity = MathHelper.Clamp(NPC.Opacity - NPC.dontTakeDamage.ToDirectionInt(), 0.35f, 1f);
+
+            // Also emit some particle effects as an indicator.
+            if (InHidingSpot)
             {
-                currentSpeed *= 1.5f;
-                currentTurnSpeed *= 1.5f;
+                Dust sparkle = Dust.NewDustDirect(TileCoordsToHideIn.ToWorldCoordinates(0, 0), 16, 16, 261);
+                sparkle.color = Color.Cyan;
+                sparkle.velocity = Main.rand.NextVector2Circular(4f, 4f);
+                sparkle.noGravity = true;
             }
-            float maxCurrentSpeed = currentSpeed * 1.3f;
-            float minCurrentSpeed = currentSpeed * 0.7f;
-            float speedCompare = NPC.velocity.Length();
-            if (speedCompare > 0f)
+
+            // Decide rotation.
+            NPC.rotation = NPC.AngleFrom(SpotToHideIn) + MathHelper.PiOver2;
+
+            // Prevent the tile from being destroyed.
+            FixExploitManEaters.ProtectSpot(TileCoordsToHideIn.X, TileCoordsToHideIn.Y);
+
+            // Do nothing other than hiding if instructed to do so.
+            if (RetreatingToHidingSpot)
             {
-                if (speedCompare > maxCurrentSpeed)
+                NPC.velocity = NPC.SafeDirectionTo(SpotToHideIn) * 0.002f;
+                NPC.position += NPC.velocity.SafeNormalize(Vector2.Zero) * 5f;
+
+                // Stop once the hiding spot has been reached.
+                if (InHidingSpot)
                 {
-                    NPC.velocity.Normalize();
-                    NPC.velocity *= maxCurrentSpeed;
+                    NPC.Center = SpotToHideIn;
+                    NPC.velocity = Vector2.Zero;
+                    RetreatingToHidingSpot = false;
+                    NPC.netUpdate = true;
                 }
-                else if (speedCompare < minCurrentSpeed)
-                {
-                    NPC.velocity.Normalize();
-                    NPC.velocity *= minCurrentSpeed;
-                }
+
+                return;
             }
-            targetXDist = (float)((int)(targetXDist / 16f) * 16);
-            targetYDist = (float)((int)(targetYDist / 16f) * 16);
-            segmentPosition.X = (float)((int)(segmentPosition.X / 16f) * 16);
-            segmentPosition.Y = (float)((int)(segmentPosition.Y / 16f) * 16);
-            targetXDist -= segmentPosition.X;
-            targetYDist -= segmentPosition.Y;
-            float targetDistance = (float)System.Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
-            float absoluteTargetX = System.Math.Abs(targetXDist);
-            float absoluteTargetY = System.Math.Abs(targetYDist);
-            float timeToReachTarget = currentSpeed / targetDistance;
-            targetXDist *= timeToReachTarget;
-            targetYDist *= timeToReachTarget;
-            if ((NPC.velocity.X > 0f && targetXDist > 0f) || (NPC.velocity.X < 0f && targetXDist < 0f) || (NPC.velocity.Y > 0f && targetYDist > 0f) || (NPC.velocity.Y < 0f && targetYDist < 0f))
+
+            // Don't do any snapping and such if the cooldown is active.
+            if (SnapCooldown > 0f)
             {
-                if (NPC.velocity.X < targetXDist)
+                SnapCooldown--;
+                if (SnapCooldown <= 0f)
+                    NPC.netUpdate = true;
+                return;
+            }
+
+            if (SnapTimer > 0f)
+            {
+                int snapTime = PeekingOut ? 45 : 32;
+                float idealSpeed = PeekingOut ? 1.75f : 17f;
+                float newSpeed = MathHelper.Lerp(NPC.velocity.Length(), idealSpeed, 0.08f);
+                NPC.velocity = CurrentSnapDirection.ToRotationVector2() * newSpeed;
+
+                // Get closer to the target if one not peeking.
+                if (!PeekingOut && target != null)
+                    CurrentSnapDirection = CurrentSnapDirection.AngleTowards(NPC.AngleTo(target.Center), 0.0125f);
+
+                // Retreat if velocity is zero for some reason.
+                if (NPC.velocity == Vector2.Zero)
                 {
-                    NPC.velocity.X = NPC.velocity.X + currentTurnSpeed;
+                    SnapTimer = 0f;
+                    RetreatingToHidingSpot = true;
+                    NPC.netUpdate = true;
+                    return;
+                }
+
+                SnapTimer++;
+                if (SnapTimer >= snapTime || (Collision.SolidCollision(NPC.Center, 1, 1) && SnapTimer > 5f))
+                {
+                    SnapTimer = 0f;
+                    SnapCooldown = 35f;
+                    PeekingOut = false;
+                    RetreatingToHidingSpot = true;
+                }
+
+                return;
+            }
+
+            Vector2 snapDirection = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * Main.rand.Next(4));
+
+            // Pick a potential direction to snap out.
+            // This is important for attacking.
+            int snapDirectionTries = 0;
+            float targetSnapAngularThreshold = 0.48f;
+            while ((CalamityUtils.DistanceToTileCollisionHit(SpotToHideIn, snapDirection, 50) ?? 50f) < 5f)
+            {
+                snapDirectionTries++;
+                snapDirection = snapDirection.RotatedBy(MathHelper.PiOver2);
+
+                if (snapDirectionTries >= 8)
+                    return;
+
+                // Try again if there's a defined target and it isn't in the line of sight of the current direction.
+                if (target != null && snapDirection.AngleBetween(NPC.SafeDirectionTo(target.Center)) > targetSnapAngularThreshold)
+                    continue;
+            }
+
+            // Snap out if a suitable target gets close.
+            // Otherwise, sometimes randomly peek out.
+            bool canSnapAtTarget =
+                target != null &&
+                snapDirection.AngleBetween(NPC.SafeDirectionTo(target.Center)) < targetSnapAngularThreshold &&
+                Collision.CanHit(NPC.Center + snapDirection * 12f, 1, 1, target.Center, 1, 1);
+            if (Main.rand.NextBool(30) && !canSnapAtTarget)
+                PeekingOut = true;
+
+            if (PeekingOut || canSnapAtTarget)
+            {
+                if (canSnapAtTarget)
+                    SoundEngine.PlaySound(SoundID.Item96, NPC.Center);
+                else
+                    SoundEngine.PlaySound(SoundID.Item95, NPC.Center);
+
+                // Add some randomness when peeking.
+                if (PeekingOut)
+                    snapDirection = snapDirection.RotatedByRandom(MathHelper.Pi / 6f);
+
+                NPC.velocity = snapDirection * 4f;
+                InitialSnapDirection = CurrentSnapDirection = NPC.velocity.ToRotation();
+                SnapTimer = 1f;
+                NPC.netUpdate = true;
+            }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (InHidingSpot)
+                return false;
+
+            Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D body1Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent2").Value;
+            Texture2D body2Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent3").Value;
+            Texture2D body3Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent4").Value;
+            Texture2D body4Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent5").Value;
+            Texture2D body5Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent6").Value;
+            Texture2D body6Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent7").Value;
+            Texture2D body7Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent8").Value;
+            Texture2D tailTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent9").Value;
+
+            Vector2 idealDrawPosition = SpotToHideIn;
+            Vector2 backOffset = (NPC.rotation - MathHelper.PiOver2).ToRotationVector2() * -18f;
+            if (Collision.SolidCollision(idealDrawPosition + backOffset, 4, 4))
+                idealDrawPosition += backOffset;
+
+            List<Vector2> bezierPoints = new List<Vector2>()
+            {
+                idealDrawPosition
+            };
+
+            // Calculate points to create segments at based on a catmull-rom spine.
+            float bendFactor = Utils.GetLerpValue(80f, 250f, NPC.Distance(idealDrawPosition), true);
+            for (int i = 0; i < 20; i++)
+            {
+                Vector2 leftEnd = idealDrawPosition - InitialSnapDirection.ToRotationVector2() * bendFactor * 450f;
+                Vector2 rightEnd = NPC.Center + CurrentSnapDirection.ToRotationVector2() * bendFactor * 450f;
+                bezierPoints.Add(Vector2.CatmullRom(leftEnd, idealDrawPosition, NPC.Center, rightEnd, i / 19f));
+            }
+            bezierPoints.Add(NPC.Center);
+
+            // And then generalize them with a bezier curve.
+            BezierCurve bezierCurve = new BezierCurve(bezierPoints.ToArray());
+            int totalChains = (int)(NPC.Distance(idealDrawPosition) / 16f);
+            totalChains = (int)MathHelper.Clamp(totalChains, 2f, 100f);
+
+            for (int i = 0; i < totalChains - 1; i++)
+            {
+                Texture2D textureToUse;
+
+
+                if (i % 2 == 0)
+                {
+                    textureToUse = body3Texture;
                 }
                 else
                 {
-                    if (NPC.velocity.X > targetXDist)
-                    {
-                        NPC.velocity.X = NPC.velocity.X - currentTurnSpeed;
-                    }
+                    textureToUse = body4Texture;
                 }
-                if (NPC.velocity.Y < targetYDist)
+
+                switch (totalChains - i - 1)
                 {
-                    NPC.velocity.Y = NPC.velocity.Y + currentTurnSpeed;
+                    case 1:
+                        textureToUse = headTexture;
+                        break;
+                    case 2:
+                        textureToUse = body1Texture;
+                        break;
+                    case 3:
+                        textureToUse = body2Texture;
+                        break;
                 }
-                else
-                {
-                    if (NPC.velocity.Y > targetYDist)
-                    {
-                        NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed;
-                    }
-                }
-                if ((double)System.Math.Abs(targetYDist) < (double)currentSpeed * 0.2 && ((NPC.velocity.X > 0f && targetXDist < 0f) || (NPC.velocity.X < 0f && targetXDist > 0f)))
-                {
-                    if (NPC.velocity.Y > 0f)
-                    {
-                        NPC.velocity.Y = NPC.velocity.Y + currentTurnSpeed * 2f;
-                    }
-                    else
-                    {
-                        NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed * 2f;
-                    }
-                }
-                if ((double)System.Math.Abs(targetXDist) < (double)currentSpeed * 0.2 && ((NPC.velocity.Y > 0f && targetYDist < 0f) || (NPC.velocity.Y < 0f && targetYDist > 0f)))
-                {
-                    if (NPC.velocity.X > 0f)
-                    {
-                        NPC.velocity.X = NPC.velocity.X + currentTurnSpeed * 2f; //changed from 2
-                    }
-                    else
-                    {
-                        NPC.velocity.X = NPC.velocity.X - currentTurnSpeed * 2f; //changed from 2
-                    }
-                }
+
+                Vector2 drawPosition = bezierCurve.Evaluate(i / (float)totalChains);
+                Color lightColor = Lighting.GetColor((int)(drawPosition.X / 16f), (int)(drawPosition.Y / 16f));
+                float angle = (bezierCurve.Evaluate(i / (float)totalChains + 1f / totalChains) - drawPosition).ToRotation() + MathHelper.PiOver2;
+                spriteBatch.Draw(textureToUse, drawPosition - Main.screenPosition, null, lightColor, angle, textureToUse.Size() * 0.5f, NPC.scale, SpriteEffects.None, 0f);
             }
-            else
-            {
-                if (absoluteTargetX > absoluteTargetY)
-                {
-                    if (NPC.velocity.X < targetXDist)
-                    {
-                        NPC.velocity.X = NPC.velocity.X + currentTurnSpeed * 1.1f; //changed from 1.1
-                    }
-                    else if (NPC.velocity.X > targetXDist)
-                    {
-                        NPC.velocity.X = NPC.velocity.X - currentTurnSpeed * 1.1f; //changed from 1.1
-                    }
-                    if ((double)(System.Math.Abs(NPC.velocity.X) + System.Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
-                    {
-                        if (NPC.velocity.Y > 0f)
-                        {
-                            NPC.velocity.Y = NPC.velocity.Y + currentTurnSpeed;
-                        }
-                        else
-                        {
-                            NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed;
-                        }
-                    }
-                }
-                else
-                {
-                    if (NPC.velocity.Y < targetYDist)
-                    {
-                        NPC.velocity.Y = NPC.velocity.Y + currentTurnSpeed * 1.1f;
-                    }
-                    else if (NPC.velocity.Y > targetYDist)
-                    {
-                        NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed * 1.1f;
-                    }
-                    if ((double)(System.Math.Abs(NPC.velocity.X) + System.Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
-                    {
-                        if (NPC.velocity.X > 0f)
-                        {
-                            NPC.velocity.X = NPC.velocity.X + currentTurnSpeed;
-                        }
-                        else
-                        {
-                            NPC.velocity.X = NPC.velocity.X - currentTurnSpeed;
-                        }
-                    }
-                }
-            }
-            NPC.rotation = (float)System.Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + 1.57f;
+            return false;
+        }
+
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+        {
+            return NPC.life < NPC.lifeMax * 0.99f;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (Main.hardMode && spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water &&
-                !NPC.AnyNPCs(ModContent.NPCType<SeaSerpent1>()) && !spawnInfo.Player.Calamity().clamity && !spawnInfo.PlayerSafe)
+            if (spawnInfo.Player.Calamity().ZoneSunkenSeaPolyp && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity && !spawnInfo.PlayerSafe)
                 return SpawnCondition.CaveJellyfish.Chance * 0.3f;
 
             return 0f;
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ModContent.ItemType<Serpentine>(), 4);
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            npcLoot.Add(ModContent.ItemType<Serpentine>(), 4);
+        }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
@@ -307,16 +393,13 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
             }
-            if (NPC.life <= 0)
+            if (NPC.life <= 0 && Main.netMode != NetmodeID.Server)
             {
                 for (int k = 0; k < 10; k++)
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
-                {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaSerpentGore1").Type, 1f);
-                }
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaSerpentGore1").Type, NPC.scale);
             }
         }
     }
