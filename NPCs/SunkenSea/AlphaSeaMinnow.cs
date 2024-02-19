@@ -50,6 +50,12 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
+            // Alphas released by the player do not spawn a shoal of minnows
+            if (source is EntitySource_Parent parentSource && parentSource.Entity is Player)
+            {
+                return;
+            }
+            // Spawn a shoal of minnows
             int fishCount = Main.rand.Next(5, 10);
             for (int i = 0; i < fishCount; i++)
             {
