@@ -361,7 +361,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<SeaMinnow>();
                     break;
                 case 106:
-                    npc = NPCType<SeaSerpent1>();
+                    npc = NPCType<SandProwlerNested>();
                     break;
                 case 108:
                     npc = NPCType<Piggy>();

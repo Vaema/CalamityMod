@@ -340,11 +340,8 @@ namespace CalamityMod
                 { ModContent.NPCType<GhostBell>(), sunkenSea },
                 { ModContent.NPCType<GiantClam>(), sunkenSea },
                 { ModContent.NPCType<PrismBack>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent1>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent2>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent3>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent4>(), sunkenSea },
-                { ModContent.NPCType<SeaSerpent5>(), sunkenSea },
+                { ModContent.NPCType<SandProwler>(), sunkenSea },
+                { ModContent.NPCType<SandProwlerNested>(), sunkenSea },
 
                 { ModContent.NPCType<BabyCannonballJellyfish>(), abyss },
                 { ModContent.NPCType<CannonballJellyfish>(), abyss },

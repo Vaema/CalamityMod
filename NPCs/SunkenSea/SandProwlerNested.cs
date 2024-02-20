@@ -18,7 +18,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class SeaSerpent1 : ModNPC
+    public class SandProwlerNested : ModNPC
     {
         public bool PeekingOut;
         public bool HasChosenSpotToHideIn => SpotToHideIn != Vector2.Zero;
@@ -49,6 +49,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float SnapCooldown => ref NPC.localAI[0];
         public ref float InitialSnapDirection => ref NPC.localAI[1];
         public ref float CurrentSnapDirection => ref NPC.localAI[2];
+        public override string Texture => "CalamityMod/NPCs/SunkenSea/SandProwler1";
 
         public override void SetStaticDefaults()
         {
@@ -300,14 +301,10 @@ namespace CalamityMod.NPCs.SunkenSea
                 return false;
 
             Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
-            Texture2D body1Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent2").Value;
-            Texture2D body2Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent3").Value;
-            Texture2D body3Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent4").Value;
-            Texture2D body4Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent5").Value;
-            Texture2D body5Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent6").Value;
-            Texture2D body6Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent7").Value;
-            Texture2D body7Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent8").Value;
-            Texture2D tailTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SeaSerpent9").Value;
+            Texture2D body1Texture = SandProwler.BodySprite1;
+            Texture2D body2Texture = SandProwler.BodySprite2;
+            Texture2D body3Texture = SandProwler.BodySprite3;
+            Texture2D body4Texture = SandProwler.BodySprite4;
 
             Vector2 idealDrawPosition = SpotToHideIn;
             Vector2 backOffset = (NPC.rotation - MathHelper.PiOver2).ToRotationVector2() * -18f;
