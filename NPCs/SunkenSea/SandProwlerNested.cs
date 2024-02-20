@@ -159,16 +159,24 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.netUpdate = true;
             }
 
-            NPC target = null;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            Entity target = null;
+            if (NPC.life > NPC.lifeMax * 0.99f)
             {
-                NPC n = Main.npc[i];
-                if (n == null || !n.active || n.type != ModContent.NPCType<SeaMinnow>())
-                    continue;
-                if (n.Distance(NPC.Center) <= 300)
+                for (int i = 0; i < Main.maxNPCs; i++)
                 {
-                    target = n;
+                    NPC n = Main.npc[i];
+                    if (n == null || !n.active || n.type != ModContent.NPCType<SeaMinnow>())
+                        continue;
+                    if (n.Distance(NPC.Center) <= 300 && Collision.CheckAABBvLineCollision(NPC.Center, NPC.Size, NPC.Center, n.Center))
+                    {
+                        target = n;
+                    }
                 }
+            }
+            else
+            {
+                NPC.TargetClosest(false);
+                target = Main.player[NPC.target];
             }
 
             // Become invulnerable and mostly transparent if hiding in a tile.

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -43,6 +44,7 @@ namespace CalamityMod.NPCs.SunkenSea
             value.Position.X += 40;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.TrailingMode[Type] = 1;
+            NPCID.Sets.CantTakeLunchMoney[Type] = true; // It will only eat coins that the AI says it can, and when it does, you aren't getting them back
             if (!Main.dedServ)
             {
                 BodySprite1 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler2", AssetRequestMode.ImmediateLoad).Value;
@@ -107,7 +109,6 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public void HeadAI()
         {
-
             Point point = NPC.Center.ToTileCoordinates();
             Tile tileSafely = Framing.GetTileSafely(point);
             bool createDust = tileSafely.HasUnactuatedTile && NPC.Distance(Main.player[NPC.target].Center) < 800f;
@@ -122,7 +123,6 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
 
-            Lighting.AddLight(NPC.Center, (255 - NPC.alpha) * 0f / 255f, (255 - NPC.alpha) * 0.30f / 255f, (255 - NPC.alpha) * 0.30f / 255f);
             if (NPC.ai[2] > 0f)
             {
                 NPC.realLife = (int)NPC.ai[2];
@@ -152,7 +152,7 @@ namespace CalamityMod.NPCs.SunkenSea
                                 break;
                             case maxLength - 2:
                                 spriteUse = 7; // Body 7
-                                width = 14;
+                                width = 14 ;
                                 break;
                             case maxLength - 3:
                                 spriteUse = 6; // Body 6
@@ -204,7 +204,38 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
             float targetXDist = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2);
             float targetYDist = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2);
-            if (NPC.life > NPC.lifeMax * 0.99)
+            bool coinTarget = false;
+            // Look for silver and gold coins to eat
+            for (int i = 0; i < Main.maxItems; i++)
+            {
+                Item item = Main.item[i];
+                // continue if not an active silver or gold coin
+                if (item == null || !item.active || (item.type != ItemID.SilverCoin && item.type != ItemID.GoldCoin))
+                    continue;
+                // can only look for coins in a 75 tile radius
+                if (item.Distance(NPC.Center) > 1200)
+                    continue;
+                // if its head touches the coin, eat it
+                if (item.getRect().Intersects(NPC.getRect()))
+                {
+                    SoundEngine.PlaySound(SoundID.Item2 with { Pitch = 1.2f, Volume = 0.8f }, NPC.Center);
+                    SoundEngine.PlaySound(SoundID.CoinPickup, NPC.Center);
+                    int dustType = item.type == ItemID.SilverCoin ? DustID.SilverCoin : DustID.GoldCoin;
+                    for (int j = 0; j < 4; j++)
+                    {
+                        Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
+                    }
+                    item.active = false;
+                    break;
+                }
+                // if it isn't touching the coin, go to it
+                targetXDist = item.Center.X;
+                targetYDist = item.Center.Y;
+                coinTarget = true;
+                break;
+            }
+            // aggro on coins takes priority over players
+            if (NPC.life > NPC.lifeMax * 0.99 && !coinTarget)
             {
                 targetYDist += 300;
                 if (Math.Abs(NPC.Center.X - Main.player[NPC.target].Center.X) < 250f)
