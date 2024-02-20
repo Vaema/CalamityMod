@@ -152,7 +152,7 @@ namespace CalamityMod.NPCs.SunkenSea
                                 break;
                             case maxLength - 3:
                                 spriteUse = 6; // Body 6
-                                width = 14;
+                                //width = 14;
                                 break;
                             case maxLength - 4:
                                 spriteUse = 5; // Body 5
@@ -399,7 +399,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 try
                 {
                     segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-                    float headDivisor = NPC.ai[3] == 1 ? (float)(Main.npc[(int)NPC.ai[1]].width / 2) : 1;
+                    float headDivisor = 1;
                     targetXDist = Main.npc[(int)NPC.ai[1]].position.X + (float)(Main.npc[(int)NPC.ai[1]].width / 2 / headDivisor) - segmentPosition.X;
                     targetYDist = Main.npc[(int)NPC.ai[1]].position.Y + (float)(Main.npc[(int)NPC.ai[1]].height / 2) - segmentPosition.Y;
                 }
@@ -486,8 +486,12 @@ namespace CalamityMod.NPCs.SunkenSea
                     segmentSprite = TailSprite;
                     break;
             }
+            Vector2 origin = new Vector2(segmentSprite.Width / 2, segmentSprite.Height / 2);
+            Vector2 npcOffset = NPC.Center - screenPos;
+            npcOffset -= new Vector2(segmentSprite.Width, segmentSprite.Height) * NPC.scale / 2f;
+            npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             SpriteEffects fx = NPC.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            spriteBatch.Draw(segmentSprite, NPC.position - Main.screenPosition, null, NPC.GetAlpha(drawColor), NPC.rotation, segmentSprite.Size(), NPC.scale, fx, 0f);
+            spriteBatch.Draw(segmentSprite, npcOffset, null, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, fx, 0f);
             return false;
         }
     }
