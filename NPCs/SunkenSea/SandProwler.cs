@@ -42,6 +42,7 @@ namespace CalamityMod.NPCs.SunkenSea
             value.Position.Y += 20;
             value.Position.X += 40;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            NPCID.Sets.TrailingMode[Type] = 1;
             if (!Main.dedServ)
             {
                 BodySprite1 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler2", AssetRequestMode.ImmediateLoad).Value;
@@ -78,6 +79,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
+            NPC.waterMovementSpeed = 1;
+            NPC.GravityIgnoresLiquid = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
@@ -149,10 +152,11 @@ namespace CalamityMod.NPCs.SunkenSea
                                 break;
                             case maxLength - 2:
                                 spriteUse = 7; // Body 7
+                                width = 14;
                                 break;
                             case maxLength - 3:
                                 spriteUse = 6; // Body 6
-                                //width = 14;
+                                width = 16;
                                 break;
                             case maxLength - 4:
                                 spriteUse = 5; // Body 5
@@ -490,7 +494,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 npcOffset = NPC.Center - screenPos;
             npcOffset -= new Vector2(segmentSprite.Width, segmentSprite.Height) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            SpriteEffects fx = NPC.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            SpriteEffects fx = NPC.oldPos[1].X < NPC.position.X ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             spriteBatch.Draw(segmentSprite, npcOffset, null, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, fx, 0f);
             return false;
         }
