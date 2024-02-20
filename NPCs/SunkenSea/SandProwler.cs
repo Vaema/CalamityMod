@@ -382,8 +382,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public void SegmentAI()
         {
-            Lighting.AddLight(NPC.Center, (255 - NPC.alpha) * 0f / 255f, (255 - NPC.alpha) * 0.30f / 255f, (255 - NPC.alpha) * 0.30f / 255f);
-
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 

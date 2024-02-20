@@ -1,7 +1,6 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Critters;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
