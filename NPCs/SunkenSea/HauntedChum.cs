@@ -1,17 +1,13 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.GameContent;
-using Terraria.GameContent.Bestiary;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
-using Terraria.DataStructures;
-using CalamityMod.Particles;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -20,6 +16,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public static Texture2D jawTexture;
         public override void SetStaticDefaults()
         {
+            this.HideFromBestiary();
             if (!Main.dedServ)
             {
                 jawTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/HauntedChumMouth", AssetRequestMode.ImmediateLoad).Value;
@@ -32,6 +29,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.defense = 5;
             NPC.lifeMax = 60;
             NPC.aiStyle = -1;
+            NPC.alpha = 255;
             AIType = -1;
             NPC.HitSound = SoundID.DD2_SkeletonHurt;
             NPC.DeathSound = SoundID.DD2_SkeletonDeath;
@@ -42,7 +40,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
-            int aggroRange = 600;
+            int aggroRange = 800;
             if (NPC.direction == 0)
             {
                 NPC.TargetClosest();
@@ -58,6 +56,10 @@ namespace CalamityMod.NPCs.SunkenSea
                 case 0:
                     NPC.velocity.Y = -1;
                     NPC.ai[1]++;
+                    if (NPC.alpha > 0)
+                    {
+                        NPC.alpha -= 25;
+                    }
                     if (NPC.ai[1] > 30)
                     {
                         NPC.ai[0] = 1;
@@ -70,9 +72,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         NPC.ai[0] = 2;
                         NPC.ai[1] = 0;
                         NPC.TargetClosest();
-                        Vector2 direction = NPC.DirectionTo(target.Center);
-                        direction.SafeNormalize(Vector2.Zero);
-                        NPC.velocity = direction * 7;
+                        SoundEngine.PlaySound(SoundID.Zombie7, NPC.Center);
                     }
                     NPC.TargetClosest();
                     NPC.localAI[0] = MathHelper.Lerp(NPC.localAI[0], -MathHelper.PiOver4, 0.05f);
@@ -90,6 +90,11 @@ namespace CalamityMod.NPCs.SunkenSea
                             direction = direction.SafeNormalize(Vector2.Zero);
                             NPC.velocity = direction * 4;
                         }
+                    }
+                    // Lose brightness
+                    if (NPC.ai[1] < 30)
+                    {
+                        NPC.localAI[1] = MathHelper.Max(NPC.localAI[1] - 0.01f, 0);
                     }
                     NPC.velocity *= 0.98f;
                     NPC.direction = NPC.velocity.X > 0 ? 1 : -1;
@@ -112,12 +117,23 @@ namespace CalamityMod.NPCs.SunkenSea
                         {
                             NPC.localAI[0] = MathHelper.Lerp(NPC.localAI[0], 0, 0.1f);
                         }
-                        if (NPC.ai[1] > Main.rand.Next(55, 76))
+                        // Lose brightness
+                        if (NPC.ai[1] < 30)
+                        {
+                            NPC.localAI[1] = MathHelper.Max(NPC.localAI[1] - 0.02f, 0);
+                        }
+                        // Gain brightness
+                        else if (NPC.ai[1] > 60)
+                        {
+                            NPC.localAI[1] = MathHelper.Min(NPC.localAI[1] + 0.06f, 0.6f);
+                        }
+                        if (NPC.ai[1] > 70)
                         {
                             NPC.TargetClosest();
                             Vector2 direction = NPC.DirectionTo(target.Center);
                             direction.SafeNormalize(Vector2.Zero);
                             NPC.velocity = direction * 7;
+                            SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot with { Pitch = 0.8f, Volume = 0.8f }, NPC.Center);
                             NPC.ai[1] = 0;
                         }
                         else
@@ -130,6 +146,14 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
             }
             NPC.spriteDirection = NPC.direction;
+            if (NPC.localAI[1] > 0)
+            {
+                Lighting.AddLight(NPC.Center, 1 * NPC.localAI[1], 0, 0);
+            }
+            for (int i = 0; i < 2; i++)
+            {
+                Dust.NewDust(new Vector2(NPC.Center.X - NPC.width / 2.4f * NPC.spriteDirection, NPC.position.Y + NPC.height / 4), 0, NPC.height / 2, DustID.Blood, -NPC.spriteDirection * 5, Main.rand.NextFloat(-3, 3), Scale: Main.rand.NextFloat(0.8f, 1.2f));
+            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -150,6 +174,19 @@ namespace CalamityMod.NPCs.SunkenSea
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
+
+            // Spooky glowey aura effect
+            if (NPC.ai[0] == 2 && NPC.ai[1] < 50)
+            {
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+                Color glowColor = Color.Red;
+                int xOffset = NPC.spriteDirection == 1 ? 16 : 22;
+                spriteBatch.Draw(bloom, NPC.position - Main.screenPosition + new Vector2(xOffset, 28), null, glowColor * NPC.localAI[1], 0f, bloom.Size() / 2f, 0.8f, SpriteEffects.None, 0);
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            }
 
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);

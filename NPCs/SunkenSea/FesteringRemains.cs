@@ -1,14 +1,15 @@
 ﻿using CalamityMod.BiomeManagers;
+using CalamityMod.Particles;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.DataStructures;
-using CalamityMod.Particles;
-using System.Collections.Generic;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -82,6 +83,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         int head = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y - 48, ModContent.NPCType<HauntedChum>(), ai3: NPC.whoAmI);
                         NPC.ai[1] = 1;
                         NPC.ai[2] = head;
+                        SoundEngine.PlaySound(SoundID.Item4 with { Pitch = -0.8f }, NPC.Center);
                         Main.npc[head].localAI[0] = -MathHelper.PiOver4;
                     }
                 }
@@ -98,6 +100,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         int head = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y - 48, ModContent.NPCType<HauntedChum>(), ai3: NPC.whoAmI);
                         NPC.ai[2] = head;
                         NPC.ai[3] = 0;
+                        SoundEngine.PlaySound(SoundID.Item4 with { Pitch = -0.8f }, NPC.Center);
                         Main.npc[head].localAI[0] = -MathHelper.PiOver4;
                     }
                     NPC.ai[3]++;

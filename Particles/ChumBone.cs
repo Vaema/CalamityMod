@@ -47,7 +47,7 @@ namespace CalamityMod.Particles
         {
             Texture2D tex = variant ? ModContent.Request<Texture2D>(Texture2).Value : ModContent.Request<Texture2D>(Texture).Value;            
             SpriteEffects spriteDir = direction ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            spriteBatch.Draw(tex, Position - Main.screenPosition, null, Color, Rotation, new Vector2(tex.Width / 2, tex.Height), Scale, spriteDir, 0);
+            spriteBatch.Draw(tex, Position - Main.screenPosition, null, Lighting.GetColor(Position.ToTileCoordinates()), Rotation, new Vector2(tex.Width / 2, tex.Height), Scale, spriteDir, 0);
         }
     }
 }
