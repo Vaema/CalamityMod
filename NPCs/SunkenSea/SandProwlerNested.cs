@@ -215,7 +215,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             // Open mouth when near target
-            if (target != null && NPC.Distance(target.Center) < 64)
+            if (target != null && NPC.Distance(target.Center) < 64 && !RetreatingToHidingSpot)
             {
                 NPC.Calamity().newAI[1] = 1;
             }
