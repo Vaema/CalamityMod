@@ -30,7 +30,6 @@ namespace CalamityMod.NPCs.SunkenSea
         public static Texture2D BodySprite7;
         public static Texture2D TailSprite;
         #endregion
-        public override string Texture => "CalamityMod/NPCs/SunkenSea/SandProwler1";
 
         public override void SetStaticDefaults()
         {
@@ -56,6 +55,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 BodySprite7 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler8", AssetRequestMode.ImmediateLoad).Value;
                 TailSprite = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler9", AssetRequestMode.ImmediateLoad).Value;
             }
+            Main.npcFrameCount[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -283,6 +283,14 @@ namespace CalamityMod.NPCs.SunkenSea
             float timeToReachTarget = currentSpeed / targetDistance;
             targetXDist *= timeToReachTarget;
             targetYDist *= timeToReachTarget;
+            if (targetDistance < 64)
+            {
+                NPC.localAI[0] = 1;
+            }
+            else
+            {
+                NPC.localAI[0] = 0;
+            }
             if ((NPC.velocity.X > 0f && targetXDist > 0f) || (NPC.velocity.X < 0f && targetXDist < 0f) || (NPC.velocity.Y > 0f && targetYDist > 0f) || (NPC.velocity.Y < 0f && targetYDist < 0f))
             {
                 if (NPC.velocity.X < targetXDist)
@@ -519,12 +527,18 @@ namespace CalamityMod.NPCs.SunkenSea
                     segmentSprite = TailSprite;
                     break;
             }
-            Vector2 origin = new Vector2(segmentSprite.Width / 2, segmentSprite.Height / 2);
+            float headFrameDivisor = NPC.ai[3] == 0 ? 2 : 1;
+            Vector2 origin = new Vector2(segmentSprite.Width / 2, segmentSprite.Height / 2 / headFrameDivisor);
             Vector2 npcOffset = NPC.Center - screenPos;
-            npcOffset -= new Vector2(segmentSprite.Width, segmentSprite.Height) * NPC.scale / 2f;
+            npcOffset -= new Vector2(segmentSprite.Width, segmentSprite.Height / headFrameDivisor) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             SpriteEffects fx = NPC.oldPos[1].X < NPC.position.X ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            spriteBatch.Draw(segmentSprite, npcOffset, null, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, fx, 0f);
+            Rectangle frame = segmentSprite.Frame(1, 1, 0, 0);
+            if (NPC.ai[3] == 0)
+            {
+                frame = TextureAssets.Npc[Type].Frame(1, 2, 0, (int)NPC.localAI[0]);
+            }
+            spriteBatch.Draw(segmentSprite, npcOffset, frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, fx, 0f);
             return false;
         }
     }

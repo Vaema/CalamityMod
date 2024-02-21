@@ -49,7 +49,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float SnapCooldown => ref NPC.localAI[0];
         public ref float InitialSnapDirection => ref NPC.localAI[1];
         public ref float CurrentSnapDirection => ref NPC.localAI[2];
-        public override string Texture => "CalamityMod/NPCs/SunkenSea/SandProwler1";
+        public override string Texture => "CalamityMod/NPCs/SunkenSea/SandProwler";
 
         public override void SetStaticDefaults()
         {
@@ -66,6 +66,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPCID.Sets.TrailingMode[NPC.type] = 0;
             NPCID.Sets.TrailCacheLength[NPC.type] = 60;
             NPCID.Sets.UsesNewTargetting[NPC.type] = true;
+            NPCID.Sets.CantTakeLunchMoney[Type] = true;
+            Main.npcFrameCount[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -114,6 +116,7 @@ namespace CalamityMod.NPCs.SunkenSea
             writer.Write(SnapCooldown);
             writer.Write(InitialSnapDirection);
             writer.Write(CurrentSnapDirection);
+            writer.Write(NPC.Calamity().newAI[1]);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -122,6 +125,7 @@ namespace CalamityMod.NPCs.SunkenSea
             SnapCooldown = reader.ReadSingle();
             InitialSnapDirection = reader.ReadSingle();
             CurrentSnapDirection = reader.ReadSingle();
+            NPC.Calamity().newAI[1] = reader.ReadSingle();
         }
 
         public override void AI()
@@ -160,23 +164,64 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             Entity target = null;
-            if (NPC.life > NPC.lifeMax * 0.99f)
+
+            // Look for coins
+            for (int i = 0; i < Main.maxItems; i++)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                Item n = Main.item[i];
+                if (n == null || !n.active || (n.type != ItemID.SilverCoin && n.type != ItemID.GoldCoin))
+                    continue;
+                // if its head touches the coin, eat it
+                if (n.getRect().Intersects(NPC.getRect()))
                 {
-                    NPC n = Main.npc[i];
-                    if (n == null || !n.active || n.type != ModContent.NPCType<SeaMinnow>())
-                        continue;
-                    if (n.Distance(NPC.Center) <= 300 && Collision.CheckAABBvLineCollision(NPC.Center, NPC.Size, NPC.Center, n.Center))
+                    SoundEngine.PlaySound(SoundID.Item2 with { Pitch = 1.2f, Volume = 0.8f }, NPC.Center);
+                    SoundEngine.PlaySound(SoundID.CoinPickup, NPC.Center);
+                    int dustType = n.type == ItemID.SilverCoin ? DustID.SilverCoin : DustID.GoldCoin;
+                    for (int j = 0; j < 4; j++)
                     {
-                        target = n;
+                        Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
+                    }
+                    n.active = false;
+                    break;
+                }
+                // Set the coin as the target
+                if (n.Distance(NPC.Center) <= 300 && Collision.CheckAABBvLineCollision(NPC.Center, NPC.Size, NPC.Center, n.Center))
+                {
+                    target = n;
+                }
+            }
+            // Go after sea minnows if not distracted by shiny coin
+            if (target == null)
+            {
+                if (NPC.life > NPC.lifeMax * 0.99f)
+                {
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        NPC n = Main.npc[i];
+                        if (n == null || !n.active || n.type != ModContent.NPCType<SeaMinnow>())
+                            continue;
+                        if (n.Distance(NPC.Center) <= 300 && Collision.CheckAABBvLineCollision(NPC.Center, NPC.Size, NPC.Center, n.Center))
+                        {
+                            target = n;
+                        }
                     }
                 }
+                // If you've pissed it off, it now goes after YOU
+                else
+                {
+                    NPC.TargetClosest(false);
+                    target = Main.player[NPC.target];
+                }
+            }
+
+            // Open mouth when near target
+            if (target != null && NPC.Distance(target.Center) < 64)
+            {
+                NPC.Calamity().newAI[1] = 1;
             }
             else
             {
-                NPC.TargetClosest(false);
-                target = Main.player[NPC.target];
+                NPC.Calamity().newAI[1] = 0;
             }
 
             // Become invulnerable and mostly transparent if hiding in a tile.
@@ -369,7 +414,11 @@ namespace CalamityMod.NPCs.SunkenSea
                 Vector2 drawPosition = bezierCurve.Evaluate(i / (float)totalChains);
                 Color lightColor = Lighting.GetColor((int)(drawPosition.X / 16f), (int)(drawPosition.Y / 16f));
                 float angle = (bezierCurve.Evaluate(i / (float)totalChains + 1f / totalChains) - drawPosition).ToRotation() + MathHelper.PiOver2;
-                spriteBatch.Draw(textureToUse, drawPosition - Main.screenPosition, null, lightColor, angle, textureToUse.Size() * 0.5f, NPC.scale, SpriteEffects.None, 0f);
+                Rectangle frame = textureToUse.Frame(1, 1, 0, 0);
+                if (textureToUse == headTexture)
+                    frame = textureToUse.Frame(1, 2, 0, (int)NPC.Calamity().newAI[1]);
+                Vector2 origin = new Vector2(textureToUse.Width / 2, textureToUse.Height / (textureToUse == headTexture ? 4 : 2));
+                spriteBatch.Draw(textureToUse, drawPosition - Main.screenPosition, frame, lightColor, angle, origin, NPC.scale, SpriteEffects.None, 0f);
             }
             return false;
         }
