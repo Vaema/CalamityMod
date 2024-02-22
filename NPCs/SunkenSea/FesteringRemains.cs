@@ -141,6 +141,10 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
+            if (NPC.life <= 0)
+            {
+                SoundEngine.PlaySound(SoundID.DD2_SkeletonHurt with { Volume = 0.8f, Pitch = 1.2f }, NPC.position);
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Placeables.Banners;
@@ -9,6 +10,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -52,6 +54,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             Player target = Main.player[NPC.target];
             NPC body = Main.npc[(int)NPC.ai[3]];
+            // Create a chain
             if (Segments == null || Segments.Count < 10)
             {
                 Segments = new List<VerletSimulatedSegment>(10);
@@ -169,20 +172,41 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             for (int i = 0; i < 2; i++)
             {
-                int dustPos = NPC.spriteDirection == 1 ? 0 : 10;
+                int dustPos = NPC.spriteDirection == 1 ? -10 : 0;
                 Dust.NewDust(new Vector2(NPC.Center.X + dustPos, NPC.position.Y + NPC.height / 4), 0, NPC.height / 2, DustID.Blood, -NPC.spriteDirection * Main.rand.NextFloat(4f, 5f), Main.rand.NextFloat(-3, 3), Scale: Main.rand.NextFloat(0.6f, 1f));
             }
 
+            // Update the chain
             Segments[0].oldPosition = Segments[0].position;
-            Segments[0].position = body.Center + new Vector2(body.direction * 10, 8);
+            Segments[0].position = body.Center + new Vector2(body.spriteDirection * 20, 8);
 
             Segments[Segments.Count - 1].oldPosition = Segments[Segments.Count - 1].position;
             Segments[Segments.Count - 1].position = body.active ? NPC.Center : body.Center;
 
-            Segments = VerletSimulatedSegment.SimpleSimulation(Segments, 10, loops: 100, gravity: 0.3f);
+            Segments = VerletSimulatedSegment.SimpleSimulation(Segments, 10, loops: 1, gravity: 0.3f);
 
             NPC.netUpdate = true;
             NPC.netSpam = 0;
+        }
+
+        public PrimitiveTrail GutTrail;
+
+        public PrimitiveTrail GutBGTrail;
+        internal float WidthFunction(float completionRatio)
+        {
+            return MathHelper.Clamp(((float)Math.Cos(completionRatio * 60)) + 2, 1, 2) / 2;
+        }
+
+        internal Color ColorFunction(float completionRatio)
+        {
+            return (int)(completionRatio * 100) % 2 == 0 ? new Color(69, 52, 0) : new Color();
+        }
+
+        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 3f;
+
+        internal Color BackgroundColorFunction(float completionRatio)
+        {
+            return Color.Black;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -191,11 +215,32 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Sandnado, hit.HitDirection, -1f, 0, default, 1f);
             }
+            if (NPC.life <= 0)
+            {
+                // Drop a bone gore for each bone
+                if (Segments != null && Segments.Count > 0)
+                {
+                    for (int i = 0; i < Segments.Count; i++)
+                    {
+                        VerletSimulatedSegment v = Segments[i];
+                        int goreType = i < Segments.Count / 2 ? Mod.Find<ModGore>("ChumBone2").Type : Mod.Find<ModGore>("ChumBone1").Type;
+                        if (Main.netMode != NetmodeID.Server)
+                        {
+                            Gore.NewGorePerfect(NPC.GetSource_Death(), v.position, new Vector2(Main.rand.NextFloat(-2, 2), -6), goreType);
+                        }
+                    }
+                }
+                if (Main.netMode != NetmodeID.Server)
+                {
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("HauntedChum").Type, 1f);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("HauntedChumMouth").Type, 1f);
+                }
+            }
         }
 
         public override bool CheckActive()
         {
-            return !(Main.npc[(int)NPC.ai[3]].active && Main.npc[(int)NPC.ai[3]].type == ModContent.NPCType<HauntedChum>());
+            return !(Main.npc[(int)NPC.ai[3]].active && Main.npc[(int)NPC.ai[3]].type == ModContent.NPCType<FesteringRemains>());
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -204,8 +249,23 @@ namespace CalamityMod.NPCs.SunkenSea
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
+            // Draw the chain's flesh
+            if (GutTrail is null)
+                GutTrail = new PrimitiveTrail(WidthFunction, ColorFunction);
+            if (GutBGTrail is null)
+                GutBGTrail = new PrimitiveTrail(BackgroundWidthFunction, BackgroundColorFunction);
+
+            List<Vector2> points = new List<Vector2>();
+            for (int i = 0; i < Segments.Count; i++)
+            {
+                points.Add(Segments[i].position);
+            }
+
+            GutBGTrail.Draw(points, -Main.screenPosition, 75);
+            GutTrail.Draw(points, -Main.screenPosition, 75);
+
             NPC body = Main.npc[(int)NPC.ai[3]];
-            // Draw a physiques chain 
+            // Draw a chain of bones
             if (body != null && body.active && body.type == ModContent.NPCType<FesteringRemains>())
             {
                 if (Segments == null || Segments.Count <= 0)
@@ -245,6 +305,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             }
 
+            // Draw the chum itself and its jaw, rotated by localai[0]
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
             Vector2 jawOrigin = new Vector2(NPC.spriteDirection == 1? jawTexture.Width - 22 : 22, 4);

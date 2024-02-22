@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Particles
@@ -40,6 +42,13 @@ namespace CalamityMod.Particles
             else
             {
                 Velocity.Y = 0;
+            }
+            if (Time == Lifetime)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    Dust.NewDust(Position, 10, 10, DustID.Bone, Main.rand.NextFloat(-4, 4), Main.rand.NextFloat(-4, 4));
+                }
             }
         }
 
