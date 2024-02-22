@@ -1,5 +1,8 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.Collections.Generic;
+using CalamityMod.BiomeManagers;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -14,6 +17,7 @@ namespace CalamityMod.NPCs.SunkenSea
     public class HauntedChum : ModNPC
     {
         public static Texture2D jawTexture;
+        public List<VerletSimulatedSegment> Segments;
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
@@ -28,6 +32,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.height = 50;
             NPC.defense = 5;
             NPC.lifeMax = 60;
+            NPC.damage = 20;
             NPC.aiStyle = -1;
             NPC.alpha = 255;
             AIType = -1;
@@ -40,13 +45,25 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
-            int aggroRange = 800;
+            int aggroRange = 600;
             if (NPC.direction == 0)
             {
                 NPC.TargetClosest();
             }
             Player target = Main.player[NPC.target];
             NPC body = Main.npc[(int)NPC.ai[3]];
+            if (Segments == null || Segments.Count < 10)
+            {
+                Segments = new List<VerletSimulatedSegment>(10);
+                for (int i = 0; i < 10; i++)
+                {
+                    VerletSimulatedSegment segment = new VerletSimulatedSegment(body.Center + Vector2.UnitY * i * 10);
+                    Segments.Add(segment);
+                }
+
+                Segments[0].locked = true;
+                Segments[Segments.Count - 1].locked = true;
+            }
             if (body == null || !body.active || body.type != ModContent.NPCType<FesteringRemains>())
             {
                 NPC.StrikeInstantKill();
@@ -152,8 +169,20 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             for (int i = 0; i < 2; i++)
             {
-                Dust.NewDust(new Vector2(NPC.Center.X - NPC.width / 2.4f * NPC.spriteDirection, NPC.position.Y + NPC.height / 4), 0, NPC.height / 2, DustID.Blood, -NPC.spriteDirection * 5, Main.rand.NextFloat(-3, 3), Scale: Main.rand.NextFloat(0.8f, 1.2f));
+                int dustPos = NPC.spriteDirection == 1 ? 0 : 10;
+                Dust.NewDust(new Vector2(NPC.Center.X + dustPos, NPC.position.Y + NPC.height / 4), 0, NPC.height / 2, DustID.Blood, -NPC.spriteDirection * Main.rand.NextFloat(4f, 5f), Main.rand.NextFloat(-3, 3), Scale: Main.rand.NextFloat(0.6f, 1f));
             }
+
+            Segments[0].oldPosition = Segments[0].position;
+            Segments[0].position = body.Center + new Vector2(body.direction * 10, 8);
+
+            Segments[Segments.Count - 1].oldPosition = Segments[Segments.Count - 1].position;
+            Segments[Segments.Count - 1].position = body.active ? NPC.Center : body.Center;
+
+            Segments = VerletSimulatedSegment.SimpleSimulation(Segments, 10, loops: 100, gravity: 0.3f);
+
+            NPC.netUpdate = true;
+            NPC.netSpam = 0;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -174,6 +203,34 @@ namespace CalamityMod.NPCs.SunkenSea
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
+
+            NPC body = Main.npc[(int)NPC.ai[3]];
+            // Draw a physiques chain 
+            if (body != null && body.active && body.type == ModContent.NPCType<FesteringRemains>())
+            {
+                if (Segments == null || Segments.Count <= 0)
+                {
+                    return true;
+                }
+                for (int i = 0; i < Segments.Count - 1; i++)
+                {
+                    VerletSimulatedSegment seg = Segments[i];
+                    float dist = i > 0 ? Vector2.Distance(seg.position, Segments[i - 1].position) : 0;
+                    if (dist <= 2)
+                        dist = 2;
+                    dist += 2;
+                    if (i == Segments.Count - 1)
+                    {
+                        dist = Vector2.Distance(seg.position, body.Center) + 2;
+                    }
+                    float rot = 0f;
+                    if (i > 0)
+                        rot = seg.position.DirectionTo(Segments[i - 1].position).ToRotation();
+                    SpriteEffects dir = NPC.Center.X > body.Center.X ? SpriteEffects.FlipVertically : SpriteEffects.None;
+                    Texture2D bone = i < Segments.Count / 2 ? ModContent.Request<Texture2D>(ChumBone.Texture2).Value : ModContent.Request<Texture2D>("CalamityMod/Particles/ChumBone1").Value;
+                    Main.EntitySpriteDraw(bone, seg.position - Main.screenPosition, null, Lighting.GetColor((int)(seg.position.X / 16), (int)(seg.position.Y / 16)) * NPC.Opacity, rot, bone.Size() / 2, 1f, dir, 0);
+                }
+            }
 
             // Spooky glowey aura effect
             if (NPC.ai[0] == 2 && NPC.ai[1] < 50)

@@ -2,6 +2,7 @@
 using CalamityMod.Particles;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -26,6 +27,7 @@ namespace CalamityMod.NPCs.SunkenSea
             AIType = -1;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.knockBackResist = 0f;
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<AlphaSeaMinnowBanner>();
             NPC.chaseable = false;
@@ -87,6 +89,13 @@ namespace CalamityMod.NPCs.SunkenSea
                         Main.npc[head].localAI[0] = -MathHelper.PiOver4;
                     }
                 }
+                else
+                {
+                    if (NPC.ai[0] > 0)
+                    {
+                        NPC.ai[0]--;
+                    }
+                }
             }
             NPC spawnedHead = Main.npc[(int)NPC.ai[2]];
             // If the head has already been spawned but there is no more head (no head?) start a countdown, once the countdown reaches full, the head respawns
@@ -104,6 +113,10 @@ namespace CalamityMod.NPCs.SunkenSea
                         Main.npc[head].localAI[0] = -MathHelper.PiOver4;
                     }
                     NPC.ai[3]++;
+                }
+                if (NPC.ai[0] > 0)
+                {
+                    NPC.ai[0]--;
                 }
             }
             // Keep the bones alive
@@ -128,6 +141,27 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            // Spooky glowey aura effect
+            if (NPC.ai[0] > 0)
+            {
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+                Color glowColor = Color.Red;
+                int xOffset = NPC.spriteDirection == 1 ? 16 : 22;
+                spriteBatch.Draw(bloom, NPC.position - Main.screenPosition + new Vector2(xOffset, 28), null, glowColor * (NPC.ai[0] / 120), 0f, bloom.Size() / 2f, 1f, SpriteEffects.None, 0);
+                foreach (ChumBone bone in bones)
+                {
+                    spriteBatch.Draw(bloom, bone.Position - Main.screenPosition, null, glowColor * (NPC.ai[0] / 210), 0f, bloom.Size() / 2f, 0.4f * bone.Scale, SpriteEffects.None, 0);
+                }
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            }
+            return true;
         }
     }
 }
