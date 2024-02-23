@@ -126,7 +126,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Otherwise sit at a distance and fire projectiles
                         NPC.velocity *= 0.9f;
                         NPC.ai[1]++;
-                        if (NPC.ai[1] % 30 == 0)
+                        if (NPC.ai[1] % 45 == 0)
                         {
                             SoundEngine.PlaySound(Sounds.CommonCalamitySounds.ExoPlasmaShootSound with { Volume = 0.2f, Pitch = 1.8f }, NPC.Center);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -161,15 +161,15 @@ namespace CalamityMod.NPCs.SunkenSea
             // Anger
             if (NPC.ai[0] == 1 && NPC.ai[1] > 0)
             {
-                if (NPC.frame.Y > 12 * frameHeight || NPC.frame.Y < frameHeight * 9)
+                if (NPC.frame.Y > 12 * frameHeight || NPC.frame.Y < frameHeight * 7)
                 {
-                    NPC.frame.Y = frameHeight * 9;
+                    NPC.frame.Y = frameHeight * 7;
                 }
             }
             // Idle
             else
             {
-                if (NPC.frame.Y > 8 * frameHeight)
+                if (NPC.frame.Y > 6 * frameHeight)
                 {
                     NPC.frame.Y = 0;
                 }
