@@ -75,6 +75,18 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.TargetClosest();
             }
             Player target = Main.player[NPC.target];
+            // Fall and be useless if out of water
+            if (!NPC.wet)
+            {
+                NPC.ai[0] = 0;
+                NPC.ai[1] = 0;
+                NPC.velocity.X *= 0.98f;
+                NPC.noGravity = false;
+                NPC.rotation = MathHelper.Lerp(NPC.rotation, MathHelper.PiOver2, 0.1f);
+                NPC.gfxOffY += 5;
+                return;
+            }
+            NPC.noGravity = true;
             switch (NPC.ai[0])
             {
                 // Idle AI. Mostly sits still but occasionally moves in a random direction for a bit. 
@@ -152,6 +164,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void FindFrame(int frameHeight)
         {
+            if (!NPC.wet && !NPC.IsABestiaryIconDummy)
+                return;
             NPC.frameCounter++;
             if (NPC.frameCounter > 6)
             {
