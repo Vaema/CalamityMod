@@ -260,6 +260,7 @@ Sulflounder.DisplayName: Sulflounder
 Toxicatfish.DisplayName: Toxicatfish
 Trasher.DisplayName: Trasher
 AlphaSeaMinnow.DisplayName: Alpha Sea Minnow
+AlphaSeaMinnowGold.DisplayName: Gold Alpha Sea Minnow
 MinnowPrime: Minnow Prime
 BabyGhostBell.DisplayName: Baby Ghost Bell
 BlindedAngler.DisplayName: Blinded Angler
@@ -274,6 +275,7 @@ HauntedChum.DisplayName: Haunted Chum
 KelpieSeadragon.DisplayName: Kelpie Seadragon
 LostShoal.DisplayName: Lost Shoal
 PearlpodBlack.DisplayName: Pearlpod
+PearlpodGold.DisplayName: Gold Pearlpod
 PearlpodPink.DisplayName: Pearlpod
 PearlpodWhite.DisplayName: Pearlpod
 PolypPanasea.DisplayName: Polyp Panasea
@@ -282,6 +284,8 @@ SandProwler.DisplayName: Sand Prowler
 SandProwlerNested.DisplayName: Sand Prowler
 SeaFloaty.DisplayName: Sea Floaty
 SeaMinnow.DisplayName: Sea Minnow
+SeaMinnowGold.DisplayName: Gold Sea Minnow
+Sharkoon.DisplayName: Sharkoon
 BrimstoneHeart.DisplayName: Brimstone Heart
 SepulcherHead.DisplayName: Sepulcher
 SoulSeekerSupreme.DisplayName: Soul Seeker

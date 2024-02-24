@@ -5,7 +5,7 @@ using Terraria.ID;
 
 namespace CalamityMod.Items.Critters
 {
-    public class BabyGhostBellRadiantItem : ModItem, ILocalizedModType
+    public class BabyGhostBellGoldItem : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
         public override void SetStaticDefaults()
@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Critters
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.noUseGraphic = true;
-            Item.value = Item.buyPrice(0, 10, 0, 0);
+            Item.value = Item.buyPrice(0, 5, 0, 0);
             Item.bait = 20;
             Item.makeNPC = (short)ModContent.NPCType<BabyGhostBell>();
             Item.rare = ItemRarityID.Green;

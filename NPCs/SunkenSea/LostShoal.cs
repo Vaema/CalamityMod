@@ -19,6 +19,7 @@ namespace CalamityMod.NPCs.SunkenSea
     {
         public static Texture2D RedTexture;
         public static Texture2D BlueTexture;
+        public static Texture2D GoldTexture;
 
         public ref float Variant => ref NPC.ai[1];
         public ref float Leader => ref NPC.ai[2];
@@ -28,7 +29,8 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             Red = 0,
             Blue = 1,
-            Green = 2
+            Green = 2,
+            Gold = 3
         }
 
         public override void SetStaticDefaults()
@@ -39,6 +41,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalRed", AssetRequestMode.ImmediateLoad).Value;
                 BlueTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalBlue", AssetRequestMode.ImmediateLoad).Value;
+                GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalGold", AssetRequestMode.ImmediateLoad).Value;
             }
             NPCID.Sets.CountsAsCritter[NPC.type] = true;
         }
@@ -79,6 +82,10 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             // Randomize the color of the fish
             Variant = Main.rand.Next(0, 3);
+            if (Main.rand.NextBool(50))
+            {
+                Variant = (int)ShoalColor.Gold;
+            }
         }
 
         public override void AI()
@@ -195,6 +202,9 @@ namespace CalamityMod.NPCs.SunkenSea
                 case (int)ShoalColor.Red:
                     glowColor = new(1f, 0.83f, 0.819f);
                     break;
+                case (int)ShoalColor.Gold:
+                    glowColor = new(1f, 1f, 0.678f);
+                    break;
             }
             Lighting.AddLight(NPC.Center, glowColor.R * intensity, glowColor.G * intensity, glowColor.B * intensity);
             // Sprinkle down ash particles
@@ -209,9 +219,36 @@ namespace CalamityMod.NPCs.SunkenSea
                     case (int)ShoalColor.Red:
                         ashColor = new(79, 41, 42);
                         break;
+                    case (int)ShoalColor.Gold:
+                        ashColor = Color.Yellow;
+                        break;
                 }
                 Particle ash = new SquareAshParticle(NPC.Center, new Vector2(0, 4), 150, Main.rand.NextFloat(0.85f, 1f), ashColor);
                 GeneralParticleHandler.SpawnParticle(ash);
+            }
+            if (Variant == (int)ShoalColor.Gold)
+            {
+                NPC.position += NPC.netOffset;
+                Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
+                if (color.R > 20 || color.B > 20 || color.G > 20)
+                {
+                    int colorVal = color.R;
+                    if (color.G > colorVal)
+                    {
+                        colorVal = color.G;
+                    }
+                    if (color.B > colorVal)
+                    {
+                        colorVal = color.B;
+                    }
+                    colorVal /= 30;
+                    if (Main.rand.Next(300) < colorVal)
+                    {
+                        int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 43, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
+                        Main.dust[golddust].velocity *= 0f;
+                    }
+                }
+                NPC.position -= NPC.netOffset;
             }
         }
 
@@ -330,6 +367,9 @@ namespace CalamityMod.NPCs.SunkenSea
                 case (int)ShoalColor.Red:
                     glowColor = Color.Pink;
                     break;
+                case (int)ShoalColor.Gold:
+                    glowColor = Color.Yellow;
+                    break;
             }
             spriteBatch.Draw(bloom, NPC.position - Main.screenPosition + new Vector2(20, 5), null, glowColor * 0.4f, 0f, bloom.Size() / 2f, 0.5f, SpriteEffects.None, 0);
             spriteBatch.End();
@@ -344,6 +384,9 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
                 case (int)ShoalColor.Red:
                     texture = RedTexture;
+                    break;
+                case (int)ShoalColor.Gold:
+                    texture = GoldTexture;
                     break;
             }
             Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[NPC.type] / 2));

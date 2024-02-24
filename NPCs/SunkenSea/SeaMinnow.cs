@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.SunkenSea
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[NPC.type] = 8;
             Main.npcCatchable[NPC.type] = true;
             NPCID.Sets.CountsAsCritter[NPC.type] = true;
         }
@@ -53,7 +53,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC owner = Main.npc[(int)NPC.ai[2]];
             if (NPC.wet)
             {
-                if (owner == null || !owner.active || owner.type != ModContent.NPCType<AlphaSeaMinnow>())
+                if (owner == null || !owner.active || (owner.type != ModContent.NPCType<AlphaSeaMinnow>() && owner.type != ModContent.NPCType<AlphaSeaMinnowGold>()))
                 {
                     CalamityAI.PassiveSwimmingAI(NPC, Mod, 3, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
                     NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
@@ -170,7 +170,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     {
                         NPC otherFish = Main.npc[k];
                         // Short circuits to make the loop as fast as possible
-                        if (!otherFish.active || k == NPC.whoAmI || (otherFish.type != ModContent.NPCType<SeaMinnow>() && otherFish.type != ModContent.NPCType<AlphaSeaMinnow>()))
+                        if (!otherFish.active || k == NPC.whoAmI || (otherFish.type != ModContent.NPCType<SeaMinnow>() && otherFish.type != ModContent.NPCType<AlphaSeaMinnow>() && otherFish.type != ModContent.NPCType<AlphaSeaMinnowGold>()))
                             continue;
 
                         float taxicabDist = Math.Abs(NPC.position.X - otherFish.position.X) + Math.Abs(NPC.position.Y - otherFish.position.Y);
@@ -305,7 +305,30 @@ namespace CalamityMod.NPCs.SunkenSea
             if ((double)NPC.rotation > 0.1)
             {
                 NPC.rotation = 0.1f;
-                return;
+            }
+            if (NPC.type == ModContent.NPCType<SeaMinnowGold>())
+            {
+                NPC.position += NPC.netOffset;
+                Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
+                if (color.R > 20 || color.B > 20 || color.G > 20)
+                {
+                    int colorVal = color.R;
+                    if (color.G > colorVal)
+                    {
+                        colorVal = color.G;
+                    }
+                    if (color.B > colorVal)
+                    {
+                        colorVal = color.B;
+                    }
+                    colorVal /= 30;
+                    if (Main.rand.Next(300) < colorVal)
+                    {
+                        int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 43, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
+                        Main.dust[golddust].velocity *= 0f;
+                    }
+                }
+                NPC.position -= NPC.netOffset;
             }
         }
 
@@ -322,20 +345,48 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.frame.Y = frame * frameHeight;
         }
 
-        public override float SpawnChance(NPCSpawnInfo spawnInfo)
-        {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
-            {
-                return SpawnCondition.CaveJellyfish.Chance * 0.6f;
-            }
-            return 0f;
-        }
-
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
+            }
+        }
+    }
+    public class SeaMinnowGold : SeaMinnow
+    {
+        public override void SetStaticDefaults()
+        {
+            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcCatchable[NPC.type] = true;
+            NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            this.HideFromBestiary();
+        }
+        public override void SetDefaults()
+        {
+            NPC.npcSlots = 0.1f;
+            NPC.noGravity = true;
+            NPC.damage = 0;
+            NPC.width = 36;
+            NPC.height = 22;
+            NPC.defense = 0;
+            NPC.lifeMax = 5;
+            NPC.aiStyle = -1;
+            AIType = -1;
+            NPC.HitSound = SoundID.NPCHit1;
+            NPC.DeathSound = SoundID.NPCDeath1;
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<SeaMinnowBanner>();
+            NPC.chaseable = false;
+            NPC.catchItem = (short)ModContent.ItemType<SeaMinnowGoldItem>();
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            NPC.rarity = 3;
+        }
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            for (int k = 0; k < 5; k++)
+            {
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GoldCritter, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
     }

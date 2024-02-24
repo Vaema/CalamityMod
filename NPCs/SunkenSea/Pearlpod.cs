@@ -2,6 +2,7 @@
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Tiles.SunkenSea.Ambient;
+using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
 using Terraria.ID;
@@ -102,6 +103,30 @@ namespace CalamityMod.NPCs.SunkenSea
                     }
                 }
             }
+            if (NPC.type == ModContent.NPCType<PearlpodGold>())
+            {
+                NPC.position += NPC.netOffset;
+                Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
+                if (color.R > 20 || color.B > 20 || color.G > 20)
+                {
+                    int colorVal = color.R;
+                    if (color.G > colorVal)
+                    {
+                        colorVal = color.G;
+                    }
+                    if (color.B > colorVal)
+                    {
+                        colorVal = color.B;
+                    }
+                    colorVal /= 30;
+                    if (Main.rand.Next(300) < colorVal)
+                    {
+                        int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 43, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
+                        Main.dust[golddust].velocity *= 0f;
+                    }
+                }
+                NPC.position -= NPC.netOffset;
+            }
         }
 
         public override void FindFrame(int frameHeight)
@@ -173,5 +198,50 @@ namespace CalamityMod.NPCs.SunkenSea
         public override int PearlType => ItemID.BlackPearl;
         public override float SpawnRate => 0.05f;
         public override int ItemType => ModContent.ItemType<PearlpodBlackItem>();
+    }
+    public class PearlpodGold : Pearlpod
+    {
+        public override void SetStaticDefaults()
+        {
+            this.HideFromBestiary();
+            Main.npcFrameCount[NPC.type] = 6;
+        }
+        public override void SetDefaults()
+        {
+            NPC.aiStyle = NPCAIStyleID.Snail;
+            NPC.damage = 0;
+            NPC.width = 24;
+            NPC.height = 24;
+            NPC.defense = 0;
+            NPC.lifeMax = 20;
+            NPC.knockBackResist = 0f;
+            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.lavaImmune = false;
+            NPC.noGravity = false;
+            NPC.noTileCollide = false;
+            NPC.HitSound = SoundID.NPCHit38;
+            NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.GravityIgnoresLiquid = true;
+            AIType = NPCID.Snail;
+            //Banner = NPC.type;
+            //BannerItem = ModContent.ItemType<PearlpodBanner>();
+            NPC.catchItem = ItemType;
+            NPC.Calamity().VulnerableToHeat = false;
+            NPC.Calamity().VulnerableToSickness = true;
+            NPC.Calamity().VulnerableToElectricity = true;
+            NPC.Calamity().VulnerableToWater = false;
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            NPC.rarity = 3;
+        }
+        public override int PearlType => ItemID.GoldCoin;
+        public override float SpawnRate => 0.0005f;
+        public override int ItemType => ModContent.ItemType<PearlpodGoldItem>();
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            for (int k = 0; k < 5; k++)
+            {
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GoldCritter, hit.HitDirection, -1f, 0, default, 1f);
+            }
+        }
     }
 }

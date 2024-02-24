@@ -4,6 +4,11 @@ AlphaSeaMinnowItem: {
 	Tooltip: ""
 }
 
+AlphaSeaMinnowGoldItem: {
+	DisplayName: Gold Alpha Sea Minnow
+	Tooltip: ""
+}
+
 AndroombaItem: {
 	DisplayName: "{$Mods.CalamityMod.NPCs.Androomba.DisplayName}"
 	Tooltip:
@@ -25,6 +30,11 @@ BabyFlakCrabItem: {
 
 BabyGhostBellItem: {
 	DisplayName: Blue Baby Ghost Bell
+	Tooltip: ""
+}
+
+BabyGhostBellGoldItem: {
+	DisplayName: Gold Baby Ghost Bell
 	Tooltip: ""
 }
 
@@ -70,6 +80,11 @@ PearlpodBlackItem: {
 
 PearlpodItem: {
 	DisplayName: White Pearlpod
+	Tooltip: ""
+}
+
+PearlpodGoldItem: {
+	DisplayName: Gold Pearlpod
 	Tooltip: ""
 }
 
@@ -120,6 +135,11 @@ RepairUnitItem: {
 
 SeaMinnowItem: {
 	DisplayName: "{$Mods.CalamityMod.NPCs.SeaMinnow.DisplayName}"
+	Tooltip: ""
+}
+
+SeaMinnowGoldItem: {
+	DisplayName: Gold Sea Minnow
 	Tooltip: ""
 }
 

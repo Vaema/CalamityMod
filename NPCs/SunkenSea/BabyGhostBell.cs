@@ -27,6 +27,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public static Texture2D VoltaicTexture;
         public static Texture2D RedTexture;
         public static Texture2D GreenTexture;
+        public static Texture2D GoldTexture;
         public ref float Variant => ref NPC.ai[1];
         public enum JellyColor
         {
@@ -34,7 +35,8 @@ namespace CalamityMod.NPCs.SunkenSea
             Green = 1,
             Red = 2,
             Radiant = 3,
-            Voltaic = 4
+            Voltaic = 4,
+            Gold = 5
         }
 
         public static Asset<Texture2D> GlowTexture;
@@ -47,6 +49,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 VoltaicTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellVoltaic", AssetRequestMode.ImmediateLoad).Value;
                 GreenTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGreen", AssetRequestMode.ImmediateLoad).Value;
                 RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellRed", AssetRequestMode.ImmediateLoad).Value;
+                GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGold", AssetRequestMode.ImmediateLoad).Value;
             }
             Main.npcFrameCount[NPC.type] = 6;
             Main.npcCatchable[NPC.type] = true;
@@ -115,6 +118,10 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Variant = (int)JellyColor.Voltaic;
             }
+            if (Main.rand.NextBool(50))
+            {
+                Variant = (int)JellyColor.Gold;
+            }
             switch (Variant)
             {
                 case (int)JellyColor.Blue:
@@ -127,10 +134,22 @@ namespace CalamityMod.NPCs.SunkenSea
                     NPC.catchItem = ModContent.ItemType<BabyGhostBellRedItem>();
                     break;
                 case (int)JellyColor.Radiant:
-                    NPC.catchItem = ModContent.ItemType<BabyGhostBellRadiantItem>();
+                    {
+                        NPC.catchItem = ModContent.ItemType<BabyGhostBellRadiantItem>();
+                        NPC.rarity = 3;
+                    }
+                    break;
+                case (int)JellyColor.Gold:
+                    {
+                        NPC.catchItem = ModContent.ItemType<BabyGhostBellGoldItem>();
+                        NPC.rarity = 3;
+                    }
                     break;
                 case (int)JellyColor.Voltaic:
-                    NPC.catchItem = ModContent.ItemType<VoltaicJelly>();
+                    {
+                        NPC.catchItem = ModContent.ItemType<VoltaicJelly>();
+                        NPC.rarity = 3;
+                    }
                     break;
             }
         }
@@ -212,6 +231,31 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
             }
             Lighting.AddLight(NPC.Center, (lightColor.R - NPC.alpha) * 1f / 255f, (lightColor.G - NPC.alpha) * 1f / 255f, (lightColor.B - NPC.alpha) * 1f / 255f);
+
+            if (Variant == (int)JellyColor.Gold)
+            {
+                NPC.position += NPC.netOffset;
+                Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
+                if (color.R > 20 || color.B > 20 || color.G > 20)
+                {
+                    int colorVal = color.R;
+                    if (color.G > colorVal)
+                    {
+                        colorVal = color.G;
+                    }
+                    if (color.B > colorVal)
+                    {
+                        colorVal = color.B;
+                    }
+                    colorVal /= 30;
+                    if (Main.rand.Next(300) < colorVal)
+                    {
+                        int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 43, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
+                        Main.dust[golddust].velocity *= 0f;
+                    }
+                }
+                NPC.position -= NPC.netOffset;
+            }
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
@@ -251,6 +295,9 @@ namespace CalamityMod.NPCs.SunkenSea
                 case (int)JellyColor.Green:
                     dustType = DustID.GemEmerald;
                     break;
+                case (int)JellyColor.Gold:
+                    dustType = DustID.GoldCritter;
+                    break;
             }
             for (int k = 0; k < 2; k++)
             {
@@ -284,6 +331,9 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
                 case (int)JellyColor.Voltaic:
                     texture = VoltaicTexture;
+                    break;
+                case (int)JellyColor.Gold:
+                    texture = GoldTexture;
                     break;
             }
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / Main.npcFrameCount[NPC.type] / 2);

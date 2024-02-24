@@ -68,6 +68,10 @@ namespace CalamityMod.Items.Critters
                     Main.npc[n].ai[1] = colorType;
                     Main.npc[n].ai[2] = 0;
                     Main.npc[n].catchItem = item.type;
+                    if (item.type == ModContent.ItemType<PolypPanaseaGoldItem>())
+                    {
+                        Main.npc[n].rarity = 3;
+                    }
                 }
             }
             else

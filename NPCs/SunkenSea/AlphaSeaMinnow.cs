@@ -1,6 +1,7 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Critters;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -58,7 +59,9 @@ namespace CalamityMod.NPCs.SunkenSea
             int fishCount = Main.rand.Next(5, 10);
             for (int i = 0; i < fishCount; i++)
             {
-                int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<SeaMinnow>());
+                int goldchance = NPC.type == ModContent.NPCType<AlphaSeaMinnowGold>() ? 20 : 50;
+                int minnowtype = Main.rand.NextBool(goldchance) ? ModContent.NPCType<SeaMinnowGold>() : ModContent.NPCType<SeaMinnow>();
+                int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, minnowtype);
                 Main.npc[n].ai[2] = NPC.whoAmI; // makes the spawned minnow recognize this one as the alpha
             }
         }
@@ -139,7 +142,30 @@ namespace CalamityMod.NPCs.SunkenSea
             if ((double)NPC.rotation > 0.1)
             {
                 NPC.rotation = 0.1f;
-                return;
+            }
+            if (NPC.type == ModContent.NPCType<AlphaSeaMinnowGold>())
+            {
+                NPC.position += NPC.netOffset;
+                Color color = Lighting.GetColor((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16);
+                if (color.R > 20 || color.B > 20 || color.G > 20)
+                {
+                    int colorVal = color.R;
+                    if (color.G > colorVal)
+                    {
+                        colorVal = color.G;
+                    }
+                    if (color.B > colorVal)
+                    {
+                        colorVal = color.B;
+                    }
+                    colorVal /= 30;
+                    if (Main.rand.Next(300) < colorVal)
+                    {
+                        int golddust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 43, 0f, 0f, 254, new Color(255, 255, 0), 0.5f);
+                        Main.dust[golddust].velocity *= 0f;
+                    }
+                }
+                NPC.position -= NPC.netOffset;
             }
         }
 
@@ -180,6 +206,52 @@ namespace CalamityMod.NPCs.SunkenSea
             for (int k = 0; k < 5; k++)
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, 68, hit.HitDirection, -1f, 0, default, 1f);
+            }
+        }
+    }
+    public class AlphaSeaMinnowGold : AlphaSeaMinnow
+    {
+        public override void SetStaticDefaults()
+        {
+            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcCatchable[NPC.type] = true;
+            NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            this.HideFromBestiary();
+        }
+        public override void SetDefaults()
+        {
+            NPC.npcSlots = 0.1f;
+            NPC.noGravity = true;
+            NPC.damage = 0;
+            NPC.width = 40;
+            NPC.height = 32;
+            NPC.defense = 0;
+            NPC.lifeMax = 5;
+            NPC.aiStyle = -1;
+            AIType = -1;
+            NPC.HitSound = SoundID.NPCHit1;
+            NPC.DeathSound = SoundID.NPCDeath1;
+            //Banner = NPC.type;
+            //BannerItem = ModContent.ItemType<AlphaSeaMinnowBanner>();
+            NPC.chaseable = false;
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            NPC.rarity = 3;
+            NPC.catchItem = ModContent.ItemType<AlphaSeaMinnowGoldItem>();
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                return SpawnCondition.CaveJellyfish.Chance * 0.03f;
+            }
+            return 0f;
+        }
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            for (int k = 0; k < 5; k++)
+            {
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GoldCritter, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
     }
