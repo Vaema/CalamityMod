@@ -9,69 +9,71 @@ namespace CalamityMod.Projectiles.Melee
     public class JudgementProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        int whiteLightTimer = 5;
-
+        public ref float time => ref Projectile.ai[0];
+        public float hitboxSize = 10;
+        public Color mainColor;
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+        }
         public override void SetDefaults()
         {
-            Projectile.width = 12;
-            Projectile.height = 12;
+            Projectile.width = 132;
+            Projectile.height = 30;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 60;
+            Projectile.tileCollide = false;
+            Projectile.timeLeft = 450;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.extraUpdates = 15;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
-            whiteLightTimer--;
-            if (whiteLightTimer == 0)
+            if (time == 0)
             {
-                float spread = 180f * 0.0174f;
-                double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-                double deltaAngle = spread / 8f;
-                double offsetAngle;
-                int i;
-                if (Projectile.owner == Main.myPlayer)
-                {
-                    for (i = 0; i < 1; i++)
-                    {
-                        offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                        int projectile1 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<WhiteOrb>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
-                        int projectile2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<WhiteOrb>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
-                        Main.projectile[projectile1].velocity.X *= 0.1f;
-                        Main.projectile[projectile1].velocity.Y *= 0.1f;
-                        Main.projectile[projectile2].velocity.X *= 0.1f;
-                        Main.projectile[projectile2].velocity.Y *= 0.1f;
-                    }
-                }
-                whiteLightTimer = 5;
+                Projectile.scale = 0.25f;
+                Projectile.velocity *= 0.75f;
+                mainColor = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
             }
 
-            Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.5f / 255f, (255 - Projectile.alpha) * 0.5f / 255f, (255 - Projectile.alpha) * 0.5f / 255f);
-
-            for (int i = 0; i < 2; i++)
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
+            if (time < 200)
             {
-                int shinyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.GemDiamond, 0f, 0f, 100, default, 1.25f);
-                Main.dust[shinyDust].noGravity = true;
-                Main.dust[shinyDust].velocity *= 0.5f;
-                Main.dust[shinyDust].velocity += Projectile.velocity * 0.1f;
+                Projectile.scale += 0.008f;
+                hitboxSize += 0.55f;
+            }
+            Projectile.velocity *= 0.995f;
+
+            if (time < 300 && time > 20 && Main.rand.NextBool(3))
+            {
+                Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(hitboxSize, hitboxSize), 66);
+                trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f);
+                trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.85f, 1.5f);
+                trailDust.color = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
+                trailDust.noGravity = true;
             }
 
-            CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 200f, 9f, 20f);
+            time++;
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item122, Projectile.position);
-            if (Projectile.owner == Main.myPlayer)
-            {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y - 100, 0f, 0f, ModContent.ProjectileType<WhiteBoltAura>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
-            }
+            //Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y - 100, 0f, 0f, ModContent.ProjectileType<WhiteBoltAura>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
         }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            CalamityUtils.DrawAfterimagesFromEdge(Projectile, 0, mainColor == Color.MediumPurple ? Color.MediumOrchid : Color.MediumPurple);
+            return true;
+        }
+        public override Color? GetAlpha(Color lightColor)
+        {
+            return mainColor;
+        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, hitboxSize, targetHitbox);
     }
 }
