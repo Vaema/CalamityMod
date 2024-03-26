@@ -14,6 +14,7 @@ namespace CalamityMod.Items.Weapons.Melee
     public class EssenceFlayer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
         public override void SetDefaults()
         {
             Item.width = 100;
@@ -43,6 +44,7 @@ namespace CalamityMod.Items.Weapons.Melee
             if (Main.rand.NextBool(3))
             {
                 int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.ShadowbeamStaff);
+                Main.dust[dust].velocity *= 0f;
             }
         }
 

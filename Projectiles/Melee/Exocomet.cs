@@ -1,6 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Balancing;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -85,34 +87,22 @@ namespace CalamityMod.Projectiles.Melee
         {
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
 
-            float healAmt = hit.Damage * 0.01f;
-            if ((int)healAmt == 0)
+            int heal = (int)Math.Round(hit.Damage * 0.01);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (healAmt > CalamityMod.lifeStealCap)
-                healAmt = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], healAmt, ModContent.ProjectileType<Exoheal>(), 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<Exoheal>(), BalancingConstants.LifeStealRange);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
 
-            float healAmt = info.Damage * 0.01f;
-            if ((int)healAmt == 0)
+            int heal = (int)Math.Round(info.Damage * 0.01);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (healAmt > CalamityMod.lifeStealCap)
-                healAmt = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], healAmt, ModContent.ProjectileType<Exoheal>(), 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<Exoheal>(), BalancingConstants.LifeStealRange);
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -5,6 +5,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -17,12 +18,17 @@ namespace CalamityMod.NPCs.CalClone
     {
         private int timer = 0;
         private bool start = true;
+        public static Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 5;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -33,7 +39,6 @@ namespace CalamityMod.NPCs.CalClone
             NPC.height = 40;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.damage = 40;
             NPC.defense = 10;
             NPC.DR_NERD(0.1f);
@@ -213,7 +218,7 @@ namespace CalamityMod.NPCs.CalClone
             drawPos += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, drawPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/CalClone/SoulSeekerGlow").Value;
+            texture = GlowTexture.Value;
             Color glow = Color.Lerp(Color.White, Color.Red, colorLerpAmt);
 
             if (CalamityConfig.Instance.Afterimages)

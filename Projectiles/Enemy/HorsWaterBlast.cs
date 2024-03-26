@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Enemy
                     }
                 }
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item21, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item21, Projectile.Center);
             }
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.35f / 255f);
             for (int j = 0; j < 10; j++)
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item21, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item21, Projectile.Center);
             for (int dust = 0; dust <= 40; dust++)
             {
                 float rando1 = (float)Main.rand.Next(-10, 11);

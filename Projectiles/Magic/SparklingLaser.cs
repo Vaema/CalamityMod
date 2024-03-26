@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Magic
             // Play a cool sound when fully charged.
             if (!playedSound)
             {
-                SoundEngine.PlaySound(SoundID.Item68, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item68, Projectile.Center);
                 playedSound = true;
             }
             return true;

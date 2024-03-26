@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
             if (Projectile.ai[0] == 0f)
             {
-                float maxRange = 100f;
+                float maxRange = Projectile.ai[1] == 1f ? 256f : 100f; // Increased homing range for Lionfish
                 int npcIndex = -1;
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {

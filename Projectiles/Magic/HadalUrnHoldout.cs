@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Magic
                         bool manaCostPaid = player.CheckMana(player.ActiveItem(), -1, true, false);
                         if (manaCostPaid)
                         {
-                            SoundEngine.PlaySound(SoundID.Item111, Projectile.position);
+                            SoundEngine.PlaySound(SoundID.Item111, Projectile.Center);
                             int projcount = 3;
                             for (int i = 0; i < projcount; ++i)
                             {
@@ -111,14 +111,14 @@ namespace CalamityMod.Projectiles.Magic
                         }
                         else
                         {
-                            SoundEngine.PlaySound(UrnSound, Projectile.position);
+                            SoundEngine.PlaySound(UrnSound, Projectile.Center);
                             Projectile.Kill();
                         }
                     }
                 }
                 else
                 {
-                    SoundEngine.PlaySound(UrnSound, Projectile.position);
+                    SoundEngine.PlaySound(UrnSound, Projectile.Center);
                     Projectile.Kill();
                 }
             }

@@ -320,7 +320,7 @@ namespace CalamityMod.Systems
 
         public static bool CanPlaceBasedOnProximity(int x, int y, int tileType)
         {
-            if (tileType == ModContent.TileType<LumenylCrystals>() && !DownedBossSystem.downedCalamitasClone)
+            if (tileType == ModContent.TileType<LumenylCrystals>() && !DownedBossSystem.downedLeviathan)
                 return false;
 
             int minDistanceFromOtherTiles = 10;

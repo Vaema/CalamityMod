@@ -65,7 +65,7 @@ namespace CalamityMod.Items.DraedonMisc
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AuricBar>(2).
+                AddIngredient<AuricBar>(5).
                 AddIngredient<MysteriousCircuitry>(8).
                 AddIngredient<DubiousPlating>(8).
                 AddIngredient<EndothermicEnergy>(40).

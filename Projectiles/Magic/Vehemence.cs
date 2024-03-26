@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
             if (Main.myPlayer == Projectile.owner)
             {
                 int skullID = ModContent.ProjectileType<VehemenceSkull>();

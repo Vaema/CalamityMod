@@ -19,9 +19,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public float Combo = 1f;
         public float Charge = 0f;
-        public static float chargeDamageMultiplier = 1.45f; //Extra damage from charge
-        public static float beamDamageMultiplier = 0.8f; //Damage multiplier for the charged shots (remember it applies ontop of the charge damage multiplied
-        public static float glassStarDamageMultiplier = 0.4f; //Damage multiplier for the glass stars it shoots (Shoots 3x glass stars when not charged, shoots 2x glass stars + one beam when charged)
+        public static float chargeDamageMultiplier = 1.25f; //Extra damage from charge
+        public static float beamDamageMultiplier = 1f; //Damage multiplier for the charged shots (remember it applies ontop of the charge damage multiplied
+        public static float glassStarDamageMultiplier = 0.6f; //Damage multiplier for the glass stars it shoots (Shoots 3x glass stars when not charged, shoots 2x glass stars + one beam when charged)
 
         public static float blastDamageMultiplier = 0.5f; //Damage multiplier applied ontop of the charge damage multiplier mutliplied by the amount of charges consumed. So if you consume 5 charges, the blast will get multiplied by 5 times the damage multiplier
         public static float blastFalloffSpeed = 0.1f; //How much the blast damage falls off as you hit more and more targets
@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = Item.height = 72;
-            Item.damage = 188;
+            Item.damage = 194;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noUseGraphic = true;
             Item.noMelee = true;

@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 54;
             Item.height = 52;
-            Item.damage = 75;
+            Item.damage = 103;
             Item.knockBack = 1.25f;
             Item.mana = 10;
 

@@ -47,6 +47,12 @@ namespace CalamityMod.Projectiles.Boss
                 return;
             }
 
+            if (Projectile.ai[2] > 0f)
+            {
+                if (Projectile.timeLeft > Projectile.ai[2])
+                    Projectile.timeLeft = (int)Projectile.ai[2];
+            }
+
             Player proviTarget = Main.player[Main.npc[CalamityGlobalNPC.holyBoss].target];
 
             Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];

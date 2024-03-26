@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
@@ -88,7 +89,7 @@ namespace CalamityMod.CalPlayer
                     break;
 
                 case ItemID.PalladiumSword:
-                    if (!target.canGhostHeal || Player.moonLeech)
+                    if (Player.moonLeech)
                         return;
                     Player.lifeRegenTime += 2;
                     break;
@@ -110,10 +111,17 @@ namespace CalamityMod.CalPlayer
                     break;
 
                 case ItemID.CandyCaneSword:
-                    if (!target.canGhostHeal || Player.moonLeech)
+
+                    if (Player.moonLeech || Player.lifeSteal <= 0f || target.lifeMax <= 5)
                         return;
-                    Player.statLife += 2;
-                    Player.HealEffect(2);
+
+                    int heal = 2;
+                    Player.lifeSteal -= heal;
+                    Player.statLife += heal;
+                    Player.HealEffect(heal);
+                    if (Player.statLife > Player.statLifeMax2)
+                        Player.statLife = Player.statLifeMax2;
+
                     break;
 
                 case ItemID.DeathSickle:
@@ -210,7 +218,7 @@ namespace CalamityMod.CalPlayer
                     break;
 
                 case ProjectileID.PalladiumPike:
-                    if (!target.canGhostHeal || Player.moonLeech)
+                    if (Player.moonLeech)
                         return;
                     Player.lifeRegenTime += 2;
                     break;
@@ -232,10 +240,17 @@ namespace CalamityMod.CalPlayer
                     break;
 
                 case ProjectileID.FruitcakeChakram:
-                    if (!target.canGhostHeal || Player.moonLeech)
+
+                    if (Player.moonLeech || Main.player[Main.myPlayer].lifeSteal <= 0f || target.lifeMax <= 5)
                         return;
-                    Player.statLife += 2;
-                    Player.HealEffect(2);
+
+                    int heal = 2;
+                    Main.player[Main.myPlayer].lifeSteal -= heal;
+                    Player.statLife += heal;
+                    Player.HealEffect(heal);
+                    if (Player.statLife > Player.statLifeMax2)
+                        Player.statLife = Player.statLifeMax2;
+
                     break;
 
                 case ProjectileID.ObsidianSwordfish:
@@ -1126,35 +1141,7 @@ namespace CalamityMod.CalPlayer
         {
             CalamityGlobalProjectile modProj = proj.Calamity();
 
-            // Spectre Damage set and Nebula set work on enemies which are "immune to lifesteal"
-            if (!target.canGhostHeal)
-            {
-                if (Player.ghostHurt)
-                {
-                    proj.ghostHurt(damage, target.Center, target);
-                }
-
-                if (Player.setNebula && Player.nebulaCD == 0 && Main.rand.NextBool(3))
-                {
-                    Player.nebulaCD = 30;
-                    int boosterType = Utils.SelectRandom(Main.rand, new int[]
-                    {
-                        ItemID.NebulaPickup1,
-                        ItemID.NebulaPickup2,
-                        ItemID.NebulaPickup3
-                    });
-                    var source = Player.GetSource_Misc("1");
-                    int nebulaBooster = Item.NewItem(source, target.Center, target.Size, boosterType, 1, false, 0, false, false);
-                    Main.item[nebulaBooster].velocity.Y = Main.rand.Next(-20, 1) * 0.2f;
-                    Main.item[nebulaBooster].velocity.X = Main.rand.Next(10, 31) * 0.2f * proj.direction;
-                    if (Main.netMode == NetmodeID.MultiplayerClient)
-                    {
-                        NetMessage.SendData(MessageID.SyncItem, -1, -1, null, nebulaBooster, 0f, 0f, 0f, 0, 0, 0);
-                    }
-                }
-            }
-
-            if (bloodflareSet && !target.IsAnEnemy(false) && !Player.moonLeech)
+            if (bloodflareSet && !target.IsAnEnemy(false) && !Player.moonLeech && target.lifeMax > 5)
             {
                 if ((target.life < target.lifeMax * 0.5) && bloodflareHeartTimer <= 0)
                 {
@@ -1163,17 +1150,18 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (gladiatorSword && target.IsAnEnemy(false) && target.life <= 0 && target.Calamity().gladiatorOnKill)
+            if (gladiatorSword && target.IsAnEnemy(false) && target.life <= 0 && target.Calamity().gladiatorOnKill && target.lifeMax > 5)
             {
                 target.Calamity().gladiatorOnKill = false;
                 Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center.X, target.Center.Y, target.velocity.X / 2, target.velocity.Y / 2, ModContent.ProjectileType<GladiatorHealOrb>(), 0, 0f);
             }
 
-            if (Main.player[Main.myPlayer].lifeSteal > 0f && target.canGhostHeal && !Player.moonLeech)
+            if (Main.player[Main.myPlayer].lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
             {
                 // Increases the degree to which Spectre Healing set contributes to the lifesteal cap
                 if (Player.ghostHeal && proj.CountsAsClass<MagicDamageClass>())
                 {
+                    // This doesn't use Math.Round because it doesn't in vanilla
                     float cooldownMult = 0.2f;
                     cooldownMult -= proj.numHits * 0.05f;
                     if (cooldownMult < 0f)
@@ -1183,202 +1171,83 @@ namespace CalamityMod.CalPlayer
                     Main.player[Main.myPlayer].lifeSteal -= cooldown;
                 }
 
-                // Increases the degree to which Vampire Knives contribute to the lifesteal cap
-                if (proj.type == ProjectileID.VampireKnife)
-                {
-                    float cooldown = damage * 0.075f;
-                    if (cooldown < 0f)
-                        cooldown = 0f;
-
-                    Main.player[Main.myPlayer].lifeSteal -= cooldown;
-                }
-
-                // Increases the degree to which Bloodfire Arrows contribute to the lifesteal cap
-                if (proj.type == ModContent.ProjectileType<BloodfireArrowProj>())
-                {
-                    float cooldown = 6;
-                    if (cooldown < 0f)
-                        cooldown = 0f;
-
-                    Main.player[Main.myPlayer].lifeSteal -= cooldown;
-                }
-
                 if (vampiricTalisman && proj.CountsAsClass<RogueDamageClass>() && crit)
                 {
-                    float heal = MathHelper.Clamp(damage * 0.011f, 0f, 5f);
-                    if ((int)heal > 0)
-                    {
-                        CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileID.VampireHeal, 1200f, 3f);
-                        float cooldown = heal * 2f;
-                        Main.player[Main.myPlayer].lifeSteal -= cooldown;
-                    }
+                    int heal = (int)Math.Round(damage * 0.015);
+                    if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile(1f, heal))
+                        CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange, BalancingConstants.LifeStealAccessoryCooldownMultiplier);
                 }
 
                 if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && modProj.stealthStrike)
-                {
-                    float cooldown = 20;
-                    Player.statLife += 2;
-                    Player.HealEffect(2);
-                    Main.player[Main.myPlayer].lifeSteal -= cooldown;
-                }
+                    CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, 2, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange, BalancingConstants.LifeStealAccessoryCooldownMultiplier);
 
                 if (target.IsAnEnemy(false))
                 {
-                    if (bloodflareThrowing && proj.CountsAsClass<ThrowingDamageClass>() && crit && Main.rand.NextBool())
-                    {
-                        float projHitMult = 0.03f;
-                        projHitMult -= proj.numHits * 0.015f;
-                        if (projHitMult < 0f)
-                            projHitMult = 0f;
-
-                        float cooldownMult = damage * projHitMult;
-                        if (cooldownMult < 0f)
-                            cooldownMult = 0f;
-
-                        if (Player.lifeSteal > 0f)
-                        {
-                            Player.statLife += 1;
-                            Player.HealEffect(1);
-                            Player.lifeSteal -= cooldownMult * 2f;
-                        }
-                    }
+                    if (bloodflareThrowing && proj.CountsAsClass<ThrowingDamageClass>() && crit)
+                        CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, 2, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange, BalancingConstants.LifeStealSetBonusCooldownMultiplier);
 
                     if (bloodflareMelee && proj.IsTrueMelee())
-                    {
-                        int healAmount = Main.rand.Next(2) + 1;
-                        Player.statLife += healAmount;
-                        Player.HealEffect(healAmount);
-                    }
+                        CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, 2, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange, BalancingConstants.LifeStealSetBonusCooldownMultiplier);
                 }
-
-                bool otherHealTypes = auricSet || silvaSet || tarraMage || ataxiaMage;
 
                 if (proj.CountsAsClass<MagicDamageClass>() && Player.ActiveItem().CountsAsClass<MagicDamageClass>())
                 {
-                    if (manaOverloader && otherHealTypes)
+                    if (manaOverloader)
                     {
-                        if (Main.rand.NextBool())
-                        {
-                            float healMult = 0.2f;
-                            healMult -= proj.numHits * 0.05f;
-                            float heal = damage * healMult * (Player.statMana / (float)Player.statManaMax2);
-
-                            if (heal > CalamityMod.lifeStealCap)
-                                heal = CalamityMod.lifeStealCap;
-
-                            if (!CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
-                                return;
-
-                            CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<ManaPolarizerHealOrb>(), 1200f, 3f);
-                        }
+                        double healMult = 0.2;
+                        healMult -= proj.numHits * healMult * 0.25;
+                        int heal = (int)Math.Round(damage * healMult * (Player.statMana / (double)Player.statManaMax2));
+                        if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
+                            CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<ManaPolarizerHealOrb>(), BalancingConstants.LifeStealRange, BalancingConstants.LifeStealAccessoryCooldownMultiplier);
                     }
                 }
 
                 if (silvaSet)
                 {
-                    float healMult = 0.03f;
-                    healMult -= proj.numHits * 0.015f;
-                    float heal = damage * healMult;
-
-                    if (heal > CalamityMod.lifeStealCap)
-                        heal = CalamityMod.lifeStealCap;
-
-                    if (!CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
-                        return;
-
-                    CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<SilvaOrb>(), 1200f, 3f);
+                    double healMult = 0.1;
+                    healMult -= proj.numHits * healMult * 0.5;
+                    int heal = (int)Math.Round(damage * healMult);
+                    if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
+                        CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<SilvaOrb>(), BalancingConstants.LifeStealRange, BalancingConstants.LifeStealSetBonusCooldownMultiplier);
                 }
                 else if (proj.CountsAsClass<MagicDamageClass>() && Player.ActiveItem().CountsAsClass<MagicDamageClass>())
                 {
-                    if (manaOverloader)
-                    {
-                        float healMult = 0.2f;
-                        healMult -= proj.numHits * 0.05f;
-                        float heal = damage * healMult * (Player.statMana / (float)Player.statManaMax2);
-
-                        if (heal > CalamityMod.lifeStealCap)
-                            heal = CalamityMod.lifeStealCap;
-
-                        if (!CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
-                            return;
-
-                        CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<ManaPolarizerHealOrb>(), 1200f, 3f);
-                    }
-
                     if (tarraMage)
                     {
-                        if (tarraMageHealCooldown <= 0)
-                        {
-                            tarraMageHealCooldown = 90;
-
-                            float healMult = 0.1f;
-                            healMult -= proj.numHits * 0.05f;
-                            float heal = damage * healMult;
-
-                            if (heal > CalamityMod.lifeStealCap)
-                                heal = CalamityMod.lifeStealCap;
-
-                            if (!CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
-                                return;
-
-                            Main.player[Main.myPlayer].lifeSteal -= heal * 6f;
-
-                            int healAmount = (int)heal;
-                            Player.statLife += healAmount;
-                            Player.HealEffect(healAmount);
-
-                            if (Player.statLife > Player.statLifeMax2)
-                                Player.statLife = Player.statLifeMax2;
-                        }
+                        double healMult = 0.1;
+                        healMult -= proj.numHits * healMult * 0.5;
+                        int heal = (int)Math.Round(damage * healMult);
+                        if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
+                            CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<ReaverHealOrb>(), BalancingConstants.LifeStealRange, BalancingConstants.LifeStealSetBonusCooldownMultiplier);
                     }
                     else if (ataxiaMage)
                     {
-                        float healMult = 0.1f;
-                        healMult -= proj.numHits * 0.05f;
-                        float heal = damage * healMult;
-
-                        if (heal > CalamityMod.lifeStealCap)
-                            heal = CalamityMod.lifeStealCap;
-
-                        if (!CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
-                            return;
-
-                        CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<HydrothermicHealOrb>(), 1200f, 3f);
+                        double healMult = 0.1;
+                        healMult -= proj.numHits * healMult * 0.5;
+                        int heal = (int)Math.Round(damage * healMult);
+                        if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
+                            CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<HydrothermicHealOrb>(), BalancingConstants.LifeStealRange, BalancingConstants.LifeStealSetBonusCooldownMultiplier);
                     }
                 }
 
                 if (reaverDefense)
                 {
-                    float healMult = 0.2f;
-                    healMult -= proj.numHits * 0.05f;
-                    float heal = damage * healMult;
-
-                    if (heal > CalamityMod.lifeStealCap)
-                        heal = CalamityMod.lifeStealCap;
-                    if (Main.rand.Next(10) > 0)
-                        heal = 0;
-
-                    if (!CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
-                        return;
-
-                    CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<ReaverHealOrb>(), 1200f, 3f);
+                    double healMult = 0.1;
+                    healMult -= proj.numHits * healMult * 0.5;
+                    int heal = (int)Math.Round(damage * healMult);
+                    if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
+                        CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<ReaverHealOrb>(), BalancingConstants.LifeStealRange, BalancingConstants.LifeStealReaverTankCooldownMultiplier);
                 }
 
                 if (proj.CountsAsClass<ThrowingDamageClass>())
                 {
                     if (xerocSet && xerocDmg <= 0 && Player.ownedProjectileCounts[ProjectileType<EmpyreanEmber>()] < 3 && Player.ownedProjectileCounts[ProjectileType<EmpyreanBlast>()] < 3)
                     {
-                        float healMult = 0.06f;
-                        healMult -= proj.numHits * 0.015f;
-                        float heal = damage * healMult;
-
-                        if (heal > CalamityMod.lifeStealCap)
-                            heal = CalamityMod.lifeStealCap;
-
-                        if (!CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
-                            return;
-
-                        CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<EmpyreanHealOrb>(), 1200f, 3f);
+                        double healMult = 0.1;
+                        healMult -= proj.numHits * healMult * 0.5;
+                        int heal = (int)Math.Round(damage * healMult);
+                        if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile(healMult, heal))
+                            CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileType<EmpyreanHealOrb>(), BalancingConstants.LifeStealRange, BalancingConstants.LifeStealSetBonusCooldownMultiplier);
                     }
                 }
             }
@@ -1386,7 +1255,7 @@ namespace CalamityMod.CalPlayer
 
         public void ItemLifesteal(NPC target, Item item, int damage)
         {
-            if (bloodflareSet && target.IsAnEnemy(false))
+            if (bloodflareSet && target.IsAnEnemy(false) && target.lifeMax > 5)
             {
                 if ((target.life < target.lifeMax * 0.5) && bloodflareHeartTimer <= 0)
                 {
@@ -1395,37 +1264,14 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (target.IsAnEnemy(false) && target.canGhostHeal && !Player.moonLeech)
+            if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>() && target.lifeMax > 5)
             {
-                if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>())
+                if (target.IsAnEnemy(false) && Main.player[Main.myPlayer].lifeSteal > 0f && !Player.moonLeech)
                 {
-                    int healAmount = Main.rand.Next(2) + 1;
-                    Player.statLife += healAmount;
-                    Player.HealEffect(healAmount);
-                }
-            }
-
-            if (gladiatorSword && target.IsAnEnemy(false) && target.life <= 0 && target.Calamity().gladiatorOnKill)
-            {
-                target.Calamity().gladiatorOnKill = false;
-                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center.X, target.Center.Y, target.velocity.X / 2, target.velocity.Y / 2, ModContent.ProjectileType<GladiatorHealOrb>(), 0, 0f);
-            }
-
-            if (reaverDefense)
-            {
-                if (Main.player[Main.myPlayer].lifeSteal > 0f && target.canGhostHeal && !Player.moonLeech)
-                {
-                    float healMult = 0.2f;
-                    float heal = damage * healMult;
-
-                    if (heal > CalamityMod.lifeStealCap)
-                        heal = CalamityMod.lifeStealCap;
-                    if (Main.rand.Next(10) > 0)
-                        heal = 0;
-
-                    if ((int)heal > 0 && !Main.player[Main.myPlayer].moonLeech)
+                    int heal = 4;
+                    if (!Main.player[Main.myPlayer].moonLeech)
                     {
-                        Main.player[Main.myPlayer].lifeSteal -= heal * 3f;
+                        Main.player[Main.myPlayer].lifeSteal -= heal * BalancingConstants.LifeStealSetBonusCooldownMultiplier;
 
                         float lowestHealthCheck = 0f;
                         int healTarget = Player.whoAmI;
@@ -1435,7 +1281,46 @@ namespace CalamityMod.CalPlayer
                             if (otherPlayer.active && !otherPlayer.dead && ((!Player.hostile && !otherPlayer.hostile) || Player.team == otherPlayer.team))
                             {
                                 float playerDist = Vector2.Distance(target.Center, otherPlayer.Center);
-                                if (playerDist < 1200f && (otherPlayer.statLifeMax2 - otherPlayer.statLife) > lowestHealthCheck)
+                                if (playerDist < BalancingConstants.LifeStealRange && (otherPlayer.statLifeMax2 - otherPlayer.statLife) > lowestHealthCheck)
+                                {
+                                    lowestHealthCheck = otherPlayer.statLifeMax2 - otherPlayer.statLife;
+                                    healTarget = i;
+                                }
+                            }
+                        }
+
+                        // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
+                        var source = Player.GetSource_FromThis(ReaverHeadTank.HealOrbEntitySourceContext);
+                        Projectile.NewProjectile(source, target.Center, Vector2.Zero, ProjectileID.VampireHeal, 0, 0f, Player.whoAmI, healTarget, heal);
+                    }
+                }
+            }
+
+            if (gladiatorSword && target.IsAnEnemy(false) && target.life <= 0 && target.Calamity().gladiatorOnKill && target.lifeMax > 5)
+            {
+                target.Calamity().gladiatorOnKill = false;
+                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, target.velocity * 0.5f, ModContent.ProjectileType<GladiatorHealOrb>(), 0, 0f);
+            }
+
+            if (reaverDefense)
+            {
+                if (Main.player[Main.myPlayer].lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
+                {
+                    double healMult = 0.1;
+                    int heal = (int)Math.Round(damage * healMult);
+                    if (heal > 0 && !Main.player[Main.myPlayer].moonLeech)
+                    {
+                        Main.player[Main.myPlayer].lifeSteal -= heal * BalancingConstants.LifeStealReaverTankCooldownMultiplier;
+
+                        float lowestHealthCheck = 0f;
+                        int healTarget = Player.whoAmI;
+                        for (int i = 0; i < Main.maxPlayers; i++)
+                        {
+                            Player otherPlayer = Main.player[i];
+                            if (otherPlayer.active && !otherPlayer.dead && ((!Player.hostile && !otherPlayer.hostile) || Player.team == otherPlayer.team))
+                            {
+                                float playerDist = Vector2.Distance(target.Center, otherPlayer.Center);
+                                if (playerDist < BalancingConstants.LifeStealRange && (otherPlayer.statLifeMax2 - otherPlayer.statLife) > lowestHealthCheck)
                                 {
                                     lowestHealthCheck = otherPlayer.statLifeMax2 - otherPlayer.statLife;
                                     healTarget = i;

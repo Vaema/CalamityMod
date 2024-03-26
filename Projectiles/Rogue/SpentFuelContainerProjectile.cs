@@ -19,22 +19,12 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 34;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
+            Projectile.aiStyle = ProjAIStyleID.ThrownProjectile;
             Projectile.timeLeft = 200;
             Projectile.tileCollide = true;
             Projectile.alpha = 0;
+            AIType = ProjectileID.ThrowingKnife;
             Projectile.DamageType = RogueDamageClass.Instance;
-        }
-        public override void AI()
-        {
-            Projectile.ai[0] += 1f; //arbitrary timer
-            if (Projectile.ai[0] > 75f)
-            {
-                if (Projectile.velocity.Y < 10f)
-                {
-                    Projectile.velocity.Y += 0.15f;
-                }
-            }
-            Projectile.rotation += MathHelper.ToRadians(Projectile.velocity.Length());
         }
         public override void OnKill(int timeLeft)
         {
@@ -49,7 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
             Point result;
             if (WorldUtils.Find(Projectile.Top.ToTileCoordinates(), Searches.Chain((GenSearch)new Searches.Down(80), (GenCondition)new Conditions.IsSolid()), out result))
             {
-                int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), result.ToVector2() * 16f, Vector2.Zero, ModContent.ProjectileType<SulphuricNukesplosion>(), Projectile.damage, 2f, Projectile.owner);
+                int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), result.ToVector2() * 16f, Vector2.Zero, ModContent.ProjectileType<SulphuricNukesplosion>(), (int)(Projectile.damage * .5f), 2f, Projectile.owner);
                 if (proj.WithinBounds(Main.maxProjectiles))
                     Main.projectile[proj].Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
             }

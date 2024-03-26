@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Materials
             CreateRecipe(2).
                 AddIngredient<Bloodstone>(5).
                 AddIngredient<BloodOrb>().
-                AddIngredient<Polterplasm>().
+                AddIngredient<Necroplasm>().
                 AddTile(TileID.AdamantiteForge).
                 Register();
         }

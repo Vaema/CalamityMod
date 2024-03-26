@@ -838,9 +838,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 npc.TargetClosest();
 
+            bool enrage = true;
+            int targetTileX = (int)Main.player[npc.target].Center.X / 16;
+            int targetTileY = (int)Main.player[npc.target].Center.Y / 16;
+
+            Tile tile = Framing.GetTileSafely(targetTileX, targetTileY);
+            if (tile.WallType == WallID.HiveUnsafe)
+                enrage = false;
+
             bool dead4 = Main.player[npc.target].dead;
             float num644 = 0f;
-            if ((double)(npc.position.Y / 16f) < Main.worldSurface)
+            if ((double)(npc.position.Y / 16f) < Main.worldSurface && enrage)
                 num644 += 1f;
 
             if (!Main.player[npc.target].ZoneJungle)
@@ -932,6 +940,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else if (npc.ai[0] == 0f)
             {
+                // Charging distance from player
+                int chargeDistanceX = Main.masterMode ? 425 : 600;
+                if (Main.expertMode)
+                {
+                    int chargeDistanceReduction = Main.masterMode ? 25 : 50;
+                    if ((double)npc.life < (double)npc.lifeMax * 0.1)
+                        chargeDistanceX -= chargeDistanceReduction * 6;
+                    else if ((double)npc.life < (double)npc.lifeMax * 0.25)
+                        chargeDistanceX -= chargeDistanceReduction * 3;
+                    else if ((double)npc.life < (double)npc.lifeMax * 0.5)
+                        chargeDistanceX -= chargeDistanceReduction * 2;
+                    else if ((double)npc.life < (double)npc.lifeMax * 0.75)
+                        chargeDistanceX -= chargeDistanceReduction;
+                }
+                chargeDistanceX -= (int)(100f * num644);
+
                 int num648 = Main.masterMode ? 1 : 2;
                 if (Main.expertMode)
                 {
@@ -961,9 +985,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.damage = 0;
 
                     npc.TargetClosest();
-                    float num649 = 20f;
-                    num649 += 20f * num644;
-                    if (Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) < num649)
+                    
+                    float chargeDistanceY = 20f;
+                    chargeDistanceY += 20f * num644;
+
+                    float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[npc.target].Center.X);
+                    float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y);
+                    if (distanceFromTargetY < chargeDistanceY && distanceFromTargetX >= chargeDistanceX)
                     {
                         // Set damage
                         npc.damage = npc.defDamage;
@@ -998,8 +1026,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         num653 = num650 / num653;
                         npc.velocity.X = num651 * num653;
                         npc.velocity.Y = num652 * num653;
+
+                        float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
+                        npc.direction = playerLocation < 0 ? 1 : -1;
                         npc.spriteDirection = npc.direction;
+
                         SoundEngine.PlaySound(SoundID.Zombie125, npc.Center);
+
                         return false;
                     }
 
@@ -1037,31 +1070,39 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     num654 += 3f * num644;
                     num655 += 0.5f * num644;
-                    if (npc.Center.Y < Main.player[npc.target].Center.Y)
+
+                    // Velocity calculations
+                    if (npc.Center.Y < Main.player[npc.target].Center.Y - chargeDistanceY)
                         npc.velocity.Y += num655;
-                    else
+                    else if (npc.Center.Y > Main.player[npc.target].Center.Y + chargeDistanceY)
                         npc.velocity.Y -= num655;
+                    else
+                        npc.velocity.Y *= 0.7f;
 
-                    if (npc.velocity.Y < 0f - num654)
-                        npc.velocity.Y = 0f - num654;
-
+                    if (npc.velocity.Y < -num654)
+                        npc.velocity.Y = -num654;
                     if (npc.velocity.Y > num654)
                         npc.velocity.Y = num654;
 
-                    if (Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) > 600f)
-                        npc.velocity.X += 0.15f * (float)npc.direction;
-                    else if (Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) < 300f)
-                        npc.velocity.X -= 0.15f * (float)npc.direction;
+                    float distanceXMax = 100f;
+                    float distanceXMin = 20f;
+                    if (distanceFromTargetX > chargeDistanceX + distanceXMax)
+                        npc.velocity.X += 0.15f * npc.direction;
+                    else if (distanceFromTargetX < chargeDistanceX + distanceXMin)
+                        npc.velocity.X -= 0.15f * npc.direction;
                     else
-                        npc.velocity.X *= 0.8f;
+                        npc.velocity.X *= 0.7f;
 
                     if (npc.velocity.X < -16f)
                         npc.velocity.X = -16f;
-
                     if (npc.velocity.X > 16f)
                         npc.velocity.X = 16f;
 
+                    // Face the correct direction
+                    float playerLocation2 = npc.Center.X - Main.player[npc.target].Center.X;
+                    npc.direction = playerLocation2 < 0 ? 1 : -1;
                     npc.spriteDirection = npc.direction;
+
                     return false;
                 }
 
@@ -1074,33 +1115,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.direction = 1;
 
                 npc.spriteDirection = npc.direction;
-                int num656 = Main.masterMode ? 425 : 600;
-                if (Main.expertMode)
-                {
-                    int chargeDistanceReduction = Main.masterMode ? 25 : 50;
-                    if ((double)npc.life < (double)npc.lifeMax * 0.1)
-                        num656 -= chargeDistanceReduction * 6;
-                    else if ((double)npc.life < (double)npc.lifeMax * 0.25)
-                        num656 -= chargeDistanceReduction * 3;
-                    else if ((double)npc.life < (double)npc.lifeMax * 0.5)
-                        num656 -= chargeDistanceReduction * 2;
-                    else if ((double)npc.life < (double)npc.lifeMax * 0.75)
-                        num656 -= chargeDistanceReduction;
-                }
 
                 int num657 = 1;
                 if (npc.Center.X < Main.player[npc.target].Center.X)
                     num657 = -1;
 
-                num656 -= (int)(100f * num644);
                 bool flag34 = false;
-                if (npc.direction == num657 && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) > (float)num656)
+                if (npc.direction == num657 && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) > (float)chargeDistanceX)
                 {
                     npc.ai[2] = 1f;
                     flag34 = true;
                 }
 
-                if (Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) > (float)num656 * 1.5f)
+                if (Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) > (float)chargeDistanceX * 1.5f)
                 {
                     npc.ai[2] = 1f;
                     flag34 = true;
@@ -1111,9 +1138,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (npc.ai[2] == 1f)
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     npc.TargetClosest();
+
+                    float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
+                    npc.direction = playerLocation < 0 ? 1 : -1;
                     npc.spriteDirection = npc.direction;
+
                     npc.localAI[0] = 0f;
+
                     npc.velocity *= (Main.masterMode ? 0.8f : 0.9f);
                     float num658 = Main.masterMode ? 0.2f : 0.1f;
                     if (Main.expertMode)
@@ -1158,17 +1193,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.damage = 0;
 
                 npc.TargetClosest();
-                npc.spriteDirection = npc.direction;
-                float num659 = Main.masterMode ? 16f : 12f;
-                float num660 = 0.07f;
-                if (Main.expertMode)
-                    num660 = Main.masterMode ? 0.15f : 0.1f;
 
-                Vector2 vector83 = npc.Center;
-                float num661 = Main.player[npc.target].Center.X - vector83.X;
-                float num662 = Main.player[npc.target].Center.Y - 200f - vector83.Y;
-                float num663 = (float)Math.Sqrt(num661 * num661 + num662 * num662);
-                if (num663 < 200f)
+                float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
+                npc.direction = playerLocation < 0 ? 1 : -1;
+                npc.spriteDirection = npc.direction;
+
+                float num659 = Main.masterMode ? 14f : 12f;
+                float num660 = 0.14f;
+                if (Main.expertMode)
+                    num660 = Main.masterMode ? 0.3f : 0.2f;
+
+                bool canHitTarget = Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
+                float distanceAboveTarget = !canHitTarget ? 0f : 320f;
+                Vector2 hoverDestination = Main.player[npc.target].Center - Vector2.UnitY * distanceAboveTarget;
+                Vector2 idealVelocity = npc.SafeDirectionTo(hoverDestination) * num659;
+
+                if (Vector2.Distance(npc.Center, hoverDestination) < 200f && canHitTarget)
                 {
                     npc.ai[0] = 1f;
                     npc.ai[1] = 0f;
@@ -1176,32 +1216,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     return false;
                 }
 
-                num663 = num659 / num663;
-                if (npc.velocity.X < num661)
-                {
-                    npc.velocity.X += num660;
-                    if (npc.velocity.X < 0f && num661 > 0f)
-                        npc.velocity.X += num660;
-                }
-                else if (npc.velocity.X > num661)
-                {
-                    npc.velocity.X -= num660;
-                    if (npc.velocity.X > 0f && num661 < 0f)
-                        npc.velocity.X -= num660;
-                }
-
-                if (npc.velocity.Y < num662)
-                {
-                    npc.velocity.Y += num660;
-                    if (npc.velocity.Y < 0f && num662 > 0f)
-                        npc.velocity.Y += num660;
-                }
-                else if (npc.velocity.Y > num662)
-                {
-                    npc.velocity.Y -= num660;
-                    if (npc.velocity.Y > 0f && num662 < 0f)
-                        npc.velocity.Y -= num660;
-                }
+                npc.SimpleFlyMovement(idealVelocity, num660);
             }
             else if (npc.ai[0] == 1f)
             {
@@ -1210,11 +1225,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 npc.localAI[0] = 0f;
                 npc.TargetClosest();
-                Vector2 vector84 = new Vector2(npc.Center.X + (float)(Main.rand.Next(20) * npc.direction), npc.position.Y + (float)npc.height * 0.8f);
-                Vector2 vector85 = npc.Center;
-                float num664 = Main.player[npc.target].Center.X - vector85.X;
-                float num665 = Main.player[npc.target].Center.Y - vector85.Y;
-                float num666 = (float)Math.Sqrt(num664 * num664 + num665 * num665);
+
+                float num672 = Main.masterMode ? 16f : 14f;
+                float num673 = Main.masterMode ? 0.15f : 0.1f;
+
+                Vector2 beeSpawnLocation = new Vector2(npc.Center.X + (Main.rand.Next(20) * npc.direction), npc.position.Y + npc.height * 0.8f);
+                Vector2 beeSpawnCollisionLocation = new Vector2(beeSpawnLocation.X, beeSpawnLocation.Y - 30f);
+                bool canHitTarget = Collision.CanHit(beeSpawnCollisionLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
+                Vector2 hoverDestination = Main.player[npc.target].Center - Vector2.UnitY * (!canHitTarget ? 0f : 320f);
+                Vector2 idealVelocity = npc.SafeDirectionTo(hoverDestination) * num672;
+
                 npc.ai[1] += (Main.masterMode ? 2f : 1f);
                 if (Main.expertMode)
                 {
@@ -1249,13 +1269,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     flag35 = true;
                 }
 
-                if (Collision.CanHit(vector84, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height) && flag35)
+                if (Collision.CanHit(beeSpawnLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height) && flag35)
                 {
                     SoundEngine.PlaySound(SoundID.NPCHit1, npc.Center);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int num670 = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
-                        int num671 = NPC.NewNPC(npc.GetSource_FromAI(), (int)vector84.X, (int)vector84.Y, num670);
+                        int num671 = NPC.NewNPC(npc.GetSource_FromAI(), (int)beeSpawnLocation.X, (int)beeSpawnLocation.Y, num670);
                         Vector2 beeVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
                         Main.npc[num671].velocity = beeVelocity;
                         Main.npc[num671].velocity *= 5f;
@@ -1265,45 +1285,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
 
-                if (num666 > 400f || !Collision.CanHit(new Vector2(vector84.X, vector84.Y - 30f), 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                {
-                    float num672 = Main.masterMode ? 16f : 14f;
-                    float num673 = Main.masterMode ? 0.15f : 0.1f;
-                    vector85 = vector84;
-                    num664 = Main.player[npc.target].Center.X - vector85.X;
-                    num665 = Main.player[npc.target].Center.Y - vector85.Y;
-                    num666 = (float)Math.Sqrt(num664 * num664 + num665 * num665);
-                    num666 = num672 / num666;
-                    if (npc.velocity.X < num664)
-                    {
-                        npc.velocity.X += num673;
-                        if (npc.velocity.X < 0f && num664 > 0f)
-                            npc.velocity.X += num673;
-                    }
-                    else if (npc.velocity.X > num664)
-                    {
-                        npc.velocity.X -= num673;
-                        if (npc.velocity.X > 0f && num664 < 0f)
-                            npc.velocity.X -= num673;
-                    }
-
-                    if (npc.velocity.Y < num665)
-                    {
-                        npc.velocity.Y += num673;
-                        if (npc.velocity.Y < 0f && num665 > 0f)
-                            npc.velocity.Y += num673;
-                    }
-                    else if (npc.velocity.Y > num665)
-                    {
-                        npc.velocity.Y -= num673;
-                        if (npc.velocity.Y > 0f && num665 < 0f)
-                            npc.velocity.Y -= num673;
-                    }
-                }
+                // Velocity calculations if target is too far away
+                if (Vector2.Distance(beeSpawnLocation, hoverDestination) > 400f || !canHitTarget)
+                    npc.SimpleFlyMovement(idealVelocity, num673);
                 else
                     npc.velocity *= (Main.masterMode ? 0.8f : 0.9f);
 
+                float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
+                npc.direction = playerLocation < 0 ? 1 : -1;
                 npc.spriteDirection = npc.direction;
+
                 float maxBees = Main.masterMode ? 8f : 5f;
                 if (npc.ai[2] > maxBees)
                 {
@@ -1317,21 +1308,25 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Avoid cheap bullshit
                 npc.damage = 0;
 
-                float num674 = 4f;
-                float num675 = 0.05f;
+                float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
+                npc.direction = playerLocation < 0 ? 1 : -1;
+                npc.spriteDirection = npc.direction;
+
+                float num674 = 12f;
+                float num675 = 0.1f;
                 if (Main.expertMode)
                 {
-                    num675 = Main.masterMode ? 0.1f : 0.075f;
-                    num674 = Main.masterMode ? 8f : 6f;
+                    num675 = Main.masterMode ? 0.2f : 0.15f;
+                    num674 = Main.masterMode ? 16f : 14f;
                 }
-
                 num675 += 0.2f * num644;
                 num674 += 6f * num644;
-                Vector2 vector86 = new Vector2(npc.Center.X + (float)(Main.rand.Next(20) * npc.direction), npc.position.Y + (float)npc.height * 0.8f);
-                Vector2 vector87 = npc.Center;
-                float num676 = Main.player[npc.target].Center.X - vector87.X;
-                float num677 = Main.player[npc.target].Center.Y - 300f - vector87.Y;
-                float num678 = (float)Math.Sqrt(num676 * num676 + num677 * num677);
+
+                Vector2 stingerSpawnLocation = new Vector2(npc.Center.X + (Main.rand.Next(20) * npc.direction), npc.position.Y + npc.height * 0.8f);
+                bool canHitTarget = Collision.CanHit(new Vector2(stingerSpawnLocation.X, stingerSpawnLocation.Y - 30f), 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
+                Vector2 hoverDestination = Main.player[npc.target].Center - Vector2.UnitY * (!canHitTarget ? 0f : 300f);
+                Vector2 idealVelocity = npc.SafeDirectionTo(hoverDestination) * num674;
+
                 npc.ai[1] += 1f;
                 int num679 = 40;
                 if (Main.masterMode)
@@ -1340,7 +1335,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     num679 = (((double)npc.life < (double)npc.lifeMax * 0.1) ? 15 : ((npc.life < npc.lifeMax / 3) ? 25 : ((npc.life >= npc.lifeMax / 2) ? 35 : 30)));
 
                 num679 -= (int)((Main.masterMode ? 3f : 5f) * num644);
-                if (npc.ai[1] % (float)num679 == (float)(num679 - 1) && npc.position.Y + (float)npc.height < Main.player[npc.target].position.Y && Collision.CanHit(vector86, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                if (npc.ai[1] % (float)num679 == (float)(num679 - 1) && npc.position.Y + (float)npc.height < Main.player[npc.target].position.Y && Collision.CanHit(stingerSpawnLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                 {
                     SoundEngine.PlaySound(SoundID.Item17, npc.Center);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -1362,87 +1357,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (num682 < 1)
                             num682 = 1;
 
-                        float num683 = Main.player[npc.target].Center.X - vector86.X + (float)Main.rand.Next(-num681, num681 + 1);
-                        float num684 = Main.player[npc.target].Center.Y - vector86.Y + (float)Main.rand.Next(-num682, num682 + 1);
+                        float num683 = Main.player[npc.target].Center.X - stingerSpawnLocation.X + (float)Main.rand.Next(-num681, num681 + 1);
+                        float num684 = Main.player[npc.target].Center.Y - stingerSpawnLocation.Y + (float)Main.rand.Next(-num682, num682 + 1);
                         float num685 = (float)Math.Sqrt(num683 * num683 + num684 * num684);
                         num685 = num680 / num685;
                         num683 *= num685;
                         num684 *= num685;
                         int type = ProjectileID.QueenBeeStinger;
-                        int num688 = Projectile.NewProjectile(npc.GetSource_FromAI(), vector86.X, vector86.Y, num683, num684, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
+                        int num688 = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation.X, stingerSpawnLocation.Y, num683, num684, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
                         Main.projectile[num688].timeLeft = 300;
                     }
                 }
 
-                if (!Collision.CanHit(new Vector2(vector86.X, vector86.Y - 30f), 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                {
-                    num674 = Main.masterMode ? 16f : 14f;
-                    num675 = Main.masterMode ? 0.15f : 0.1f;
-                    if (num644 > 0f)
-                        num675 = 0.5f;
-
-                    vector87 = vector86;
-                    num676 = Main.player[npc.target].Center.X - vector87.X;
-                    num677 = Main.player[npc.target].Center.Y - vector87.Y;
-                    num678 = (float)Math.Sqrt(num676 * num676 + num677 * num677);
-                    num678 = num674 / num678;
-                    if (npc.velocity.X < num676)
-                    {
-                        npc.velocity.X += num675;
-                        if (npc.velocity.X < 0f && num676 > 0f)
-                            npc.velocity.X += num675;
-                    }
-                    else if (npc.velocity.X > num676)
-                    {
-                        npc.velocity.X -= num675;
-                        if (npc.velocity.X > 0f && num676 < 0f)
-                            npc.velocity.X -= num675;
-                    }
-
-                    if (npc.velocity.Y < num677)
-                    {
-                        npc.velocity.Y += num675;
-                        if (npc.velocity.Y < 0f && num677 > 0f)
-                            npc.velocity.Y += num675;
-                    }
-                    else if (npc.velocity.Y > num677)
-                    {
-                        npc.velocity.Y -= num675;
-                        if (npc.velocity.Y > 0f && num677 < 0f)
-                            npc.velocity.Y -= num675;
-                    }
-                }
-                else if (num678 > 100f)
-                {
-                    npc.TargetClosest();
-                    npc.spriteDirection = npc.direction;
-                    num678 = num674 / num678;
-                    if (npc.velocity.X < num676)
-                    {
-                        npc.velocity.X += num675;
-                        if (npc.velocity.X < 0f && num676 > 0f)
-                            npc.velocity.X += num675 * 2f;
-                    }
-                    else if (npc.velocity.X > num676)
-                    {
-                        npc.velocity.X -= num675;
-                        if (npc.velocity.X > 0f && num676 < 0f)
-                            npc.velocity.X -= num675 * 2f;
-                    }
-
-                    if (npc.velocity.Y < num677)
-                    {
-                        npc.velocity.Y += num675;
-                        if (npc.velocity.Y < 0f && num677 > 0f)
-                            npc.velocity.Y += num675 * 2f;
-                    }
-                    else if (npc.velocity.Y > num677)
-                    {
-                        npc.velocity.Y -= num675;
-                        if (npc.velocity.Y > 0f && num677 < 0f)
-                            npc.velocity.Y -= num675 * 2f;
-                    }
-                }
+                if (Vector2.Distance(stingerSpawnLocation, hoverDestination) > 40f || !canHitTarget)
+                    npc.SimpleFlyMovement(idealVelocity, num675);
 
                 float num689 = Main.masterMode ? 16f : 20f;
                 num689 -= 5f * num644;

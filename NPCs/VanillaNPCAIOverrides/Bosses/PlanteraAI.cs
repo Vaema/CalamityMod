@@ -20,6 +20,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float SeedGatlingColorChangeGateValue = SeedGatlingStopValue - SeedGatlingColorChangeDuration;
         public const float TentaclePhaseSlowDuration = 1200f;
         public const float ChargePhaseGateValue = 900f;
+        public const float ChargeTelegraphColorChangeGateValue = ChargePhaseGateValue - SeedGatlingColorChangeDuration;
         public const float ReduceSpeedForChargeDistance = 480f;
         public const float BeginChargeGateValue = -120f;
         public const float BeginChargeSlowDownGateValue = BeginChargeGateValue - 45f;
@@ -222,7 +223,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int projectileType = shootThornBall ? ProjectileID.ThornBall : shootPoisonSeed ? ProjectileID.PoisonSeedPlantera : ProjectileID.SeedPlantera;
                         int damage = npc.GetProjectileDamage(projectileType);
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
-                        Vector2 spawnOffset = npc.Center + projectileVelocity * 50f;
+                        Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
 
                         int dustType = shootPoisonSeed ? 74 : 73;
                         int dustSpawnBoxSize = shootThornBall ? 38 : 14;
@@ -342,7 +343,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     int projectileType = ModContent.ProjectileType<HomingGasBulb>();
                     int damage = npc.GetProjectileDamage(projectileType);
                     Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
-                    Vector2 spawnOffset = npc.Center + projectileVelocity * 50f;
+                    Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
 
                     int dustType = 73;
                     Vector2 dustVelocity = projectileVelocity * projectileSpeed;
@@ -626,7 +627,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float projectileSpeed = masterMode ? 16f : 14f;
                         int damage = npc.GetProjectileDamage(projectileType);
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
-                        Vector2 spawnOffset = npc.Center + projectileVelocity * 50f;
+                        Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
 
                         int dustType = shootPoisonSeed ? 74 : 73;
                         Vector2 dustVelocity = projectileVelocity * projectileSpeed;
@@ -752,7 +753,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             bool shootPinkSeed = i % 2 == 0;
                             if (shootPinkSeed)
+                            {
                                 type = ProjectileID.SeedPlantera;
+                                damage = npc.GetProjectileDamage(type);
+                            }
                             else
                                 type = ProjectileID.PoisonSeedPlantera;
 
@@ -769,12 +773,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, perturbedSpeed * projectileSpeed, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, perturbedSpeed * projectileSpeed * 0.5f, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileSpeed);
+                        }
+
+                        if (death)
+                        {
+                            type = ProjectileID.ThornBall;
+                            damage = npc.GetProjectileDamage(type);
+                            Vector2 spawnOffset = npc.Center + projectileVelocity * 50f;
+
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity * projectileSpeed, type, damage, 0f, Main.myPlayer);
                         }
 
                         if (masterMode && Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            float sporeSpeed = Main.masterMode ? 12f : Main.expertMode ? 10f : 8f;
+                            float sporeSpeed = Main.masterMode ? 12f : 10f;
                             Vector2 sporeVelocity = projectileVelocity * sporeSpeed;
                             int spore = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.Spore);
                             Main.npc[spore].velocity.X = sporeVelocity.X;
@@ -1018,9 +1032,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            // Percent life remaining
-            float lifeRatio = npc.life / (float)npc.lifeMax;
-
             // Emit light
             Lighting.AddLight((int)(npc.Center.X / 16f), (int)(npc.Center.Y / 16f), 0.2f, 0.4f, 0.1f);
 
@@ -1073,19 +1084,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.damage = npc.defDamage;
 
             // Movement variables
+            int maxOffset = 100;
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (npc.ai[0] == 0f || npc.ai[1] == 0f)
                 {
-                    npc.ai[0] = Main.rand.Next(-100, 101);
-                    npc.ai[1] = Main.rand.Next(-100, 101);
+                    npc.ai[0] = Main.rand.Next(-maxOffset, maxOffset + 1);
+                    npc.ai[1] = Main.rand.Next(-maxOffset, maxOffset + 1);
                     npc.netUpdate = true;
                 }
             }
 
             // Velocity and acceleration
             float tentacleAcceleration = death ? 2.4f : 1.6f;
-            float extendedDistanceFromPlantera = (1f - lifeRatio) * 2f;
+            float extendedDistanceFromPlantera = Math.Abs(npc.ai[0] + npc.ai[1]) / maxOffset;
             float tentacleVelocity = 100f + (extendedDistanceFromPlantera * 300f);
             float deceleration = (death ? 0.5f : 0.8f) / (1f + extendedDistanceFromPlantera);
 
@@ -1389,33 +1401,50 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     num791 = num788 / num791;
                     num789 *= num791;
                     num790 *= num791;
-                    int type = ProjectileID.SeedPlantera;
+                    int type = Main.masterMode ? ProjectileID.PoisonSeedPlantera : ProjectileID.SeedPlantera;
                     int maxValue2 = 4;
-                    int maxValue3 = 8;
+                    int thornBallChance = 8;
                     if (Main.expertMode)
                     {
                         maxValue2 = 2;
-                        maxValue3 = Main.masterMode ? 5 : 6;
+                        thornBallChance = Main.masterMode ? 5 : 6;
                     }
 
-                    if ((double)npc.life < (double)npc.lifeMax * 0.8 && (Main.rand.NextBool(maxValue2) || Main.masterMode))
+                    if ((double)npc.life < npc.lifeMax * 0.8 && Main.rand.NextBool(maxValue2) && !Main.masterMode)
                     {
                         npc.localAI[1] = -30f;
                         type = ProjectileID.PoisonSeedPlantera;
                     }
-                    else if ((double)npc.life < (double)npc.lifeMax * 0.8 && Main.rand.NextBool(maxValue3))
+                    else if ((double)npc.life < npc.lifeMax * 0.8 && Main.rand.NextBool(thornBallChance))
                     {
-                        npc.localAI[1] = -120f;
-                        type = ProjectileID.ThornBall;
+                        bool shootThornBall = true;
+                        int numThornBalls = 0;
+                        int thornBallLimit = 3;
+                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        {
+                            if (Main.projectile[i].active && Main.projectile[i].type == ProjectileID.ThornBall)
+                            {
+                                numThornBalls++;
+                                if (numThornBalls >= thornBallLimit)
+                                {
+                                    shootThornBall = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        npc.localAI[1] = shootThornBall ? -120f : -30f;
+                        type = shootThornBall ? ProjectileID.ThornBall : ProjectileID.PoisonSeedPlantera;
                     }
+                    else if (Main.masterMode)
+                        npc.localAI[1] = -30f;
 
                     int damage = npc.GetProjectileDamage(type);
                     if (flag39)
                         damage *= 2;
 
-                    vector99.X += num789 * 3f;
-                    vector99.Y += num790 * 3f;
-                    int num794 = Projectile.NewProjectile(npc.GetSource_FromAI(), vector99.X, vector99.Y, num789, num790, type, damage, 0f, Main.myPlayer);
+                    Vector2 projectileVelocity = new Vector2(num789, num790);
+                    int num794 = Projectile.NewProjectile(npc.GetSource_FromAI(), vector99 + projectileVelocity.SafeNormalize(Vector2.UnitY) * 70f, projectileVelocity, type, damage, 0f, Main.myPlayer);
                     if (type != ProjectileID.ThornBall)
                         Main.projectile[num794].timeLeft = 300;
                 }

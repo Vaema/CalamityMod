@@ -19,6 +19,7 @@ using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
@@ -87,6 +88,8 @@ namespace CalamityMod.NPCs.HiveMind
         public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/HiveMindRoar");
         public static readonly SoundStyle FastRoarSound = new("CalamityMod/Sounds/Custom/HiveMindRoarFast");
 
+        public static Asset<Texture2D> Phase2Texture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 16;
@@ -101,6 +104,10 @@ namespace CalamityMod.NPCs.HiveMind
             value.Position.Y += 3f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                Phase2Texture = ModContent.Request<Texture2D>(Texture + "P2", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -287,7 +294,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (phase2)
             {
                 SpriteEffects spriteEffects = NPC.direction == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/HiveMind/HiveMindP2").Value;
+                Texture2D texture = Phase2Texture.Value;
                 Rectangle frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
                 Vector2 vector = new Vector2(NPC.width / 2, NPC.height / 2);
                 Color afterimageBaseColor = Color.White;
@@ -1161,7 +1168,7 @@ namespace CalamityMod.NPCs.HiveMind
             {
                 string key = "Mods.CalamityMod.Status.Progression.SkyOreText";
                 Color messageColor = Color.Cyan;
-                AerialiteOreGen.Generate(true);
+                AerialiteOreGen.Enchant();
 
                 CalamityUtils.DisplayLocalizedText(key, messageColor);
             }

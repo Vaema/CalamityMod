@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(FlareSound, Projectile.position);
+            SoundEngine.PlaySound(FlareSound, Projectile.Center);
             int dustAmt = 36;
             for (int i = 0; i < dustAmt; i++)
             {

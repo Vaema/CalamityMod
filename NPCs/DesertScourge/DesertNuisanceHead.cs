@@ -233,7 +233,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     NPC.velocity.Y = maxChaseSpeed;
 
                 // This bool exists to stop the strange wiggle behavior when worms are falling down
-                bool slowXVelocity = Math.Abs(NPC.velocity.X) > maxChaseSpeed;
+                bool slowXVelocity = Math.Abs(NPC.velocity.X) > speedCopy;
                 if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)maxChaseSpeed * 0.4)
                 {
                     if (NPC.velocity.X < 0f)
@@ -365,12 +365,12 @@ namespace CalamityMod.NPCs.DesertScourge
             float minimalDamageVelocity = maxChaseSpeed * 0.5f;
             if (NPC.velocity.Length() <= minimalContactDamageVelocity)
             {
-                NPC.damage = (int)(NPC.defDamage * 0.5f);
+                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
             }
             else
             {
                 float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(NPC.defDamage * 0.5f, NPC.defDamage, velocityDamageScalar);
+                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
             }
 
             NPC.rotation = (float)Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + MathHelper.PiOver2;

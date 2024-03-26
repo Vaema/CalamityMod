@@ -364,8 +364,8 @@ namespace CalamityMod.NPCs.SlimeGod
             }
             else if (NPC.ai[0] == 1f)
             {
-                // Set damage
-                NPC.damage = setDamage;
+                // Avoid cheap bullshit
+                NPC.damage = 0;
 
                 NPC.noTileCollide = true;
                 NPC.noGravity = true;

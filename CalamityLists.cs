@@ -101,7 +101,6 @@ namespace CalamityMod
         public static List<int> revengeanceProjectileBuffList25Percent;
         public static List<int> revengeanceProjectileBuffList20Percent;
         public static List<int> revengeanceProjectileBuffList15Percent;
-        public static List<int> revengeanceLifeStealExceptionList;
         public static List<int> noRageWormSegmentList;
         public static List<int> needsDebuffIconDisplayList;
         public static List<int> scopedWeaponList;
@@ -1510,36 +1509,6 @@ namespace CalamityMod
                 ProjectileType<PearlRain>()
             };
 
-            revengeanceLifeStealExceptionList = new List<int>()
-            {
-                NPCID.Probe,
-                NPCID.CultistDragonHead,
-                NPCID.CultistDragonBody1,
-                NPCID.CultistDragonBody2,
-                NPCID.CultistDragonBody3,
-                NPCID.CultistDragonBody4,
-                NPCID.CultistDragonTail,
-                NPCID.AncientCultistSquidhead,
-                NPCID.AncientLight,
-                NPCID.Sharkron,
-                NPCID.Sharkron2,
-                NPCID.PlanterasTentacle,
-                NPCType<PlanterasFreeTentacle>(),
-                NPCID.Spore,
-                NPCID.TheHungryII,
-                NPCID.LeechHead,
-                NPCID.LeechBody,
-                NPCID.LeechTail,
-                NPCID.QueenSlimeMinionBlue,
-                NPCID.QueenSlimeMinionPink,
-                NPCID.QueenSlimeMinionPurple,
-                NPCID.TheDestroyerBody,
-                NPCID.TheDestroyerTail,
-                NPCID.EaterofWorldsBody,
-                NPCID.EaterofWorldsTail,
-                NPCID.MoonLordCore
-            };
-
             noRageWormSegmentList = new List<int>()
             {
                 NPCType<DesertScourgeBody>(),
@@ -2297,6 +2266,22 @@ namespace CalamityMod
 
             ZeroContactDamageNPCList = new List<int>
             {
+                NPCID.Harpy,
+                NPCID.Salamander,
+                NPCID.Salamander2,
+                NPCID.Salamander3,
+                NPCID.Salamander4,
+                NPCID.Salamander5,
+                NPCID.Salamander6,
+                NPCID.Salamander7,
+                NPCID.Salamander8,
+                NPCID.Salamander9,
+                NPCID.GiantCursedSkull,
+                NPCID.FungiBulb,
+                NPCID.GiantFungiBulb,
+                NPCID.IcyMerman,
+                NPCID.AngryNimbus,
+                NPCID.SandElemental,
                 NPCID.DarkCaster,
                 NPCID.FireImp,
                 NPCID.Tim,
@@ -2338,6 +2323,7 @@ namespace CalamityMod
                 NPCID.ElfArcher,
                 NPCID.NebulaBrain,
                 NPCID.NebulaSoldier,
+                NPCID.StardustCellSmall,
                 NPCID.StardustJellyfishBig,
                 NPCID.StardustSoldier,
                 NPCID.StardustSpiderBig,
@@ -2361,6 +2347,21 @@ namespace CalamityMod
                 NPCID.DD2DarkMageT3,
                 NPCID.DD2OgreT2,
                 NPCID.DD2OgreT3,
+                NPCID.DD2GoblinBomberT1,
+                NPCID.DD2GoblinBomberT2,
+                NPCID.DD2GoblinBomberT3,
+                NPCID.DD2JavelinstT1,
+                NPCID.DD2JavelinstT2,
+                NPCID.DD2JavelinstT3,
+                NPCID.DD2KoboldWalkerT2,
+                NPCID.DD2KoboldWalkerT3,
+                NPCID.DD2DrakinT2,
+                NPCID.DD2DrakinT3,
+                NPCID.DD2KoboldFlyerT2,
+                NPCID.DD2KoboldFlyerT3,
+                NPCID.DD2WitherBeastT2,
+                NPCID.DD2WitherBeastT3,
+                NPCID.DD2LightningBugT3,
                 NPCID.MourningWood,
                 NPCID.Pumpking,
                 NPCID.Everscream,
@@ -2431,27 +2432,20 @@ namespace CalamityMod
                 NPCID.Derpling,
                 NPCID.Herpling,
                 NPCID.DiggerHead,
-                NPCID.DiggerBody,
-                NPCID.DiggerTail,
                 NPCID.DesertGhoul,
                 NPCID.DesertGhoulCorruption,
                 NPCID.DesertGhoulCrimson,
                 NPCID.DesertGhoulHallow,
                 NPCID.DuneSplicerHead,
-                NPCID.DuneSplicerBody,
-                NPCID.DuneSplicerTail,
                 NPCID.EnchantedSword,
                 NPCID.FloatyGross,
                 NPCID.GiantBat,
                 NPCID.GiantFlyingFox,
-                NPCID.GiantFungiBulb,
                 NPCID.FungiSpore,
                 NPCID.GiantTortoise,
                 NPCID.IceTortoise,
                 NPCID.HoppinJack,
                 NPCID.Mimic,
-                NPCID.IchorSticker,
-                NPCID.IcyMerman,
                 NPCID.IlluminantBat,
                 NPCID.IlluminantSlime,
                 NPCID.JungleCreeper,
@@ -2480,12 +2474,8 @@ namespace CalamityMod
                 NPCID.Werewolf,
                 NPCID.Wolf,
                 NPCID.SeekerHead,
-                NPCID.SeekerBody,
-                NPCID.SeekerTail,
                 NPCID.Wraith,
                 NPCID.ChatteringTeethBomb,
-                NPCID.Clown,
-                NPCID.AngryNimbus,
                 NPCID.IceGolem,
                 NPCID.RainbowSlime,
                 NPCID.SandShark,
@@ -2506,8 +2496,6 @@ namespace CalamityMod
                 NPCID.HellArmoredBonesSpikeShield,
                 NPCID.HellArmoredBonesSword,
                 NPCID.MisterStabby,
-                NPCID.SnowBalla,
-                NPCID.SnowmanGangsta,
                 NPCID.Butcher,
                 NPCID.CreatureFromTheDeep,
                 NPCID.DeadlySphere,
@@ -2544,8 +2532,6 @@ namespace CalamityMod
                 NPCID.ZombieElfBeard,
                 NPCID.ZombieElfGirl,
                 NPCID.BloodEelHead,
-                NPCID.BloodEelBody,
-                NPCID.BloodEelTail,
                 NPCID.GoblinShark,
                 NPCID.EyeballFlyingFish,
                 NPCID.ZombieMerman
@@ -2795,7 +2781,6 @@ namespace CalamityMod
             revengeanceProjectileBuffList25Percent = null;
             revengeanceProjectileBuffList20Percent = null;
             revengeanceProjectileBuffList15Percent = null;
-            revengeanceLifeStealExceptionList = null;
             noRageWormSegmentList = null;
             needsDebuffIconDisplayList = null;
             scopedWeaponList = null;

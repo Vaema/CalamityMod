@@ -367,9 +367,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             notDuringCultistFight.Add(ModContent.ItemType<EidolonTablet>(), 4);
             aewMinionCondition.Add(notDuringCultistFight);
 
-            LeadingConditionRule postClone = new LeadingConditionRule(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 1, 8, 10, 10, 14));
-            aewMinionCondition.Add(postClone);
+            LeadingConditionRule postLevi = new LeadingConditionRule(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 1, 8, 10, 10, 14));
+            aewMinionCondition.Add(postLevi);
 
             LeadingConditionRule postPlant = new LeadingConditionRule(DropHelper.PostPlant());
             postPlant.Add(ItemID.Ectoplasm, 1, 3, 5);

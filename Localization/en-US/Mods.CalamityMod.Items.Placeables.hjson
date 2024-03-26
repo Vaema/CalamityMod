@@ -343,6 +343,11 @@ BabyGhostBellJar: {
 	Tooltip: ""
 }
 
+CirrusCouch: {
+	DisplayName: Cirrus Courch
+	Tooltip: This shouldn't exist...
+}
+
 AquaticScourgeRelic: {
 	DisplayName: Aquatic Scourge Relic
 	Tooltip: A glimpse into what could have been...

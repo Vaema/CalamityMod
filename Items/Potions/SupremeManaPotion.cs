@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Potions
         {
             CreateRecipe(15).
                 AddIngredient(ItemID.SuperManaPotion, 15).
-                AddIngredient<Polterplasm>().
+                AddIngredient<Necroplasm>().
                 AddTile(TileID.Bottles).
                 Register()
                 .DisableDecraft();

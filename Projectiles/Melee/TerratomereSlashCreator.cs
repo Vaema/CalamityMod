@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = false;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 45;
+            Projectile.timeLeft = 36;
             Projectile.MaxUpdates = 2;
             Projectile.noEnchantmentVisuals = true;
         }

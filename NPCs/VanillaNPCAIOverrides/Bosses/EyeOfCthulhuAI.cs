@@ -1443,7 +1443,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else if (npc.ai[1] == 1f)
             {
-                SoundEngine.PlaySound(SoundID.ForceRoarPitched, npc.Center);
+                SoundEngine.PlaySound(SoundID.ForceRoar, npc.Center);
                 npc.rotation = num7;
                 float num44 = Main.masterMode ? 8f : 6.8f;
                 if (Main.expertMode && npc.ai[3] == 1f)

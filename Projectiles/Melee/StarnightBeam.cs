@@ -17,8 +17,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = 14;
-            Projectile.height = 14;
+            Projectile.width = 16;
+            Projectile.height = 16;
             Projectile.aiStyle = ProjAIStyleID.Beam;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return new Color(200, 200, 200, Projectile.alpha);
+            return new Color(byte.MaxValue, 50, 128, Projectile.alpha);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -51,18 +51,16 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
-            int inc;
-            for (int i = 4; i < 31; i = inc + 1)
+            for (int i = 4; i < 31; i++)
             {
                 float projOldX = Projectile.oldVelocity.X * (30f / (float)i);
                 float projOldY = Projectile.oldVelocity.Y * (30f / (float)i);
                 int starnight = Dust.NewDust(new Vector2(Projectile.oldPosition.X - projOldX, Projectile.oldPosition.Y - projOldY), 8, 8, DustID.PinkFairy, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, default, 1.8f);
                 Dust dust = Main.dust[starnight];
                 dust.noGravity = true;
-                dust.velocity *= 0.5f;
+                dust.velocity *= 0.1f;
                 starnight = Dust.NewDust(new Vector2(Projectile.oldPosition.X - projOldX, Projectile.oldPosition.Y - projOldY), 8, 8, DustID.PinkFairy, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, default, 1.4f);
-                dust.velocity *= 0.05f;
-                inc = i;
+                dust.velocity *= 0.01f;
             }
         }
 

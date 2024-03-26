@@ -213,7 +213,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Poisoned, 300);
+                target.AddBuff(BuffID.Poisoned, 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

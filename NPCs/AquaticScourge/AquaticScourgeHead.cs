@@ -246,7 +246,6 @@ namespace CalamityMod.NPCs.AquaticScourge
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AquaticEmblem>()));
                 normalOnly.Add(ModContent.ItemType<CorrosiveSpine>(), DropHelper.NormalWeaponDropRateFraction);
-                normalOnly.Add(ModContent.ItemType<DeepDiver>(), 10);
                 normalOnly.Add(ModContent.ItemType<SeasSearing>(), 10);
 
                 // Fishing

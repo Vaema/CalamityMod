@@ -606,12 +606,12 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 {
                     if (npc.velocity.Length() <= minimalContactDamageVelocity)
                     {
-                        npc.damage = (int)(npc.defDamage * 0.5f);
+                        npc.damage = (int)Math.Round(npc.defDamage * 0.5);
                     }
                     else
                     {
                         float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                        npc.damage = (int)MathHelper.Lerp(npc.defDamage * 0.5f, npc.defDamage, velocityDamageScalar);
+                        npc.damage = (int)MathHelper.Lerp((float)Math.Round(npc.defDamage * 0.5), npc.defDamage, velocityDamageScalar);
                     }
                 }
                 else

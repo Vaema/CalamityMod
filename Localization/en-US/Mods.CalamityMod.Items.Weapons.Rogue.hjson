@@ -54,8 +54,8 @@ BallisticPoisonBomb: {
 	DisplayName: Ballistic Poison Bomb
 	Tooltip:
 		'''
-		Throws a sticky bomb that explodes into spikes and poison clouds
-		Stealth strikes throw three at once
+		Throws a sticky bomb that explodes into spikes and venomous clouds
+		Stealth strikes erupt into more clouds with a longer lasting venom
 		'''
 }
 
@@ -618,7 +618,8 @@ JawsOfOblivion: {
 	DisplayName: Jaws of Oblivion
 	Tooltip:
 		'''
-		Throws a tight spread of six venomous reaper fangs that stick in enemies
+		Throws a tight spread of six venomous reaper teeth that stick in enemies
+		This venom can stack when more teeth are stuck in an enemy
 		Stealth strikes cause the teeth to emit a crushing shockwave on impact
 		'You're gonna need a bigger boat'
 		'''
@@ -666,6 +667,7 @@ LeviathanTeeth: {
 	Tooltip:
 		'''
 		Rapidly throws a spread of venomous teeth that stick to enemies
+		This venom can stack when more teeth are stuck in an enemy
 		Stealth strikes cause 6 very fast teeth to be thrown, ignoring gravity and spawning water blasts on hit
 		'''
 }
@@ -674,8 +676,9 @@ Lionfish: {
 	DisplayName: Lionfish
 	Tooltip:
 		'''
-		Sticks to enemies and injects a potent toxin
-		Stealth strikes are trailed by homing urchin spikes
+		Sticks to enemies and injects a potent venom
+		This venom can stack when more lionfish are stuck in an enemy
+		Stealth strikes spawn homing urchin spikes as they travel
 		'''
 }
 

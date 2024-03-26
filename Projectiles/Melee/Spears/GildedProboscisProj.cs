@@ -1,4 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Balancing;
+using System;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Terraria;
 using Terraria.ID;
@@ -28,7 +30,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
         // These numbers sure are common, huh? yeah, they are
         public override float InitialSpeed => 3f;
         public override float ReelbackSpeed => 2.4f;
-        public override float ForwardSpeed => 0.95f;
+        public override float ForwardSpeed => 0.8f;
         public override void ExtraBehavior()
         {
             if (Main.rand.NextBool(4))
@@ -40,12 +42,11 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (!target.canGhostHeal || Main.player[Projectile.owner].moonLeech)
+            int heal = (int)Math.Round(hit.Damage * 0.01);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            Player player = Main.player[Projectile.owner];
-            player.statLife += 1;
-            player.HealEffect(1);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
     }
 }

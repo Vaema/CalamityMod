@@ -24,6 +24,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -56,12 +57,14 @@ namespace CalamityMod.NPCs.Polterghast
         private int soundTimer = 0;
         private bool reachedChargingPoint = false;
         private bool threeAM = false;
-        private int nameStage = 1;
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PolterghastHit");
         public static readonly SoundStyle P2Sound = new("CalamityMod/Sounds/Custom/Polterghast/PolterghastP2Transition");
         public static readonly SoundStyle P3Sound = new("CalamityMod/Sounds/Custom/Polterghast/PolterghastP3Transition");
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/Polterghast/PolterghastSpawn");
         public static readonly SoundStyle PhantomSound = new("CalamityMod/Sounds/Custom/Polterghast/PolterghastPhantomSpawn");
+
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> Texture_Glow2;
 
         public static List<SoundStyle> creepySounds = new List<SoundStyle>
         {
@@ -96,6 +99,11 @@ namespace CalamityMod.NPCs.Polterghast
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -130,16 +138,6 @@ namespace CalamityMod.NPCs.Polterghast
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheDungeon,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Polterghast")
             });
-        }
-
-        public override void ModifyTypeName(ref string typeName)
-        {
-            typeName = nameStage switch
-            {
-                2 => CalamityUtils.GetTextValue("NPCs.Necroghast"),
-                3 => CalamityUtils.GetTextValue("NPCs.Necroplasm"),
-                _ => this.GetLocalizedValue("DisplayName"),
-            };
         }
 
         public override void BossHeadSlot(ref int index)
@@ -790,7 +788,7 @@ namespace CalamityMod.NPCs.Polterghast
 
                     for (int i = 0; i < 10; i++)
                     {
-                        int ghostDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Polterplasm, 0f, 0f, 100, default, 2f);
+                        int ghostDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
                         Main.dust[ghostDust].velocity *= 3f;
                         Main.dust[ghostDust].noGravity = true;
                         if (Main.rand.NextBool())
@@ -809,13 +807,10 @@ namespace CalamityMod.NPCs.Polterghast
                     }
                 }
 
-                // Actually changes name to Necroghast
-                nameStage = 2;
-
                 if (!isInChargePhase)
                     NPC.damage = phase2ReducedSetDamage;
 
-                NPC.defense = (int)(NPC.defDefense * 0.8f);
+                NPC.defense = (int)Math.Round(NPC.defDefense * 0.8);
 
                 if (Main.netMode != NetmodeID.MultiplayerClient && !isInChargePhase)
                 {
@@ -946,7 +941,7 @@ namespace CalamityMod.NPCs.Polterghast
 
                     for (int i = 0; i < 10; i++)
                     {
-                        int ghostDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Polterplasm, 0f, 0f, 100, default, 2f);
+                        int ghostDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
                         Main.dust[ghostDust].velocity *= 3f;
                         Main.dust[ghostDust].noGravity = true;
                         if (Main.rand.NextBool())
@@ -965,13 +960,10 @@ namespace CalamityMod.NPCs.Polterghast
                     }
                 }
 
-                // Actually changes name to Necroplasm
-                nameStage = 3;
-
                 if (!isInChargePhase)
                     NPC.damage = phase3ReducedSetDamage;
 
-                NPC.defense = (int)(NPC.defDefense * 0.5f);
+                NPC.defense = (int)Math.Round(NPC.defDefense * 0.5);
 
                 NPC.localAI[1] += 1f;
                 if (NPC.localAI[1] >= (getPissed ? 200f : 280f) && Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
@@ -1033,11 +1025,6 @@ namespace CalamityMod.NPCs.Polterghast
                             Main.npc[phantomSpirit].velocity.Y = spiritYDist;
                             Main.npc[phantomSpirit].netUpdate = true;
                         }
-                    }
-
-                    if (Main.zenithWorld)
-                    {
-                        NPC.GivenName = CalamityUtils.GetTextValue("NPCs.Polterplasm");
                     }
                 }
             }
@@ -1104,7 +1091,7 @@ namespace CalamityMod.NPCs.Polterghast
 
                 // Materials
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RuinousSoul>(), 1, 7, 15));
-                normalOnly.Add(ModContent.ItemType<Polterplasm>(), 1, 30, 40);
+                normalOnly.Add(ModContent.ItemType<Necroplasm>(), 1, 30, 40);
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<PolterghastMask>(), 7);
@@ -1173,7 +1160,7 @@ namespace CalamityMod.NPCs.Polterghast
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Texture2D texture2D16 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastGlow2").Value;
+            Texture2D texture2D16 = Texture_Glow2.Value;
             Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
             int afterimageAmt = 7;
 
@@ -1198,7 +1185,7 @@ namespace CalamityMod.NPCs.Polterghast
             Color c = NPC.IsABestiaryIconDummy ? Color.White : NPC.GetAlpha(drawColor);
             spriteBatch.Draw(texture2D15, vector43, NPC.frame, c, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastGlow").Value;
+            texture2D15 = Texture_Glow.Value;
 
             Color secondColorLerp = Color.Lerp(Color.White, Color.Cyan, 0.5f);
             Color lightRed = new Color(255, 100, 100, 255);
@@ -1332,7 +1319,7 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 10; i++)
                 {
-                    int ghostDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Polterplasm, 0f, 0f, 100, default, 2f);
+                    int ghostDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
                     Main.dust[ghostDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {

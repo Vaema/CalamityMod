@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             int cloudAmt = Main.rand.Next(20, 31);
             if (Projectile.owner == Main.myPlayer)
             {

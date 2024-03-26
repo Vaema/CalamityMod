@@ -37,7 +37,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.alpha = 255;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.hide = true;
             NPC.HitSound = SoundID.NPCHit13;
             NPC.DeathSound = SoundID.NPCDeath1;

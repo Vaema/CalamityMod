@@ -3,6 +3,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -12,11 +13,18 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class ProfanedEnergyLantern : ModNPC
     {
+        public static Asset<Texture2D> ChainTexture;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.ProfanedEnergyBody.DisplayName");
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 6;
+            if (!Main.dedServ)
+            {
+                ChainTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/ProfanedEnergySegment", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -218,7 +226,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         drawPositionY = Main.npc[CalamityGlobalNPC.energyFlame].Center.Y - center.Y;
                         drawPositionY -= 10f;
                         Color color = Lighting.GetColor((int)center.X / 16, (int)(center.Y / 16f));
-                        Texture2D chain = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/ProfanedEnergySegment").Value;
+                        Texture2D chain = ChainTexture.Value;
                         Main.spriteBatch.Draw(chain, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
                             new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, chain.Width, chain.Height)), color, rotation,
                             new Vector2((float)chain.Width * 0.5f, (float)chain.Height * 0.5f), 1f, SpriteEffects.None, 0f);

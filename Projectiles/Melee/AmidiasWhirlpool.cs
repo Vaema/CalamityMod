@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (homeTracker == 0)
             {
-                Projectile.rotation -= 0.104719758f;
+                Projectile.rotation -= MathHelper.Pi / 30f;
 
                 if (Projectile.ai[0] >= 30f)
                 {
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
             else if (homeTracker == 1)
             {
                 int inc;
-                Projectile.rotation -= 0.104719758f;
+                Projectile.rotation -= MathHelper.Pi / 30f;
                 Vector2 projCenter = Projectile.Center;
                 float homingRange = 150f;
                 bool isHoming = false;

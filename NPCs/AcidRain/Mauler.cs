@@ -8,6 +8,7 @@ using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -44,6 +45,8 @@ namespace CalamityMod.NPCs.AcidRain
             set => NPC.localAI[0] = value;
         }
 
+        public static Asset<Texture2D> GlowTexture;
+
         public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/MaulerRoar");
 
         public override void SetStaticDefaults()
@@ -58,6 +61,10 @@ namespace CalamityMod.NPCs.AcidRain
             };
             value.Position.X += 10f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glowmask", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -417,7 +424,7 @@ namespace CalamityMod.NPCs.AcidRain
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/AcidRain/MaulerGlowmask").Value;
+            Texture2D glowmask = GlowTexture.Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             Vector2 origin = NPC.frame.Size() * 0.5f;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

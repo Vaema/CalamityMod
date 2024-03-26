@@ -4,6 +4,7 @@ using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -16,12 +17,20 @@ namespace CalamityMod.NPCs.StormWeaver
     {
         private int invinceTime = 180;
 
+        public static Asset<Texture2D> Phase2Texture;
+        public static Asset<Texture2D> GlowTexture;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.StormWeaverHead.DisplayName");
 
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                Phase2Texture = ModContent.Request<Texture2D>(Texture + "Naked", AssetRequestMode.AsyncLoad);
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -48,7 +57,6 @@ namespace CalamityMod.NPCs.StormWeaver
             NPC.noGravity = true;
             NPC.boss = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
@@ -272,7 +280,7 @@ namespace CalamityMod.NPCs.StormWeaver
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
-            Texture2D texture = phase2 ? ModContent.Request<Texture2D>("CalamityMod/NPCs/StormWeaver/StormWeaverTailNaked").Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = phase2 ? Phase2Texture.Value : TextureAssets.Npc[NPC.type].Value;
             Vector2 halfSizeTexture = new Vector2(texture.Width / 2, texture.Height / 2);
             float chargeTelegraphTime = 120f;
             float chargeTelegraphGateValue = chargePhaseGateValue - chargeTelegraphTime;
@@ -291,7 +299,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
             if (!phase2)
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/StormWeaver/StormWeaverTailGlow").Value;
+                texture = GlowTexture.Value;
                 Color rainbowBecauseWhyTheFuckNot = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
                 Color drawColorAlpha37 = Color.Lerp(Color.White, rainbowBecauseWhyTheFuckNot, 0.5f);
                 spriteBatch.Draw(texture, drawLocation, NPC.frame, drawColorAlpha37, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);

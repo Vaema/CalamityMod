@@ -16,7 +16,6 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 90;
             Item.height = 90;
-            Item.scale = 1.5f;
             Item.damage = 483;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 18;
@@ -34,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (target.life <= (target.lifeMax * 0.2f) && target.canGhostHeal)
+            if (target.life <= (target.lifeMax * 0.2f))
             {
                 if (!CalamityPlayer.areThereAnyDamnBosses || Main.rand.NextBool())
                 {

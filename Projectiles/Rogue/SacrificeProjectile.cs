@@ -55,10 +55,17 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     if (!Owner.moonLeech && AbleToHealOwner)
                     {
-                        int healAmount = Projectile.Calamity().stealthStrike ? 40 : 3;
+                        int heal = Projectile.Calamity().stealthStrike ? 40 : 3;
 
-                        Owner.HealEffect(healAmount);
-                        Owner.statLife += healAmount;
+                        if (Main.player[Main.myPlayer].lifeSteal <= 0f)
+                        {
+                            Projectile.Kill();
+                            return;
+                        }
+
+                        Main.player[Main.myPlayer].lifeSteal -= heal;
+                        Owner.HealEffect(heal);
+                        Owner.statLife += heal;
                         if (Owner.statLife > Owner.statLifeMax2)
                             Owner.statLife = Owner.statLifeMax2;
                     }

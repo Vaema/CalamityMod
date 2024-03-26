@@ -29,5 +29,11 @@ namespace CalamityMod.Items.Potions.Alcohol
             Item.buffTime = CalamityUtils.SecondsToFrames(3600f);
             Item.value = Item.buyPrice(0, 50, 0, 0);
         }
+
+        public override void OnConsumeItem(Player player)
+        {
+            if (player.Calamity().trippyLevel < 3)
+                player.Calamity().trippyLevel++;
+        }
     }
 }

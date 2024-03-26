@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else if (phase2AI)
             {
                 setDamage = (int)Math.Round(setDamage * 1.44);
-                npc.defense = (int)(npc.defDefense * 0.8f);
+                npc.defense = (int)Math.Round(npc.defDefense * 0.8);
             }
             else
                 npc.defense = npc.defDefense;
@@ -189,6 +189,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (masterMode)
             {
                 idlePhaseTimer /= 2;
+                idlePhaseAcceleration *= 1.3f;
+                idlePhaseVelocity *= 1.3f;
                 chargeTime -= 4;
                 chargeVelocity += 3f;
             }
@@ -433,6 +435,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[2] = 0f;
                         if (enrage)
                             npc.ai[2] = sharknadoPhaseTimer - 40;
+                        else if (masterMode)
+                            npc.ai[2] = sharknadoPhaseTimer - 60;
                     }
 
                     // Go to phase 2
@@ -1042,6 +1046,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Main.dust[phase3ChargeDust].velocity -= npc.velocity;
                 }
 
+                // Spawn bubbles during charge in Master Mode
+                if (masterMode && phase4)
+                {
+                    if (npc.ai[2] % (bubbleBelchPhaseDivisor * 2) == 0f)
+                    {
+                        SoundEngine.PlaySound(SoundID.NPCDeath19, npc.Center);
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            Vector2 bubbleSpawnDirection = Vector2.Normalize(player.Center - npc.Center) * (npc.width + 20) / 2f + npc.Center;
+                            NPC.NewNPC(npc.GetSource_FromAI(), (int)bubbleSpawnDirection.X, (int)bubbleSpawnDirection.Y + 45, NPCID.DetonatingBubble);
+                        }
+                    }
+                }
+
                 npc.ai[2] += 1f;
                 if (npc.ai[2] >= chargeTime)
                 {
@@ -1137,18 +1156,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             bool pop = npc.ai[0] == 1f;
+
             Vector2 velocityVector = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
-            float inertia = 40f;
+            float inertia = 30f;
             float velocity = 25f;
             npc.velocity = (npc.velocity * inertia + velocityVector * velocity) / (inertia + 1f);
+            
             npc.scale = npc.ai[3];
+
             npc.alpha -= 30;
             if (npc.alpha < 50)
                 npc.alpha = 50;
-
             npc.alpha = 50;
-            npc.velocity.X = (npc.velocity.X * 50f + Main.windSpeedCurrent * 2f + (float)Main.rand.Next(-10, 11) * 0.1f) / 51f;
-            npc.velocity.Y = (npc.velocity.Y * 50f + -0.25f + (float)Main.rand.Next(-10, 11) * 0.2f) / 51f;
+
+            float inertia2 = inertia + 10f;
+            npc.velocity.X = (npc.velocity.X * inertia2 + (float)Main.rand.Next(-10, 11) * 0.1f) / (inertia2 + 1f);
+            npc.velocity.Y = (npc.velocity.Y * inertia2 + -0.25f + (float)Main.rand.Next(-10, 11) * 0.2f) / (inertia2 + 1f);
             if (npc.velocity.Y > 0f)
                 npc.velocity.Y -= 0.04f;
 
@@ -1230,7 +1253,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else if (flag3)
             {
                 setDamage = (int)Math.Round(setDamage * 1.2 * damageScale);
-                npc.defense = (int)((float)npc.defDefense * 0.8f);
+                npc.defense = (int)Math.Round(npc.defDefense * 0.8);
             }
             else
                 npc.defense = npc.defDefense;
@@ -1699,11 +1722,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Vector2 vector8 = npc.rotation.ToRotationVector2() * (Vector2.UnitX * npc.direction) * (npc.width + 20) / 2f + center;
                     Vector2 sharknadoBoltVelocity = new Vector2(npc.direction * 2, masterMode ? 12f : 8f);
                     Projectile.NewProjectile(npc.GetSource_FromAI(), vector8, sharknadoBoltVelocity, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer);
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector8, sharknadoBoltVelocity * -Vector2.UnitX, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer);
+                    sharknadoBoltVelocity = new Vector2(npc.direction * -2, masterMode ? 12f : 8f);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector8, sharknadoBoltVelocity, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer);
                     if (masterMode)
                     {
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), vector8, sharknadoBoltVelocity * -Vector2.UnitY, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 0f, -1f);
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), vector8, sharknadoBoltVelocity * -1f, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 0f, -1f);
+                        sharknadoBoltVelocity = new Vector2(npc.direction * 2, masterMode ? -12f : -8f);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), vector8, sharknadoBoltVelocity, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 0f, -1f);
+                        sharknadoBoltVelocity = new Vector2(npc.direction * -2, masterMode ? -12f : -8f);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), vector8, sharknadoBoltVelocity, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 0f, -1f);
                     }
                 }
 

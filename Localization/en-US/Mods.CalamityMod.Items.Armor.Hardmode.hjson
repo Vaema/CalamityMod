@@ -66,6 +66,7 @@ CirrusDress: {
 		'''
 		5% increased magic damage and critical strike chance
 		20% decreased movement speed and increases maximum fall speed to 61 mph
+		Allows for drinking 5 alcohols before your liver is poisoned
 		[c/B00BA5:'Here, this should help you drink a lot more than usual!']
 		'You feel thick...'
 		'''
@@ -104,7 +105,9 @@ DaedalusHeadMelee: {
 		Enemies are more likely to target you
 		You reflect projectiles back at enemies
 		Reflected projectiles deal 50% less damage to you
-		This reflect has a 90 second cooldown which is shared with all other dodges and reflects
+		Projectiles that deal less than 5% of your max life in damage will not be reflected
+		The reflect has a cooldown that ranges between 15 and 90 seconds depending on the reflected projectile's damage
+		This cooldown is shared with all other dodges and reflects
 		'''
 }
 
@@ -494,10 +497,10 @@ ReaverHeadTank: {
 		+10 defense and +1.5 HP/s life regen
 		Enemies are more likely to target you
 		Reduces the life regen lost from damage over time debuffs by 20%
-		All attacks have a small chance to steal life and speed up the rate of life regen
-		20% decreased movement speed and flight time
+		All attacks steal life and speed up the rate of life regen
+		30% decreased movement speed and flight time
 		Enemy damage is reflected and summons a thorn spike
-		Reaver Rage has a 25% chance to activate when you are damaged
+		Reaver Rage activates when you are damaged
 		'''
 }
 

@@ -68,7 +68,7 @@ namespace CalamityMod.Items.SummonItems
             CreateRecipe().
                 AddIngredient(ItemID.LunarBar, 40).
                 AddIngredient<GalacticaSingularity>(10).
-                AddIngredient<Polterplasm>(40).
+                AddIngredient<Necroplasm>(40).
                 AddTile(TileID.LunarCraftingStation).
                 Register()
                 .DisableDecraft();

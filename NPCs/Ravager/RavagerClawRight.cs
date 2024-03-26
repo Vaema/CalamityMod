@@ -35,7 +35,6 @@ namespace CalamityMod.NPCs.Ravager
             AIType = -1;
             NPC.netAlways = true;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.alpha = 255;
             NPC.HitSound = RavagerBody.HitSound;
             NPC.DeathSound = RavagerBody.LimbLossSound;
@@ -297,9 +296,9 @@ namespace CalamityMod.NPCs.Ravager
                     drawPositionY += 12f;
                     drawPositionX += 28f;
                     Color color = Lighting.GetColor((int)center.X / 16, (int)(center.Y / 16f));
-                    spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
-                        new Rectangle?(new Rectangle(0, 0, ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Width, ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Height)), color, rotation,
-                        new Vector2(ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Width * 0.5f, ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(RavagerBody.ChainTexture.Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
+                        new Rectangle?(new Rectangle(0, 0, RavagerBody.ChainTexture.Value.Width, RavagerBody.ChainTexture.Value.Height)), color, rotation,
+                        new Vector2(RavagerBody.ChainTexture.Value.Width * 0.5f, RavagerBody.ChainTexture.Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
                 }
             }
             return true;

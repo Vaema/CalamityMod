@@ -12,9 +12,9 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Terratomere : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public const int SwingTime = 83;
+        public const int SwingTime = 54;
 
-        public const int SlashLifetime = 27;
+        public const int SlashLifetime = 135;
 
         public const int SmallSlashCreationRate = 9;
 
@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 60;
             Item.height = 66;
-            Item.damage = 370;
+            Item.damage = 145;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 21;
             Item.useTime = 21;

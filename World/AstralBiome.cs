@@ -119,7 +119,11 @@ namespace CalamityMod.World
                     "Depthice",
                 };
                 foreach (string tileName in aaTileNames)
-                    aaTilesToAvoid.Add(ancientsAwakened.Find<ModTile>(tileName).Type);
+                {
+                    //Defensive coding
+                    if (ancientsAwakened.TryFind(tileName, out ModTile value))
+                        aaTilesToAvoid.Add(value.Type);
+                }
             }
 
             while (!meteorDropped)
@@ -225,11 +229,23 @@ namespace CalamityMod.World
             IList<ushort> MSTilesToAvoid = new List<ushort>(16);
             if (magicStorage is not null)
             {
+                //yes I added the combined stations and fake altars due to them having tiles (despite no one actually placing em since MS Crafting UI exists)
+                //also thank fuck MS makes all Storage Units the same tile cuz otherwise the list would be massive
+                //decrafter may or may not exist by the time I added the new tiles, saw it while snooping around the MS github repo
+                //Idk what the TE tiles are for and they dont seem to have a tile
                 string[] MSTileNames = new string[]
                 {
+                    "CombinedFurnitureStations1Tile",
+                    "CombinedFurnitureStations2Tile",
+                    "CombinedStations1Tile",
+                    "CombinedStations2Tile",
+                    "CombinedStations3Tile",
+                    "CombinedStations4Tile",
                     "CraftingAccess",
                     "CreativeStorageUnit",
+                    "DecraftingAccess",
                     "EnvironmentAccess",
+                    "EvilAltarTile",
                     "RemoteAccess",
                     "StorageAccess",
                     "StorageComponent",
@@ -238,7 +254,11 @@ namespace CalamityMod.World
                     "StorageUnit",
                 };
                 foreach (string tileName in MSTileNames)
-                    MSTilesToAvoid.Add(magicStorage.Find<ModTile>(tileName).Type);
+                {
+                    //Defensive coding
+                    if (magicStorage.TryFind(tileName, out ModTile value))
+                        MSTilesToAvoid.Add(value.Type);
+                }
             }
 
             UnifiedRandom rand = WorldGen.genRand;

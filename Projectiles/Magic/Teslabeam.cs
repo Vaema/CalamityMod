@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Magic
             // Play zap sounds idly
             if (Projectile.ai[2] % 5 == 0)
             {
-                SoundEngine.PlaySound(SoundID.DD2_LightningBugZap with { Pitch = 1.1f }, Projectile.position);
+                SoundEngine.PlaySound(SoundID.DD2_LightningBugZap with { Pitch = 1.1f }, Projectile.Center);
             }
             // If the weapon's target hasn't just been hit, tick down the grace period timer
             if (decayGracePeriod > 0 && damageShouldDecay)

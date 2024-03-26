@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.NPCDeath28, Projectile.position);
+            SoundEngine.PlaySound(SoundID.NPCDeath28, Projectile.Center);
             if (Projectile.owner == Main.myPlayer)
             {
                 int randProjAmt = Main.rand.Next(5, 9);

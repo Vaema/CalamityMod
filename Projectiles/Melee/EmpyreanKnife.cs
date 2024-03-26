@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Balancing;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -78,32 +79,20 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            float healAmt = hit.Damage * 0.0075f;
-            if ((int)healAmt == 0)
+            int heal = (int)Math.Round(hit.Damage * 0.015);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (healAmt > CalamityMod.lifeStealCap)
-                healAmt = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], healAmt, ProjectileID.VampireHeal, 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            float healAmt = info.Damage * 0.005f;
-            if ((int)healAmt == 0)
+            int heal = (int)Math.Round(info.Damage * 0.015);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (healAmt > CalamityMod.lifeStealCap)
-                healAmt = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], healAmt, ProjectileID.VampireHeal, 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
 
         public override bool PreDraw(ref Color lightColor)

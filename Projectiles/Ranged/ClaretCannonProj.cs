@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Balancing;
+using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -54,15 +56,11 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (!target.canGhostHeal || Main.player[Projectile.owner].moonLeech)
+            int heal = (int)Math.Round(hit.Damage * 0.02);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            Player player = Main.player[Projectile.owner];
-            if (Main.rand.NextBool())
-            {
-                player.statLife += 1;
-                player.HealEffect(1);
-            }
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -59,19 +58,19 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Projectile.ExpandHitboxBy(128);
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            int projAmt = Main.rand.Next(3, 5);
+            int spikeAmt = Main.rand.Next(3, 4+1);
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int s = 0; s < projAmt; s++)
+                for (int s = 0; s < spikeAmt; s++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<BallisticPoisonBombSpike>(), Projectile.damage, 0f, Projectile.owner);
                 }
-                int cloudAmt = Main.rand.Next(8, 13);
+                int cloudAmt = Projectile.Calamity().stealthStrike ? Main.rand.Next(8, 12+1) : Main.rand.Next(3, 5+1);
                 for (int c = 0; c < cloudAmt; c++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 10f, 200f, 0.01f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<BallisticPoisonCloud>(), (int)(Projectile.damage * 0.5), 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<BallisticPoisonCloud>(), (int)(Projectile.damage * 0.75), 0f, Projectile.owner, 0f, Projectile.Calamity().stealthStrike ? 1f : 0f);
                 }
             }
             for (int d = 0; d < 5; d++)

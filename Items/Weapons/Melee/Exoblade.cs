@@ -24,10 +24,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public static readonly SoundStyle DashSound = new("CalamityMod/Sounds/Item/ExobladeDash") { Volume = 0.6f };
         public static readonly SoundStyle DashHitSound = new("CalamityMod/Sounds/Item/ExobladeDashImpact") { Volume = 0.85f };
 
-
         public static int BeamNoHomeTime = 24;
 
-        public static float NotTrueMeleeDamagePenalty = 0.46f;
+        public static float NotTrueMeleeDamagePenalty = 0.35f;
 
         public static float ExplosionDamageFactor = 1.8f;
 
@@ -50,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int DashTime = 49;
 
         public static int BaseUseTime = 49;
-        public static int BeamsPerSwing = 3;
+        public static int BeamsPerSwing = 4;
 
         public override void SetDefaults()
         {

@@ -297,7 +297,7 @@ namespace CalamityMod.UI.DraedonSummoning
             DisplayTextSelectionOptions(panelArea, panelScale);
             DisplayDialogHistory(panelArea, panelScale);
             if (OptionsTextOpacity > 0f && DraedonScreenStaticInterpolant <= 0f)
-                DrawExitButton(panelCenter + new Vector2(-16f, 138f) * GeneralScale, OptionsTextOpacity);
+                DrawExitButton(panelCenter + new Vector2(0f, 150f) * GeneralScale, OptionsTextOpacity);
         }
 
         public static void DisplayDraedonFacePanel(Vector2 panelCenter, Vector2 panelScale)
@@ -306,7 +306,7 @@ namespace CalamityMod.UI.DraedonSummoning
             Texture2D iconTexture = ModContent.Request<Texture2D>("CalamityMod/UI/DraedonSummoning/DraedonIconBorder").Value;
             Texture2D iconTextureInner = ModContent.Request<Texture2D>("CalamityMod/UI/DraedonSummoning/DraedonIconBorderInner").Value;
             float draedonIconDrawInterpolant = Utils.GetLerpValue(0.51f, 0.36f, DraedonScreenStaticInterpolant, true);
-            Vector2 draedonIconDrawTopRight = panelCenter + new Vector2(-218f, -130f) * panelScale;
+            Vector2 draedonIconDrawTopRight = panelCenter + new Vector2(-204f, -125f) * panelScale;
             draedonIconDrawTopRight += new Vector2(24f, 4f) * panelScale;
 
             Vector2 draedonIconScale = panelScale * 0.5f;
@@ -350,7 +350,7 @@ namespace CalamityMod.UI.DraedonSummoning
             // Draw the outline for the text selection options.
             float selectionOptionsDrawInterpolant = Utils.GetLerpValue(0.3f, 0f, DraedonScreenStaticInterpolant, true);
             Texture2D selectionOutline = ModContent.Request<Texture2D>("CalamityMod/UI/DraedonSummoning/DraedonSelectionOutline").Value;
-            Vector2 selectionCenter = panelArea.BottomLeft() - new Vector2(selectionOutline.Width * -0.5f - 24f, selectionOutline.Height * 0.5f + 24f) * panelScale;
+            Vector2 selectionCenter = panelArea.BottomLeft() - new Vector2(selectionOutline.Width * -0.5f - 42f, selectionOutline.Height * 0.5f + 13f) * panelScale;
             Rectangle selectionArea = Utils.CenteredRectangle(selectionCenter, selectionOutline.Size() * panelScale);
             Main.spriteBatch.Draw(selectionOutline, selectionCenter, null, Color.White * selectionOptionsDrawInterpolant, 0f, selectionOutline.Size() * 0.5f, panelScale, 0, 0f);
 
@@ -394,7 +394,7 @@ namespace CalamityMod.UI.DraedonSummoning
             {
                 // Skip/isolate the introduction text as needed.
                 string inquiry = dialog.Inquiry;
-                if (!Main.LocalPlayer.Calamity().HasTalkedAtCodebreaker && !DialogHistory.Any(d => d.Dialog == DialogOptions[0].Response))
+                if (!Main.LocalPlayer.Calamity().HasCraftedDraedonsForge)
                 {
                     if (inquiry != DialogOptions[0].Inquiry)
                         continue;
@@ -402,7 +402,15 @@ namespace CalamityMod.UI.DraedonSummoning
                     while (DialogHistory.Count < 1)
                         DialogHistory.Add(new(string.Empty, true));
                 }
-                else if (inquiry == DialogOptions[0].Inquiry)
+                else if (!DialogOptions[1].HasBeenSeen)
+                {
+                    if (inquiry != DialogOptions[1].Inquiry)
+                        continue;
+
+                    while (DialogHistory.Count < 1)
+                        DialogHistory.Add(new(string.Empty, true));
+                }
+                else if (inquiry == DialogOptions[0].Inquiry || inquiry == DialogOptions[1].Inquiry)
                     continue;
 
                 // Draw the text marker.
@@ -509,7 +517,7 @@ namespace CalamityMod.UI.DraedonSummoning
             // Draw the outline for the dialog history.
             float dialogHistoryDrawInterpolant = Utils.GetLerpValue(0.3f, 0f, DraedonScreenStaticInterpolant, true);
             Texture2D dialogOutline = ModContent.Request<Texture2D>("CalamityMod/UI/DraedonSummoning/DraedonDialogOutline").Value;
-            Vector2 selectionCenter = panelArea.TopRight() - new Vector2(dialogOutline.Width * 0.5f + 16f, dialogOutline.Height * -0.5f - 6.5f) * panelScale;
+            Vector2 selectionCenter = panelArea.TopRight() - new Vector2(dialogOutline.Width * 0.5f + 12f, dialogOutline.Height * -0.5f - 12f) * panelScale;
             Rectangle dialogArea = Utils.CenteredRectangle(selectionCenter, dialogOutline.Size() * panelScale);
             Main.spriteBatch.Draw(dialogOutline, selectionCenter, null, Color.White * dialogHistoryDrawInterpolant, 0f, dialogOutline.Size() * 0.5f, panelScale, 0, 0f);
 

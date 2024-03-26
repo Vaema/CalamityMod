@@ -232,6 +232,11 @@ MysteriousCircuitry: {
 	Tooltip: ""
 }
 
+Necroplasm: {
+	DisplayName: Necroplasm
+	Tooltip: It churns and seethes with ghastly malice
+}
+
 NightmareFuel: {
 	DisplayName: Nightmare Fuel
 	Tooltip: May drain your sanity
@@ -245,11 +250,6 @@ PearlShard: {
 PerennialBar: {
 	DisplayName: Perennial Bar
 	Tooltip: ""
-}
-
-Polterplasm: {
-	DisplayName: Polterplasm
-	Tooltip: It churns and seethes with ghastly malice
 }
 
 PlagueCellCanister: {

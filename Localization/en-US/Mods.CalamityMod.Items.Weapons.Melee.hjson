@@ -254,7 +254,7 @@ ChronomancersScythe: {
 	Tooltip:
 		'''
 		Rapidly fires icicles
-		Press <right> to swing the scythe around you creating a clock pattern of homing icicles
+		Press <right> to swing the scythe around you, creating a clock pattern of homing icicles
 		Direct hits with the scythe have a chance to spawn clocks
 		Collecting the clocks increases movement speed and acceleration by 5% for each clock collected
 		This stacks up to 3 times and each level wears off after 5 seconds
@@ -305,7 +305,7 @@ CrescentMoon: {
 
 DarklightGreatsword: {
 	DisplayName: Darklight Greatsword
-	Tooltip: Fires darklight blades that split on impact
+	Tooltip: Fires darklight blades that slice through enemies, creating additional slashes
 }
 
 DeathsAscension: {
@@ -467,7 +467,8 @@ Exoblade: {
 		Press <left> to release multiple energy beams that home in on enemies and slice them on hit
 		Press <right> to dash in the direction of the cursor with the blade
 		Enemy hits from the blade during the dash result in massive damage and a rebound
-		Press <left> immediately after a rebound to perform a powerful slash that explodes on enemy hits
+		Press <left> immediately after a rebound to perform a powerful slash
+		Powerful slashes are larger, heal you, and create a large explosion
 		'''
 }
 
@@ -632,7 +633,7 @@ GreatswordofJudgement: {
 
 Greentide: {
 	DisplayName: Greentide
-	Tooltip: Summons teeth from the sky on hit
+	Tooltip: Summons teeth to chomp your foes on hit
 }
 
 HellfireFlamberge: {
@@ -679,7 +680,7 @@ IridescentExcalibur: {
 	DisplayName: Iridescent Excalibur
 	Tooltip:
 		'''
-		Freezes enemies and heals the player on hit
+		True melee strikes freeze enemies
 		Fires rainbow beams that change their behavior based on their color
 		Press <right> for true melee
 		'''
@@ -716,7 +717,6 @@ Lucrecia: {
 	DisplayName: Lucrecia
 	Tooltip:
 		'''
-		Striking an enemy makes you immune for a short time
 		Fires a DNA chain
 		Finesse
 		'''
@@ -1038,11 +1038,6 @@ SolsticeClaymore: {
 		'''
 }
 
-SoulEdge: {
-	DisplayName: Soul Edge
-	Tooltip: Fires the ghastly souls of long-deceased abyss dwellers
-}
-
 SoulHarvester: {
 	DisplayName: Soul Harvester
 	Tooltip:
@@ -1171,7 +1166,8 @@ Terratomere: {
 	Tooltip:
 		'''
 		Heals the player on true melee hits
-		Fires a piercing energy bolt that causes hit targets to explode and be slashed
+		Fires several piercing energy bolts that rapidly seek targets
+		On hit, explodes and repeatedly slashes the target
 		'Linked to the essence of Terraria'
 		'''
 }
@@ -1248,11 +1244,13 @@ TheMutilator: {
 
 TheObliterator: {
 	DisplayName: The Obliterator
-	Tooltip:
+	Tooltip: "[GFB]"
+	TooltipNormal:
 		'''
 		Ruins nearby enemies with death lasers
 		An exceptionally agile yoyo
 		'''
+	TooltipGFB: just a slight bit of dust spam on this weapon im afraid
 }
 
 TheOracle: {
@@ -1320,7 +1318,7 @@ TrueCausticEdge: {
 	Tooltip:
 		'''
 		Fires a bouncing caustic beam
-		Inflicts venom on enemy hits
+		Inflicts acid venom and slows down on enemy hits
 		'''
 }
 
@@ -1386,6 +1384,15 @@ Violence: {
 Virulence: {
 	DisplayName: Virulence
 	Tooltip: Fires a plague cloud
+}
+
+VoidEdge: {
+	DisplayName: Void Edge
+	Tooltip:
+		'''
+		Fires the ghastly souls of long-deceased abyss dwellers
+		Striking with the blade summons additional souls from below
+		'''
 }
 
 VulcaniteLance: {

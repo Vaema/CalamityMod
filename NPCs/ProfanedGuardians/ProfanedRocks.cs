@@ -6,6 +6,7 @@ using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -23,10 +24,19 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public const int MaxHP = 8000;
         public const int MaxBossRushHP = 20000;
 
+        public static Asset<Texture2D>[] Textures = new Asset<Texture2D>[6];
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    Textures[i] = ModContent.Request<Texture2D>(Texture + (i + 1), AssetRequestMode.AsyncLoad);
+                }
+            }
         }
 
         public override void SetDefaults()
@@ -47,7 +57,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.noGravity = true;
             NPC.chaseable = false;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
             NPC.Calamity().VulnerableToHeat = false;
@@ -315,7 +324,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             int npcType = (int)MathHelper.Clamp(NPC.ai[2], 1f, 6f);
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedRocks" + npcType.ToString()).Value;
+            Texture2D texture = Textures[npcType - 1].Value;
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
             Vector2 drawPos = NPC.Center - screenPos;
             drawPos -= new Vector2(texture.Width, texture.Height) * NPC.scale / 2f;

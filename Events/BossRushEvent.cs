@@ -490,9 +490,9 @@ namespace CalamityMod.Events
                 int tier = CurrentTier;
                 if (CalamityMod.Instance.musicMod != null)
                 {
-                    // Boss Rush music for tiers 4 and 5 don't exist
-                    if (tier > 3)
-                        tier = 3;
+                    // Boss Rush music for tier 5 doesn't exist
+                    if (tier > 4)
+                        tier = 4;
                     return CalamityMod.Instance.GetMusicFromMusicMod($"BossRushTier{tier}") ?? 0;
                 }
 

@@ -68,6 +68,9 @@ namespace CalamityMod.Projectiles.Ranged
             }
             else
             {
+                if (Projectile.Calamity().allProjectilesHome)
+                    Projectile.Calamity().allProjectilesHome = false; // Prevent the icicle effect from breaking with Arterial Assault
+
                 if (targetDist < 1400f)
                 {
                     SparkParticle Visual = new SparkParticle(Projectile.Center, Projectile.velocity * 0.1f, false, 2, 1.2f, Color.SkyBlue);
@@ -91,6 +94,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Frostburn2, 180);
+            if (Projectile.Calamity().allProjectilesHome)
+                Projectile.Calamity().allProjectilesHome = false; // Prevent the icicle effect from breaking with Arterial Assault
             if (!falling)
             {
                 SoundEngine.PlaySound(SoundID.Item50 with { Volume = 0.35f, Pitch = -0.2f, PitchVariance = 0.2f }, Projectile.Center);

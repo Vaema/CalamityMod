@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             Projectile.penetrate--;
             if (Projectile.penetrate <= 0)
             {
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);

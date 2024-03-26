@@ -11,6 +11,7 @@ namespace CalamityMod.Projectiles.Typeless
     public class BlazingStarHeal : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
+
         public override string Texture => "CalamityMod/Projectiles/StarProj";
 
         public override void SetDefaults()
@@ -48,10 +49,10 @@ namespace CalamityMod.Projectiles.Typeless
                 player.HealEffect(healAmt, false);
                 player.statLife += healAmt;
                 if (player.statLife > player.statLifeMax2)
-                {
                     player.statLife = player.statLifeMax2;
-                }
+
                 NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, index, healAmt);
+
                 Projectile.Kill();
             }
         }

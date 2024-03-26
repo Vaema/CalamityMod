@@ -8,6 +8,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -37,6 +38,8 @@ namespace CalamityMod.NPCs.Other
 
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/Lordeath");
 
+        public static Asset<Texture2D> DeathAnimationTexture;
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.MPAllowedEnemies[Type] = true;
@@ -44,6 +47,10 @@ namespace CalamityMod.NPCs.Other
             NPCID.Sets.ShouldBeCountedAsBoss[Type] = true;
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 7;
+            if (!Main.dedServ)
+            {
+                DeathAnimationTexture = ModContent.Request<Texture2D>(Texture + "DEATH", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -161,7 +168,7 @@ namespace CalamityMod.NPCs.Other
             {
                 // old was zombie 1 - zombie 62
                 // ideally would be collaborative inferal screeches of various devs
-                SoundEngine.PlaySound(Polterghast.Polterghast.creepySounds[Main.rand.Next(1, Polterghast.Polterghast.creepySounds.Count)] with { PitchVariance = 2 }, NPC.position);
+                SoundEngine.PlaySound(Polterghast.Polterghast.creepySounds[Main.rand.Next(1, Polterghast.Polterghast.creepySounds.Count)] with { PitchVariance = 2 }, NPC.Center);
             }
             Player playerLOL = Main.player[NPC.target];
             playerLOL.velocity.X *= 0.99f;
@@ -425,7 +432,7 @@ namespace CalamityMod.NPCs.Other
             if (Dying)
             {
                 // death animation
-                texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Other/THELORDEDEATH").Value;
+                texture = DeathAnimationTexture.Value;
                 int xFrame = 0;
                 int yFrame = frameToUse;
                 if (frameToUse > 13)

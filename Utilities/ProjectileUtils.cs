@@ -93,7 +93,7 @@ namespace CalamityMod
         public static void ExpandHitboxBy(this Projectile projectile, Vector2 newSize) => projectile.ExpandHitboxBy((int)newSize.X, (int)newSize.Y);
         public static void ExpandHitboxBy(this Projectile projectile, float expandRatio) => projectile.ExpandHitboxBy((int)(projectile.width * expandRatio), (int)(projectile.height * expandRatio));
 
-        public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float N)
+        public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float inertia)
         {
             if (!projectile.friendly)
                 return;
@@ -136,7 +136,7 @@ namespace CalamityMod
 
                 // Home in on the target.
                 Vector2 homeDirection = (destination - projectile.Center).SafeNormalize(Vector2.UnitY);
-                projectile.velocity = (projectile.velocity * N + homeDirection * homingVelocity) / (N + 1f);
+                projectile.velocity = (projectile.velocity * inertia + homeDirection * homingVelocity) / (inertia + 1f);
             }
             else
             {
@@ -440,7 +440,8 @@ namespace CalamityMod
             // Explosion radii for various rocket ammos. Defaults to the sizes used in vanilla launchers.
             public int smallRadius = 3; // Rocket I and II
             public int mediumRadius = 6; // Rocket III and IV
-            public int largeRadius = 9; // Mini Nuke and Cluster Rockets
+            public int bigRadius = 7; // Cluster Rockets
+            public int largeRadius = 9; // Mini Nukes
 
             public bool respectStandardBlastImmunity = true;
             public List<int> tilesToCheck = null;
@@ -523,12 +524,12 @@ namespace CalamityMod
                     break;
 
                 case ItemID.ClusterRocketI:
-                    explosionRadius = info.largeRadius;
+                    explosionRadius = info.bigRadius;
                     SpawnClusterFragments(false);
                     break;
 
                 case ItemID.ClusterRocketII:
-                    explosionRadius = info.largeRadius;
+                    explosionRadius = info.bigRadius;
                     SpawnClusterFragments(true);
                     break;
 

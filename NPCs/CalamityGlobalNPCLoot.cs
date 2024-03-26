@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs
             // Progression shortcuts
             LeadingConditionRule postEoC = npcLoot.DefineConditionalDropSet(DropHelper.PostEoC());
             LeadingConditionRule hardmode = npcLoot.DefineConditionalDropSet(DropHelper.Hardmode());
-            LeadingConditionRule postCalPlant = npcLoot.DefineConditionalDropSet(DropHelper.PostCalPlant());
+            LeadingConditionRule postCal = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
             LeadingConditionRule postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
             LeadingConditionRule postDoG = npcLoot.DefineConditionalDropSet(DropHelper.PostDoG());
 
@@ -120,8 +120,11 @@ namespace CalamityMod.NPCs
 
                 // Wyvern Head
                 // 8-10 Essence of Sunlight @ 100%, 10-12 Expert+
+                // TODO: Move Aero Stone to the upcoming sky structure whenever it's implemented
+                // Aero Stone @ 25% Normal, 33.3% Expert+
                 case NPCID.WyvernHead:
                     npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<EssenceofSunlight>(), 1, 8, 10, 10, 12));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AeroStone>(), 4, 3));
                     break;
                 #endregion
 
@@ -583,24 +586,24 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Reaper, Psycho
-                // 2-4 Solar Veil @ 50% IF Clone or Plant dead
+                // 2-4 Solar Veil @ 50% IF Cal Clone dead
                 // Darksun Fragment @ 50% IF Devourer of Gods dead
                 case NPCID.Reaper:
                 case NPCID.Psycho:
-                    postCalPlant.Add(ModContent.ItemType<SolarVeil>(), 2, 2, 4);
+                    postCal.Add(ModContent.ItemType<SolarVeil>(), 2, 2, 4);
                     postDoG.Add(ModContent.ItemType<DarksunFragment>(), 2);
                     break;
 
                 // Vampire / Vampire Bat (same enemy)
                 // Moon Stone @ 15% INSTEAD OF 2.86%
                 // Bat Hook @ 2.5% Normal, 5% Expert+
-                // 2-4 Solar Veil @ 50% IF Clone or Plant dead
+                // 2-4 Solar Veil @ 50% IF Cal Clone dead
                 // Darksun Fragment @ 50% IF Devourer of Gods dead
                 case NPCID.VampireBat:
                 case NPCID.Vampire:
                     npcLoot.ChangeDropRate(ItemID.MoonStone, 3, 20);
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.BatHook, 40, 20));
-                    postCalPlant.Add(ModContent.ItemType<SolarVeil>(), 2, 2, 4);
+                    postCal.Add(ModContent.ItemType<SolarVeil>(), 2, 2, 4);
                     postDoG.Add(ModContent.ItemType<DarksunFragment>(), 2);
                     break;
 
@@ -1172,6 +1175,7 @@ namespace CalamityMod.NPCs
                     // Expert+ drops are also available on Normal
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.VolatileGelatin));
                     npcLoot.AddNormalOnly(ItemID.SoulofLight, 1, 15, 20);
+                    npcLoot.AddNormalOnly(ItemID.PinkGel, 1, 15, 20);
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1965,7 +1969,7 @@ DukeEditFailed:
                             CalamityNetcode.SyncWorld();
                     }
 
-                    // Spawn Exodium planetoids and send messages about Providence, Bloodstone, Polterplasm, etc. if ML has not been killed yet
+                    // Spawn Exodium planetoids and send messages about Providence, Bloodstone, Necroplasm, etc. if ML has not been killed yet
                     if (!NPC.downedMoonlord)
                     {
                         CalamityUtils.DisplayLocalizedText(key5, messageColor5);

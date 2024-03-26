@@ -71,7 +71,7 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             CreateRecipe().
                 AddIngredient<RuinousSoul>(5).
-                AddIngredient<Polterplasm>(25).
+                AddIngredient<Necroplasm>(25).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

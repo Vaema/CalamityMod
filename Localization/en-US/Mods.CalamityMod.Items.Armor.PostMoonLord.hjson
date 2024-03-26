@@ -140,7 +140,7 @@ BloodflareHeadRogue: {
 		+120 maximum stealth
 		Being over 80% life boosts your defense by 30 and rogue crit by 5%
 		Being below 80% life boosts your rogue damage by 10%
-		Rogue critical strikes have a 50% chance to heal you
+		Rogue critical strikes heal you
 		'''
 }
 
@@ -520,14 +520,14 @@ TarragonHeadMelee: {
 	DisplayName: Tarragon Helm
 	Tooltip:
 		'''
-		10% increased melee damage and critical strike chance
+		12% increased melee damage and critical strike chance
 		10% increased damage reduction
 		'''
 	SetBonus:
 		'''
 		15% increased melee speed
 		Enemies are more likely to target you
-		You have a 25% chance to gain a life regen buff when you take damage
+		You gain a life regen buff when you take damage
 		Press {0} to cloak yourself in life energy that heavily reduces enemy contact damage for 10 seconds
 		This has a 30 second cooldown
 		'''

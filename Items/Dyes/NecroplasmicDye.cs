@@ -10,9 +10,9 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Dyes
 {
     [LegacyName("PhantoplasmDye")]
-    public class PolterplasmDye : BaseDye
+    public class NecroplasmicDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/PolterplasmDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/NecroplasmicDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
             UseColor(new Color(245, 143, 182)).UseSecondaryColor(new Color(119, 238, 255)).UseImage("Images/Misc/Perlin");
 
         public override void SafeSetStaticDefaults()
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Dyes
         {
             CreateRecipe(2).
                 AddIngredient(ItemID.BottledWater, 2).
-                AddIngredient<Polterplasm>(3).
+                AddIngredient<Necroplasm>(3).
                 AddTile(TileID.DyeVat).
                 Register();
         }

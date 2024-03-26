@@ -2,6 +2,7 @@
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -16,9 +17,16 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public NPC AheadSegment => Main.npc[(int)NPC.ai[1]];
         public NPC HeadSegment => Main.npc[(int)NPC.ai[2]];
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.SepulcherHead.DisplayName");
+
+        public static Asset<Texture2D> AltTexture;
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            if (!Main.dedServ)
+            {
+                AltTexture = ModContent.Request<Texture2D>(Texture + "Alt", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -121,7 +129,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = NPC.localAI[3] / 2f % 2f == 0f ? ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/SepulcherBodyAlt").Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture2D15 = NPC.localAI[3] / 2f % 2f == 0f ? AltTexture.Value : TextureAssets.Npc[NPC.type].Value;
             Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / 2));
 
             Vector2 drawLocation = NPC.Center - screenPos;

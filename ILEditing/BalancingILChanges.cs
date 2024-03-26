@@ -45,7 +45,7 @@ namespace CalamityMod.ILEditing
 
         private static void NerfSoaringInsigniaRunAcceleration(ILContext il)
         {
-            // Nerf the run acceleration boost from 2x to 1.1x.
+            // Nerf the run acceleration boost from 1.75x to 1.1x.
             var cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("empressBrooch")))
             {
@@ -109,6 +109,7 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_R4, 0.5f); // Decrease to 0.5f.
 
             // Find the Frog Leg jump speed bonus and reduce it to 1.2f.
+            // I don't know if this fucking does anything anymore, but I'm leaving it in just in case.
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(2.4f)))
             {
                 LogFailure("Jump Height Boost Fixes", "Could not locate Frog Leg jump speed boost value.");
@@ -345,34 +346,6 @@ namespace CalamityMod.ILEditing
             }
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_I4_M1); // Replace the 1000 with -1, no NPC can have less than -1 HP on spawn, so it fails to run.
-        }
-        #endregion
-
-        #region Chlorophyte Bullet Speed Nerfs
-        private static void AdjustChlorophyteBullets(ILContext il)
-        {
-            // Reduce dust from 10 to 5 and homing range.
-            var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(ProjectileID.ChlorophyteBullet)))
-            {
-                LogFailure("Chlorophyte Bullet AI", "Could not locate the bullet ID.");
-                return;
-            }
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(10))) // The number of dust spawned by the bullet.
-            {
-                LogFailure("Chlorophyte Bullet AI", "Could not locate the dust quantity.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4_5); // Decrease dust to 5.
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(300f))) // The 300 unit distance required to home in.
-            {
-                LogFailure("Chlorophyte Bullet AI", "Could not locate the homing range.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 150f); // Reduce homing range by 50%.
         }
         #endregion
 

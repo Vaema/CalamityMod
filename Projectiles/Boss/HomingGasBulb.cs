@@ -2,7 +2,9 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -32,13 +34,15 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
+
             if (Projectile.localAI[0] == 0f)
             {
                 Projectile.localAI[0] = 1f;
                 SoundEngine.PlaySound(SoundID.Item17, Projectile.Center);
             }
 
-            Lighting.AddLight(Projectile.Center, 0.4f, 0f, 0.4f);
+            Lighting.AddLight(Projectile.Center, 0.5f, 0.2f, 0.5f);
 
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
 
@@ -63,9 +67,24 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
 
-            if (Projectile.ai[0] % ((Main.masterMode || BossRushEvent.BossRushActive) ? 15f : 20f) == 0f)
+            if (Projectile.ai[0] % (masterMode ? 15f : 20f) == 0f)
             {
+                int dustType = 73;
+                int totalDust = 12;
+                float radians = MathHelper.TwoPi / totalDust;
+                Vector2 spinningPoint = new Vector2(0f, -1f);
+                for (int k = 0; k < totalDust; k++)
+                {
+                    Vector2 projectileVelocity = spinningPoint.RotatedBy(radians * k);
+                    Vector2 spawnOffset = Projectile.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 10f;
+                    float randomSpeed = Main.rand.NextFloat(0.8f, 1.2f);
+                    Vector2 dustVelocity = projectileVelocity * randomSpeed;
+                    for (int l = 0; l < 2; l++)
+                        Dust.NewDust(spawnOffset, 2, 2, dustType, dustVelocity.X, dustVelocity.Y);
+                }
+
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
+
                 if (Projectile.owner == Main.myPlayer)
                 {
                     int type = ModContent.ProjectileType<HomingGasBulbSporeGas>();
@@ -75,7 +94,11 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override Color? GetAlpha(Color lightColor) => new Color(255, 255, 255, Projectile.alpha);
+        public override bool PreDraw(ref Color lightColor)
+        {
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            return false;
+        }
 
         public override void OnKill(int timeLeft)
         {

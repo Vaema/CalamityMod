@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.CalClone;
@@ -78,6 +79,17 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.velocity *= scaleFactor;
                 }
             }
+            if (Projectile.ai[2] == 2f)
+            {
+                if (Projectile.timeLeft > 600)
+                    Projectile.velocity *= 1.015f;
+                Projectile.scale = 0.8f;
+
+                Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(4, 4), 182);
+                trailDust.noGravity = true;
+                trailDust.velocity = (-Projectile.velocity * 0.5f) * Main.rand.NextFloat(0.1f, 0.9f);
+                trailDust.scale = Main.rand.NextFloat(0.2f, 0.6f);
+            }
 
             if (Projectile.localAI[0] == 0f)
             {
@@ -98,7 +110,7 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (Projectile.ai[0] == 0f || Main.zenithWorld)
-                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 120);
+                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
             else
                 target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
         }

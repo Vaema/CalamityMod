@@ -3,6 +3,7 @@ using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -17,10 +18,21 @@ namespace CalamityMod.NPCs.Perforator
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PerfLargeHit", 3);
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
 
+        public static Asset<Texture2D> AltTexture;
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> AltTexture_Glow;
+
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.PerforatorHeadLarge.DisplayName");
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            if (!Main.dedServ)
+            {
+                AltTexture = ModContent.Request<Texture2D>(Texture + "Alt", AssetRequestMode.AsyncLoad);
+                AltTexture_Glow = ModContent.Request<Texture2D>(Texture + "AltGlow", AssetRequestMode.AsyncLoad);
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -43,7 +55,6 @@ namespace CalamityMod.NPCs.Perforator
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = HitSound;
             NPC.DeathSound = DeathSound;
             NPC.netAlways = true;
@@ -173,7 +184,7 @@ namespace CalamityMod.NPCs.Perforator
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = NPC.localAI[3] == 1f ? ModContent.Request<Texture2D>("CalamityMod/NPCs/Perforator/PerforatorBodyLargeAlt").Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture2D15 = NPC.localAI[3] == 1f ? AltTexture.Value : TextureAssets.Npc[NPC.type].Value;
             Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / 2));
 
             Vector2 drawLocation = NPC.Center - screenPos;
@@ -181,7 +192,7 @@ namespace CalamityMod.NPCs.Perforator
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = NPC.localAI[3] == 1f ? ModContent.Request<Texture2D>("CalamityMod/NPCs/Perforator/PerforatorBodyLargeAltGlow").Value : ModContent.Request<Texture2D>("CalamityMod/NPCs/Perforator/PerforatorBodyLargeGlow").Value;
+            texture2D15 = NPC.localAI[3] == 1f ? AltTexture_Glow.Value : Texture_Glow.Value;
             Color glowmaskColor = Color.Lerp(Color.White, Color.Yellow, 0.5f);
 
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);

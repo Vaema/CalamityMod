@@ -7,6 +7,7 @@ using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
+using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
@@ -364,11 +365,6 @@ namespace CalamityMod.CalPlayer
         {
             if (CalamityWorld.revenge)
             {
-                // Adjusts the life steal cap in rev/death
-                float lifeStealCap = BossRushEvent.BossRushActive ? 30f : CalamityWorld.death ? 45f : 60f;
-                if (Player.lifeSteal > lifeStealCap)
-                    Player.lifeSteal = lifeStealCap;
-
                 if (Player.whoAmI == Main.myPlayer)
                 {
                     // Hallowed Armor nerf
@@ -608,7 +604,7 @@ namespace CalamityMod.CalPlayer
 
             // Apply the adrenaline change and cap adrenaline in both directions.
             // Changes are only applied if the Adrenaline mechanic is available.
-            if (AdrenalineEnabled && nanomachinesLockoutTimer == 0)
+            if (AdrenalineEnabled && adrenalinePauseTimer == 0)
             {
                 adrenaline += adrenalineDiff;
                 if (adrenaline < 0f)
@@ -629,8 +625,8 @@ namespace CalamityMod.CalPlayer
                     playFullAdrenalineSound = true;
             }
 
-            if (nanomachinesLockoutTimer > 0)
-                nanomachinesLockoutTimer--;
+            if (adrenalinePauseTimer > 0)
+                adrenalinePauseTimer--;
             #endregion
         }
         #endregion
@@ -891,14 +887,37 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Life Steal nerf
-            // Reduces Normal Mode life steal recovery rate from 0.6/s to 0.5/s
-            // Reduces Expert Mode life steal recovery rate from 0.5/s to 0.35/s
-            // Revengeance Mode recovery rate is 0.3/s
-            // Death Mode recovery rate is 0.25/s
-            // Boss Rush recovery rate is 0.2/s
-            float lifeStealCooldown = BossRushEvent.BossRushActive ? 0.3f : CalamityWorld.death ? 0.25f : CalamityWorld.revenge ? 0.2f : Main.expertMode ? 0.15f : 0.1f;
-            Player.lifeSteal -= lifeStealCooldown;
+            // Life Steal nerf in difficulties above Expert
+            // Reduces the max possible life steal before the cooldown occurs (this mostly just nerfs how much life steal the player can get in bursts)
+            // Master Mode nerfs this by an additional 10
+            float lifeStealCap =
+                CalamityWorld.death ? BalancingConstants.LifeStealCap_Death :
+                CalamityWorld.revenge ? BalancingConstants.LifeStealCap_Revengeance :
+                Main.expertMode ? BalancingConstants.LifeStealCap_Expert :
+                BalancingConstants.LifeStealCap_Classic;
+
+            if (Main.masterMode)
+                lifeStealCap -= BalancingConstants.LifeStealCapReduction_Master;
+
+            if (Player.lifeSteal > lifeStealCap)
+                Player.lifeSteal = lifeStealCap;
+
+            // Normal Mode life steal recovery rate is 0.2/s
+            // Expert Mode life steal recovery rate is 0.15/s
+            // Revengeance Mode life steal recovery rate is 0.125/s
+            // Death Mode life steal recovery rate is 0.1/s
+            // Master Mode life steal recovery rate is nerfed by an additional 0.05/s
+            float lifeStealRecoveryRateReduction =
+                    CalamityWorld.death ? BalancingConstants.LifeStealRecoveryRateReduction_Death :
+                    CalamityWorld.revenge ? BalancingConstants.LifeStealRecoveryRateReduction_Revengeance :
+                    Main.expertMode ? BalancingConstants.LifeStealRecoveryRateReduction_Expert :
+                    BalancingConstants.LifeStealRecoveryRateReduction_Classic;
+
+            if (Main.masterMode)
+                lifeStealRecoveryRateReduction += BalancingConstants.LifeStealRecoveryRateReduction_Master;
+
+            if (Player.lifeSteal < lifeStealCap)
+                Player.lifeSteal -= lifeStealRecoveryRateReduction;
 
             // Bool for drawing boss health bar small text or not
             if (Main.myPlayer == Player.whoAmI)
@@ -973,14 +992,12 @@ namespace CalamityMod.CalPlayer
                     if (Player.IsUnderwater())
                     {
                         if (Main.myPlayer == Player.whoAmI)
-                        {
                             Player.AddBuff(ModContent.BuffType<FrozenLungs>(), 2, false);
-                        }
                     }
                 }
                 if (iCantBreathe)
                 {
-                    if (Player.breath > 0)
+                    if (Player.breath > 0 && Player.miscCounter % 2 == 0)
                         Player.breath--;
                 }
             }
@@ -1177,6 +1194,8 @@ namespace CalamityMod.CalPlayer
                     {
                         Player.statLife += 15;
                         Player.HealEffect(15);
+                        if (Player.statLife > Player.statLifeMax2)
+                            Player.statLife = Player.statLifeMax2;
 
                         if (profanedCrystal)
                         {
@@ -1366,8 +1385,6 @@ namespace CalamityMod.CalPlayer
                 bloodflareMageCooldown--;
             if (silvaMageCooldown > 0)
                 silvaMageCooldown--;
-            if (tarraMageHealCooldown > 0)
-                tarraMageHealCooldown--;
             if (scuttlerCooldown > 0)
                 scuttlerCooldown--;
             if (rogueCrownCooldown > 0)
@@ -1709,15 +1726,17 @@ namespace CalamityMod.CalPlayer
 
             // Raider Talisman bonus
             if (raiderTalisman && !StealthStrikeAvailable())
-            {
                 Player.GetCritChance<ThrowingDamageClass>() += raiderCritBonus;
-            }
 
             if (kamiBoost)
                 Player.GetDamage<GenericDamageClass>() += 0.15f;
 
             if (avertorBonus)
                 Player.GetDamage<GenericDamageClass>() += 0.1f;
+
+            // Reduce Ichor debuff defense reduction from -15 to -10
+            if (Player.ichor)
+                Player.statDefense += 5;
 
             // Fairy Boots bonus
             if (fairyBoots)
@@ -2497,7 +2516,7 @@ namespace CalamityMod.CalPlayer
 
             if (rRage)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.3f;
+                Player.GetDamage<GenericDamageClass>() += 0.1f;
                 Player.statDefense += 5;
             }
 
@@ -2554,10 +2573,8 @@ namespace CalamityMod.CalPlayer
 
             if (aeroStone && !Player.slowFall && Player.wingTime < Player.wingTimeMax)
             {
-                if (!Player.controlJump && Player.miscCounter % 5 == 0)
-                {
+                if (!Player.controlJump && Player.miscCounter % 4 == 0)
                     Player.wingTime += 1;
-                }
             }
 
             if (gShell)
@@ -2619,6 +2636,8 @@ namespace CalamityMod.CalPlayer
             {
                 Player.statLife += 1;
                 Player.HealEffect(1, false);
+                if (Player.statLife > Player.statLifeMax2)
+                    Player.statLife = Player.statLifeMax2;
 
                 // Produce an implosion of blood themed dust so it's obvious an effect is occurring
                 for (int i = 0; i < 3; ++i)
@@ -2639,6 +2658,11 @@ namespace CalamityMod.CalPlayer
             // Disabled while Overhaul is enabled, because Overhaul does very similar things to make movement more snappy
             if (CalamityMod.Instance.overhaul is null && CalamityConfig.Instance.FasterBaseSpeed)
                 Player.moveSpeed += BalancingConstants.DefaultMoveSpeedBoost;
+
+            // Reduce how slow Chilled makes the player, because it's cancerous right now
+            // The moveSpeed multiplier for Chilled in vanilla is 0.75, so we just multiply by 1.166667 here to make it 0.875, effectively cutting the reduction in half
+            if (Player.chilled)
+                Player.moveSpeed *= 1f + (1f / 6f);
 
             if (cirrusDress)
                 Player.moveSpeed -= 0.2f;
@@ -2814,7 +2838,7 @@ namespace CalamityMod.CalPlayer
 
             // Reaver Tank set nuke flight time
             if (reaverDefense)
-                flightTimeMult -= 0.2f;
+                flightTimeMult -= 0.3f;
 
             // Increase wing time
             if (Player.wingTimeMax > 0)
@@ -2822,7 +2846,6 @@ namespace CalamityMod.CalPlayer
 
             if (vHex)
             {
-                Player.blind = true;
                 Player.statDefense -= 20;
 
                 if (Player.wingTimeMax < 0)
@@ -3056,13 +3079,6 @@ namespace CalamityMod.CalPlayer
                     infiniteFlight = true;
                     ascendantInsigniaBuffTime--;
                 }
-            }
-
-            if (deepDiver && Player.IsUnderwater())
-            {
-                Player.GetDamage<GenericDamageClass>() += 0.15f;
-                Player.statDefense += 15;
-                Player.moveSpeed += 0.15f;
             }
 
             if (abyssalDivingSuit && !Player.IsUnderwater())
@@ -4177,7 +4193,7 @@ namespace CalamityMod.CalPlayer
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
-                if (npc is null || !npc.active)
+                if (npc is null || !npc.active || npc.type != ModContent.NPCType<AndroombaFriendly>())
                     return;
 
                 bool holdingsol = ((Player.HeldItem.type >= ItemID.GreenSolution && Player.HeldItem.type <= ItemID.RedSolution) || (Player.HeldItem.type >= ItemID.SandSolution && Player.HeldItem.type <= ItemID.DirtSolution) || Player.HeldItem.type == ModContent.ItemType<AstralSolution>());

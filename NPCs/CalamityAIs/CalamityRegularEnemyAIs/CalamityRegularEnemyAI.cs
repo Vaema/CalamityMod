@@ -201,7 +201,6 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs
                 }
 
                 npc.dontTakeDamage = false;
-                npc.chaseable = true;
             }
 
             targetDist = homingSpeed / targetDist;

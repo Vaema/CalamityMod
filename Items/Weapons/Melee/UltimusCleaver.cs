@@ -19,7 +19,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
             Item.rare = ItemRarityID.Yellow;
-            Item.scale = 1.5f;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;

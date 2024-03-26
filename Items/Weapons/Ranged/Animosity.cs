@@ -16,10 +16,10 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Animosity : ModItem, ILocalizedModType
     {
         public static readonly SoundStyle ShootAndReloadSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFireAndReload") { PitchVariance = 0.25f };
-        // Very cool sound and it would be a shame for it to not be used elsewhere, would be even better if a new sound is made in the future
+        // Very cool sound and it would be a shame for it to not be used elsewhere, would be even better if a new sound is made in the future, but for now this is good enough
 
         public float SniperDmgMult = 8f;
-        public float SniperCritMult = Main.zenithWorld ? 7f : 1.2f;
+        public float SniperCritMult = Main.zenithWorld ? 7f : 1.35f;
         public float SniperVelocityMult = 2f;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 70;
             Item.height = 18;
-            Item.damage = 47;
+            Item.damage = 45;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 70;
             Item.height = 18;
@@ -114,12 +114,6 @@ namespace CalamityMod.Items.Weapons.Ranged
                 //The dmg mult has to be applied here otherwise the left click gets it instead (for one shot), and the crit needs to be applied down here too cuz otherwise it never affects the weapon
                 int p = Projectile.NewProjectile(source, nuzzlePos, velocity * SniperVelocityMult, ModContent.ProjectileType<AnimosityBullet>(), (int)(damage * SniperDmgMult), knockback, player.whoAmI);
                 Main.projectile[p].CritChance = (int)(Main.projectile[p].CritChance * SniperCritMult); //To support crit mults with decimals
-                if (Main.netMode != NetmodeID.Server)
-                {
-                    // TO DO: Replace with actual bullet shells or used casings
-                    Gore.NewGore(source, position, velocity.RotatedBy(2f * -player.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>("Polt5").Type);
-                }
-
             }
             else
             {
@@ -181,6 +175,12 @@ namespace CalamityMod.Items.Weapons.Ranged
                         }
                     }
                 }
+            }
+            //shell
+            if (Main.netMode != NetmodeID.Server)
+            {
+                string goreType = Main.rand.NextBool() ? "EmptyAnimosityShell" : "EmptyAnimosityShell2";
+                Gore.NewGore(source, position, velocity.RotatedBy(2f * -player.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);
             }
             return false;
         }

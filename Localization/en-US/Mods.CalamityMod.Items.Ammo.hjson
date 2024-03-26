@@ -41,7 +41,7 @@ BubonicRound: {
 	Tooltip:
 		'''
 		Spreads the plague on hit
-		Ignores 20% of enemy defense
+		Ignores 10% of enemy defense
 		'''
 }
 
@@ -76,7 +76,11 @@ GodSlayerSlug: {
 
 HallowPointRound: {
 	DisplayName: Hallow-Point Round
-	Tooltip: ""
+	Tooltip:
+		'''
+		Gallant light deals 6 bonus damage on hit
+		This effect does not occur if the bullets are converted by special guns
+		'''
 }
 
 HolyFireBullet: {
@@ -166,7 +170,6 @@ VanquisherArrow: {
 		'''
 		Powerful arrows forged with cosmic steel
 		Pierces through tiles and homes in on enemies
-		Creates a large explosion upon expiration
 		'''
 }
 

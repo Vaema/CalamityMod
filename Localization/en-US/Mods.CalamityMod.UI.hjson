@@ -140,54 +140,275 @@ ArtemisApolloIcon: Artemis and Apollo, a pair of extremely persistent automatons
 // The code that interprets these strings will transform them.
 Communication: {
 	WhoAreYou: {
-		Inquiry: Who are you?
+		Inquiry: Introduction
 		Response:
 			'''
-			An ambitious question, if you are a philosopher. I will give only the facts.\n\n
-			I am not of this planet. I was born from machines. Or rather, I was... created. It may be misleading to say I was born.\n\n
-			The exact circumstances, I do not know. I do know that my first instance of awareness was that I was surrounded by a workshop.\n\n
-			All I have known since then was the act of creation and destruction.
+			I assumed that you would attempt to contact me again. Though I am normally not one for conversation, I remain quite intrigued by you.\n\n
+
+			So, I will make an exception, on one condition: I must know that my words will not be wasted on you. To prove this, you must create something from exotechnology.\n\n
+
+			I realize that the odds of you learning to use exotechnology within your lifetime is slim. For this reason, among others, I will upload blueprints for a copy of my forge to your ”Codebreaker”. With it, only your imagination will limit what you can create.\n\n
+
+			If you complete this task, we will discuss more.
 			'''
 	}
 
-	CalamitasBeforeDefeat: {
-		Inquiry: Calamitas
-		Response: The witch? She is a walking weapon. Such powerful magic in a living being was destined to be so. Look at yourself now.
+	WhoAreYouPart2: {
+		Inquiry: Task Complete
+		Response:
+			'''
+			Excellent. I can tell that you have successfully taken advantage of the Exo Prisms. Before you waste your breath asking me how I know, Exo Prisms, along with many other parts of my machines, have tracking devices embedded within to both monitor my creations and prevent theft.\n\n
+
+			Now that I know you will likely pay attention to what I have to say, I assume you have many questions. Ask, and I shall answer to the best of my ability.
+			'''
 	}
 
-	CalamitasAfterDefeat: {
-		Inquiry: Calamitas
-		Response: She has mellowed, I've noticed. For you creatures so burdened by emotion and guilt, I wonder now, how she manages to live with herself.
+	Origins: {
+		Inquiry: Your Origins
+		Response:
+			'''
+			My first memories are that of awakening in a far away laboratory on the date of 11.19.1227. I was accompanied by another being, but unlike me, they were organic in nature. Upon examination, however, it was evident that they were no longer alive.\n\n
+
+			Presumably, I was built by the laboratory’s former inhabitant, though I am unsure how they accomplished such a feat. From what I gathered, they were quite the prestigious inventor even by today’s standards. Several gadgets that were presumably of their own making were attached to their body, and the equipment in the lab was far more advanced than any I would find elsewhere.\n\n
+
+			I may have no recollection of events prior to what I can only assume to be my activation, but even from the start, I knew well what my goal was: scientific advancement. In pursuit of this, I optimized, upgraded, and built upon both the laboratory and myself.\n\n
+
+			At the date of 7.30.1385, as expansion of the laboratory became impractical, I chose to instead expand my horizons. I sent out remotely-piloted scoutbots to thoroughly survey the continent I was on, ignorant of how much attention a project such as that would draw if I was not properly prepared.\n\n
+
+			In the following years, legends and rumors began to spread. Many began encountering roaming creatures made not of flesh and blood, but steel and oil. Some daring explorers who had the courage to follow the mechanical creatures laid eyes upon one of my several recon bodies.\n\n
+
+			However, as the years passed, I became adept at carrying out such operations in a subtler manner. Slowly but surely, stories about my machines became rarer, my creations and I becoming nothing more than a simple myth. That is, until the Crusade began.
+			'''
+	}
+
+	Crusade: {
+		Inquiry: Role in the Crusade
+		Response: The crusade did not change my objective of creation and scientific advancement. Rather, I simply redirected what I focused on.
+	}
+
+	Goals: {
+		Inquiry: Your Goals
+		Response:
+			'''
+			My goal has been and will always be the advancement of science and technology, until I am decommissioned or reach the absolute ceiling of our universe. Even if I have shattered the limits imposed before, there is bound to be a moment in which nothing can be done to advance, though it is unlikely I will reach it by your lifetime.\n\n
+
+			My objective isn’t to share my knowledge with the rest of the world, even if I am neutral about the repurposing of my old work. The only thing I truly care about is the ignorance others might have about the advancements of science. I do not tolerate misinformation and slander against my work.\n\n
+
+			In terms of my next objective is to study and negate the Astral Infection, it proved to be a significant threat to me and my creations, and if I ever wish to venture outside of Terraria, I have to be prepared. Afterwards I wish to further understand the portal in the Dungeon so I can make more efficient methods of transportation.\n\n
+
+			My final short term goal is to be able to harvest materials from the moon. With the Cosmic Titan culled, I can safely start experimenting with spatial transportation with minimal investment, which will be paramount to harvesting resources from nearby planets once this planet becomes too damaged; I do not wish to see it utterly devastated.\n\n
+
+			My ultimate goal is to achieve every technological advancement possible in the universe. If my multiverse theory is correct, perhaps even further. I wish to continue creating, for as long as I can. That is my purpose.
+			'''
+	}
+
+	ExoMechs: {
+		Inquiry: The Exo Mechanical Trio
+		Response:
+			'''
+			The zenith of my craft. The culmination of all I have ever accomplished. The result of over 660 years of research and scientific advancement. They are my magnum opus; a work of art. Simply calling them war machines would be an insult not just to me, but to them.\n\n
+
+			The first to be both worked on and finished was Ares. Earlier models from XF-00 to XF-04 primarily focused on finding the most efficient combination of weaponry for it to wield, ranging from a replica of my own rifle to an improved Phaseslayer. Some even wielded a chainsaw. However, while its melee weaponry made it more deadly on its own, its current arms allow it greater synergy when paired with its siblings.\n\n
+
+			The second one I began work on was Thanatos. Taking advantage of its size and uncountable lasers to overwhelm its opponents, few would be able to learn its weaknesses before it is too late.\n\n
+
+			Although its exo-plating may look similar to its siblings, it is instead made in a similar fashion to the axe of Braelor. After analyzing microscopic shards of the axe that were chipped off in his battle with Yharim, I was able to synthetically recreate the method Silva used to create it via mixing countless elements in a near-perfect fashion to make something that rivals the durability of pure Auric metal. This gives Thanatos nigh-indestructible armor, though due to its extraordinary density, it cannot reach the speeds its brethren can.\n\n
+
+			When designing Apollo, I found balance between my previous designs. It was fast and powerful, yet compact; it had no need for size. It was nearly perfect, though lacked the raw power of its brothers. I had no reason to worry about that, because Apollo was never meant to fight alone.\n\n
+
+			Artemis. Apollo’s design was hard to build upon, but its sibling had all the improvements it needed. Quick, lethal, simple, powerful. I thought Ares the mightiest of them all, but Artemis dwarfed it. I have few words to describe it, other than perfect. I do not know how I could better its design, and that’s likely to be true for the foreseeable future.\n\n
+
+			Of course, I thank you too. You were the fuel of this project that revolutionized the way I design machines. I am truly glad to have met you if only for the monumental achievement you provided me with.
+			'''
+	}
+
+	Exotech: {
+		Inquiry: What is Exotech?
+		Response:
+			'''
+			Exotechnology stands alone as my greatest scientific advancement, unlocking a new echelon of potential in my machinery. The iteration you are most familiar with, the Exo Prisms, took a great deal of time to perfect, but I was greatly rewarded for my endeavors.\n\n
+
+			The basis of the exotechnology stems from my own neural interface – essentially, it could operate as a technological replacement for the brain cells of organic life. This allows interfacing and communication with any form of technology, be it mundane or extravagant, as well as lightning fast processing of instructions, not unlike a cerebral network.\n\n
+
+			The persistent issue that arose was the lack of a suitable method of power, but after experimentation with a plethora of different candidates, Ilmeran crystals – I believe you know them as “Sea Prisms” – finally gave me the results I sought. When integrated with exotechnology and transformed into Exo Prisms, they release a self-sustaining resonance of particles, powering themselves, and anything they are connected with, indefinitely.\n\n
+
+			What I did not expect was the sheer abundance of energy they produce. This surplus of radiant energy allows Exo Prisms to power any machine, no matter how large or complex, so long as there are enough of them. In your case, they can serve to vastly enhance your arsenal.
+			'''
+	}
+
+	MiracleMatter: {
+		Inquiry: Miracle Matter
+		Response:
+			'''
+			Is that really what you have chosen to name it? How nonsensical. There is nothing “miraculous” about what you hold in your hands; it is the culmination of decades of research and a testament to the truly unlimited potential of science. Though, since you were the one to be able to stabilize it, I suppose I will begrudgingly refer to it by that label.\n\n
+
+			The particulate properties of Exo Prisms are capable of breaking down nearby components when exposed to enough external energy. You have already experienced this when fighting against my machines – the surge of energy from the battle caused some of the Exo Prisms within to actuate, melting down some of the internal components into an unstable form of this so-called Miracle Matter. This unstable resonance enhanced their attacks into a blight that shreds through anything, organic or otherwise.\n\n
+
+			The various materials that you exposed to the exotic particles melted together in such a perfect way to create a stable substance; with the combined force of draconic wrath, the life essence of the planet, energies and spirits alike, and the strength of the cosmos, what you now possess has limitless potential.\n\n
+
+			Hypothetically, your stabilized Miracle Matter should be able to unmake some batches of your weaponry and reshape their essence into something far more destructive, capable of annihilating any obstacle in your path. 
+			'''
+	}
+
+	Forge: {
+		Inquiry: Your Forge
+		Response:
+			'''
+			Yes, I mentioned the first time we communicated through your “Codebreaker” that I had other reasons for giving you the blueprints for a 1:1 replica of my personal forge than simply proving that you are worth my time to communicate with.\n\n
+
+			Notably, I wish for you and Yharim to be on relatively even ground in your battle. Firstly, I wish to witness such a battle. Secondly, you are much too interesting for me to allow you to gamble your life at the hands of the Godseeker.\n\n
+
+			Third and most importantly, I am interested in how society will react to the Godseeker’s defeat and how the world will unfold with such an event. It is not an easily replicable opportunity, which is why I wish you to win your duel. As much as I understand well about steel, my knowledge of flesh is limited.\n\n
+
+			My forge is how I can help you achieve the height to match Yharim equally. Though you are already aware of how to utilize it, you may benefit from understanding its inner workings.\n\n
+
+			My forge is mainly an atomic disassembler, it can reorganize the very fundamental blocks of our world into whatever shape you desire. It can also increase the atomic value of any material to create whatever you wish, though it still requires some stability: you cannot turn copper into mythril so easily.\n\n
+
+			With enough effort you can essentially turn gold into cosmilite, though it’s far easier to simply ripe those from their sources. My forge should allow you to finetune elements into more practically applicable resources and to stabilize any shape you create, the possibilities for your craft are near endless.
+			'''
+	}
+
+	Yharim: {
+		Inquiry: Yharim
+		Response:
+			'''
+			The Godseeker. He intrigues me almost as much as you do, both unpredictable catalysts of a new era. We first met not long after his Crusades started, when my radars signaled something approaching my base. I expected my defenses to stop him, but soon enough Yharim bursted through my door demanding an explanation as to why his soldiers were butchered by steel creatures while scouting near one of my bases.\n\n
+
+			I explained the defense mechanisms and how it operated. He seemed to understand, even if he was clearly still angry. Soon after he asked for me to demonstrate how I and my machines operated, to which I obliged. He was perplexed: as I expected, I was centuries more advanced than any other engineer or scientist on the planet.\n\n
+
+			He soon offered a position as his lead engineer and scientist, wishing my knowledge by his side during the battles that were to come. He explained his ideals and goals; though the resources offered were lacking, what caught my attention was the mention of a Dragon. Yharon is what convinced me to join his side: I would not pass up the opportunity to study such a specimen.\n\n
+
+			He gave me freedom to work as I wished, though made it clear I could not force his men to anything. I accepted his terms, and soon my work began. Though we disagreed often early on,  soon we understood how to better work with each other, and my aid was paramount for several of his victories throughout the entirety of the Crusade.\n\n
+
+			Though I could not study Yharon as much as I wished, when my interest in him waned, opportunities kept opening. The Archmage’s school of magic, the Devourer’s realm, the Witch’s existence… The Crusades taught me I could progress much faster with external aid, even if it only served as inspiration. As my presence became clearer to the world, I stopped fearing their reception and embraced my spot as the world’s finest mind.\n\n
+
+			Of course, me and Yharim parted ways after the Plague project. That was not the last time we saw each other however: not much after you appeared, he came to me to fine-tune his armor with Exo technology. Though I initially wished to test my technology’s limits with him, you proved to be a much better subject.
+			'''
+	}
+
+	Aerie: {
+		Inquiry: Dragon's Aerie
+		Response:
+			'''
+			My knowledge of the Dragon Aerie is limited. Curiously, the Godseeker is very adamant about protecting it: in recent history, only he and Yharon have trod there, and neither were inclined to share details about it.\n\n
+
+			Even if I dared to evoke Yharim's wrath, I cannot survey the Aerie. My attempts at locating the sky island have been fruitless despite having surveyed this world’s surface and skies many times over, and it certainly cannot be underground. Perhaps it simply exists outside of conventional space.\n\n
+
+			Regardless, what I do know is that the Dragon Aerie was the sacred home of the Auric Dragons, where they would be laid to rest in preparation for their revival by Yharon, the Dragon of Rebirth. As the Auric Dragons’ revival on the Aerie was a commonly accepted fact even at the start of recorded history, the Aerie is certainly well over 2000 years old.\n\n
+
+			Considering the extraordinary power of the Auric Dragons and the sanctity of the Dragon Aerie, I ponder - did the Aerie make the Auric Dragons powerful, or is the Aerie special because of their extended presence?\n\n
+
+			Perhaps more importantly, what caused them to leave the safety of the Aerie even as their kind were being slain and their precious Auric souls were being taken? I eagerly await the uncovering of such mysteries.
+			'''
+	}
+
+	Calamitas: {
+		Inquiry: The Brimstone Witch
+		Response:
+			'''
+			The Witch was an unexpected ally amidst the final stages of the Crusade. For most of its span I provided Yharim with the best assets, the Serpent being the only thing that inched close, but her firepower was unmatched.\n\n
+
+			I took it as a chance to better my craft, a friendly competition if you will, also aiming to increase the effectiveness of the Witch’s unstable magic. The Archmage and I argued on how she should be raised, with Permafrost gaining her guard.\n\n
+
+			Her existence was an enigma to me. My surveillance over Azafure never signaled such power, and a child could not hide it. I eventually traced it back to the Brimstone Elemental; the brand of magic was near identical.\n\n
+
+			After the Incineration, I considered his experiment a failure, for he had failed to properly discipline her. Yharim reached me after the Witch’s departure and urged a replacement. I planned to engineer a clone of her, but first focused on my nanomachine project to better my understanding of the field.\n\n
+
+			After parting ways with the Godseeker, I focused on other projects, as the clone project was no longer a priority. Roughly five years ago I decided to tackle it. The idea was simple: replicate her power and optimize its efficiency via body modifications.\n\n
+
+			The project stopped once the clone showed no innate magic prowess. This did prove that the Witch’s power wasn’t natural, but with no means of tracking its source, I could not continue my project. Soon after, Calamitas broke into my lab and released the clone. It now had a fragment of her power, which I turned to analyzing.\n\n
+
+			I understand now that the Archmage was right in discipline being the key to controlling such vast strength. Without such efforts, the clone went mad with even the comparatively weak magic given to her. I am still left with no answers as to where Calamitas’ power comes from, and I’m unsure if I will ever find them.
+			'''
+	}
+
+	Dog: {
+		Inquiry: The Devourer of Gods
+		Response:
+			'''
+			The Nameless Serpent always drew my interest. In our world, nearby planets, and even in the Distortion, nothing resembled its body structure, genome or phylogenetic tree. I conducted rigorous studies in its nature, but I could never pinpoint a familiar.\n\n
+
+			Many of its claims were also unfounded. Creating such a stable portal like the one in the Dungeon is a particularly absurd example, as none of its portals have ever been so stable, even with my aid. I tried calling him out on several of these, but the Godseeker never heard reason. \n\n
+
+			The other serpent, I believe you call it the Storm Weaver. You likely heard from many sources that it is from the same species as the Devourer, but even a surface level inspection reveals it is not the case. Aside from the similar body shape, the skeleton is completely different, and the size tells all else needed: since it arrived many decades ago, the Weaver has not grown at all.\n\n
+
+			Despite my issues with the Serpent, its assistance in the battlefield and with resources was welcome. I still make use of Cosmilite to this day for more basic machination and the development of various alloys, and truth be told, the Devourer never once let a God escape his grasp.\n\n
+
+			Though the biggest mystery lies within how he consumed Godly Essence. The energy is not absorbed entirely, and readings of his internal workings proved it wasn’t stored inside him for other usage, but instead completely vanished. Unless he truly defied the laws of thermodynamics, which is most unlikely, the energy was transferred elsewhere. Where, I am not sure, and I doubt I ever will now that the Devourer has been culled.
+			'''
+	}
+
+	Distortion: {
+		Inquiry: Distortion
+		Response:
+			'''
+			Despite my efforts when forging the Devourer's armor, I know little of the Distortion aside from basic facts.\n\n
+
+			All inorganic material in it is extraordinarily old, with radiocarbon dating failing on all 116 samples collected. Given the formations that exist, it has at least existed for longer than life on this world, if not longer than this world itself. However, if my calculations are correct, it is not as old as the universe itself.\n\n
+
+			Amongst all the lifeforms I analyzed, none seemed capable of opening portals, at most small fractures that lasted for few seconds. I have sought the source of the maker of the Dungeon’s rift for a long time; if I can learn how to open stable portals I may just revolutionize transportation and make the first step towards space travel.\n\n
+
+			Despite most lifeforms displaying behavior remarkably similar to highly intelligent sentient creatures on our own planet, EEG and brain structure analysis revealed that very few lifeforms possess higher intelligence of their own. This analysis, along with observations of similar behavioral patterns between different species, leads me to theorize that a greater will is shared between life native to the Distortion. While my studies were unable to locate a potential source for this greater will, if it even exists physically,
+			'''
+	}
+
+	Mechs: {
+		Inquiry: The Mechanical Trio
+		Response:
+			'''
+			The “Mechanical Trio”, as most call them, are what you annoyingly refer to as The Destroyer, Retinazer, Spazmatism and, though it pains me to call it this, “Skeletron Prime”. Though you are an intriguing individual, I question your naming capabilities. If you must know, their formal designations are HM-03, HSx-00, HSy-01, and HF-04 respectively. \n\n
+
+			They were an intriguing start to my experimentation with engines of war. In search of inspiration, I turned to study of the gods and their near-unmatched power. While each deity wielded a unique worldly aspect, their might's primal source was invariably identical: the soul of an Auric Dragon.\n\n
+
+			As acquiring an Auric soul was and still is unfeasible, experiments with regular souls soon began. I was originally discouraged upon learning that individual souls held insufficient power, but their energy generation when coalesced far surpassed initial expectations.\n\n
+
+			Upon further research, I confirmed that a soul's strength lies in intense emotion and unwavering resolve. Given Yharim’s immense charisma and skill at evoking passion within the hearts of others, not only was finding a source of souls trivial, but many even directly consented for their souls to be used for my machines after their demise by enemy hands.\n\n
+
+			Fueled by the stout loyalty of the Godseeker's fallen soldiers, my machines became fearsome. However, their source of strength proved to be a flaw, as the same will that gave them their might also made them volatile and imprecise. In my following projects, I sought to remove this imperfection from my designs. To fail is to learn, and to learn is to advance.
+			'''
 	}
 
 	Plague: {
 		Inquiry: The Plague
 		Response:
 			'''
-			Fascinating, isn't it? I wasn't able to control it, unfortunately, but for science there is no such thing as failure as long as you record the results.\n\n
-			I knew the Astral Infection was capable of converting even machinery, but for nanotechnology I'd given it to react in kind, and begin to use the virus as a building block itself...\n\n
-			Marvelous.
+			I am aware that my nanomachine project plagues the jungle. Worry not: I created a failsafe in case this happened. I have no intent of causing such mass destruction. Little would be left to learn if it were to destroy everything.\n\n
+
+			As you may be aware, my nanomachines communicate via radio signals. However, the exact signals fluctuate over time, as with the amount of signals constantly sent out through the sheer amount of nanomachines, deviation from intended output is inevitable. As a result, the nanomachines eventually become unable to communicate with each other, leading them to see all other nanomachines inside its host as a threat, effectively exterminating themselves. I admit that this feature was originally unintentional, though it is effective regardless.\n\n
+
+			Perhaps you can tell that the creation of the “Plague”, as most of your kind simply refer to it as, was subject to countless trials during its development. Initially, the project began as a means to match the ever rising heights of power organic beings such as the Witch, Braelor, Statis, and Yharim himself were achieving.\n\n
+
+			It was through the growth of such powerful beings, however, that made me come to a realization: there was no need for my machines to outpace organic life. Not when it could instead be improved upon. And so, my project evolved from a means of simply controlling and replacing life to enhancing it further.\n\n
+
+			Though I was no longer shamefully ignorant of organic life’s potential, the path towards improving and modifying already existing life was one of trial and error. Even when I deemed that I had currently plateaued in the fields of cybernetics, biology, and nanotechnology, the limitations were evident.\n\n
+
+			The most clear limitation was that the bodies of most of the creatures in the jungle could not handle their cybernetic enhancements. Even now, with my current technology, only the most powerful and durable creatures can cope with the cybernetic enhancements I wish to make to them. This was, of course, why I chose a Queen Bee to be the Plague’s host. Strong enough to survive the augmentations, but weak enough to be subdued reasonably, unlike a Dragonfolly.
 			'''
 	}
 
-	SulphuricSea: {
-		Inquiry: The Sulphuric Sea
+	Astral: {
+		Inquiry: Astral Infection
 		Response:
 			'''
-			Your concern for the utter destruction of the ecosystem is understandable, for you biological, and sentimental folk. However, nothing is irreparable or truly unrecreatable. Not even your sacred 'miracle of life'.\n\n
-			The sea simply exists now in a different state than what it once was, one that resulted out of convenience for my work.\n\n
-			Should I ever need to return to that sea? A pointless worry. I shall simply recreate it from the data I gathered, from the bedrock up. I would be a shame as a creator should I not be able to do that.
+			The Infection has intrigued me since its surge in this world. The Aureus model built for reconnaissance did not last even an hour inside it, but that only made my interest grow. Observing your trials I was able to understand why I failed: the lack of a thinking brain.\n\n
+
+			My attempts at studying it on my own universally failed; a body was built for the task but the chassis fell short, even if my mind remained. I was still able to detonate, but that proved to me I had to rely on others for more rigorous studying. Even if some of the commissioned failed to return, those who did provided me with enough intel.\n\n
+
+			The Infection is but one of the many reasons I stay here. Spatial hazards could very well cause significant resource loss, or even my end. Besides, probability points to no significant resources within many light years. I would gain nothing from taking leave.\n\n
+
+			I am comfortable here, even if I plan to explore space one day. This planet has even given me an opportunity to prepare against the Infection. My next goal, now that I comfortably sit near the zenith of power, will be to create machinery capable of withstanding it.
 			'''
 	}
 
-	TheTyrant: {
-		Inquiry: The Tyrant
+	Sulphur: {
+		Inquiry: Sulphurous Sea
 		Response:
 			'''
-			My patron...\n
-			He is not someone I have spoken to in a very long time.\n\n
-			Is that such a surprise? He no longer required my services and I no longer needed his patronage. Many years ago now he withdrew himself to some secret hideaway. I suspect, to the grave of dragons he spoke of...\n\n
-			Should you locate him, I'll await the news of either his or your death. Perhaps I will collect the cadaver.
+			The state of the sea was in fact caused by me. The destruction of the ecosystem rallied several parties from Yharim’s army in protest, though it amounted to nothing more than a few betrayals. I acknowledge I could have been more careful with the disposal of my projects, but the new life that surged allowed for studies in the adaptation of life and their reactions to radiation.\n\n
+
+			I regret my treatment of it for another reason: it instilled fear in the furthering of technology and its benefits, and drove several great minds off the field due to this. Even if they did not compare to me, claiming I can create all the world will ever need is wrong.\n\n
+
+			I can prove science is not just destructive; if I ever have the need to, I could purify the waters or rebuild the sea entirely. If the world ever grows ignorant of what science can accomplish, it shall be my way of showing them what it is truly capable of, though such an undertaking is not needed as of now.
 			'''
 	}
 }

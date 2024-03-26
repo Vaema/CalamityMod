@@ -117,11 +117,11 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < 6; i++)
             {
-                Dust polterplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12f, 12f), 261);
-                polterplasm.color = Color.Lerp(Color.LightPink, Color.Red, Main.rand.NextFloat(0.67f));
-                polterplasm.scale = 1.2f;
-                polterplasm.fadeIn = 0.55f;
-                polterplasm.noGravity = true;
+                Dust necroplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12f, 12f), 261);
+                necroplasm.color = Color.Lerp(Color.LightPink, Color.Red, Main.rand.NextFloat(0.67f));
+                necroplasm.scale = 1.2f;
+                necroplasm.fadeIn = 0.55f;
+                necroplasm.noGravity = true;
             }
         }
     }

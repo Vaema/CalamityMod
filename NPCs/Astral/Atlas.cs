@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.Astral
     {
         //TODO -- draw 4 pixels lower than actual bottom position (arm overlaps tiles)
 
-        private static Texture2D glowmask;
+        public static Asset<Texture2D> glowmask;
 
         //CONSTANTS
         private const int sheetHeight = 852;
@@ -108,7 +108,7 @@ namespace CalamityMod.NPCs.Astral
             //also it's visuals are messed up on npc spawners etc. because the sheet is 3 wide.
             //not much we can do. looks fine in-game so /shrug
             if (!Main.dedServ)
-                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AtlasGlow", AssetRequestMode.ImmediateLoad).Value;
+                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AtlasGlow", AssetRequestMode.AsyncLoad);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionYOverride = -5
@@ -590,7 +590,7 @@ namespace CalamityMod.NPCs.Astral
 
             //draw glowmask
             spriteBatch.Draw(
-                glowmask, position, NPC.frame,
+                glowmask.Value, position, NPC.frame,
                 Color.White * 0.65f, 0f, default, 1f, //color, rotation, origin, scale
                 effect, 0f); //effect, drawlayer
 

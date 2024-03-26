@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Melee
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
 
-        const float MaxTime = 40;
+        const float MaxTime = 75;
         public float Timer => MaxTime - Projectile.timeLeft;
 
         public override void SetDefaults()
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.timeLeft > 35)
+            if (Projectile.timeLeft > 70)
                 return false;
 
             DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Texture2D starTexture = Request<Texture2D>("CalamityMod/Particles/Sparkle").Value;
             Texture2D bloomTexture = Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-            //Ajust the bloom's texture to be the same size as the star's
+            //Adjust the bloom's texture to be the same size as the star's
             float properBloomSize = (float)starTexture.Height / (float)bloomTexture.Height;
 
             Color color = Main.hslToRgb((Main.GlobalTimeWrappedHourly * 0.6f) % 1, 1, 0.85f);

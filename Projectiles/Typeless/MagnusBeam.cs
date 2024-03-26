@@ -1,5 +1,7 @@
 ﻿using System;
+using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -200,14 +202,15 @@ namespace CalamityMod.Projectiles.Typeless
         {
             target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 480);
 
-            if (!target.canGhostHeal || Main.player[Projectile.owner].moonLeech)
+            Player player = Main.player[Projectile.owner];
+            player.statMana += 25;
+            player.ManaEffect(25);
+
+            int heal = (int)Math.Round(hit.Damage * 0.1);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            Player player = Main.player[Projectile.owner];
-            player.statLife += 1;
-            player.statMana += 25;
-            player.HealEffect(1);
-            player.ManaEffect(25);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<RoyalHeal>(), BalancingConstants.LifeStealRange);
         }
 
         public override void OnKill(int timeLeft)

@@ -15,6 +15,9 @@ namespace CalamityMod.Items.Weapons.Melee
     public class ExaltedOathblade : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        internal const float ShootSpeed = 3f;
+
         public override void SetDefaults()
         {
             Item.width = 88;
@@ -31,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.Rarity8BuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<ForbiddenOathbladeProjectile>();
-            Item.shootSpeed = 3f;
+            Item.shootSpeed = ShootSpeed;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -40,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Melee
             for (int i = -index; i <= index; i += index)
             {
                 Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
-                Projectile.NewProjectile(source, position, perturbedSpeed, type, damage / 2, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, perturbedSpeed, type, damage / 2, knockback, player.whoAmI);
             }
             return false;
         }

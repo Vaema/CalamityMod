@@ -103,7 +103,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(bFlames, abaddon ? 10 : 30, purity);
             ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
             ApplyDoTDebuff(hFlames, reducedHolyFlamesDamage ? 20 : 40, purity);
-            ApplyDoTDebuff(vHex, 30);
+            ApplyDoTDebuff(vHex, 35);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || purity);
             ApplyDoTDebuff(pFlames, 30, purity);

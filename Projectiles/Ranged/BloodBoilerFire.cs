@@ -22,6 +22,7 @@ namespace CalamityMod.Projectiles.Ranged
         public bool improvedHeal = false;
         public bool setHomingVelocity = false;
         public float HomingVelocity = 0.18f;
+
         public override void SetDefaults()
         {
             Projectile.width = 43;
@@ -36,6 +37,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localNPCHitCooldown = -1;
             Projectile.timeLeft = 300;
         }
+
         public override void AI()
         {
             if (Projectile.timeLeft > 220) // Main visual size changes
@@ -56,6 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
                 BloodParticle blood = new BloodParticle(Projectile.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
                 GeneralParticleHandler.SpawnParticle(blood);
             }
+
             if (Projectile.timeLeft < 296) // The main visual of the projectile and the blood mist it produces before turning around
             {
                 BloodBoilerMetaball2.SpawnParticle(Projectile.Center, particleSize * 2.3f);
@@ -80,6 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(pulse);
                 }
             }
+
             if (!playedSound)
             {
                 SoundEngine.PlaySound(SoundID.Item34, Projectile.position);
@@ -91,8 +95,10 @@ namespace CalamityMod.Projectiles.Ranged
             // A bunch of small things mostly for visuals when the projectile starts turning around before it homes on the player
             if (Projectile.timeLeft == 235)
                 bloodCloudReturn = Projectile.velocity;
+
             if (Projectile.timeLeft <= 235 && Projectile.ai[1] == 0f)
                 Projectile.velocity *= 0.98f;
+
             if (Projectile.timeLeft == 220)
             {
                 Projectile.velocity = -bloodCloudReturn.RotatedBy(Projectile.ai[2] == 5 ? -0.7f : 0.7f) * 1.2f;
@@ -106,6 +112,7 @@ namespace CalamityMod.Projectiles.Ranged
                     dust2.scale = Main.rand.NextFloat(1.2f, 2f);
                 }
             }
+
             if (Projectile.timeLeft == 209) // Begin returning to player
             {
                 Projectile.ai[1] = 1f;
@@ -118,6 +125,7 @@ namespace CalamityMod.Projectiles.Ranged
                     HomingVelocity = Main.rand.NextFloat(0.29f, 0.32f);
                     setHomingVelocity = true;
                 }
+
                 Projectile.extraUpdates = 5;
                 bool dustEffect = Main.rand.NextBool(3) ? false : true;
                 int dustColor = dustEffect ? 296 : 60;
@@ -167,19 +175,33 @@ namespace CalamityMod.Projectiles.Ranged
                     if (Projectile.velocity.Y > 0f && yDist < 0f)
                         Projectile.velocity.Y -= HomingVelocity;
                 }
+
                 if (Projectile.timeLeft == 5) // Absolutely make sure the player gets the chance to heal
                     Projectile.Center = playerCenter;
+
                 // Delete the projectile if it touches its owner. Has a chance to heal the player again
                 if (Main.myPlayer == Projectile.owner)
                 {
                     if (Projectile.Hitbox.Intersects(player.Hitbox))
                     {
-                        if (Main.rand.NextBool(4) && !Main.player[Projectile.owner].moonLeech)
+                        if (!Main.player[Projectile.owner].moonLeech)
                         {
-                            int bonusHeal = Main.rand.NextBool(3) ? 3 : 2;
-                            player.statLife += improvedHeal ? bonusHeal : 1;
-                            player.HealEffect(improvedHeal ? bonusHeal : 1);
+                            int bonusHeal = Main.rand.NextBool(3) ? 6 : 4;
+                            int heal = improvedHeal ? bonusHeal : 2;
+
+                            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
+                            {
+                                Projectile.Kill();
+                                return;
+                            }
+
+                            Main.player[Main.myPlayer].lifeSteal -= heal;
+                            player.statLife += heal;
+                            player.HealEffect(heal);
+                            if (Main.player[Projectile.owner].statLife > Main.player[Projectile.owner].statLifeMax2)
+                                Main.player[Projectile.owner].statLife = Main.player[Projectile.owner].statLifeMax2;
                         }
+
                         Projectile.Kill();
                     }
                 }
@@ -191,6 +213,7 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(ModContent.BuffType<BurningBlood>(), 600);
             improvedHeal = true;
         }
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 0)

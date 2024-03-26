@@ -14,7 +14,6 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 64;
             Item.height = 64;
-            Item.scale = 1.5f;
             Item.damage = 100;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 35;
@@ -43,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Melee
             for (int k = 0; k < totalProjectiles; k++)
             {
                 Vector2 projRotation = spinningPoint.RotatedBy(radians * k);
-                Projectile.NewProjectile(source, target.Center, projRotation, type, bombDamage, hit.Knockback, Main.myPlayer);
+                Projectile.NewProjectile(source, target.Center, projRotation, type, bombDamage, hit.Knockback * 0.5f, Main.myPlayer);
             }
         }
 

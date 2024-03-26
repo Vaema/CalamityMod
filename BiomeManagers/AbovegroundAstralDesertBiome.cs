@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
 using Terraria;
+using Terraria.GameContent.Events;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,7 +13,7 @@ namespace CalamityMod.BiomeManagers
         public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/AstralWater");
         public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/AstralDesertSurfaceBGStyle");
         public override int BiomeTorchItemType => ModContent.ItemType<AstralTorch>();
-        public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
+        public override SceneEffectPriority Priority => Sandstorm.Happening ? SceneEffectPriority.Environment : SceneEffectPriority.BiomeHigh;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AstralDesertIcon";
         // Could use its own unique background
         public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AstralBG";

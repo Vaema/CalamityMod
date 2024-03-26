@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Balancing;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -76,10 +77,10 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
-            if (target.life <= 0)
+            if (target.life <= 0 && target.lifeMax > 5)
             {
                 if (Projectile.owner == Main.myPlayer)
-                    CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], 8, ModContent.ProjectileType<EssenceFlame>(), 1200f, 0f);
+                    CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], 8, ModContent.ProjectileType<EssenceFlame>(), BalancingConstants.LifeStealRange, 0f);
             }
         }
     }

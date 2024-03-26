@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Healing;
+﻿using System;
+using CalamityMod.Balancing;
+using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -80,20 +82,11 @@ namespace CalamityMod.Projectiles.Ranged
                 Main.projectile[proj].scale = (Projectile.ai[1] * 0.5f) + 1f;
             }
 
-            if (Main.player[Projectile.owner].moonLeech)
+            int heal = (int)Math.Round(hit.Damage * 0.05);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            float healAmt = hit.Damage * 0.05f;
-            if ((int)healAmt == 0)
-                return;
-
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (healAmt > CalamityMod.lifeStealCap)
-                healAmt = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], healAmt, ModContent.ProjectileType<TransfusionTrail>(), 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<TransfusionTrail>(), BalancingConstants.LifeStealRange);
         }
     }
 }

@@ -11,6 +11,19 @@ namespace CalamityMod.Items.Weapons.Melee
     public class DarklightGreatsword : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        internal const float ShootSpeed = 2f;
+
+        internal const float ProjectileDamageMultiplier = 0.8f;
+
+        internal const float TrueMeleeSlashProjectileDamageMultiplier = 0.8f;
+
+        internal const float SlashProjectileDamageMultiplier = 0.4125f; // Makes them do 33% damage since main projectile does 80% damage
+
+        internal const int SlashProjectileLimit = 4;
+
+        internal const int SlashCreationRate = 18;
+
         public override void SetDefaults()
         {
             Item.width = 92;
@@ -20,37 +33,43 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
-            Item.knockBack = 5;
+            Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.Rarity5BuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<DarkBeam>();
-            Item.shootSpeed = 25f;
+            Item.shootSpeed = ShootSpeed;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            type = Main.rand.NextBool() ? type : ModContent.ProjectileType<LightBeam>();
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, (int)(damage * 0.8), knockback, player.whoAmI);
-            return false;
-        }
+            Vector2 offset = new Vector2(Item.width * 0.25f * -player.direction, Item.height * 0.25f);
+            if (player.gravDir == 1f)
+                position -= offset;
+            else
+                position += offset;
 
-        public override void MeleeEffects(Player player, Rectangle hitbox)
-        {
-            if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.WaterCandle);
+            velocity = (Main.MouseWorld - position).SafeNormalize(Vector2.UnitY) * ShootSpeed;
+            type = Main.rand.NextBool() ? type : ModContent.ProjectileType<LightBeam>();
+            Projectile.NewProjectile(source, position, velocity, type, (int)(damage * ProjectileDamageMultiplier), knockback * ProjectileDamageMultiplier, player.whoAmI);
+            return false;
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Frostburn2, 180);
+            target.AddBuff(Main.rand.NextBool() ? BuffID.Frostburn2 : BuffID.OnFire3, 240);
+            int slashCreatorID = ModContent.ProjectileType<DarklightGreatswordSlashCreator>();
+            int slashDamage = (int)(player.CalcIntDamage<MeleeDamageClass>(Item.damage) * TrueMeleeSlashProjectileDamageMultiplier);
+            float slashKnockback = Item.knockBack * TrueMeleeSlashProjectileDamageMultiplier;
+            if (player.ownedProjectileCounts[slashCreatorID] < SlashProjectileLimit)
+            {
+                Projectile.NewProjectile(player.GetSource_ItemUse(Item), target.Center, Vector2.Zero, slashCreatorID, slashDamage, slashKnockback, player.whoAmI, target.whoAmI, player.itemRotation, Main.rand.Next(2));
+                player.ownedProjectileCounts[slashCreatorID]++;
+            }
         }
 
-        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
-        {
-            target.AddBuff(BuffID.Frostburn2, 180);
-        }
+        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo) => target.AddBuff(Main.rand.NextBool() ? BuffID.Frostburn2 : BuffID.OnFire3, 240);
 
         public override void AddRecipes()
         {

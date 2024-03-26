@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (Projectile.ai[0] <= 0f)
             {
-                float constant = 0.104719758f;
+                float constant = MathHelper.Pi / 30f;
                 float smallWidth = (float)Projectile.width / 5f;
                 smallWidth *= 2f;
                 float xFluctuation = (float)(Math.Cos((double)(constant * -(double)Projectile.ai[0])) - 0.5) * smallWidth;

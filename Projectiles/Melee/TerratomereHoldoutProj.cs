@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -153,17 +155,25 @@ namespace CalamityMod.Projectiles.Melee
             // Create the slash.
             if (Time == (int)(Terratomere.SwingTime * (SwingCompletionRatio + 0.15f)))
                 SoundEngine.PlaySound(Terratomere.SwingSound, Projectile.Center);
-            
+
+            // Create 4 beams.
+            bool createBeams = Time == (int)(Terratomere.SwingTime * RecoveryCompletionRatio) + 5f;
             if (Main.myPlayer == Projectile.owner && Time == (int)(Terratomere.SwingTime * (SwingCompletionRatio + 0.34f)))
             {
-                Vector2 bigSlashVelocity = Projectile.SafeDirectionTo(Main.MouseWorld) * Owner.ActiveItem().shootSpeed;
+                Vector2 bigSlashVelocity = Projectile.SafeDirectionTo(Main.MouseWorld) * Owner.ActiveItem().shootSpeed / 2f;
                 if (bigSlashVelocity.AngleBetween(InitialRotation.ToRotationVector2()) > 1.456f)
                     bigSlashVelocity = InitialRotation.ToRotationVector2() * bigSlashVelocity.Length();
 
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - bigSlashVelocity * 0.4f, bigSlashVelocity, ModContent.ProjectileType<TerratomereBigSlash>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                int totalBeams = 4;
+                float randomVelocityLimit = bigSlashVelocity.Length() * 0.2f;
+                for (int i = 0; i < totalBeams; i++)
+                {
+                    Vector2 randomVelocity = Main.rand.NextVector2CircularEdge(randomVelocityLimit, randomVelocityLimit);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - bigSlashVelocity * 0.4f, bigSlashVelocity + randomVelocity, ModContent.ProjectileType<TerratomereBigSlash>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                }
             }
 
-            // Create a terra blade-like beam when the slash terminates.
+            // This is a slash, not a beam.
             if (Main.myPlayer == Projectile.owner && Time == (int)(Terratomere.SwingTime * RecoveryCompletionRatio) + 5f)
             {
                 Vector2 bigSlashVelocity = InitialRotation.ToRotationVector2() * Owner.ActiveItem().shootSpeed / 6f;
@@ -267,27 +277,28 @@ namespace CalamityMod.Projectiles.Melee
 
         #region Hit Effects and Collision
 
-        public void OnHitHealEffect()
+        public void OnHitHealEffect(int damage)
         {
-            if (Owner.moonLeech)
+            int heal = (int)Math.Round(damage * 0.025);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
                 return;
-            
-            Owner.statLife += Terratomere.TrueMeleeHitHeal;
-            Owner.HealEffect(Terratomere.TrueMeleeHitHeal);
+
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<ReaverHealOrb>(), BalancingConstants.LifeStealRange);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            float _ = 0f;
+            float point = 0f;
             Vector2 direction = (InitialRotation + GetSwingOffsetAngle(SwingCompletion)).ToRotationVector2() * new Vector2(Projectile.spriteDirection, 1f);
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + direction * Projectile.height * Projectile.scale, Projectile.width * 0.25f, ref _);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + direction * Projectile.height * Projectile.scale, Projectile.width * 0.25f, ref point);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GlacialState>(), Terratomere.TrueMeleeGlacialStateTime);
-            if (target.canGhostHeal)
-                OnHitHealEffect();
+
+            if (target.lifeMax > 5)
+                OnHitHealEffect(hit.Damage);
 
             // Create a slash creator on top of the hit target.
             int slashCreatorID = ModContent.ProjectileType<TerratomereSlashCreator>();
@@ -301,7 +312,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<GlacialState>(), Terratomere.TrueMeleeGlacialStateTime);
-            OnHitHealEffect();
+            OnHitHealEffect(info.Damage);
         }
         #endregion Hit Effects and Collision
     }

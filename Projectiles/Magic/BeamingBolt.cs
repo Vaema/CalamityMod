@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<BeamingBolt2>(), (int)(Projectile.damage * 1), Projectile.knockBack, Projectile.owner, Projectile.ai[0]);
                 }
             }
-            SoundEngine.PlaySound(SoundID.Item105, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item105, Projectile.Center);
         }
     }
 }

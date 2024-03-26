@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             //Black Anurian bubble dust
             int inc;
             for (int i = 0; i < 25; i = inc + 1)

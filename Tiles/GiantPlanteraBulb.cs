@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -30,6 +31,8 @@ namespace CalamityMod.Tiles
             Main.tileLighted[Type] = true;
 
             Main.tileFrameImportant[Type] = true;
+
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
 
             // Various data sets to protect this tile from premature death
             TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;

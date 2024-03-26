@@ -3,6 +3,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -13,6 +14,9 @@ namespace CalamityMod.NPCs.Leviathan
 {
     public class LeviathanStart : ModNPC
     {
+
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
@@ -25,6 +29,10 @@ namespace CalamityMod.NPCs.Leviathan
                 PortraitScale = 0.75f
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -116,7 +124,7 @@ namespace CalamityMod.NPCs.Leviathan
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D drawTex = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/NPCs/Leviathan/Leviathan").Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D drawTex = Main.zenithWorld ? TextureAssets.Npc[ModContent.NPCType<Leviathan>()].Value : TextureAssets.Npc[NPC.type].Value;
             Rectangle frame = Main.zenithWorld ? drawTex.Frame(2, 3, 0, 0) : NPC.frame;
             Vector2 origin = new Vector2(drawTex.Width / 2, drawTex.Height / 2);
 
@@ -136,7 +144,7 @@ namespace CalamityMod.NPCs.Leviathan
 
             if (!Main.zenithWorld)
             {
-                drawTex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Leviathan/LeviathanStartGlow").Value;
+                drawTex = GlowTexture.Value;
 
                 spriteBatch.Draw(drawTex, drawPos, frame, Color.White, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
             }

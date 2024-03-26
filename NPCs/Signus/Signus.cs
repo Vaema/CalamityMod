@@ -18,6 +18,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -37,6 +38,12 @@ namespace CalamityMod.NPCs.Signus
         private int lifeToAlpha = 0;
         private int stealthTimer = 0;
 
+        public static Asset<Texture2D> AltTexture;
+        public static Asset<Texture2D> AltTexture2;
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> AltTexture_Glow;
+        public static Asset<Texture2D> AltTexture2_Glow;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
@@ -52,6 +59,14 @@ namespace CalamityMod.NPCs.Signus
             value.Position.Y += 10f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                AltTexture_Glow = ModContent.Request<Texture2D>(Texture + "AltGlow", AssetRequestMode.AsyncLoad);
+                AltTexture2_Glow = ModContent.Request<Texture2D>(Texture + "Alt2Glow", AssetRequestMode.AsyncLoad);
+                AltTexture = ModContent.Request<Texture2D>(Texture + "Alt", AssetRequestMode.AsyncLoad);
+                AltTexture2 = ModContent.Request<Texture2D>(Texture + "Alt2", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -794,7 +809,7 @@ namespace CalamityMod.NPCs.Signus
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D NPCTexture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusGlow").Value;
+            Texture2D glowMaskTexture = Texture_Glow.Value;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
@@ -806,8 +821,8 @@ namespace CalamityMod.NPCs.Signus
 
             if (NPC.ai[0] == 4f)
             {
-                NPCTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusAlt2").Value;
-                glowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusAlt2Glow").Value;
+                NPCTexture = AltTexture2.Value;
+                glowMaskTexture = AltTexture2_Glow.Value;
                 afterimageAmt = 10;
                 int frameY = 94 * (int)(NPC.frameCounter / 12.0);
                 if (frameY >= 94 * 6)
@@ -816,14 +831,14 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 3f)
             {
-                NPCTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusAlt").Value;
-                glowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusAltGlow").Value;
+                NPCTexture = AltTexture.Value;
+                glowMaskTexture = AltTexture_Glow.Value;
                 afterimageAmt = 7;
             }
             else
             {
                 NPCTexture = TextureAssets.Npc[NPC.type].Value;
-                glowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusGlow").Value;
+                glowMaskTexture = Texture_Glow.Value;
             }
 
             Vector2 halfSizeTexture = new Vector2(NPCTexture.Width / 2, NPCTexture.Height / frameCount / 2);

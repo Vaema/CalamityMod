@@ -6,6 +6,7 @@ using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -21,6 +22,9 @@ namespace CalamityMod.NPCs.DevourerofGods
         private const int maxLength = 11;
         private int invinceTime = 180;
 
+        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> GlowTexture2;
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
@@ -35,6 +39,11 @@ namespace CalamityMod.NPCs.DevourerofGods
             value.Position.X += 62f;
             value.Position.Y += 35f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                GlowTexture2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -54,7 +63,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.netAlways = true;
@@ -335,12 +343,12 @@ namespace CalamityMod.NPCs.DevourerofGods
             float minimalDamageVelocity = segmentVelocity * 0.5f;
             if (NPC.velocity.Length() <= minimalContactDamageVelocity)
             {
-                NPC.damage = (int)(NPC.defDamage * 0.5f);
+                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
             }
             else
             {
                 float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(NPC.defDamage * 0.5f, NPC.defDamage, velocityDamageScalar);
+                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
             }
 
             NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
@@ -363,12 +371,12 @@ namespace CalamityMod.NPCs.DevourerofGods
             distFromHead3 += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, distFromHead3, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/CosmicGuardianHeadGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color glowmaskColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
 
             spriteBatch.Draw(texture2D15, distFromHead3, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/CosmicGuardianHeadGlow2").Value;
+            texture2D15 = GlowTexture2.Value;
             glowmaskColor = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
             spriteBatch.Draw(texture2D15, distFromHead3, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);

@@ -310,12 +310,6 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             if (npc.ai[2] > 0f)
                 npc.realLife = (int)npc.ai[2];
 
-            if (!head)
-            {
-                if (npc.life > Main.npc[(int)npc.ai[1]].life)
-                    npc.life = Main.npc[(int)npc.ai[1]].life;
-            }
-
             // Alpha effects
             if ((head || Main.npc[(int)npc.ai[1]].alpha < 128) && !npc.dontTakeDamage)
             {
@@ -355,11 +349,6 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     if (npc.netSpam >= 10)
                         npc.netSpam = 9;
                 }
-            }
-            else
-            {
-                if (npc.life > Main.npc[(int)npc.ai[0]].life)
-                    npc.life = Main.npc[(int)npc.ai[0]].life;
             }
 
             // Direction
@@ -413,6 +402,14 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         }
                     }
                 }
+
+                if (npc.life > Main.npc[(int)npc.ai[0]].life)
+                    npc.life = Main.npc[(int)npc.ai[0]].life;
+            }
+            else
+            {
+                if (npc.life > Main.npc[(int)npc.ai[1]].life)
+                    npc.life = Main.npc[(int)npc.ai[1]].life;
             }
 
             float segmentVelocity = deathModeEnragePhase_Head ? 19f : death ? 17.5f : 16f;
@@ -579,7 +576,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.velocity.Y = segmentVelocity;
 
                     // This bool exists to stop the strange wiggle behavior when worms are falling down
-                    bool slowXVelocity = Math.Abs(npc.velocity.X) > segmentVelocity;
+                    bool slowXVelocity = Math.Abs(npc.velocity.X) > speed;
                     if ((Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y)) < segmentVelocity * 0.4)
                     {
                         if (npc.velocity.X < 0f)
@@ -923,12 +920,12 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 {
                     if (npc.velocity.Length() <= minimalContactDamageVelocity)
                     {
-                        npc.damage = (int)(npc.defDamage * 0.5f);
+                        npc.damage = (int)Math.Round(npc.defDamage * 0.5);
                     }
                     else
                     {
                         float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                        npc.damage = (int)MathHelper.Lerp(npc.defDamage * 0.5f, npc.defDamage, velocityDamageScalar);
+                        npc.damage = (int)MathHelper.Lerp((float)Math.Round(npc.defDamage * 0.5), npc.defDamage, velocityDamageScalar);
                     }
                 }
                 else

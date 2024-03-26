@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(Spark);
             }
 
-            if (!target.canGhostHeal || Owner.moonLeech)
+            if (Owner.moonLeech)
                 return;
 
             Owner.statLife += OmegaBiomeBlade.SuperPogoAttunementSlashLifesteal;

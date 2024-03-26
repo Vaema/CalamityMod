@@ -3,12 +3,16 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
     public class Feather : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+
         public override string Texture => "CalamityMod/Projectiles/Magic/TradewindsProjectile";
+
+        private const int TimeLeft = 150;
 
         public override void SetDefaults()
         {
@@ -17,22 +21,30 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 150;
+            Projectile.timeLeft = TimeLeft;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
         }
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + MathHelper.PiOver2;
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (Projectile.timeLeft > TimeLeft - 5)
+                return false;
+
+            return true;
         }
 
         public override void OnKill(int timeLeft)
         {
-            int inc;
-            for (int i = 0; i < 10; i = inc + 1)
+            for (int i = 0; i < 10; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.YellowTorch, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 0, default, 1f);
-                inc = i;
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.YellowTorch, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, default, 1.4f);
+                Main.dust[dust].noGravity = true;
+                Main.dust[dust].velocity *= 0.5f;
             }
         }
     }

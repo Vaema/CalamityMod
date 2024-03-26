@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Environment
                         dust.velocity.Y -= 0.2f;
                     }
                 }
-                SoundEngine.PlaySound(SoundID.Item34, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item34, Projectile.Center);
             }
             if (isActive == 1)
             {

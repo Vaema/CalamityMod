@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Melee
         public ref float Charge => ref Projectile.ai[1];
         public ref float HasFired => ref Projectile.localAI[0];
 
-        const float MaxTime = 35;
+        const float MaxTime = 40;
         private float SwingWidth = MathHelper.PiOver2 * 1.5f;
         public Vector2 DistanceFromPlayer => direction * 30;
         public float Timer => MaxTime - Projectile.timeLeft;
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(SwingWidth / 2 * SwingDirection, -SwingWidth / 2 * SwingDirection, SwingRatio());
 
-            Projectile.scale = 1.4f + ((float)Math.Sin(SwingRatio() * MathHelper.Pi) * 0.6f) + (Charge / 10f) * 0.6f;
+            Projectile.scale = 1.6f + ((float)Math.Sin(SwingRatio() * MathHelper.Pi) * 0.65f) + (Charge > 0 ? 0.6f : 0f);
 
             if (Owner.whoAmI == Main.myPlayer && SwingRatio() > 0.5f && HasFired == 0f && Charge > 0)
             {
@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Melee
                 float rotation = (-MathHelper.PiOver4 * 0.5f + MathHelper.PiOver4 * 0.5f * Timer / MaxTime) * SwingDirection;
                 Color smearColor = Main.hslToRgb(((Timer - MaxTime * 0.5f) / (MaxTime * 0.5f)) * 0.7f, 1, 0.6f);
 
-                Main.EntitySpriteDraw(smear, Owner.Center - Main.screenPosition, null, smearColor * 0.5f * opacity, Projectile.velocity.ToRotation() + MathHelper.Pi + rotation, smear.Size() / 2f, Projectile.scale * 1.4f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(smear, Owner.Center - Main.screenPosition, null, smearColor * 0.5f * opacity, Projectile.velocity.ToRotation() + MathHelper.Pi + rotation, smear.Size() / 2f, Projectile.scale * 1.5f, SpriteEffects.None, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

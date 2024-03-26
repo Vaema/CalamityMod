@@ -380,6 +380,7 @@ Deathwind: {
 		'''
 		Fires a spread of 4 arrows
 		Wooden arrows are converted into nebula arrows
+		Nebula arrows deal more damage and inflict god slayer inferno
 		'''
 }
 
@@ -1249,8 +1250,9 @@ TheHive: {
 	DisplayName: The Hive
 	Tooltip:
 		'''
-		Launches a variety of rockets that explode into friendly bees
-		Rockets will destroy tiles with tile-destroying ammo
+		Launches a wide spread of 4 missiles that explode on contact with enemies and tiles
+		Charging the launcher decreases the spread and increases the velocity of the missile barrage
+		Fully charging the launcher will cause it to fire a nuke to decimate a massive area on impact
 		'''
 }
 

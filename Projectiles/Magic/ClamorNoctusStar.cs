@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = 20 + Main.rand.Next(40);
                 if (Main.rand.NextBool(5))
                 {
-                    SoundEngine.PlaySound(SoundID.Item9, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item9, Projectile.Center);
                 }
             }
             if (Main.rand.NextBool(3))
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
             Projectile.width = 50;

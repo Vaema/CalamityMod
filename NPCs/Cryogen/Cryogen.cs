@@ -26,6 +26,7 @@ using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -53,6 +54,12 @@ namespace CalamityMod.NPCs.Cryogen
         public static readonly SoundStyle ShieldRegenSound = new("CalamityMod/Sounds/Custom/CryogenShieldRegenerate");
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/CryogenDeath");
 
+        public static Asset<Texture2D> Phase2Texture;
+        public static Asset<Texture2D> Phase3Texture;
+        public static Asset<Texture2D> Phase4Texture;
+        public static Asset<Texture2D> Phase5Texture;
+        public static Asset<Texture2D> Phase6Texture;
+
         public FireParticleSet FireDrawer = null;
 
         public static int cryoIconIndex;
@@ -74,6 +81,14 @@ namespace CalamityMod.NPCs.Cryogen
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                Phase2Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Cryogen/Cryogen_Phase2", AssetRequestMode.AsyncLoad);
+                Phase3Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Cryogen/Cryogen_Phase3", AssetRequestMode.AsyncLoad);
+                Phase4Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Cryogen/Cryogen_Phase4", AssetRequestMode.AsyncLoad);
+                Phase5Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Cryogen/Cryogen_Phase5", AssetRequestMode.AsyncLoad);
+                Phase6Texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Cryogen/Cryogen_Phase6", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -927,7 +942,7 @@ Block:
                 {
                     NPC.TargetClosest();
                     NPC.ai[0] = 4f;
-                    NPC.ai[1] = 0f;
+                    NPC.ai[1] = 150f;
                     NPC.ai[3] = 0f;
                     NPC.localAI[0] = 0f;
                     NPC.localAI[2] = 0f;
@@ -957,7 +972,7 @@ Block:
 
                 if (phase6)
                 {
-                    if (NPC.ai[1] == 60f)
+                    if (NPC.ai[1] == 60f) // Spawn homing ice blasts on charge
                     {
                         NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * (18f + enrageScale * 2f);
 
@@ -996,7 +1011,7 @@ Block:
                     }
 
                     NPC.ai[1] -= 1f;
-                    if (NPC.ai[1] <= 0f)
+                    if (NPC.ai[1] <= 0f) // Set the next charge, or switch back to floating above the player
                     {
                         NPC.ai[3] += 1f;
                         NPC.TargetClosest();
@@ -1012,12 +1027,17 @@ Block:
 
                         NPC.rotation = NPC.velocity.X * 0.1f;
                     }
-                    else if (NPC.ai[1] <= 15f)
+                    else if (NPC.ai[1] <= 15f) // Slow down in preparation for the next charge
                     {
                         NPC.velocity *= 0.95f;
                         NPC.rotation = NPC.velocity.X * 0.15f;
                     }
-                    else
+                    else if (NPC.ai[1] > 60f) // Only used for when phase 6 first starts to prevent insta-charges
+                    {
+                        NPC.velocity *= 0.98f;
+                        NPC.rotation += (150f - NPC.ai[1]) * 0.01f * NPC.direction;
+                    }
+                    else // Charge
                     {
                         // Set damage
                         NPC.damage = NPC.defDamage;
@@ -1230,8 +1250,29 @@ Block:
             else
                 FireDrawer = null;
 
-            string phase = "CalamityMod/NPCs/Cryogen/Cryogen_Phase" + currentPhase;
-            Texture2D texture = ModContent.Request<Texture2D>(phase).Value;
+
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            switch (currentPhase)
+            {
+                case 2:
+                    texture = Phase2Texture.Value;
+                    break;
+                case 3:
+                    texture = Phase3Texture.Value;
+                    break;
+                case 4:
+                    texture = Phase4Texture.Value;
+                    break;
+                case 5:
+                    texture = Phase5Texture.Value;
+                    break;
+                case 6:
+                    texture = Phase6Texture.Value;
+                    break;
+                default:
+                    texture = TextureAssets.Npc[NPC.type].Value;
+                    break;
+            }
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)

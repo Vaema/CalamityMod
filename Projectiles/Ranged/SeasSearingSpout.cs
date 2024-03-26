@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Projectile.ai[0] <= 0f)
             {
-                float swaySize = 0.104719758f;
+                float swaySize = MathHelper.Pi / 30f;
                 float smolWidth = (float)Projectile.width / 5f;
                 float projXChange = (float)(Math.Cos((double)(swaySize * -(double)Projectile.ai[0])) - 0.5) * smolWidth;
                 Projectile.position.X = Projectile.position.X - projXChange * (float)-(float)Projectile.direction;

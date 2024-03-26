@@ -190,11 +190,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Reduce the amount of skulls per spread in later phases due to near-constant teleporting
-            if (!masterMode)
+            if (!masterMode && numProj > 3)
             {
                 if (phase4)
                     numProj--;
-                if (phase5)
+                if (phase5 && numProj > 3)
                     numProj--;
             }
 
@@ -252,8 +252,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             double deltaAngle = spread / numProj;
                             double offsetAngle;
 
+                            // Inverse parabolic projectile spreads
+                            bool evenNumberOfProjectiles = numProj % 2 == 0;
+                            int centralProjectile = evenNumberOfProjectiles ? numProj / 2 : (numProj - 1) / 2;
+                            int otherCentralProjectile = evenNumberOfProjectiles ? centralProjectile - 1 : -1;
+                            float centralScalingAmount = (float)Math.Floor(numProj / (double)centralProjectile) * 0.75f;
+                            float amountToAdd = evenNumberOfProjectiles ? 0.5f : 0f;
+                            float originalBaseSpeed = baseSpeed;
+                            float minVelocityMultiplier = 0.5f;
                             for (int i = 0; i < numProj; i++)
                             {
+                                float velocityScalar = (evenNumberOfProjectiles && (i == centralProjectile || i == otherCentralProjectile)) ? minVelocityMultiplier : MathHelper.Lerp(minVelocityMultiplier, centralScalingAmount, Math.Abs((i + amountToAdd) - centralProjectile) / (float)centralProjectile);
+                                baseSpeed = originalBaseSpeed;
+                                baseSpeed *= velocityScalar;
                                 offsetAngle = startAngle + deltaAngle * i;
                                 int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), center.X, center.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), type, damage, 0f, Main.myPlayer, -2f);
                                 Main.projectile[proj].timeLeft = 600;
@@ -403,7 +414,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.damage = 0;
 
                 calamityGlobalNPC.newAI[1] += 1f;
-                float chargePhaseChangeRateBoost = phase5 ? (death ? 24f : 14f) : phase4 ? (death ? 4f : 3f) : (2f * ((1f - lifeRatio) / (1f - phase4LifeRatio)));
+                float chargePhaseChangeRateBoost = phase5 ? (death ? 24f : 14f) : phase4 ? (death ? 8f : 6f) : (4f * ((1f - lifeRatio) / (1f - phase4LifeRatio)));
                 float chargePhaseChangeRate = chargePhaseChangeRateBoost + 1f;
                 npc.ai[2] += chargePhaseChangeRate;
                 npc.localAI[1] += chargePhaseChangeRate;
@@ -412,7 +423,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[1] = chargePhaseGateValue;
 
                 float forcedMoveAwayTime = death ? 30f : 60f;
-                float canChargeDistance = phase3 ? 800f : 320f; // 20 tile distance, 50 tile distance in phase 3
+                float canChargeDistance = phase3 ? 640f : 320f; // 20 tile distance, 40 tile distance in phase 3
                 bool hasMovedForcedDistance = npc.localAI[2] >= forcedMoveAwayTime;
                 bool canCharge = Vector2.Distance(Main.player[npc.target].Center, npc.Center) >= canChargeDistance;
                 bool charge = npc.ai[2] >= chargePhaseGateValue && canCharge;
@@ -601,14 +612,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Shoot shadowflames (giant cursed skull projectiles) while charging in phase 4
                 if (phase4 && Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                 {
-                    float shadowFlameGateValue = death ? 16f : 24f;
+                    float shadowFlameGateValue = death ? 30f : 45f;
                     int shadowFlameLimit = death ? 3 : 2;
                     if (calamityGlobalNPC.newAI[1] % shadowFlameGateValue == 0f && calamityGlobalNPC.newAI[1] < shadowFlameGateValue * shadowFlameLimit)
                     {
                         // Spawn projectiles
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 160f)
+                            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 320f)
                             {
                                 float shadowFlameProjectileSpeed = death ? 5f : 4f;
                                 if (masterMode)
@@ -617,8 +628,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 Vector2 initialProjectileVelocity = npc.Center.DirectionTo(Main.player[npc.target].Center) * shadowFlameProjectileSpeed;
                                 int type = ProjectileID.Shadowflames;
                                 int damage = npc.GetProjectileDamage(type);
-                                int shadowFlameProjectile = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, initialProjectileVelocity, type, damage, 0f, Main.myPlayer);
-                                Main.projectile[shadowFlameProjectile].timeLeft = 300;
+                                int shadowFlameProjectile = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, initialProjectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 1f);
+                                Main.projectile[shadowFlameProjectile].timeLeft = 600;
                             }
                         }
                     }
@@ -716,7 +727,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         headSpinVelocityMult += velocityBoost;
                 }
 
-                float altDashStopDistance = death ? (masterMode ? 210f : 240f) : (masterMode ? 320f : 400f);
+                float altDashStopDistance = death ? (masterMode ? 280f : 360f) : (masterMode ? 320f : 400f);
                 float headSpeedIncreaseDist = phase3 ? altDashStopDistance : 160f;
                 if (headSpinTargetDist > headSpeedIncreaseDist)
                 {
@@ -887,9 +898,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Attack far more often if still alive
             bool phase3 = skeletronLifeRatio < 0.3f;
 
-            float velocityMultiplier = MathHelper.Lerp(death ? 0.5f : 0.7f, 1f, skeletronLifeRatio);
-            float velocityIncrement = MathHelper.Lerp(0.2f, death ? 0.6f : 0.45f, 1f - skeletronLifeRatio);
-            float handSwipeVelocity = MathHelper.Lerp(16f, death ? 28f : 22f, 1f - skeletronLifeRatio);
+            float velocityMultiplier = MathHelper.Lerp(death ? 0.6f : 0.7f, 1f, skeletronLifeRatio);
+            float velocityIncrement = MathHelper.Lerp(0.2f, death ? 0.4f : 0.3f, 1f - skeletronLifeRatio);
+            float handSwipeVelocity = MathHelper.Lerp(16f, death ? 24f : 20f, 1f - skeletronLifeRatio);
             float deceleration = Main.getGoodWorld ? 0.78f : Main.masterMode ? 0.82f : Main.expertMode ? 0.86f : 0.9f;
 
             float handSwipeDuration = HandSwipeDistance / handSwipeVelocity;
@@ -897,7 +908,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             float slapTimerIncrement = MathHelper.Lerp(1f, 2f, 1f - skeletronLifeRatio);
             if (phase3)
-                slapTimerIncrement *= (death ? 3f : 2f);
+                slapTimerIncrement *= (death ? 2.5f : 2f);
             else if (phase2)
                 slapTimerIncrement *= (death ? 2f : 1.5f);
 
@@ -1239,7 +1250,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         numHands++;
                 }
 
-                npc.defense += numHands * (Main.masterMode ? 50 : 25);
+                npc.defense += numHands * (Main.masterMode ? 15 : 10);
                 npc.Calamity().CurrentlyIncreasingDefenseOrDR = numHands > 0;
                 npc.chaseable = numHands == 0;
                 if ((numHands < maxHands || (double)npc.life < (double)npc.lifeMax * 0.75 || Main.masterMode) && npc.ai[1] == 0f)
@@ -1401,7 +1412,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.damage = (int)Math.Round(npc.defDamage * 1.3);
                 if (Main.expertMode)
                 {
-                    num175 = Main.masterMode ? 4f : 3.5f;
+                    num175 = Main.masterMode ? (5f - numHands * 0.5f) : 3.5f;
                     if (num174 > 150f)
                         num175 *= 1.05f;
 

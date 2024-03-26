@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             player.autoJump = true;
-            player.jumpSpeedBoost += 0.6f;
+            player.jumpSpeedBoost += 1.6f;
             player.noFallDmg = true;
             player.blackBelt = true;
             modPlayer.DashID = StatisVoidSashDash.ID;

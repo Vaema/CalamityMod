@@ -1,5 +1,7 @@
-﻿using CalamityMod.Projectiles.Melee.Yoyos;
+﻿using System.Collections.Generic;
+using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Rarities;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -38,5 +40,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.Rarity14BuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
     }
 }

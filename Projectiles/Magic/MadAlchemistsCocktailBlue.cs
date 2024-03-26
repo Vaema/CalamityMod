@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item107, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item107, Projectile.Center);
 
             if (Main.netMode != NetmodeID.Server)
             {

@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Projectile.frame = 0;
                     Shards();
-                    SoundEngine.PlaySound(SoundID.Item42, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item42, Projectile.Center);
                     Projectile.ai[1]++;
                     Projectile.ai[0] = 0;
                 }

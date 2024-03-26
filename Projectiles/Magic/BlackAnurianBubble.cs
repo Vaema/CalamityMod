@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item54, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item54, Projectile.Center);
             int inc;
             for (int i = 0; i < 25; i = inc + 1)
             {

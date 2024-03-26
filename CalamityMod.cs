@@ -108,17 +108,21 @@ namespace CalamityMod
         public static Texture2D SulphurSeaSkyFront;
         public static Texture2D SulphurSeaSurface;
 
+        //Destroyer glowmasks
+        public static Asset<Texture2D>[] DestroyerGlowmasks = new Asset<Texture2D>[3];
+
         // DR data structure
         public static SortedDictionary<int, float> DRValues;
 
         // Boss Kill Time data structure
         public static SortedDictionary<int, int> bossKillTimes;
 
-        // Life steal cap
-        public const int lifeStealCap = 10;
-
         // Speedrun timer
         internal static Stopwatch SpeedrunTimer = new Stopwatch();
+
+        // External flag to disable non-Revengeance boss AI edits
+        // This can be edited by other mods using reflection to prevent compatibility issues
+        public static bool ExternalFlag_DisableNonRevBossAI = false;
 
         internal static CalamityMod Instance;
 
@@ -285,6 +289,11 @@ namespace CalamityMod
             SulphurSeaSkyFront = ModContent.Request<Texture2D>("CalamityMod/Skies/SulphurSeaSkyFront", AssetRequestMode.ImmediateLoad).Value;
             SulphurSeaSurface = ModContent.Request<Texture2D>("CalamityMod/Skies/SulphurSeaSurface", AssetRequestMode.ImmediateLoad).Value;
 
+            //Destroyer glowmasks
+            DestroyerGlowmasks[0] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerHeadGlow", AssetRequestMode.AsyncLoad);
+            DestroyerGlowmasks[1] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerBodyGlow", AssetRequestMode.AsyncLoad);
+            DestroyerGlowmasks[2] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerTailGlow", AssetRequestMode.AsyncLoad);
+
             // TODO -- Sky shaders should probably be loaded in a ModSystem
             Filters.Scene["CalamityMod:DevourerofGodsHead"] = new Filter(new DoGScreenShaderData("FilterMiniTower").UseColor(0.4f, 0.1f, 1.0f).UseOpacity(0.5f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityMod:DevourerofGodsHead"] = new DoGSky();
@@ -301,7 +310,7 @@ namespace CalamityMod
             Filters.Scene["CalamityMod:Leviathan"] = new Filter(new LevScreenShaderData("FilterMiniTower").UseColor(0f, 0f, 0.5f).UseOpacity(0.5f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityMod:Leviathan"] = new LevSky();
 
-            Filters.Scene["CalamityMod:SupremeCalamitas"] = new Filter(new SCalScreenShaderData("FilterMiniTower").UseColor(1.1f, 0.3f, 0.3f).UseOpacity(0.65f), EffectPriority.VeryHigh);
+            Filters.Scene["CalamityMod:SupremeCalamitas"] = new Filter(new SCalScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityMod:SupremeCalamitas"] = new SCalSky();
 
             Filters.Scene["CalamityMod:Signus"] = new Filter(new SignusScreenShaderData("FilterMiniTower").UseColor(0.35f, 0.1f, 0.55f).UseOpacity(0.35f), EffectPriority.VeryHigh);

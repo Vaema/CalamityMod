@@ -28,6 +28,7 @@ using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
@@ -155,6 +156,30 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public static readonly SoundStyle LaserLoopSound = new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/AresCircleLaserLoop") with { IsLooped = true };
 
         public static readonly SoundStyle LaserEndSound = new("CalamityMod/Sounds/Custom/ExoMechs/AresCircleLaserEnd");
+
+        #region Textures
+        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> NeuronTexture;
+        public static Asset<Texture2D> NeuronTexture_Glow;
+
+        public static Asset<Texture2D> ArmTopTexture;
+        public static Asset<Texture2D> ArmTopTexture2;
+        public static Asset<Texture2D> ArmSegmentTexture;
+        public static Asset<Texture2D> ArmTopShoulderTexture;
+        public static Asset<Texture2D> ArmBottomConnectorTexture;
+        public static Asset<Texture2D> ArmBottomTexture;
+        public static Asset<Texture2D> ArmBottomTexture2;
+        public static Asset<Texture2D> ArmBottomShoulderTexture;
+
+        public static Asset<Texture2D> ArmTopTexture2_Glow;
+        public static Asset<Texture2D> ArmSegmentTexture_Glow;
+        public static Asset<Texture2D> ArmTopShoulderTexture_Glow;
+        public static Asset<Texture2D> ArmBottomTexture_Glow;
+        public static Asset<Texture2D> ArmBottomTexture2_Glow;
+        public static Asset<Texture2D> ArmBottomShoulderTexture_Glow;
+        #endregion
+
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.TrailingMode[NPC.type] = 3;
@@ -166,6 +191,29 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 Scale = 0.4f
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                string AresPath = "CalamityMod/NPCs/ExoMechs/Ares/Ares";
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                NeuronTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/AergiaNeuron", AssetRequestMode.AsyncLoad);
+                NeuronTexture_Glow = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/AergiaNeuron_Glow", AssetRequestMode.AsyncLoad);
+
+                ArmTopTexture = ModContent.Request<Texture2D>(AresPath + "ArmTopPart1", AssetRequestMode.AsyncLoad);
+                ArmTopTexture2 = ModContent.Request<Texture2D>(AresPath + "ArmTopPart2", AssetRequestMode.AsyncLoad);
+                ArmSegmentTexture = ModContent.Request<Texture2D>(AresPath + "ArmTopSegment", AssetRequestMode.AsyncLoad);
+                ArmTopShoulderTexture = ModContent.Request<Texture2D>(AresPath + "ArmTopShoulder", AssetRequestMode.AsyncLoad);
+                ArmBottomConnectorTexture = ModContent.Request<Texture2D>(AresPath + "BottomArmConnector", AssetRequestMode.AsyncLoad);
+                ArmBottomTexture = ModContent.Request<Texture2D>(AresPath + "BottomArmPart1", AssetRequestMode.AsyncLoad);
+                ArmBottomTexture2 = ModContent.Request<Texture2D>(AresPath + "BottomArmPart2", AssetRequestMode.AsyncLoad);
+                ArmBottomShoulderTexture = ModContent.Request<Texture2D>(AresPath + "BottomArmShoulder", AssetRequestMode.AsyncLoad);
+
+                ArmTopTexture2_Glow = ModContent.Request<Texture2D>(AresPath + "ArmTopPart2Glow", AssetRequestMode.AsyncLoad);
+                ArmSegmentTexture_Glow = ModContent.Request<Texture2D>(AresPath + "ArmTopSegmentGlow", AssetRequestMode.AsyncLoad);
+                ArmTopShoulderTexture_Glow = ModContent.Request<Texture2D>(AresPath + "ArmTopShoulderGlow", AssetRequestMode.AsyncLoad);
+                ArmBottomTexture_Glow = ModContent.Request<Texture2D>(AresPath + "BottomArmPart1Glow", AssetRequestMode.AsyncLoad);
+                ArmBottomTexture2_Glow = ModContent.Request<Texture2D>(AresPath + "BottomArmPart2Glow", AssetRequestMode.AsyncLoad);
+                ArmBottomShoulderTexture_Glow = ModContent.Request<Texture2D>(AresPath + "BottomArmShoulderGlow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -1211,7 +1259,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             Vector2 center = NPC.Center - screenPos;
             spriteBatch.Draw(texture, center, frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, SpriteEffects.None, 0f);
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresBodyGlow").Value;
+            texture = GlowTexture.Value;
 
             if (CalamityConfig.Instance.Afterimages)
             {
@@ -1283,14 +1331,14 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             // Draw back arms.
             if (backArm)
             {
-                Texture2D shoulderTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresArmTopShoulder").Value;
-                Texture2D armTexture1 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresArmTopPart1").Value;
-                Texture2D armSegmentTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresArmTopSegment").Value;
-                Texture2D armTexture2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresArmTopPart2").Value;
+                Texture2D shoulderTexture = ArmTopShoulderTexture.Value;
+                Texture2D armTexture1 = ArmTopTexture.Value;
+                Texture2D armSegmentTexture = ArmSegmentTexture.Value;
+                Texture2D armTexture2 = ArmTopTexture2.Value;
 
-                Texture2D shoulderGlowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresArmTopShoulderGlow").Value;
-                Texture2D armSegmentGlowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresArmTopSegmentGlow").Value;
-                Texture2D armGlowmask2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresArmTopPart2Glow").Value;
+                Texture2D shoulderGlowmask = ArmTopShoulderTexture_Glow.Value;
+                Texture2D armSegmentGlowmask = ArmSegmentTexture_Glow.Value;
+                Texture2D armGlowmask2 = ArmTopTexture2_Glow.Value;
 
                 Vector2 shoulderDrawPosition = NPC.Center + NPC.scale * new Vector2(direction * 176f, -100f);
                 Vector2 arm1DrawPosition = shoulderDrawPosition + NPC.scale * new Vector2(direction * (shoulderTexture.Width + 16f), 10f);
@@ -1352,14 +1400,14 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
             else
             {
-                Texture2D shoulderTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresBottomArmShoulder").Value;
-                Texture2D connectorTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresBottomArmConnector").Value;
-                Texture2D armTexture1 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresBottomArmPart1").Value;
-                Texture2D armTexture2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresBottomArmPart2").Value;
+                Texture2D shoulderTexture = ArmBottomShoulderTexture.Value;
+                Texture2D connectorTexture = ArmBottomConnectorTexture.Value;
+                Texture2D armTexture1 = ArmBottomTexture.Value;
+                Texture2D armTexture2 = ArmBottomTexture2.Value;
 
-                Texture2D shoulderGlowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresBottomArmShoulderGlow").Value;
-                Texture2D armTexture1Glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresBottomArmPart1Glow").Value;
-                Texture2D armTexture2Glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresBottomArmPart2Glow").Value;
+                Texture2D shoulderGlowmask = ArmBottomShoulderTexture_Glow.Value;
+                Texture2D armTexture1Glowmask = ArmBottomTexture_Glow.Value;
+                Texture2D armTexture2Glowmask = ArmBottomTexture2_Glow.Value;
 
                 Vector2 shoulderDrawPosition = NPC.Center + NPC.scale * new Vector2(direction * 110f, -54f);
                 Vector2 connectorDrawPosition = shoulderDrawPosition + NPC.scale * new Vector2(direction * 20f, 32f);

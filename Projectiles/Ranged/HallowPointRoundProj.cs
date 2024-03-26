@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Items.Ammo;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -56,6 +57,16 @@ namespace CalamityMod.Projectiles.Ranged
         {
             CalamityUtils.DrawAfterimagesFromEdge(Projectile, 0, Color.White);
             return false;
+        }
+
+        // Deal bonus flat damage on hit.
+        // This is a flat addition to the source damage of the hit, meaning the following:
+        // - The bonus damage is pre-mitigation
+        // - The bonus damage transfers to on-hit effects, if any
+        // - It is applied in a different way than whip tag bonus damage, preventing interference
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SourceDamage.Flat += HallowPointRound.BonusDamageOnHit;
         }
 
         // On impact, make impact sparkle and play a sound.

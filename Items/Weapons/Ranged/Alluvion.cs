@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 62;
             Item.height = 90;
-            Item.damage = 165;
+            Item.damage = 78;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 15;
             Item.useAnimation = 30;
@@ -69,7 +69,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                             newType = ModContent.ProjectileType<TorrentialArrow>();
                             break;
                     }
-                    int proj = Projectile.NewProjectile(spawnSource, source.X + offset.X, source.Y + offset.Y, velocity.X, velocity.Y, newType, damage, knockback, player.whoAmI);
+                    int proj = Projectile.NewProjectile(spawnSource, source.X + offset.X, source.Y + offset.Y, velocity.X, velocity.Y, newType, (int)(damage * 2.3f), knockback, player.whoAmI);
                     if (proj.WithinBounds(Main.maxProjectiles))
                     {
                         Main.projectile[proj].arrow = true;

@@ -44,7 +44,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lavaImmune = true;
             NPC.noTileCollide = true;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit51;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.Calamity().VulnerableToHeat = true;

@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Magic
             if (!goingSlow && !currentlyHoming)
             {
                 // Spin at a certain rate
-                Projectile.rotation -= 0.104719758f;
+                Projectile.rotation -= MathHelper.Pi / 30f;
 
                 // Dust, randomly
                 if (Main.rand.NextBool(3))
@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Magic
             else
             {
                 // Spin at the exact same rate anyway
-                Projectile.rotation -= 0.104719758f;
+                Projectile.rotation -= MathHelper.Pi / 30f;
 
                 // Excessively complicated dust
                 int inc;
@@ -249,7 +249,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.maxPenetrate = -1;
             Projectile.penetrate = -1;
             Projectile.Damage();
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
 
             for (int i = 0; i < 4; i++)
             {

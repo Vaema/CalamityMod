@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // Play idle sounds every so often.
             if (Projectile.soundDelay <= 0)
             {
-                SoundEngine.PlaySound(SoundID.Item22, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item22, Projectile.Center);
                 Projectile.soundDelay = 30;
             }
             Vector2 center = Owner.RotatedRelativePoint(Owner.MountedCenter);

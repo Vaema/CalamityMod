@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Magic
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.velocity * 10f, 8f, DelegateMethods.CastLightOpen);
             if (Projectile.alpha > 0)
             {
-                SoundEngine.PlaySound(SoundID.Item9, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item9, Projectile.Center);
                 Projectile.alpha = 0;
                 Projectile.scale = 1.1f;
                 Projectile.frame = Main.rand.Next(14);
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnKill(int timeLeft)
         {
             Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             int randDustAmt = Main.rand.Next(4, 10);
             for (int j = 0; j < randDustAmt; j++)
             {

@@ -1,13 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Balancing;
+using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Summon
 {
     public class BloodSpit : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        public const int OnDeathHealValue = 1;
 
         public Player Owner => Main.player[Projectile.owner];
 
@@ -39,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void OnKill(int timeLeft)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             for (int i = 0; i < 15; i++)
             {
@@ -48,10 +50,11 @@ namespace CalamityMod.Projectiles.Summon
                 blood.noGravity = true;
             }
 
-            Owner.HealEffect(OnDeathHealValue, false);
-            Owner.statLife += OnDeathHealValue;
-            if (Owner.statLife > Owner.statLifeMax2)
-                Owner.statLife = Owner.statLifeMax2;
+            int heal = (int)Math.Round(hit.Damage * 0.01);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
+                return;
+
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
     }
 }

@@ -226,7 +226,7 @@ namespace CalamityMod.Projectiles.Summon
                         for (int i = 0; i < numProj; i++)
                         {
                             Vector2 perturbedSpeed = projDirectionAgain.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numProj - 1)));
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, projectileType, (int)(Projectile.damage * 0.8f), Projectile.knockBack * 0.5f, Projectile.owner, targetIndex, 0f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, projectileType, (int)(Projectile.damage * 0.85f), Projectile.knockBack * 0.5f, Projectile.owner, targetIndex, 0f);
                         }
                         Projectile.netUpdate = true;
                     }

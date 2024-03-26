@@ -93,7 +93,6 @@ namespace CalamityMod.ILEditing
             // Damage and health balance
             On_Main.DamageVar_float_int_float += AdjustDamageVariance;
             IL_NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
-            IL_Projectile.AI_001 += AdjustChlorophyteBullets;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
             IL_Player.UpdateBuffs += NerfSharpeningStation;
             IL_Player.UpdateBuffs += NerfBeetleScaleMail;
@@ -153,6 +152,9 @@ namespace CalamityMod.ILEditing
 
             // Fix vanilla not accounting for spritebatch modification in held projectile drawing
             On_PlayerDrawLayers.DrawHeldProj += FixHeldProjectileBlendState;
+
+            // Fix vanilla not accounting for multiple bobbers when fishing with truffle worm
+            IL_Player.ItemCheck_CheckFishingBobbers += FixTruffleWormFishing;
 
             //Additional detours that are in their own item files given they are only relevant to these specific items:
             //Rover drive detours on Player.DrawInfernoRings to draw its shield

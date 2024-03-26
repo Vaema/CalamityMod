@@ -20,6 +20,7 @@ using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -33,6 +34,7 @@ namespace CalamityMod.NPCs.Bumblebirb
     [AutoloadBossHead]
     public class Bumblefuck : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
@@ -48,6 +50,10 @@ namespace CalamityMod.NPCs.Bumblebirb
             value.Position.Y += 8f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Bumblebirb/BirbGlow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override string Texture => "CalamityMod/NPCs/Bumblebirb/Birb";
@@ -350,7 +356,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
             if (phase2)
             {
-                texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Bumblebirb/BirbGlow").Value;
+                texture2D15 = GlowTexture.Value;
                 Color glowmaskColor = Color.Lerp(Color.White, Color.Red, 0.5f);
                 altColor = Color.Red;
 

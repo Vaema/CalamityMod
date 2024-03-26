@@ -1,5 +1,7 @@
 ﻿using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.SupremeCalamitas;
+using CalamityMod.Particles;
 using CalamityMod.Skies;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -30,6 +32,22 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            if (Projectile.timeLeft == 689)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    Particle bloom = new BloomParticle(Projectile.Center, Vector2.Zero, Color.Lerp(Color.Red, Color.Magenta, 0.3f), 0f, 0.55f, 270, false);
+                    GeneralParticleHandler.SpawnParticle(bloom);
+                }
+                Particle bloom2 = new BloomParticle(Projectile.Center, Vector2.Zero, Color.White, 0f, 0.5f, 270, false);
+                GeneralParticleHandler.SpawnParticle(bloom2);
+            }
+            if (Projectile.timeLeft == 689 - 180)
+            {
+                Particle bloom = new BloomParticle(Projectile.Center, Vector2.Zero, new Color(121, 21, 77), 0f, 0.85f, 90, false);
+                GeneralParticleHandler.SpawnParticle(bloom);
+            }
+
             // If needed, these effects may continue after the ritual timer, to ensure that there are no awkward
             // background changes between the time it takes for SCal to appear after this projectile is gone.
             // If SCal is already present, this does not happen.
@@ -55,13 +73,14 @@ namespace CalamityMod.Projectiles.Boss
             int fireReleaseRate = Time > 150f ? 2 : 1;
             for (int i = 0; i < fireReleaseRate; i++)
             {
-                if (Main.rand.NextBool(4))
+                if (Main.rand.NextBool())
                 {
-                    Dust brimstone = Dust.NewDustPerfect(Projectile.Center + new Vector2(Main.rand.NextFloat(-20f, 24f), Main.rand.NextFloat(10f, 18f)), 267);
-                    brimstone.scale = Main.rand.NextFloat(0.7f, 1f);
-                    brimstone.color = Color.Lerp(Color.Orange, Color.Red, Main.rand.NextFloat());
+                    float variance = Main.rand.NextFloat(-25f, 25f);
+                    Dust brimstone = Dust.NewDustPerfect(Projectile.Center + new Vector2(variance, 20), 267);
+                    brimstone.scale = Main.rand.NextFloat(0.35f, 1.2f);
+                    brimstone.color = Main.rand.NextBool() ? Color.Red : new Color(121, 21, 77);
                     brimstone.fadeIn = 0.7f;
-                    brimstone.velocity = -Vector2.UnitY * Main.rand.NextFloat(1.5f, 2.8f);
+                    brimstone.velocity = -Vector2.UnitY.RotatedBy(variance * 0.02f) * Main.rand.NextFloat(1.1f, 2.1f) * (Time * 0.023f);
                     brimstone.noGravity = true;
                 }
             }
@@ -71,11 +90,12 @@ namespace CalamityMod.Projectiles.Boss
 
         public void SummonSCal()
         {
+            Vector2 spawnPosition = Projectile.Center - new Vector2(53f, 39f);
             // Summon SCal serverside.
             // All the other acoustic and visual effects can happen client-side.
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                NPC scal = CalamityUtils.SpawnBossBetter(Projectile.Center - new Vector2(60f), ModContent.NPCType<SupremeCalamitas>());
+                NPC scal = CalamityUtils.SpawnBossBetter(spawnPosition, ModContent.NPCType<SupremeCalamitas>());
                 if (Projectile.ai[1] == 1)
                 {
                     scal.ModNPC<SupremeCalamitas>().cirrus = true;
@@ -90,22 +110,22 @@ namespace CalamityMod.Projectiles.Boss
             Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.GetLerpValue(3400f, 1560f, Main.LocalPlayer.Distance(Projectile.Center), true) * 16f;
 
             // Generate a dust explosion at the ritual's position.
-            float burstDirectionVariance = 3;
-            float burstSpeed = 14f;
-            for (int j = 0; j < 16; j++)
+            for (int i = 0; i < 90; i++)
             {
-                burstDirectionVariance += j * 2;
-                for (int k = 0; k < 40; k++)
-                {
-                    int type = Projectile.ai[1] == 1 ? 69 : (int)CalamityDusts.Brimstone;
-                    Dust burstDust = Dust.NewDustPerfect(Projectile.Center, type);
-                    burstDust.scale = Main.rand.NextFloat(3.1f, 3.5f);
-                    burstDust.position += Main.rand.NextVector2Circular(10f, 10f);
-                    burstDust.velocity = Main.rand.NextVector2Square(-burstDirectionVariance, burstDirectionVariance).SafeNormalize(Vector2.UnitY) * burstSpeed;
-                    burstDust.noGravity = true;
-                }
-                burstSpeed += 1.8f;
+                Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, Projectile.ai[1] == 1 ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone, new Vector2(30, 30).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 1.2f));
+                spawnDust.noGravity = true;
+                spawnDust.scale = Main.rand.NextFloat(1.2f, 2.3f);
             }
+            for (int i = 0; i < 40; i++)
+            {
+                Vector2 sparkVel = new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.1f);
+                GlowOrbParticle orb = new GlowOrbParticle(Projectile.Center + sparkVel * 2, sparkVel, false, 120, Main.rand.NextFloat(1.55f, 2.75f), Projectile.ai[1] == 1 ? Color.Magenta : Color.Red, true, true);
+                GeneralParticleHandler.SpawnParticle(orb);
+            }
+            Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Projectile.ai[1] == 1 ? Color.Magenta : Color.Red, new Vector2(2f, 2f), 0, 0f, 2.7f, 60);
+            GeneralParticleHandler.SpawnParticle(pulse);
+            Particle pulse2 = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Projectile.ai[1] == 1 ? Color.Magenta : new Color(121, 21, 77), new Vector2(2f, 2f), 0, 0f, 2.1f, 60);
+            GeneralParticleHandler.SpawnParticle(pulse2);
         }
     }
 }

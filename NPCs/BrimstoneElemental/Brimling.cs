@@ -39,7 +39,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit23;
             NPC.DeathSound = SoundID.NPCDeath39;
             if (BossRushEvent.BossRushActive)

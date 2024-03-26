@@ -5,6 +5,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -16,11 +17,19 @@ namespace CalamityMod.NPCs.Polterghast
         private int despawnTimer = 300;
         private bool phase2 = false;
 
+        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> ChainTexture;
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 2;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                ChainTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -352,9 +361,9 @@ namespace CalamityMod.NPCs.Polterghast
                     if (Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)
                         cyanLerpColor = Color.Lerp(cyanLerpColor, lightRed, MathHelper.Clamp((Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
 
-                    Main.spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
-                        new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value.Width, chainWidth)), cyanLerpColor, chainRotation,
-                        new Vector2(ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value.Width * 0.5f, ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
+                    Main.spriteBatch.Draw(ChainTexture.Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
+                        new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, ChainTexture.Value.Width, chainWidth)), cyanLerpColor, chainRotation,
+                        new Vector2(ChainTexture.Value.Width * 0.5f, ChainTexture.Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
                 }
             }
 
@@ -386,7 +395,7 @@ namespace CalamityMod.NPCs.Polterghast
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastHookGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color cyanLerp2 = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
             if (Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)

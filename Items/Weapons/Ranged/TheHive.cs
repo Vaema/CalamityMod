@@ -1,52 +1,63 @@
 ﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
     public class TheHive : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public static int OriginalUseTime = 34;
+
         public override void SetDefaults()
         {
-            Item.width = 62;
-            Item.height = 30;
-            Item.damage = 60;
+            Item.damage = 323;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 34;
-            Item.useAnimation = 34;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
+            Item.useTime = Item.useAnimation = OriginalUseTime;
+            Item.shoot = ProjectileType<TheHiveHoldout>();
+            Item.shootSpeed = 13f;
             Item.knockBack = 3.5f;
+
+            Item.width = 66;
+            Item.height = 30;
+            Item.noMelee = true;
+            Item.autoReuse = true;
+            Item.channel = true;
+            Item.noUseGraphic = true;
+            Item.useAmmo = AmmoID.Rocket;
             Item.value = CalamityGlobalItem.Rarity8BuyPrice;
             Item.rare = ItemRarityID.Yellow;
-            Item.UseSound = SoundID.Item61;
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<BeeRPG>();
-            Item.shootSpeed = 13f;
-            Item.useAmmo = AmmoID.Rocket;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.9f, PitchVariance = 0.1f };
         }
 
-        public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
 
-        // Figure out which rocket is used
-        public int RocketType;
-        public override void OnConsumeAmmo(Item ammo, Player player) => RocketType = ammo.type;
+        // Spawning the holdout won't consume ammo.
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] != 0;
+
+        // Makes the rotation of the mouse around the player sync in multiplayer.
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int rocket = Utils.SelectRandom(Main.rand, new int[]
-            {
-                ModContent.ProjectileType<GoliathRocket>(),
-                ModContent.ProjectileType<HiveMissile>(),
-                ModContent.ProjectileType<HiveBomb>(),
-                ModContent.ProjectileType<BeeRPG>()
-            });
-            Projectile.NewProjectile(source, position, velocity, rocket, damage, knockback, player.whoAmI, RocketType);
+            Item.channel = true;
+
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ProjectileType<TheHiveHoldout>(), 0, 0f, player.whoAmI);
+
+            // We set the rotation to the direction to the mouse so the first frame doesn't appear bugged out.
+            holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
+
             return false;
         }
+
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI) => Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, Request<Texture2D>(Texture + "_Glow").Value);
     }
 }

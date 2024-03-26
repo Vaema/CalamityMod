@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = SoundInterval;
                 // Don't play the continuous beam sound the first time around
                 if (Projectile.ai[0] > 1f)
-                    SoundEngine.PlaySound(SoundID.Item15, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item15, Projectile.Center);
             }
 
             // Once the crystal reaches a certain charge, start producing dust. More charge = more dust.

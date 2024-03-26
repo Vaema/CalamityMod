@@ -107,10 +107,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 else if (npc.type == NPCID.EaterofWorldsHead)
                 {
                     if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
-                        calamityGlobalNPC.newAI[0] += 1f;
+                        calamityGlobalNPC.newAI[0] += ((npc.justHit && masterMode) ? 10f : 1f);
 
                     float timer = enrageScale > 0f ? 120f : 180f;
-                    float shootBoost = (0.8f - lifeRatio) * 120f;
+                    float shootBoost = lifeRatio * 120f;
                     timer += shootBoost;
 
                     if (enrageScale >= 2f)
@@ -318,6 +318,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
                 }
+
                 if (freeMoveAnyway)
                     inTiles = true;
             }
@@ -343,8 +344,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (masterMode)
             {
-                segmentVelocity += 2f;
-                segmentAcceleration += 0.04f;
+                segmentVelocity += (npc.justHit ? 8f : 2f);
+                segmentAcceleration += (npc.justHit ? 0.16f : 0.04f);
             }
 
             if (Main.getGoodWorld)
@@ -403,7 +404,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     calamityGlobalNPC.newAI[1] += 1f;
 
                     // Set velocity for when a new head spawns
-                    npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * (segmentVelocity * (death ? 0.75f : 0.5f));
+                    // Only set this if the head is far enough away from the player, to avoid unfair hits
+                    if (npc.Distance(Main.player[npc.target].Center) > segmentVelocity * 20f)
+                        npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * (segmentVelocity * (death ? 0.75f : 0.5f));
                 }
 
                 if (!inTiles)
@@ -584,7 +587,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float pushDistanceLowerLimit = 16f - numHeads;
                         float pushDistanceUpperLimit = 160f - numHeads * 10f;
                         float pushDistance = MathHelper.Lerp(pushDistanceLowerLimit, pushDistanceUpperLimit, 1f - lifeRatio) * npc.scale;
-                        float pushVelocity = 0.5f + enrageScale * 0.25f;
+                        float pushVelocity = 0.25f + enrageScale * 0.125f;
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             if (Main.npc[i].active)
@@ -633,30 +636,33 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-            float minimalDamageVelocity = segmentVelocity * 0.5f;
+            // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.
+            float minimalContactDamageHeadVelocity = segmentVelocity * 0.25f;
+            float minimalDamageHeadVelocity = segmentVelocity * 0.5f;
+            float minimalContactDamageBodyVelocity = segmentVelocity * 0.4f;
+            float minimalDamageBodyVelocity = segmentVelocity * 0.8f;
             if (npc.type == NPCID.EaterofWorldsHead)
             {
-                if (npc.velocity.Length() <= minimalContactDamageVelocity)
+                if (npc.velocity.Length() <= minimalContactDamageHeadVelocity)
                 {
-                    npc.damage = (int)(npc.defDamage * 0.5f);
+                    npc.damage = (int)Math.Round(npc.defDamage * 0.5);
                 }
                 else
                 {
-                    float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    npc.damage = (int)MathHelper.Lerp(npc.defDamage * 0.5f, npc.defDamage, velocityDamageScalar);
+                    float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageHeadVelocity) / minimalDamageHeadVelocity, 0f, 1f);
+                    npc.damage = (int)MathHelper.Lerp((float)Math.Round(npc.defDamage * 0.5), npc.defDamage, velocityDamageScalar);
                 }
             }
             else
             {
                 float bodyAndTailVelocity = (npc.position - npc.oldPosition).Length();
-                if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+                if (bodyAndTailVelocity <= minimalContactDamageBodyVelocity)
                 {
                     npc.damage = 0;
                 }
                 else
                 {
-                    float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                    float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageBodyVelocity) / minimalDamageBodyVelocity, 0f, 1f);
                     npc.damage = (int)MathHelper.Lerp(0f, npc.defDamage, velocityDamageScalar);
                 }
             }
@@ -679,6 +685,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.alpha < 0)
                         npc.alpha = 0;
                 }
+            }
+            else if (npc.type > NPCID.EaterofWorldsHead && npc.alpha > 0)
+            {
+                npc.alpha -= 42;
+                if (npc.alpha < 0)
+                    npc.alpha = 0;
             }
 
             // Manually sync newAI because there is no GlobalNPC.SendExtraAI
@@ -1133,30 +1145,33 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = num52 * 0.25f;
-            float minimalDamageVelocity = num52 * 0.5f;
+            // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.
+            float minimalContactDamageHeadVelocity = num52 * 0.25f;
+            float minimalDamageHeadVelocity = num52 * 0.5f;
+            float minimalContactDamageBodyVelocity = num52 * 0.4f;
+            float minimalDamageBodyVelocity = num52 * 0.8f;
             if (npc.type == NPCID.EaterofWorldsHead)
             {
-                if (npc.velocity.Length() <= minimalContactDamageVelocity)
+                if (npc.velocity.Length() <= minimalContactDamageHeadVelocity)
                 {
-                    npc.damage = (int)(npc.defDamage * 0.5f);
+                    npc.damage = (int)Math.Round(npc.defDamage * 0.5);
                 }
                 else
                 {
-                    float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    npc.damage = (int)MathHelper.Lerp(npc.defDamage * 0.5f, npc.defDamage, velocityDamageScalar);
+                    float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageHeadVelocity) / minimalDamageHeadVelocity, 0f, 1f);
+                    npc.damage = (int)MathHelper.Lerp((float)Math.Round(npc.defDamage * 0.5), npc.defDamage, velocityDamageScalar);
                 }
             }
             else
             {
                 float bodyAndTailVelocity = (npc.position - npc.oldPosition).Length();
-                if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+                if (bodyAndTailVelocity <= minimalContactDamageBodyVelocity)
                 {
                     npc.damage = 0;
                 }
                 else
                 {
-                    float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                    float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageBodyVelocity) / minimalDamageBodyVelocity, 0f, 1f);
                     npc.damage = (int)MathHelper.Lerp(0f, npc.defDamage, velocityDamageScalar);
                 }
             }
@@ -1179,6 +1194,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.alpha < 0)
                         npc.alpha = 0;
                 }
+            }
+            else if (npc.type > NPCID.EaterofWorldsHead && npc.alpha > 0)
+            {
+                npc.alpha -= 42;
+                if (npc.alpha < 0)
+                    npc.alpha = 0;
             }
 
             return false;

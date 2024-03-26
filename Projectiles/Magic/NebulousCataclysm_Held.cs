@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Magic
                     }
 
                     if (ableToShoot)
-                        SoundEngine.PlaySound(SoundID.Item117, Projectile.position);
+                        SoundEngine.PlaySound(SoundID.Item117, Projectile.Center);
                 }
 
                 if (Main.myPlayer == Projectile.owner && ableToShoot)

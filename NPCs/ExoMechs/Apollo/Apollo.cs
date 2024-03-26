@@ -13,6 +13,7 @@ using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -28,6 +29,8 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
     {
         public static int phase1IconIndex;
         public static int phase2IconIndex;
+
+        public static Asset<Texture2D> GlowTexture;
 
         internal static void LoadHeadIcons()
         {
@@ -135,6 +138,10 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                 Rotation = -MathHelper.PiOver4
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -1596,7 +1603,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                 }
             }
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Apollo/ApolloGlow").Value;
+            texture = GlowTexture.Value;
             if (CalamityConfig.Instance.Afterimages && !NPC.IsABestiaryIconDummy)
             {
                 for (int i = 1; i < numAfterimages; i += 2)

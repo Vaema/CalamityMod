@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.velocity = direction.SafeNormalize(Vector2.UnitX * Owner.direction) * LungeSpeed;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects(!target.canGhostHeal || Main.player[Projectile.owner].moonLeech);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects(Main.player[Projectile.owner].moonLeech);
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => OnHitEffects(Main.player[Projectile.owner].moonLeech);
 
         private void OnHitEffects(bool cannotLifesteal)

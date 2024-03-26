@@ -169,6 +169,8 @@ namespace CalamityMod.Projectiles.Summon
 
         private SoundStyle _boomSound = new("CalamityMod/Sounds/Custom/PumpkinExplode", 2) { Volume = 0.6f };
 
+        private SoundStyle _boomSoundGFB = new("CalamityMod/Sounds/Custom/PumpkinExplodeGFB", 2);
+
         /// <summary>
         /// The owner of this minion.
         /// </summary>
@@ -321,8 +323,10 @@ namespace CalamityMod.Projectiles.Summon
                     dust.color = Color.Chocolate;
                 }
             }
-
-            SoundEngine.PlaySound(_boomSound, Projectile.Center);
+            if (Main.zenithWorld)
+                SoundEngine.PlaySound(_boomSoundGFB, Projectile.Center);
+            else
+                SoundEngine.PlaySound(_boomSound, Projectile.Center);
         }
 
         /// <summary>

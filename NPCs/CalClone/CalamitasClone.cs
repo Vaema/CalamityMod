@@ -20,6 +20,7 @@ using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -33,6 +34,8 @@ namespace CalamityMod.NPCs.CalClone
     [AutoloadBossHead]
     public class CalamitasClone : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
@@ -46,6 +49,10 @@ namespace CalamityMod.NPCs.CalClone
             value.Position.Y -= 10f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -155,7 +162,7 @@ namespace CalamityMod.NPCs.CalClone
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/CalClone/CalamitasCloneGlow").Value;
+            texture = GlowTexture.Value;
             Color color = Color.Lerp(Color.White, Color.Red, 0.5f);
             if (Main.zenithWorld)
             {
@@ -184,7 +191,6 @@ namespace CalamityMod.NPCs.CalClone
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<CalamitasCloneBag>()));
-            npcLoot.Add(ItemID.BrokenHeroSword);
 
             // Normal drops: Everything that would otherwise be in the bag
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
@@ -233,18 +239,6 @@ namespace CalamityMod.NPCs.CalClone
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedCalamitasClone);
-
-            // Abyss awakens after killing Calamitas
-            string key = "Mods.CalamityMod.Status.Progression.PlantBossText";
-            Color messageColor = Color.RoyalBlue;
-
-            if (!DownedBossSystem.downedCalamitasClone)
-            {
-                if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                    SoundEngine.PlaySound(CommonCalamitySounds.WyrmScreamSound, Main.player[Main.myPlayer].Center);
-
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
-            }
 
             // Mark the Calamitas Clone as dead
             DownedBossSystem.downedCalamitasClone = true;

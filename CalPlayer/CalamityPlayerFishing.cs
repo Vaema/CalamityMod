@@ -443,7 +443,7 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
-                if (Player.FindBuffIndex(BuffID.Gills) > -1 && DownedBossSystem.downedCalamitasClone && (attempt.legendary || (attempt.veryrare && Main.rand.NextBool())))
+                if (Player.FindBuffIndex(BuffID.Gills) > -1 && DownedBossSystem.downedLeviathan && (attempt.legendary || (attempt.veryrare && Main.rand.NextBool())))
                 {
                     itemDrop = ModContent.ItemType<Floodtide>();
                 }

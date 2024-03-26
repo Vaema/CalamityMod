@@ -20,8 +20,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = 56;
-            Projectile.height = 56;
+            Projectile.width = 36;
+            Projectile.height = 36;
             Projectile.alpha = 255;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;

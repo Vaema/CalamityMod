@@ -125,7 +125,7 @@ namespace CalamityMod.NPCs.GreatSandShark
             if (NPC.soundDelay <= 0)
             {
                 NPC.soundDelay = 480;
-                SoundEngine.PlaySound(RoarSound, NPC.position);
+                SoundEngine.PlaySound(RoarSound, NPC.Center);
             }
 
             if (NPC.localAI[3] >= 1f || Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 1000f)
@@ -335,7 +335,7 @@ namespace CalamityMod.NPCs.GreatSandShark
                     {
                         int npcType = Main.zenithWorld ? ModContent.NPCType<FusionFeeder>() : NPCID.SandShark;
                         NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 50, npcType, 0, 0f, 0f, 0f, 0f, 255);
-                        SoundEngine.PlaySound(RoarSound, NPC.position);
+                        SoundEngine.PlaySound(RoarSound, NPC.Center);
                     }
                 }
 
@@ -424,7 +424,7 @@ namespace CalamityMod.NPCs.GreatSandShark
                         {
                             if (NPC.localAI[0] == 0f)
                             {
-                                SoundEngine.PlaySound(SoundID.NPCDeath15, NPC.position);
+                                SoundEngine.PlaySound(SoundID.NPCDeath15, NPC.Center);
                                 NPC.localAI[0] = -1f;
                                 for (int i = 0; i < 25; i++)
                                 {

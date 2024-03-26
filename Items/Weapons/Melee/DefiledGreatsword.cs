@@ -14,6 +14,7 @@ namespace CalamityMod.Items.Weapons.Melee
     public class DefiledGreatsword : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
         public override void SetDefaults()
         {
             Item.width = 102;
@@ -24,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 18;
             Item.useTurn = true;
-            Item.knockBack = 7.5f;
+            Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.Rarity12BuyPrice;

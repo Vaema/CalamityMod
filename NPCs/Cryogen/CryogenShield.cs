@@ -25,7 +25,6 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.coldDamage = true;
             NPC.GetNPCDamage();
@@ -62,9 +61,14 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.HitSound = Main.zenithWorld ? SoundID.NPCHit41 : Cryogen.HitSound;
             NPC.DeathSound = Main.zenithWorld ? SoundID.NPCDeath14 : BreakSound;
 
-            NPC.Opacity += 0.012f;
+            NPC.Opacity += 0.01f;
             if (NPC.Opacity > 1f)
+            {
+                NPC.damage = NPC.defDamage;
                 NPC.Opacity = 1f;
+            }
+            else
+                NPC.damage = 0;
 
             NPC.rotation += 0.15f;
 

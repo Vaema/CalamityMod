@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.NPCDeath14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.NPCDeath14, Projectile.Center);
             Projectile.ExpandHitboxBy(60);
 
             for (int i = 0; i < 15; i++)

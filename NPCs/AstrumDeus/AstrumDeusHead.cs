@@ -22,6 +22,7 @@ using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -43,6 +44,11 @@ namespace CalamityMod.NPCs.AstrumDeus
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/AstrumDeusHit", 2) { Volume = 1.25f };
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/AstrumDeusDeath");
 
+        public static Asset<Texture2D> TextureGlow1;
+        public static Asset<Texture2D> TextureGlow2;
+        public static Asset<Texture2D> TextureGlow3;
+        public static Asset<Texture2D> TextureGlow4;
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.TrailingMode[NPC.type] = 1;
@@ -56,6 +62,13 @@ namespace CalamityMod.NPCs.AstrumDeus
             value.Position.X += 55f;
             value.Position.Y += 23f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                TextureGlow1 = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                TextureGlow2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
+                TextureGlow3 = ModContent.Request<Texture2D>(Texture + "Glow3", AssetRequestMode.AsyncLoad);
+                TextureGlow4 = ModContent.Request<Texture2D>(Texture + "Glow4", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -153,7 +166,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool doubleWormPhase = NPC.Calamity().newAI[0] != 0f && !deathModeEnragePhase;
 
             Texture2D mainWormTex = TextureAssets.Npc[NPC.type].Value;
-            Texture2D secondWormTex = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumDeus/AstrumDeusHeadGlow2").Value;
+            Texture2D secondWormTex = TextureGlow2.Value;
             Vector2 halfSizeTex = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
 
             Vector2 drawLocation = NPC.Center - screenPos;
@@ -161,12 +174,12 @@ namespace CalamityMod.NPCs.AstrumDeus
             drawLocation += halfSizeTex * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(mainWormTex, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
 
-            mainWormTex = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumDeus/AstrumDeusHeadGlow").Value;
+            mainWormTex = TextureGlow1.Value;
             Color phaseColor = drawCyan ? Color.Cyan : Color.Orange;
             if (doubleWormPhase)
             {
-                mainWormTex = drawCyan ? mainWormTex : ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumDeus/AstrumDeusHeadGlow3").Value;
-                secondWormTex = drawCyan ? ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumDeus/AstrumDeusHeadGlow4").Value : secondWormTex;
+                mainWormTex = drawCyan ? mainWormTex : TextureGlow3.Value;
+                secondWormTex = drawCyan ? TextureGlow4.Value : secondWormTex;
             }
             Color mainWormColorLerp = Color.Lerp(Color.White, doubleWormPhase ? phaseColor : Color.Cyan, 0.5f) * (deathModeEnragePhase ? 1f : NPC.Opacity);
             Color secondWormColorLerp = Color.Lerp(Color.White, doubleWormPhase ? phaseColor : Color.Orange, 0.5f) * (deathModeEnragePhase ? 1f : NPC.Opacity);

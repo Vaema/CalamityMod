@@ -8,8 +8,10 @@ using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -44,6 +46,9 @@ namespace CalamityMod.NPCs.NormalNPCs
         }
         public bool Phase2 => NPC.life < NPC.lifeMax * 0.5f;
         public ref float AttackTimer => ref NPC.ai[1];
+
+        public static Asset<Texture2D> AttackTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 8;
@@ -56,6 +61,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                 PortraitPositionYOverride = 2f
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                AttackTexture = ModContent.Request<Texture2D>(Texture + "Attack", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -406,13 +415,13 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/ThiccWaifuAttack").Value;
+            Texture2D texture = AttackTexture.Value;
             SpriteEffects direction = NPC.spriteDirection == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             if (CurrentAttackState != AttackState.Hover)
                 Main.EntitySpriteDraw(texture, NPC.Center - screenPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, direction, 0);
             else
             {
-                texture = ModContent.Request<Texture2D>(Texture).Value;
+                texture = TextureAssets.Npc[NPC.type].Value;
                 Main.EntitySpriteDraw(texture, NPC.Center - screenPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, direction, 0);
             }
             if (Main.zenithWorld)

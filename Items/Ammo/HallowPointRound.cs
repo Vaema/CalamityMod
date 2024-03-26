@@ -7,8 +7,11 @@ namespace CalamityMod.Items.Ammo
 {
     public class HallowPointRound : ModItem, ILocalizedModType
     {
-        public static int BaseDamage = 18;
         public new string LocalizationCategory => "Items.Ammo";
+
+        public static int BaseDamage = 12;
+        public static int BonusDamageOnHit = 6; // 12 + 6 = 18
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;

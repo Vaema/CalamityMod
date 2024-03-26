@@ -125,6 +125,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(5), ScaleExact(1.5f)) },
                 { ProjectileID.ChlorophyteChainsaw, standardChainsawTweaks },
                 { ProjectileID.ChlorophyteDrill, standardDrillTweaks },
+                { ProjectileID.ClothiersCurse, Do(PiercingExact(3), LocalIFrames(-1)) },
                 { ProjectileID.CobaltChainsaw, standardChainsawTweaks },
                 { ProjectileID.CobaltDrill, standardDrillTweaks },
                 { ProjectileID.CrystalBullet, standardBulletTweaks },
@@ -184,6 +185,10 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.QueenSlimeGelAttack, Do(NoPiercing) },
                 { ProjectileID.QueenSlimeMinionPinkBall, Do(NoPiercing) },
                 { ProjectileID.RedCounterweight, counterweightTweaks },
+                { ProjectileID.RocketFireworkBlue, Do(TimeLeftDelta(+45)) },
+                { ProjectileID.RocketFireworkGreen, Do(TimeLeftDelta(+45)) },
+                { ProjectileID.RocketFireworkRed, Do(TimeLeftDelta(+45)) },
+                { ProjectileID.RocketFireworkYellow, Do(TimeLeftDelta(+45)) },
                 { ProjectileID.SawtoothShark, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(6)) },
                 { ProjectileID.ShadowBeamHostile, Do(TimeLeftExact(60)) },
                 { ProjectileID.Shroomerang, Do(ExtraUpdatesExact(1)) },
@@ -200,6 +205,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.VenomBullet, standardBulletTweaks },
                 { ProjectileID.VenomFang, Do(LocalIFrames(10)) },
                 { ProjectileID.VortexDrill, standardDrillTweaks },
+                { ProjectileID.Wasp, Do(PiercingExact(2)) },
                 { ProjectileID.YellowCounterweight, counterweightTweaks },
                 #endregion
 

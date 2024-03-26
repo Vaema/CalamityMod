@@ -520,15 +520,12 @@ namespace CalamityMod
         /// <param name="damageMult">A reference to the current in-use damage multiplier. This will be increased in-place.</param>
         public static void ApplyRippersToDamage(CalamityPlayer mp, bool trueMelee, ref float damageMult)
         {
-            // Reduce how much true melee benefits from Rage and Adrenaline.
-            float rageAndAdrenalineTrueMeleeDamageMult = 0.5f;
-
             // Rage and Adrenaline now stack additively with no special cases.
             if (mp.rageModeActive)
-                damageMult += trueMelee ? mp.RageDamageBoost * rageAndAdrenalineTrueMeleeDamageMult : mp.RageDamageBoost;
+                damageMult += trueMelee ? mp.RageDamageBoost * BalancingConstants.TrueMeleeRipperReductionFactor : mp.RageDamageBoost;
             // Draedon's Heart disables Adrenaline damage.
             if (mp.adrenalineModeActive && !mp.draedonsHeart)
-                damageMult += trueMelee ? mp.GetAdrenalineDamage() * rageAndAdrenalineTrueMeleeDamageMult : mp.GetAdrenalineDamage();
+                damageMult += trueMelee ? mp.GetAdrenalineDamage() * BalancingConstants.TrueMeleeRipperReductionFactor : mp.GetAdrenalineDamage();
         }
         #endregion
 

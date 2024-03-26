@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Tools.ClimateChange
 
         public override bool CanUseItem(Player player)
         {
-            return DownedBossSystem.downedDesertScourge;
+            return DownedBossSystem.downedDesertScourge || Main.hardMode;
         }
 
         // this is extremely ugly and has to be fully qualified because we add an item called Sandstorm

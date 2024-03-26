@@ -228,7 +228,39 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 80, true);
+            {
+                if (Main.zenithWorld)
+                {
+                    target.AddBuff(ModContent.BuffType<HolyInferno>(), 150);
+
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.OnFire, 180);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.OnFire3, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.CursedInferno, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Frostburn, 180);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Frostburn2, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Burning, 60);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 90);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<Dragonfire>(), 90);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 90);
+                }
+                else
+                    target.AddBuff(BuffID.OnFire, 150, true);
+            }
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.AddIf(() => Main.hardMode, ModContent.ItemType<EssenceofSunlight>(), 2);

@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -143,7 +144,7 @@ namespace CalamityMod.NPCs.Providence
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedGuardianCommanderGlow").Value;
+            texture2D15 = ProfanedGuardianCommander.Texture_Glow.Value;
             Color yellowLerpColor = Color.Lerp(Color.White, Color.Yellow, 0.5f);
 
             if (CalamityConfig.Instance.Afterimages)

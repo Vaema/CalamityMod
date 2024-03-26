@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || Projectile.Opacity != 1f)
                 return;
 
-            target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 120, true);
+            target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 240, true);
         }
     }
 }

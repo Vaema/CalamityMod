@@ -108,7 +108,7 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             bool usingSpecialItem = Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>());
 
             Vector2 ritualSpawnPosition = new Vector2(left + Width / 2, top).ToWorldCoordinates();
-            ritualSpawnPosition += new Vector2(-10f, -24f);
+            ritualSpawnPosition += new Vector2(0f, -24f);
 
             SoundEngine.PlaySound(SummonSound, ritualSpawnPosition);
             Projectile.NewProjectile(new EntitySource_WorldEvent(), ritualSpawnPosition, Vector2.Zero, ModContent.ProjectileType<SCalRitualDrama>(), 0, 0f, Main.myPlayer, 0, vodka.ToInt());

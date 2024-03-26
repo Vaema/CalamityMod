@@ -192,6 +192,23 @@ namespace CalamityMod
         }
 
         /// <summary>
+        /// Syncs <see cref="CalamityGlobalNPC.destroyerLaserColor"/>. This exists to sync the Destroyer's lasers so that the telegraphs and segment colors display properly.
+        /// </summary>
+        /// <param name="npc"></param>
+        public static void SyncDestroyerLaserColor(this NPC npc)
+        {
+            // Don't bother attempting to send packets in singleplayer.
+            if (Main.netMode == NetmodeID.SinglePlayer)
+                return;
+
+            ModPacket packet = CalamityMod.Instance.GetPacket();
+            packet.Write((byte)CalamityModMessageType.SyncDestroyerLaserColor);
+            packet.Write((byte)npc.whoAmI);
+            packet.Write(npc.Calamity().destroyerLaserColor);
+            packet.Send();
+        }
+
+        /// <summary>
         /// Syncs <see cref="CalamityGlobalNPC.newAI"/>. This exists specifically for AIs manipulated in a global context, as <see cref="GlobalNPC"/> has no netUpdate related hooks.
         /// </summary>
         /// <param name="npc"></param>

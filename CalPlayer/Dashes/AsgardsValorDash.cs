@@ -93,7 +93,7 @@ namespace CalamityMod.CalPlayer.Dashes
                 dust.noGravity = false;
                 dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
             }
-            SoundEngine.PlaySound(SoundID.Item62 with { Volume = 0.6f, PitchVariance = 0.3f }, npc.position);
+            SoundEngine.PlaySound(SoundID.Item62 with { Volume = 0.6f, PitchVariance = 0.3f }, npc.Center);
         }
     }
 }

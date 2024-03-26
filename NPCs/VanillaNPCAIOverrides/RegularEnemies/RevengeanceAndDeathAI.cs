@@ -403,9 +403,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
             {
                 int activeTime = 300;
                 int defendTime = 120;
+
+                // Set damage
+                npc.damage = npc.defDamage;
+
                 npc.defense = npc.defDefense;
+
                 if (npc.ai[2] < 0f)
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     npc.defense = npc.defDefense + 15;
                     npc.ai[2] += 1f;
                     npc.velocity.X *= 0.9f;
@@ -480,7 +488,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                         float time = npc.ai[2] + maxTime + turnToStoneTime;
                         if (time == 1f)
                         {
-                            SoundEngine.PlaySound(SoundID.NPCDeath17, npc.position);
+                            SoundEngine.PlaySound(SoundID.NPCDeath17, npc.Center);
                         }
                         if (time < turnToStoneTime)
                         {
@@ -548,7 +556,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                 if (npc.ai[3] < 0f)
                 {
                     npc.knockBackResist = 0f;
-                    npc.defense = (int)(npc.defDefense * 1.3);
+                    npc.defense = (int)Math.Round(npc.defDefense * 1.3);
                     npc.noGravity = true;
                     npc.noTileCollide = true;
                     npc.direction = (npc.velocity.X > 0).ToDirectionInt();
@@ -1035,7 +1043,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                 {
                     npc.velocity *= 0f;
                     npc.ai[3] = 0f;
-                    SoundEngine.PlaySound(SoundID.Item8, npc.position);
+                    SoundEngine.PlaySound(SoundID.Item8, npc.Center);
                     float distX = npc.oldPos[2].X + (float)npc.width * 0.5f - npc.Center.X;
                     float distY = npc.oldPos[2].Y + (float)npc.height * 0.5f - npc.Center.Y;
                     float distance = (float)Math.Sqrt((distX * distX + distY * distY));
@@ -1312,31 +1320,31 @@ PrepareToShoot:
             {
                 if ((npcType == NPCID.Zombie || npcType == NPCID.ZombieXmas || npcType == NPCID.ZombieSweater || npcType == NPCID.Skeleton || (npcType >= NPCID.BoneThrowingSkeleton && npcType <= NPCID.BoneThrowingSkeleton4) || npcType == NPCID.AngryBones || npcType == NPCID.AngryBonesBig || npcType == NPCID.AngryBonesBigHelmet || npcType == NPCID.AngryBonesBigMuscle || npcType == NPCID.ArmoredSkeleton || npcType == NPCID.SkeletonArcher || npcType == NPCID.BaldZombie || npcType == NPCID.UndeadViking || npcType == NPCID.ZombieEskimo || npcType == NPCID.Frankenstein || npcType == NPCID.PincushionZombie || npcType == NPCID.SlimedZombie || npcType == NPCID.SwampZombie || npcType == NPCID.TwiggyZombie || npcType == NPCID.ArmoredViking || npcType == NPCID.FemaleZombie || npcType == NPCID.HeadacheSkeleton || npcType == NPCID.MisassembledSkeleton || npcType == NPCID.PantlessSkeleton || npcType == NPCID.ZombieRaincoat || npcType == NPCID.SkeletonSniper || npcType == NPCID.TacticalSkeleton || npcType == NPCID.SkeletonCommando || npcType == NPCID.ZombieSuperman || npcType == NPCID.ZombiePixie || npcType == NPCID.ZombieDoctor || npcType == NPCID.GreekSkeleton) && Main.rand.NextBool(1000))
                 {
-                    SoundEngine.PlaySound(SoundID.ZombieMoan, npc.position);
+                    SoundEngine.PlaySound(SoundID.ZombieMoan, npc.Center);
                 }
                 if (npcType == NPCID.BloodZombie && Main.rand.NextBool(800))
                 {
-                    SoundEngine.PlaySound(SoundID.ZombieMoan, npc.position); //There was a npcType thing afterwards but its not really useable now. Hilarious, frankly
+                    SoundEngine.PlaySound(SoundID.ZombieMoan, npc.Center); //There was a npcType thing afterwards but its not really useable now. Hilarious, frankly
                 }
                 if ((npcType == NPCID.Mummy || npcType == NPCID.DarkMummy || npcType == NPCID.LightMummy) && Main.rand.NextBool(500))
                 {
-                    SoundEngine.PlaySound(SoundID.Mummy, npc.position);
+                    SoundEngine.PlaySound(SoundID.Mummy, npc.Center);
                 }
                 if (npcType == NPCID.Vampire && Main.rand.NextBool(500))
                 {
-                    SoundEngine.PlaySound(SoundID.Zombie7, npc.position);
+                    SoundEngine.PlaySound(SoundID.Zombie7, npc.Center);
                 }
                 if (npcType == NPCID.Frankenstein && Main.rand.NextBool(500))
                 {
-                    SoundEngine.PlaySound(SoundID.Zombie6, npc.position);
+                    SoundEngine.PlaySound(SoundID.Zombie6, npc.Center);
                 }
                 if (npcType == NPCID.FaceMonster && Main.rand.NextBool(500))
                 {
-                    SoundEngine.PlaySound(SoundID.Zombie8, npc.position);
+                    SoundEngine.PlaySound(SoundID.Zombie8, npc.Center);
                 }
                 if (npcType >= 269 && npcType <= 280 && Main.rand.NextBool(1000))
                 {
-                    SoundEngine.PlaySound(SoundID.ZombieMoan, npc.position);
+                    SoundEngine.PlaySound(SoundID.ZombieMoan, npc.Center);
                 }
                 npc.TargetClosest(true);
             }
@@ -1819,7 +1827,9 @@ PrepareToShoot:
             {
                 if (npc.ai[2] == 0f)
                 {
-                    npc.damage = npc.defDamage;
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     float maxVelocity = CalamityWorld.death ? 2.5f : 1.5f;
                     maxVelocity *= 1f + (1f - npc.scale);
                     FighterRunningAI(npc, maxVelocity, 0.09f, 0.8f, true, 0.8f);
@@ -1840,7 +1850,9 @@ PrepareToShoot:
                 }
                 else
                 {
-                    npc.damage = npc.defDamage * 2;
+                    // Set damage
+                    npc.damage = (int)Math.Round(npc.defDamage * 1.4);
+
                     npc.ai[3] = 1f;
                     npc.velocity.X *= 0.9f;
                     if (Math.Abs(npc.velocity.X) < 0.1f)
@@ -3452,46 +3464,15 @@ PrepareToShoot:
             // Teleport (Chaos elementals)
             if (Main.netMode != NetmodeID.MultiplayerClient && (npcType == NPCID.ChaosElemental || npcType == ModContent.NPCType<RenegadeWarlock>()) && npc.ai[3] >= (float)aiGateValue)
             {
-                int tileCoordsX = (int)Main.player[npc.target].position.X / 16;
-                int tileCoordsY = (int)Main.player[npc.target].position.Y / 16;
-                int tileCoordsX2 = (int)npc.position.X / 16;
-                int tileCoordsY2 = (int)npc.position.Y / 16;
-                int maxDistanceX = 20;
-                int tryCount = 0;
-                bool tooFarFromPlayer = false;
-                if (Math.Abs(npc.position.X - Main.player[npc.target].position.X) + Math.Abs(npc.position.Y - Main.player[npc.target].position.Y) > 2000f)
+                int targetTileX = (int)Main.player[npc.target].Center.X / 16;
+                int targetTileY = (int)Main.player[npc.target].Center.Y / 16;
+                Vector2 chosenTile = Vector2.Zero;
+                if (npc.AI_AttemptToFindTeleportSpot(ref chosenTile, targetTileX, targetTileY, 20, 9))
                 {
-                    tryCount = 100;
-                    tooFarFromPlayer = true;
-                }
-                while (!tooFarFromPlayer && tryCount < 100)
-                {
-                    tryCount++;
-                    int randX = Main.rand.Next(tileCoordsX - maxDistanceX, tileCoordsX + maxDistanceX);
-                    for (int t = Main.rand.Next(tileCoordsY - maxDistanceX, tileCoordsY + maxDistanceX); t < tileCoordsY + maxDistanceX; t++)
-                    {
-                        if ((t < tileCoordsY - 4 || t > tileCoordsY + 4 || randX < tileCoordsX - 4 || randX > tileCoordsX + 4) && (t < tileCoordsY2 - 1 || t > tileCoordsY2 + 1 || randX < tileCoordsX2 - 1 || randX > tileCoordsX2 + 1) && Main.tile[randX, t].HasUnactuatedTile)
-                        {
-                            bool foundGoodTeleport = true;
-                            // I don't understand why the hell this exists if it's only for Chaos Elementals, but I suppose I'll
-                            // Leave it here
-                            if (npcType == NPCID.DarkCaster && Main.tile[randX, t - 1].WallType == WallID.None)
-                            {
-                                foundGoodTeleport = false;
-                            }
-                            else if (Main.tile[randX, t - 1].LiquidType == LiquidID.Lava)
-                            {
-                                foundGoodTeleport = false;
-                            }
-                            if (foundGoodTeleport && Main.tileSolid[(int)Main.tile[randX, t].TileType] && !Collision.SolidTiles(randX - 1, randX + 1, t - 4, t - 1))
-                            {
-                                npc.position.X = (float)(randX * 16 - npc.width / 2);
-                                npc.position.Y = (float)(t * 16 - npc.height);
-                                npc.netUpdate = true;
-                                npc.ai[3] = -30f;
-                            }
-                        }
-                    }
+                    npc.position.X = chosenTile.X * 16f - (float)(npc.width / 2);
+                    npc.position.Y = chosenTile.Y * 16f - (float)npc.height;
+                    npc.ai[3] = -30f;
+                    npc.netUpdate = true;
                 }
             }
             return false;
@@ -3976,7 +3957,7 @@ PrepareToShoot:
 
                 if (npc.ai[1] == 301f)
                 {
-                    SoundEngine.PlaySound(SoundID.Item17, npc.position);
+                    SoundEngine.PlaySound(SoundID.Item17, npc.Center);
                     npc.ai[1] = 0f;
                 }
 
@@ -4119,7 +4100,7 @@ PrepareToShoot:
             if (npc.type == NPCID.LeechHead && npc.localAI[1] == 0f)
             {
                 npc.localAI[1] = 1f;
-                SoundEngine.PlaySound(SoundID.NPCDeath13, npc.position);
+                SoundEngine.PlaySound(SoundID.NPCDeath13, npc.Center);
                 int dustVelocity = 1;
                 if (npc.velocity.X < 0f)
                 {
@@ -4178,7 +4159,7 @@ PrepareToShoot:
             }
             else
             {
-                npc.defense = (int)(npc.defDefense * 1.3);
+                npc.defense = (int)Math.Round(npc.defDefense * 1.3);
 
                 if (npc.ai[3] > 0f)
                     npc.realLife = (int)npc.ai[3];
@@ -4874,7 +4855,7 @@ PrepareToShoot:
                             soundDelay = 20f;
                         }
                         npc.soundDelay = (int)soundDelay;
-                        SoundEngine.PlaySound(SoundID.WormDig, npc.position);
+                        SoundEngine.PlaySound(SoundID.WormDig, npc.Center);
                     }
 
                     wormTargetDist = (float)Math.Sqrt((double)(wormTargetX * wormTargetX + wormTargetY * wormTargetY));
@@ -5104,7 +5085,7 @@ PrepareToShoot:
                 {
                     npc.alpha = 255;
                 }
-                SoundEngine.PlaySound(SoundID.Item8, npc.position);
+                SoundEngine.PlaySound(SoundID.Item8, npc.Center);
                 int dustIncrement;
                 for (int i = 0; i < 50; i = dustIncrement + 1)
                 {
@@ -5175,7 +5156,7 @@ PrepareToShoot:
                 npc.velocity.Y = 0f;
                 npc.ai[2] = 0f;
                 npc.ai[3] = 0f;
-                SoundEngine.PlaySound(SoundID.Item8, npc.position);
+                SoundEngine.PlaySound(SoundID.Item8, npc.Center);
                 for (int j = 0; j < 50; j = dustIncrement + 1)
                 {
                     if (npc.type == NPCID.GoblinSorcerer || npc.type == NPCID.Tim)
@@ -5304,46 +5285,12 @@ PrepareToShoot:
                 npc.ai[0] = 2f;
                 int targetTileX = (int)Main.player[npc.target].position.X / 16;
                 int targetTileY = (int)Main.player[npc.target].position.Y / 16;
-                int npcTileX = (int)npc.position.X / 16;
-                int npcTileY = (int)npc.position.Y / 16;
-                int randTeleportOffset = 20;
-                int teleportTries = 0;
-                bool canTeleport = false;
-                if (Math.Abs(npc.position.X - Main.player[npc.target].position.X) + Math.Abs(npc.position.Y - Main.player[npc.target].position.Y) > 2000f)
+                Vector2 chosenTile = Vector2.Zero;
+                if (npc.AI_AttemptToFindTeleportSpot(ref chosenTile, targetTileX, targetTileY))
                 {
-                    teleportTries = 100;
-                    canTeleport = true;
-                }
-                while (!canTeleport && teleportTries < 100)
-                {
-                    teleportTries++;
-                    int teleportTileX = Main.rand.Next(targetTileX - randTeleportOffset, targetTileX + randTeleportOffset);
-                    int teleportTileY = Main.rand.Next(targetTileY - randTeleportOffset, targetTileY + randTeleportOffset);
-                    int dustIncrement;
-                    for (int k = teleportTileY; k < targetTileY + randTeleportOffset; k = dustIncrement + 1)
-                    {
-                        if ((k < targetTileY - 4 || k > targetTileY + 4 || teleportTileX < targetTileX - 4 || teleportTileX > targetTileX + 4) && (k < npcTileY - 1 || k > npcTileY + 1 || teleportTileX < npcTileX - 1 || teleportTileX > npcTileX + 1) && Main.tile[teleportTileX, k].HasUnactuatedTile)
-                        {
-                            bool validTeleportSpot = true;
-                            if ((npc.type == NPCID.DarkCaster || (npc.type >= NPCID.RaggedCaster && npc.type <= NPCID.DiabolistWhite)) && !Main.wallDungeon[(int)Main.tile[teleportTileX, k - 1].WallType])
-                            {
-                                validTeleportSpot = false;
-                            }
-                            else if (Main.tile[teleportTileX, k - 1].LiquidType == LiquidID.Lava)
-                            {
-                                validTeleportSpot = false;
-                            }
-                            if (validTeleportSpot && Main.tileSolid[(int)Main.tile[teleportTileX, k].TileType] && !Collision.SolidTiles(teleportTileX - 1, teleportTileX + 1, k - 4, k - 1))
-                            {
-                                npc.ai[1] = 20f;
-                                npc.ai[2] = (float)teleportTileX;
-                                npc.ai[3] = (float)k;
-                                canTeleport = true;
-                                break;
-                            }
-                        }
-                        dustIncrement = k;
-                    }
+                    npc.ai[1] = 20f;
+                    npc.ai[2] = chosenTile.X;
+                    npc.ai[3] = chosenTile.Y;
                 }
                 npc.netUpdate = true;
             }
@@ -5354,7 +5301,7 @@ PrepareToShoot:
                 {
                     if (npc.ai[1] % 30f == 0f && npc.ai[1] / 30f < 5f)
                     {
-                        SoundEngine.PlaySound(SoundID.Item8, npc.position);
+                        SoundEngine.PlaySound(SoundID.Item8, npc.Center);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Point spiritCenter = npc.Center.ToTileCoordinates();
@@ -5451,7 +5398,7 @@ PrepareToShoot:
                     {
                         if (npc.type != NPCID.RuneWizard)
                         {
-                            SoundEngine.PlaySound(SoundID.Item8, npc.position);
+                            SoundEngine.PlaySound(SoundID.Item8, npc.Center);
                         }
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
@@ -5618,7 +5565,7 @@ PrepareToShoot:
                     minDistance = 225f;
                     break;
                 case NPCID.FungiBulb:
-                    minDistance = 200f;
+                    minDistance = !CalamityWorld.revenge ? 100f : 200f;
                     break;
                 case NPCID.AngryTrapper:
                     acceleration = 0.05f;
@@ -5733,7 +5680,7 @@ PrepareToShoot:
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                if (npc.type == NPCID.Clinger && !Main.player[npc.target].dead)
+                if (npc.type == NPCID.Clinger && !Main.player[npc.target].DeadOrGhost)
                 {
                     if (npc.justHit)
                         npc.localAI[0] = 0f;
@@ -5757,17 +5704,19 @@ PrepareToShoot:
                         }
                     }
                 }
-                if (npc.type == NPCID.GiantFungiBulb && !Main.player[npc.target].dead)
+
+                if ((npc.type == NPCID.GiantFungiBulb || npc.type == NPCID.FungiBulb) && !Main.player[npc.target].DeadOrGhost)
                 {
                     if (npc.justHit)
                         npc.localAI[0] = 0f;
 
                     npc.localAI[0] += 1f;
-                    if (npc.localAI[0] >= 120f)
+                    float sporeSpawnGateValue = npc.type == NPCID.GiantFungiBulb ? 120f : 240f;
+                    if (npc.localAI[0] >= sporeSpawnGateValue)
                     {
                         if (!Collision.SolidCollision(npc.position, npc.width, npc.height))
                         {
-                            float speed = 16f;
+                            float speed = npc.type == NPCID.GiantFungiBulb ? 16f : 8f;
                             distanceVector.X = Main.player[npc.target].Center.X - npc.Center.X;
                             float absoluteYDistance = Math.Abs(distanceVector.X * 0.1f);
                             if (Main.player[npc.target].Center.Y - npc.Center.Y > 0f)
@@ -5777,7 +5726,7 @@ PrepareToShoot:
 
                             Vector2 velocity = npc.SafeDirectionTo(Main.player[npc.target].Center - npc.Center - Vector2.UnitY * absoluteYDistance, -Vector2.UnitY) * speed;
 
-                            int idx = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.FungiSpore, 0, 0f, 0f, 0f, 0f, 255);
+                            int idx = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.FungiSpore);
                             Main.npc[idx].velocity = velocity;
                             Main.npc[idx].netUpdate = true;
                             npc.localAI[0] = 0f;
@@ -6332,6 +6281,10 @@ PrepareToShoot:
         #region Jellyfish AI
         public static bool BuffedJellyfishAI(NPC npc, Mod mod)
         {
+            // Avoid cheap bullshit
+            float damagingVelocity = npc.type == NPCID.GreenJellyfish ? 7.2f : 5.6f;
+            npc.damage = (npc.dontTakeDamage || npc.velocity.Length() > damagingVelocity) ? npc.defDamage : 0;
+
             // Stop moving because we're emitting electricity and don't take damage
             bool endEarly = false;
             if (npc.wet && npc.ai[1] == 1f)
@@ -6600,7 +6553,7 @@ PrepareToShoot:
             {
                 if (npc.ai[0] == 200f)
                 {
-                    SoundEngine.PlaySound(SoundID.NPCDeath13, npc.position);
+                    SoundEngine.PlaySound(SoundID.NPCDeath13, npc.Center);
                 }
                 npc.ai[0] -= 1f;
             }
@@ -6986,7 +6939,7 @@ PrepareToShoot:
 
                 if (Main.rand.NextBool(40))
                 {
-                    SoundEngine.PlaySound(SoundID.Pixie, npc.position);
+                    SoundEngine.PlaySound(SoundID.Pixie, npc.Center);
                 }
             }
             else if (npc.type == NPCID.IceElemental)
@@ -7500,6 +7453,9 @@ PrepareToShoot:
             // Sitting around, waiting for a potential player
             if (npc.ai[0] == 0f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 if (!isLostHoppingPresent)
                 {
                     npc.TargetClosest(true);
@@ -7525,6 +7481,9 @@ PrepareToShoot:
             }
             else if (npc.velocity.Y == 0f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.ai[2] += 1f;
 
                 int timeSpentStopping = 20;
@@ -7569,6 +7528,9 @@ PrepareToShoot:
             }
             else
             {
+                // Set damage
+                npc.damage = npc.defDamage;
+
                 if (npc.direction == 1 && npc.velocity.X < 1f)
                 {
                     npc.velocity.X += 0.1f;
@@ -8364,11 +8326,11 @@ PrepareToShoot:
 
                     if (npc.type == NPCID.GiantShelly || npc.type == NPCID.GiantShelly2)
                     {
-                        npc.damage = (int)(npc.defDamage * 1.35);
+                        npc.damage = (int)Math.Round(npc.defDamage * 1.2);
                     }
                     else
                     {
-                        npc.damage = (int)(npc.defDamage * 1.8);
+                        npc.damage = (int)Math.Round(npc.defDamage * 1.4);
                     }
 
                     npc.defense = npc.defDefense * 2;
@@ -8489,7 +8451,7 @@ PrepareToShoot:
                 {
                     if (npc.ai[0] == 6f)
                     {
-                        npc.damage = (int)(npc.defDamage * 1.4);
+                        npc.damage = (int)Math.Round(npc.defDamage * 1.2);
                         npc.defense = npc.defDefense * 2;
                         npc.knockBackResist = 0f;
 
@@ -8944,6 +8906,9 @@ PrepareToShoot:
                     npc.velocity.Y = -6f;
                 }
             }
+
+            // Avoid cheap bullshit
+            npc.damage = (npc.velocity.Y == 0f || npc.velocity.Length() < 3f) ? 0 : npc.defDamage;
 
             if (npc.velocity.Y == 0f)
             {
@@ -9434,7 +9399,7 @@ PrepareToShoot:
         public static bool BuffedSporeAI(NPC npc, Mod mod)
         {
             if (npc.type == NPCID.Spore)
-                Lighting.AddLight(npc.Center, 0.2f, 0.1f, 0.2f);
+                Lighting.AddLight(npc.Center, 0.5f, 0.2f, 0.5f);
 
             if (npc.timeLeft > 5)
                 npc.timeLeft = 5;
@@ -9716,6 +9681,9 @@ PrepareToShoot:
             // Move upward.
             if (npc.ai[0] == 0f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.knockBackResist = npcKBResist;
                 Vector2 playerDistanceNorm = Main.player[npc.target].Center - npc.Center;
                 Vector2 upwardVelocity = playerDistanceNorm - Vector2.UnitY * idealUpwardDelta;
@@ -9766,18 +9734,36 @@ PrepareToShoot:
             // Slow down and prepare for charge.
             else if (npc.ai[0] == 1f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.knockBackResist = 0f;
-                npc.velocity *= chargeWaitSlowdownMult;
+
+                bool decelerate = true;
+                if (npc.type == NPCID.SolarCorite)
+                {
+                    decelerate = npc.velocity.Length() > 2f;
+                    if (!decelerate && npc.target >= 0 && !Main.player[npc.target].DeadOrGhost)
+                    {
+                        Vector2 maxVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.Zero) * 0.1f;
+                        npc.velocity = Vector2.Lerp(npc.velocity, maxVelocity, 0.25f);
+                    }
+                }
+
+                if (decelerate)
+                    npc.velocity *= chargeWaitSlowdownMult;
 
                 npc.ai[1] += 1f;
                 // If enough time has passed, charge.
                 if (npc.ai[1] >= chargePhaseWait)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     npc.ai[0] = 2f;
                     npc.ai[1] = 0f;
                     npc.netUpdate = true;
-                    Vector2 velocity = new Vector2(npc.ai[2], npc.ai[3]) +
-                        new Vector2(Main.rand.Next(-chargeRandomness, chargeRandomness + 1), Main.rand.Next(-chargeRandomness, chargeRandomness + 1)) * 0.04f;
+                    Vector2 velocity = new Vector2(npc.ai[2], npc.ai[3]) + new Vector2(Main.rand.Next(-chargeRandomness, chargeRandomness + 1), Main.rand.Next(-chargeRandomness, chargeRandomness + 1)) * 0.04f;
                     velocity.Normalize();
                     velocity *= chargeSpeed;
                     npc.velocity = velocity;
@@ -9795,6 +9781,9 @@ PrepareToShoot:
             }
             else if (npc.ai[0] == 2f)
             {
+                // Set damage
+                npc.damage = npc.defDamage;
+
                 npc.knockBackResist = 0f;
 
                 npc.ai[1] += 1f;
@@ -9802,6 +9791,9 @@ PrepareToShoot:
                 // If time is up and the player is (relatively) far, or the velocity is (relatively) low, reset.
                 if ((npc.ai[1] >= maximumChargeTime & aboveAndFar) || npc.velocity.Length() < minimumChargeSpeed)
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     npc.ai[0] = 0f;
                     npc.ai[1] = 0f;
                     npc.ai[2] = 0f;
@@ -9838,6 +9830,9 @@ PrepareToShoot:
             }
             else if (npc.ai[0] == 4f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.ai[1] -= 3f;
                 if (npc.ai[1] <= 0f)
                 {
@@ -9858,16 +9853,17 @@ PrepareToShoot:
                 npc.netUpdate = true;
             }
 
-            // Dust
+            // Explode
             if (npc.ai[0] == 3f)
             {
+                // Set damage
+                npc.damage = npc.defDamage;
+
                 npc.position = npc.Center;
                 npc.width = npc.height = CalamityWorld.death ? 360 : 240;
                 npc.position -= npc.Size;
 
                 npc.velocity = Vector2.Zero;
-
-                npc.damage = 160;
 
                 npc.alpha = 255;
                 Lighting.AddLight((int)npc.Center.X / 16, (int)npc.Center.Y / 16, 0.2f, 0.7f, 1.1f);
@@ -9912,7 +9908,7 @@ PrepareToShoot:
                 npc.ai[1] += 1f;
                 if (npc.ai[1] >= 3f)
                 {
-                    SoundEngine.PlaySound(SoundID.Item14, npc.position);
+                    SoundEngine.PlaySound(SoundID.Item14, npc.Center);
                     npc.life = 0;
                     npc.HitEffect(0, 10.0);
                     npc.active = false;
@@ -10045,7 +10041,7 @@ PrepareToShoot:
 
                 if ((int)npc.ai[1] == NPCID.Mothron)
                 {
-                    npc.defense = (int)(npc.defDefense * 1.5);
+                    npc.defense = (int)Math.Round(npc.defDefense * 1.5);
                     npc.scale *= 2f;
                     npc.width = npc.height = (int)(34f * npc.scale);
                     npc.netUpdate = true;
@@ -10099,7 +10095,12 @@ PrepareToShoot:
         {
             npc.noGravity = true;
             npc.noTileCollide = false;
+
+            // Set damage
+            npc.damage = npc.defDamage;
+
             npc.defense = npc.defDefense;
+
             if (npc.justHit && Main.netMode != NetmodeID.MultiplayerClient && Main.rand.NextBool(10))
             {
                 npc.netUpdate = true;
@@ -10108,7 +10109,11 @@ PrepareToShoot:
             }
             if (npc.ai[0] == -1f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.defense = npc.defDefense + 10;
+
                 npc.noGravity = false;
                 npc.velocity.X *= 0.98f;
                 npc.ai[1] += 1f;
@@ -10288,6 +10293,10 @@ PrepareToShoot:
             npc.noTileCollide = false;
             if (npc.ai[0] == 0f)
             {
+                // Avoid cheap bullshit
+                if (npc.type == NPCID.DeadlySphere || npc.type == NPCID.NebulaHeadcrab)
+                    npc.damage = 0;
+
                 npc.TargetClosest();
                 if (Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
                 {
@@ -10347,6 +10356,12 @@ PrepareToShoot:
             }
             else if (npc.ai[0] == 1f)
             {
+                // Set damage or avoid cheap bullshit
+                if (npc.type == NPCID.DeadlySphere)
+                    npc.damage = npc.defDamage;
+                else if (npc.type == NPCID.NebulaHeadcrab)
+                    npc.damage = 0;
+
                 npc.rotation += npc.direction * 0.3f;
                 Vector2 attacktargetDirection = Main.player[npc.target].Center - npc.Center;
                 if (npc.type == NPCID.NebulaHeadcrab)
@@ -10390,6 +10405,10 @@ PrepareToShoot:
             }
             else if (npc.ai[0] == 2f)
             {
+                // Avoid cheap bullshit
+                if (npc.type == NPCID.DeadlySphere || npc.type == NPCID.NebulaHeadcrab)
+                    npc.damage = 0;
+
                 npc.rotation = npc.velocity.X * 0.1f;
                 npc.noTileCollide = true;
                 Vector2 idleTargetDirection = Main.player[npc.target].Center - npc.Center;
@@ -10404,6 +10423,10 @@ PrepareToShoot:
             }
             else if (npc.ai[0] == 3f)
             {
+                // Avoid cheap bullshit
+                if (npc.type == NPCID.DeadlySphere || npc.type == NPCID.NebulaHeadcrab)
+                    npc.damage = 0;
+
                 npc.rotation = npc.velocity.X * 0.1f;
                 Vector2 blockedCellCenter = new Vector2(npc.ai[1], npc.ai[2]);
                 Vector2 blockedCellDirection = blockedCellCenter - npc.Center;
@@ -10424,6 +10447,10 @@ PrepareToShoot:
             }
             else if (npc.ai[0] == 4f)
             {
+                // Avoid cheap bullshit
+                if (npc.type == NPCID.DeadlySphere || npc.type == NPCID.NebulaHeadcrab)
+                    npc.damage = 0;
+
                 npc.rotation = npc.velocity.X * 0.1f;
                 if (npc.collideX)
                     npc.velocity.X *= -0.8f;
@@ -10486,12 +10513,18 @@ PrepareToShoot:
                 Player player8 = Main.player[npc.target];
                 if (!player8.active || player8.dead)
                 {
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     npc.ai[0] = 0f;
                     npc.ai[1] = 0f;
                     npc.netUpdate = true;
                 }
                 else
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     npc.Center = ((player8.gravDir == 1f) ? player8.Top : player8.Bottom) + new Vector2(player8.direction * 4, 0f);
                     npc.gfxOffY = player8.gfxOffY;
                     npc.velocity = Vector2.Zero;
@@ -10813,6 +10846,9 @@ PrepareToShoot:
         #region Big Mimic AI
         public static bool BuffedBigMimicAI(NPC npc, Mod mod)
         {
+            // Set damage
+            npc.damage = npc.defDamage;
+
             npc.knockBackResist = 0.2f * Main.GameModeInfo.KnockbackToEnemiesMultiplier;
             npc.dontTakeDamage = false;
             npc.noTileCollide = false;
@@ -10934,10 +10970,13 @@ PrepareToShoot:
             }
             else if (npc.ai[0] == 3f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 npc.velocity.X *= 0.85f;
                 npc.dontTakeDamage = true;
                 npc.ai[1] += 1f;
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[1] >= (CalamityWorld.death ? 60f : 120f))
+                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[1] >= (CalamityWorld.death ? 60f : 90f))
                 {
                     npc.ai[0] = 2f;
                     npc.ai[1] = 0f;

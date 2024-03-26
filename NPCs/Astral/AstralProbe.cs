@@ -8,6 +8,7 @@ using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -19,6 +20,16 @@ namespace CalamityMod.NPCs.Astral
 {
     public class AstralProbe : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
+
+        public override void SetStaticDefaults()
+        {
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
+        }
+
         public override void SetDefaults()
         {
             NPC.damage = 20;
@@ -240,7 +251,7 @@ namespace CalamityMod.NPCs.Astral
 
             spriteBatch.Draw(texture2D15, drawPosition, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstralProbeGlow").Value;
+            texture2D15 = GlowTexture.Value;
 
             spriteBatch.Draw(texture2D15, drawPosition, NPC.frame, Color.White * 0.6f, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 

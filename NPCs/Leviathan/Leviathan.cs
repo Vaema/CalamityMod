@@ -16,6 +16,7 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.Sounds;
 using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -40,7 +41,7 @@ namespace CalamityMod.NPCs.Leviathan
         private bool gfbAnaSummoned = false;
         private int soundDelay = 0;
         private float extrapitch = 0;
-        public static Texture2D AttackTexture = null;
+        public static Asset<Texture2D> AttackTexture = null;
 
         public static readonly SoundStyle RoarMeteorSound = new("CalamityMod/Sounds/Custom/LeviathanRoarMeteor");
         public static readonly SoundStyle RoarChargeSound = new("CalamityMod/Sounds/Custom/LeviathanRoarCharge");
@@ -51,7 +52,7 @@ namespace CalamityMod.NPCs.Leviathan
             Main.npcFrameCount[NPC.type] = 3;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             if (!Main.dedServ)
-                AttackTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Leviathan/LeviathanAttack", AssetRequestMode.ImmediateLoad).Value;
+                AttackTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Leviathan/LeviathanAttack", AssetRequestMode.AsyncLoad);
         }
 
         public override void SetDefaults()
@@ -818,6 +819,18 @@ namespace CalamityMod.NPCs.Leviathan
         {
             CalamityGlobalNPC.SetNewBossJustDowned(npc);
 
+            // Abyss awakens after killing Anahita & Leviathan
+            string key = "Mods.CalamityMod.Status.Progression.AbyssDropsText";
+            Color messageColor = Color.RoyalBlue;
+
+            if (!DownedBossSystem.downedLeviathan)
+            {
+                if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
+                    SoundEngine.PlaySound(CommonCalamitySounds.WyrmScreamSound, Main.player[Main.myPlayer].Center);
+
+                CalamityUtils.DisplayLocalizedText(key, messageColor);
+            }
+
             // Mark Anahita & Leviathan as dead
             DownedBossSystem.downedLeviathan = true;
             CalamityNetcode.SyncWorld();
@@ -906,7 +919,7 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = AttackTexture;
+            Texture2D texture = AttackTexture.Value;
             if (NPC.ai[0] == 1f || NPC.Calamity().newAI[3] < 180f)
             {
                 texture = TextureAssets.Npc[NPC.type].Value;

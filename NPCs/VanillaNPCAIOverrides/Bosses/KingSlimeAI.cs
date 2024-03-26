@@ -73,7 +73,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
 
-                SoundEngine.PlaySound(SoundID.Item38, npc.position);
+                SoundEngine.PlaySound(SoundID.Item38, npc.Center);
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                     NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewel>());

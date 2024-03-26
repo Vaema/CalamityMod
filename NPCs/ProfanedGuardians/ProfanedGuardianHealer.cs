@@ -8,6 +8,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -40,6 +41,10 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> Texture_Glow2;
+        public static Asset<Texture2D> TextureNight_Glow;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 10;
@@ -54,6 +59,12 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             value.Position.X += 25;
             value.Position.Y += 15;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
+                TextureNight_Glow = ModContent.Request<Texture2D>(Texture + "GlowNight", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -73,7 +84,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             AIType = -1;
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
@@ -439,7 +449,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     spriteEffects = SpriteEffects.FlipHorizontally;
 
                 Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-                Texture2D texture2D16 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedGuardianHealerGlow2").Value;
+                Texture2D texture2D16 = Texture_Glow2.Value;
                 Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
                 int afterimageAmt = 5;
 
@@ -466,11 +476,11 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
                 spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, colorOverride ?? NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-                texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedGuardianHealerGlow").Value;
+                texture2D15 = Texture_Glow.Value;
                 Color timeBasedDrawColor = Color.Lerp(Color.White, Color.Yellow, 0.5f);
                 if (Main.remixWorld)
                 {
-                    texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedGuardianHealerGlowNight").Value;
+                    texture2D15 = TextureNight_Glow.Value;
                     timeBasedDrawColor = Color.Cyan;
                 }
                 Color overrideColor = Color.Lerp(Color.White, Color.Violet, 0.5f);

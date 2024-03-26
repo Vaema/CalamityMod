@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.autoJump = true;
-            player.jumpSpeedBoost += 0.3f;
+            player.jumpSpeedBoost += 1.6f;
             player.extraFall += 35;
             player.blackBelt = true;
             player.dashType = 1;
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient(ItemID.MasterNinjaGear).
                 AddIngredient(ItemID.FrogFlipper).
                 AddIngredient<PurifiedGel>(50).
-                AddIngredient<Polterplasm>(5).
+                AddIngredient<Necroplasm>(5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
 
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient(ItemID.BlackBelt).
                 AddIngredient(ItemID.FrogGear).
                 AddIngredient<PurifiedGel>(50).
-                AddIngredient<Polterplasm>(5).
+                AddIngredient<Necroplasm>(5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

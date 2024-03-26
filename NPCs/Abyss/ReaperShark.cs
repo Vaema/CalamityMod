@@ -23,6 +23,8 @@ namespace CalamityMod.NPCs.Abyss
 {
     public class ReaperShark : ModNPC
     {
+        public static Asset<Texture2D> ManTexture;
+
         public static readonly SoundStyle SearchRoarSound = new("CalamityMod/Sounds/Custom/ReaperSearchRoar");
         public static readonly SoundStyle EnragedRoarSound = new("CalamityMod/Sounds/Custom/ReaperEnragedRoar");
 
@@ -33,6 +35,10 @@ namespace CalamityMod.NPCs.Abyss
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 4;
+            if (!Main.dedServ)
+            {
+                ManTexture = ModContent.Request<Texture2D>(Texture + "Man", AssetRequestMode.ImmediateLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -219,7 +225,7 @@ namespace CalamityMod.NPCs.Abyss
                         if (canAttack)
                         {
                             // Set damage
-                            NPC.damage = phase3 ? (int)(NPC.defDamage * 0.5) : NPC.defDamage;
+                            NPC.damage = phase3 ? (int)Math.Round(NPC.defDamage * 0.5) : NPC.defDamage;
 
                             if (NPC.ai[3] > 0f && !Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
                             {
@@ -688,7 +694,7 @@ namespace CalamityMod.NPCs.Abyss
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Asset<Texture2D> npcTexture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/ReaperSharkMan") : TextureAssets.Npc[NPC.type];
+            Asset<Texture2D> npcTexture = Main.zenithWorld ? ManTexture : TextureAssets.Npc[NPC.type];
             Rectangle nframe = npcTexture.Frame(1, 4, 0, (int)NPC.frameCounter);
             Vector2 origin = new Vector2((float)(npcTexture.Value.Width / 2), (float)(npcTexture.Value.Height / Main.npcFrameCount[NPC.type] / 2));
             Vector2 npcOffset = NPC.Center - screenPos;
@@ -724,8 +730,8 @@ namespace CalamityMod.NPCs.Abyss
             postPolter.Add(ModContent.ItemType<DeepSeaDumbbell>(), 3);
             postPolter.Add(ModContent.ItemType<Valediction>(), 3);
 
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 10, 17, 14, 22));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 10, 17, 14, 22));
         }
 
         public override void HitEffect(NPC.HitInfo hit)

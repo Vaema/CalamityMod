@@ -27,7 +27,6 @@ namespace CalamityMod.NPCs
             npc.noTileCollide = false;
             npc.noGravity = true;
             npc.knockBackResist = 0f;
-            npc.damage = npc.defDamage;
 
             ref float aiState = ref npc.ai[0];
 
@@ -60,6 +59,7 @@ namespace CalamityMod.NPCs
             switch ((MothronAIState)(int)aiState)
             {
                 case MothronAIState.DespawnYeet:
+                    npc.damage = 0;
                     Vector2 idealVelocity = Vector2.UnitY * -34f;
                     npc.velocity = (npc.velocity * 4f + idealVelocity) / 5f;
                     npc.noTileCollide = true;
@@ -67,6 +67,8 @@ namespace CalamityMod.NPCs
                     return false;
 
                 case MothronAIState.NewAISelection:
+                    npc.damage = 0;
+
                     ref float aiTimer = ref npc.ai[1];
 
                     npc.TargetClosest(true);
@@ -146,6 +148,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 case MothronAIState.FlyTowardsPlayer:
+                    npc.damage = 0;
+                    
                     npc.collideX = false;
                     npc.collideY = false;
                     npc.noTileCollide = true;
@@ -173,6 +177,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 case MothronAIState.AccelerateTowardsPlayer:
+                    npc.damage = (int)Math.Round(npc.defDamage * 0.5);
+
                     aiTimer = ref npc.ai[1];
                     ref float flySpeedAdditive = ref npc.ai[2];
 
@@ -226,6 +232,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 case MothronAIState.ChargeRedirect:
+                    npc.damage = 0;
+                    
                     flySpeedAdditive = ref npc.ai[2];
                     npc.noTileCollide = true;
 
@@ -257,7 +265,10 @@ namespace CalamityMod.NPCs
                     idealVelocity = npc.SafeDirectionTo(destination, -Vector2.UnitY) * flySpeed;
                     npc.velocity = (npc.velocity * (flyInertia - 1f) + idealVelocity) / flyInertia;
                     break;
+
                 case MothronAIState.ChargePreparation:
+                    npc.damage = 0;
+                    
                     aiTimer = ref npc.ai[1];
                     ref float chargeDirection = ref npc.ai[2];
 
@@ -292,11 +303,11 @@ namespace CalamityMod.NPCs
                     }
                     break;
 
-                case MothronAIState.DoTheFuckingCharge:
+                case MothronAIState.DoTheFuckingCharge:                    
                     chargeDirection = ref npc.ai[2];
                     flySpeedAdditive = ref npc.ai[3];
 
-                    npc.damage = (int)(npc.defDamage * 1.2);
+                    npc.damage = (int)Math.Round(npc.defDamage * 1.2);
                     npc.collideX = false;
                     npc.collideY = false;
                     npc.noTileCollide = true;
@@ -331,6 +342,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 case MothronAIState.PickSpotToLayEgg:
+                    npc.damage = 0;
+                    
                     ref float laySpotPositionX = ref npc.ai[2];
                     ref float laySpotPositionY = ref npc.ai[3];
                     // Fallback if the spot selection fails.
@@ -376,6 +389,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 case MothronAIState.FlyToEggSpot:
+                    npc.damage = 0;
+                    
                     npc.spriteDirection = npc.direction = (npc.velocity.X > 0).ToDirectionInt();
                     npc.rotation = (npc.rotation * 9f + npc.velocity.X * 0.025f) / 10f;
                     npc.noTileCollide = true;
@@ -398,6 +413,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 case MothronAIState.LayEgg:
+                    npc.damage = 0;
+                    
                     npc.rotation = (npc.rotation * 9f + npc.velocity.X * 0.025f) / 10f;
                     npc.noTileCollide = false;
 
@@ -643,6 +660,9 @@ namespace CalamityMod.NPCs
 
             if (npc.ai[2] == 0f || npc.ai[2] == 3f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 if (Main.npc[(int)npc.ai[1]].ai[1] == 3f && npc.timeLeft > 10)
                     npc.timeLeft = 10;
 
@@ -695,6 +715,9 @@ namespace CalamityMod.NPCs
             }
             else if (npc.ai[2] == 1f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 Vector2 scytheReturnPosition = new Vector2(npc.position.X + (float)npc.width * 0.5f, npc.position.Y + (float)npc.height * 0.5f);
                 float scytheReturnTargetX = Main.npc[(int)npc.ai[1]].position.X + (float)(Main.npc[(int)npc.ai[1]].width / 2) - 200f * npc.ai[0] - scytheReturnPosition.X;
                 float scytheReturnTargetY = Main.npc[(int)npc.ai[1]].position.Y + 230f - scytheReturnPosition.Y;
@@ -709,6 +732,9 @@ namespace CalamityMod.NPCs
 
                 if (npc.position.Y < Main.npc[(int)npc.ai[1]].position.Y - 200f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     npc.TargetClosest(true);
                     npc.ai[2] = 2f;
 
@@ -725,13 +751,24 @@ namespace CalamityMod.NPCs
             }
             else if (npc.ai[2] == 2f)
             {
+                // Avoid cheap bullshit
+                npc.damage = npc.defDamage;
+
                 float scytheReturnDestination = Math.Abs(npc.Center.X - Main.npc[(int)npc.ai[1]].Center.X) + Math.Abs(npc.Center.Y - Main.npc[(int)npc.ai[1]].Center.Y);
 
                 if (npc.position.Y > Main.player[npc.target].position.Y || npc.velocity.Y < 0f || scytheReturnDestination > 800f)
+                {
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     npc.ai[2] = 3f;
+                }
             }
             else if (npc.ai[2] == 4f)
             {
+                // Avoid cheap bullshit
+                npc.damage = 0;
+
                 Vector2 scytheLesserSwipePos = new Vector2(npc.position.X + (float)npc.width * 0.5f, npc.position.Y + (float)npc.height * 0.5f);
                 float scytheLesserSwipeTargetX = Main.npc[(int)npc.ai[1]].position.X + (float)(Main.npc[(int)npc.ai[1]].width / 2) - 200f * npc.ai[0] - scytheLesserSwipePos.X;
                 float scytheLesserSwipeTargetY = Main.npc[(int)npc.ai[1]].position.Y + 230f - scytheLesserSwipePos.Y;
@@ -748,6 +785,9 @@ namespace CalamityMod.NPCs
 
                 if (npc.position.X + (float)(npc.width / 2) < Main.npc[(int)npc.ai[1]].position.X + (float)(Main.npc[(int)npc.ai[1]].width / 2) - 500f || npc.position.X + (float)(npc.width / 2) > Main.npc[(int)npc.ai[1]].position.X + (float)(Main.npc[(int)npc.ai[1]].width / 2) + 500f)
                 {
+                    // Set damage
+                    npc.damage = npc.defDamage;
+
                     npc.TargetClosest(true);
                     npc.ai[2] = 5f;
 
@@ -764,10 +804,18 @@ namespace CalamityMod.NPCs
             }
             else if (npc.ai[2] == 5f)
             {
+                // Set damage
+                npc.damage = npc.defDamage;
+
                 float scytheLesserSwipeReturnDest = Math.Abs(npc.Center.X - Main.npc[(int)npc.ai[1]].Center.X) + Math.Abs(npc.Center.Y - Main.npc[(int)npc.ai[1]].Center.Y);
 
                 if ((npc.velocity.X > 0f && npc.position.X + (float)(npc.width / 2) > Main.player[npc.target].position.X + (float)(Main.player[npc.target].width / 2)) || (npc.velocity.X < 0f && npc.position.X + (float)(npc.width / 2) < Main.player[npc.target].position.X + (float)(Main.player[npc.target].width / 2)) || scytheLesserSwipeReturnDest > 800f)
+                {
+                    // Avoid cheap bullshit
+                    npc.damage = 0;
+
                     npc.ai[2] = 0f;
+                }
             }
 
             return false;

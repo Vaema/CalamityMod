@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item43, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item43, Projectile.Center);
             for (int j = 0; j <= 10; j++)
             {
                 Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 1f);

@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (Projectile.ai[0] == 1f)
             {
-                SoundEngine.PlaySound(SaxSound, Projectile.position);
+                SoundEngine.PlaySound(SaxSound, Projectile.Center);
                 Projectile.ai[0] = 0f;
             }
             if (Projectile.velocity.Y < 10f)

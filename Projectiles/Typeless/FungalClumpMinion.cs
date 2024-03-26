@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
@@ -230,20 +231,14 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (!target.canGhostHeal)
+            if (Main.player[Projectile.owner].moonLeech)
                 return;
 
-            float healAmt = damageDone * 0.25f;
-            if ((int)healAmt == 0)
+            int heal = (int)Math.Round(damageDone * 0.25);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (healAmt > CalamityMod.lifeStealCap)
-                healAmt = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], healAmt, ModContent.ProjectileType<FungalHeal>(), 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<FungalHeal>(), BalancingConstants.LifeStealRange, BalancingConstants.LifeStealAccessoryCooldownMultiplier);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;

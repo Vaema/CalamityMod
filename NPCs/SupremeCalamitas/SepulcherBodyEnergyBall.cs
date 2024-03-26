@@ -18,6 +18,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public NPC AheadSegment => Main.npc[(int)NPC.ai[1]];
         public NPC HeadSegment => Main.npc[(int)NPC.ai[2]];
         public ref float AttackTimer => ref NPC.localAI[0];
+        public int NoStartAttack = 240;
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.SepulcherHead.DisplayName");
         public override void SetStaticDefaults()
         {
@@ -66,6 +67,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void AI()
         {
+            NoStartAttack--;
+
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 
@@ -105,7 +108,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             AttackTimer += BossRushEvent.BossRushActive ? 1.5f : 1f;
             float attackgate = !HeadSegment.Calamity().unbreakableDR && Main.zenithWorld ? 450f : 900f;
-            if (AttackTimer >= attackgate)
+            if (AttackTimer >= attackgate && NoStartAttack <= 0)
             {
                 AttackTimer = 0f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -118,11 +121,11 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 velocity = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
+                        //Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
                     }
                     NPC.netUpdate = true;
                 }
-                SoundEngine.PlaySound(SupremeCalamitas.BrimstoneShotSound, NPC.Center);
+                //SoundEngine.PlaySound(SupremeCalamitas.BrimstoneShotSound, NPC.Center);
             }
 
             if (Main.npc.IndexInRange((int)NPC.ai[1]))

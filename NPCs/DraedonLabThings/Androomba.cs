@@ -3,6 +3,7 @@ using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -14,7 +15,11 @@ namespace CalamityMod.NPCs.DraedonLabThings
 {
     public class Androomba : ModNPC
     {
+
+        public static Asset<Texture2D> GlowTexture;
+
         public SoundStyle HurrySound = new("CalamityMod/Sounds/Custom/WulfrumDroidHurry", 2) { PitchVariance = 0.3f };
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 22;
@@ -25,6 +30,10 @@ namespace CalamityMod.NPCs.DraedonLabThings
             value.Position.Y += 18;
             value.PortraitPositionYOverride = 38f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "_Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -253,7 +262,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D critterTexture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/DraedonLabThings/Androomba_Glow").Value;
+            Texture2D glowmask = GlowTexture.Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             drawPosition.Y += DrawOffsetY;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

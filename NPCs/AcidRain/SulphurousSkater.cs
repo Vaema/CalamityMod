@@ -9,6 +9,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
@@ -27,11 +28,17 @@ namespace CalamityMod.NPCs.AcidRain
 
         public const int JumpDelay = 64;
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 5;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.TrailCacheLength[NPC.type] = 6;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -229,7 +236,7 @@ namespace CalamityMod.NPCs.AcidRain
             if (!NPC.IsABestiaryIconDummy)
             {
                 CalamityGlobalNPC.DrawAfterimage(NPC, spriteBatch, drawColor, Color.Transparent, directioning: true, invertedDirection: true);
-                CalamityGlobalNPC.DrawGlowmask(NPC, spriteBatch, ModContent.Request<Texture2D>(Texture + "Glow").Value, true);
+                CalamityGlobalNPC.DrawGlowmask(NPC, spriteBatch, GlowTexture.Value, true);
             }
         }
 

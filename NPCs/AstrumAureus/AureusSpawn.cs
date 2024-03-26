@@ -9,6 +9,7 @@ using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -19,11 +20,16 @@ namespace CalamityMod.NPCs.AstrumAureus
 {
     public class AureusSpawn : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 4;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -43,7 +49,6 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.dontTakeDamage = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
@@ -264,7 +269,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             drawLocation += originalDrawSize * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, originalDrawSize, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AureusSpawnGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color afterimageColorLerp = Color.Lerp(Color.White, Color.Orange, 0.5f) * NPC.Opacity;
 
             if (CalamityConfig.Instance.Afterimages)
@@ -345,7 +350,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                 NPC.position.X = NPC.position.X + NPC.width / 2;
                 NPC.position.Y = NPC.position.Y + NPC.height / 2;
-                NPC.damage = (int)(NPC.defDamage * NPC.scale);
+                NPC.damage = (int)Math.Round(NPC.defDamage * (double)NPC.scale);
                 NPC.width = NPC.height = (int)(216 * NPC.scale);
                 NPC.position.X = NPC.position.X - NPC.width / 2;
                 NPC.position.Y = NPC.position.Y - NPC.height / 2;

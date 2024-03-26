@@ -9,6 +9,7 @@ using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
@@ -22,6 +23,9 @@ namespace CalamityMod.NPCs.AcidRain
     public class AcidEel : ModNPC
     {
         public Player Target => Main.player[NPC.target];
+        public static Asset<Texture2D> BodyTexture;
+        public static Asset<Texture2D> TailTexture;
+        public static Asset<Texture2D> BestiaryTexture;
 
         public override void SetStaticDefaults()
         {
@@ -34,6 +38,12 @@ namespace CalamityMod.NPCs.AcidRain
             };
             value.Position.X += 15;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                BodyTexture = ModContent.Request<Texture2D>(Texture + "Body", AssetRequestMode.ImmediateLoad);
+                TailTexture = ModContent.Request<Texture2D>(Texture + "Tail", AssetRequestMode.AsyncLoad);
+                BestiaryTexture = ModContent.Request<Texture2D>(Texture + "Bestiary", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -184,14 +194,14 @@ namespace CalamityMod.NPCs.AcidRain
             Vector2 headDrawPosition = NPC.Center - screenPos;
             if (NPC.IsABestiaryIconDummy)
             {
-                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AcidRain/AcidEelBestiary").Value;
+                Texture2D texture = BestiaryTexture.Value;
                 Rectangle eelArea = NPC.frame with { Width = 74 };
                 Main.EntitySpriteDraw(texture, headDrawPosition, eelArea, NPC.GetAlpha(Color.White), NPC.rotation, eelArea.Size() * 0.5f, NPC.scale, SpriteEffects.None, 0);
                 return false;
             }
 
             Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
-            Texture2D tailTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AcidRain/AcidEelTail").Value;
+            Texture2D tailTexture = TailTexture.Value;
             Vector2[] segmentPositions = (Vector2[])NPC.oldPos.Clone();
 
             Vector2 segmentAreaTopLeft = Vector2.One * 999999f;
@@ -221,7 +231,7 @@ namespace CalamityMod.NPCs.AcidRain
             float offsetAngle = (NPC.position - NPC.oldPos[1]).ToRotation();
             Vector2 primitiveArea = (segmentAreaTopRight - segmentAreaTopLeft).RotatedBy(offsetAngle);
             Rectangle tailArea = NPC.frame with { Width = 28 };
-            GameShaders.Misc["CalamityMod:PrimitiveTexture"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/NPCs/AcidRain/AcidEelBody"));
+            GameShaders.Misc["CalamityMod:PrimitiveTexture"].SetShaderTexture(BodyTexture);
             GameShaders.Misc["CalamityMod:PrimitiveTexture"].Shader.Parameters["uPrimitiveSize"].SetValue(primitiveArea);
             GameShaders.Misc["CalamityMod:PrimitiveTexture"].Shader.Parameters["flipVertically"].SetValue(NPC.velocity.X > 0f);
 

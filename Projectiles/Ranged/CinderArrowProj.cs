@@ -92,12 +92,12 @@ namespace CalamityMod.Projectiles.Ranged
 
                 for (int b = 0; b < 3; b++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(0, -10).RotatedByRandom(0.8f) * Main.rand.NextFloat(0.9f, 1.1f), ModContent.ProjectileType<CinderArrowProj>(), (int)(Projectile.damage * 0.05f), 0f, Projectile.owner, 0f, 0f, 1f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(0, -10).RotatedByRandom(0.8f) * Main.rand.NextFloat(0.9f, 1.1f), ModContent.ProjectileType<CinderArrowProj>(), (int)(Projectile.damage * 0.1f), 0f, Projectile.owner, 0f, 0f, 1f);
                 }
 
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    Projectile.damage = (int)(Projectile.damage * 0.3f);
+                    Projectile.damage = (int)(Projectile.damage * 0.5f);
                     Projectile.penetrate = -1;
                     Projectile.ExpandHitboxBy(110);
                     Projectile.Damage();

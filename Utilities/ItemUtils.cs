@@ -47,11 +47,11 @@ namespace CalamityMod
                 // This makes sense to be here but also not
                 case -1:
                     if (DownedBossSystem.downedDoG)
-                        return 20;
+                        return 14;
                     else if (NPC.downedMoonlord)
-                        return 16;
-                    else if (Main.hardMode)
                         return 12;
+                    else if (Main.hardMode)
+                        return 10;
                     return 8;
 
                 case PrefixID.Hard:
@@ -65,7 +65,7 @@ namespace CalamityMod
 
                 case PrefixID.Guarding:
                     if (DownedBossSystem.downedDoG)
-                        return 6;
+                        return 5;
                     else if (NPC.downedMoonlord)
                         return 4;
                     else if (Main.hardMode)
@@ -74,20 +74,20 @@ namespace CalamityMod
 
                 case PrefixID.Armored:
                     if (DownedBossSystem.downedDoG)
-                        return 8;
-                    else if (NPC.downedMoonlord)
                         return 6;
-                    else if (Main.hardMode)
+                    else if (NPC.downedMoonlord)
                         return 5;
+                    else if (Main.hardMode)
+                        return 4;
                     return 3;
 
                 case PrefixID.Warding:
                     if (DownedBossSystem.downedDoG)
-                        return 10;
+                        return 7;
                     else if (NPC.downedMoonlord)
-                        return 8;
-                    else if (Main.hardMode)
                         return 6;
+                    else if (Main.hardMode)
+                        return 5;
                     return 4;
             }
         }

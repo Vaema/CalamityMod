@@ -8,6 +8,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -40,6 +41,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public ref float ElapsedVerticalDistance => ref NPC.ai[3];
         public ref float AttackDelayTimer => ref NPC.localAI[0];
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 9;
@@ -51,6 +54,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 PortraitPositionYOverride = 36f,
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -70,8 +77,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.DD2_OgreRoar;
-            NPC.DeathSound = SoundID.NPCDeath52;
+            NPC.HitSound = SupremeCalamitas.BrotherHit;
+            NPC.DeathSound = SupremeCalamitas.BrotherDeath;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
         }
@@ -223,8 +230,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     CurrentFrame = 0;
                 }
 
-                // Shoot dart spreads.
-                fireRate = BossRushEvent.BossRushActive ? 3f : MathHelper.Lerp(1f, 4f, 1f - totalLifeRatio);
+                // Shoot dart spreads. (Can shoot faster and more darts on death)
+                fireRate = BossRushEvent.BossRushActive ? 3f : MathHelper.Lerp(1f, death ? 3.5f : 3f, 1f - totalLifeRatio);
                 DartBurstCounter += fireRate;
                 if (DartBurstCounter >= DartBurstCounterLimit)
                 {
@@ -237,14 +244,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         damage /= 2;
                     int totalProjectiles = bossRush ? 20 : death ? 16 : revenge ? 14 : expertMode ? 12 : 8;
                     float radians = MathHelper.TwoPi / totalProjectiles;
-                    float velocity = Main.zenithWorld ? 5f : 7f;
+                    float velocity = Main.zenithWorld ? 6f : 2.5f;
                     Vector2 spinningPoint = new Vector2(0f, -velocity);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         for (int k = 0; k < totalProjectiles; k++)
                         {
                             Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity2, type, damage, 0f, Main.myPlayer, 0f, 1f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity2, type, damage, 0f, Main.myPlayer, 0f, 1f, 2);
                         }
                     }
 
@@ -277,7 +284,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Vector2 mainDrawPosition = NPC.Center - screenPos;
             spriteBatch.Draw(texture, mainDrawPosition, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/SupremeCataclysmGlow").Value;
+            texture = GlowTexture.Value;
             Color primarycolor = Main.zenithWorld ? Color.Blue : Color.Red; // why? because blue fire is awesome!!
             Color baseGlowmaskColor = NPC.IsABestiaryIconDummy ? Color.White : Color.Lerp(Color.White, primarycolor, 0.5f);
 

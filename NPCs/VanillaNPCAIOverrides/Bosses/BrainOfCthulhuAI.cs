@@ -303,6 +303,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             npc.ai[2] -= 1f;
                             npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * (-chargeVelocity - 2f * enrageScale);
+                            if (masterMode)
+                                npc.velocity *= 1.5f;
                             if (Main.getGoodWorld)
                                 npc.velocity *= 1.15f;
                         }
@@ -485,7 +487,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[1] = playerLocation < 0 ? 1f : -1f;
                             npc.ai[2] = 0f;
 
-                            int maxRandomTime = phase7 ? 30 : 60;
+                            int maxRandomTime = phase7 ? (masterMode ? 10 : 30) : (masterMode ? 20 : 60);
                             npc.ai[3] = Main.rand.Next(maxRandomTime) + 1;
                             npc.localAI[1] = 0f;
                             npc.alpha = 0;
@@ -618,7 +620,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[1] = playerLocation < 0 ? 1f : -1f;
                             npc.ai[2] = 0f;
 
-                            int maxRandomTime = phase7 ? 30 : 60;
+                            int maxRandomTime = phase7 ? (masterMode ? 10 : 30) : (masterMode ? 20 : 60);
                             npc.ai[3] = Main.rand.Next(maxRandomTime) + 1;
                         }
                         else
@@ -671,7 +673,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float targetXDistPhase1 = Main.player[npc.target].Center.X - brainCenterPhase1.X;
                     float targetYDistPhase1 = Main.player[npc.target].Center.Y - brainCenterPhase1.Y;
                     float targetDistancePhase1 = (float)Math.Sqrt(targetXDistPhase1 * targetXDistPhase1 + targetYDistPhase1 * targetYDistPhase1);
-                    float maxMoveVelocity = (death ? 2f : 1f) + velocityScale;
+                    float maxMoveVelocity = (death ? 2f : 1.5f) + velocityScale;
                     if (Main.getGoodWorld)
                         maxMoveVelocity *= 2f;
 
@@ -1139,7 +1141,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float num853 = Main.player[npc.target].Center.X - vector105.X;
                 float num854 = Main.player[npc.target].Center.Y - vector105.Y;
                 float num855 = (float)Math.Sqrt(num853 * num853 + num854 * num854);
-                float num856 = Main.masterMode ? 1.5f : 1f;
+                float num856 = Main.masterMode ? 2.5f : 1.5f;
                 if (Main.getGoodWorld)
                     num856 *= 3f;
 

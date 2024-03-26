@@ -6,6 +6,7 @@ using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -18,10 +19,18 @@ namespace CalamityMod.NPCs.AstrumDeus
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.AstrumDeusHead.DisplayName");
 
+        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> GlowTexture2;
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                GlowTexture2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -31,7 +40,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.width = 52;
             NPC.height = 68;
             NPC.defense = 50;
-            NPC.DR_NERD(0.3f);
+            NPC.DR_NERD(0.4f);
             NPC.LifeMaxNERB(200000, 240000, 650000);
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
@@ -52,7 +61,6 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = AstrumDeusHead.HitSound;
             NPC.DeathSound = AstrumDeusHead.DeathSound;
             NPC.netAlways = true;
@@ -107,10 +115,10 @@ namespace CalamityMod.NPCs.AstrumDeus
             drawLocation += halfSizeTex * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(wormTexture, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
 
-            wormTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumDeus/AstrumDeusTailGlow").Value;
+            wormTexture = GlowTexture.Value;
             Color phaseColor = drawCyan ? Color.Cyan : Color.Orange;
             if (doubleWormPhase)
-                wormTexture = drawCyan ? ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumDeus/AstrumDeusTailGlow2").Value : wormTexture;
+                wormTexture = drawCyan ? GlowTexture2.Value : wormTexture;
 
             Color wormColorLerp = Color.Lerp(Color.White, doubleWormPhase ? phaseColor : Color.Orange, 0.5f) * (deathModeEnragePhase ? 1f : NPC.Opacity);
 

@@ -120,7 +120,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = 10;
                 Projectile.soundDelay *= 2;
                 if (Projectile.ai[0] != 1f)
-                    SoundEngine.PlaySound(SoundID.Item15, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item15, Projectile.Center);
             }
 
             if (shouldHitChargedUp && Main.myPlayer == Projectile.owner)

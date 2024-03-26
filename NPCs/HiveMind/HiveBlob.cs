@@ -40,7 +40,6 @@ namespace CalamityMod.NPCs.HiveMind
             AIType = -1;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.chaseable = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;

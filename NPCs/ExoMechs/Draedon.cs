@@ -1,12 +1,14 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Events;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -80,6 +82,11 @@ namespace CalamityMod.NPCs.ExoMechs
         public static readonly SoundStyle TeleportSound = new("CalamityMod/Sounds/Custom/DraedonTeleport");
         public static readonly SoundStyle SelectionSound = new("CalamityMod/Sounds/Custom/Codebreaker/ExoMechsIconSelect");
 
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> HoloTexture;
+        public static Asset<Texture2D> ProjectorTexture;
+        public static Asset<Texture2D> ProjectorTexture_Glow;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 12;
@@ -94,6 +101,13 @@ namespace CalamityMod.NPCs.ExoMechs
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.ShouldBeCountedAsBoss[NPC.type] = true;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
+            if (!Main.dedServ)
+            {
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glowmask", AssetRequestMode.AsyncLoad);
+                HoloTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/HologramDraedon", AssetRequestMode.AsyncLoad);
+                ProjectorTexture = ModContent.Request<Texture2D>(Texture + "Projector", AssetRequestMode.AsyncLoad);
+                ProjectorTexture_Glow = ModContent.Request<Texture2D>(Texture + "ProjectorGlowmask", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -834,11 +848,11 @@ namespace CalamityMod.NPCs.ExoMechs
                 spriteBatch.EnterShaderRegion();
             bool holo = HasBeenKilled && KillReappearDelay <= 0;
             bool leaving = HasBeenKilled && DefeatTimer > DelayBeforeDefeatStandup + TalkDelay * 8f + 200f;
-            Texture2D texture = HasBeenKilled && KillReappearDelay <= 0f ? ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/HologramDraedon").Value : TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/DraedonGlowmask").Value;
-            Texture2D projector = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/DraedonProjector").Value;
-            Texture2D projectorglow = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/DraedonProjectorGlowmask").Value;
-            Texture2D gun = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/PulseRifle").Value;
+            Texture2D texture = HasBeenKilled && KillReappearDelay <= 0f ? HoloTexture.Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D glowmask = Texture_Glow.Value;
+            Texture2D projector = ProjectorTexture.Value;
+            Texture2D projectorglow = ProjectorTexture_Glow.Value;
+            Texture2D gun = TextureAssets.Item[ModContent.ItemType<PulseRifle>()].Value;
             Rectangle frame = NPC.frame;
 
             Vector2 drawPosition = NPC.Center - screenPos - Vector2.UnitY * 38f;

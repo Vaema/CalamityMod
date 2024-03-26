@@ -77,7 +77,6 @@ namespace CalamityMod.Items.TreasureBags
 
             // Equipment
             itemLoot.Add(ModContent.ItemType<OceanCrest>());
-            itemLoot.Add(ModContent.ItemType<AeroStone>(), DropHelper.BagWeaponDropRateFraction);
             itemLoot.Add(ModContent.ItemType<SandCloak>(), DropHelper.BagWeaponDropRateFraction);
             itemLoot.AddRevBagAccessories();
 

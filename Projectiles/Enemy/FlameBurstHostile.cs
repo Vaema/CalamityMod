@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Enemy
         {
             if (count == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item73, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item73, Projectile.Center);
                 Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
                 Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
                 Projectile.width = 20;

@@ -42,7 +42,6 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.knockBackResist = BossRushEvent.BossRushActive ? 0f : 0.3f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;

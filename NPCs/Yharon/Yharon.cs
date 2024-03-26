@@ -28,6 +28,7 @@ using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
@@ -70,6 +71,10 @@ namespace CalamityMod.NPCs.Yharon
 
         public SlotId RoarSoundSlot;
 
+        public static Asset<Texture2D> GlowTextureGreen;
+        public static Asset<Texture2D> GlowTextureOrange;
+        public static Asset<Texture2D> GlowTexturePurple;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 7;
@@ -86,6 +91,12 @@ namespace CalamityMod.NPCs.Yharon
             value.Position.Y -= 14f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                GlowTextureGreen = ModContent.Request<Texture2D>(Texture + "GlowGreen", AssetRequestMode.AsyncLoad);
+                GlowTextureOrange = ModContent.Request<Texture2D>(Texture + "GlowOrange", AssetRequestMode.AsyncLoad);
+                GlowTexturePurple = ModContent.Request<Texture2D>(Texture + "GlowPurple", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -356,9 +367,9 @@ namespace CalamityMod.NPCs.Yharon
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     safeBox.X = (int)(player.Center.X - (Main.zenithWorld ? 1500f : Main.getGoodWorld ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f));
-                    safeBox.Y = (int)(player.Center.Y - 10500f);
+                    safeBox.Y = (int)Main.topWorld;
                     safeBox.Width = Main.zenithWorld ? 3000 : Main.getGoodWorld ? 2000 : bossRush ? 4000 : revenge ? 6000 : 7000;
-                    safeBox.Height = 21000;
+                    safeBox.Height = Main.maxTilesY * 16;
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (Main.zenithWorld ? 1500f : Main.getGoodWorld ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X - (Main.zenithWorld ? 1500f : Main.getGoodWorld ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
                 }
@@ -2844,15 +2855,15 @@ namespace CalamityMod.NPCs.Yharon
 
             if (enteredSubphase2 || NPC.ai[0] == 4f || startSecondAI)
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Yharon/YharonGlowOrange").Value;
+                texture = GlowTextureOrange.Value;
                 Color orangeGlowColor = Color.Lerp(Color.White, invincible ? invincibleColor : Color.Orange, 0.5f) * NPC.Opacity;
                 lerpEndColor = invincible ? invincibleColor : Color.Orange;
 
-                Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Yharon/YharonGlowGreen").Value;
+                Texture2D texture2 = GlowTextureGreen.Value;
                 Color greenGlowColorOpacity = Color.Lerp(Color.White, invincible ? invincibleColor : Color.Chartreuse, 0.5f) * NPC.Opacity;
                 Color greenGlowColor = invincible ? invincibleColor : Color.Chartreuse;
 
-                Texture2D texture3 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Yharon/YharonGlowPurple").Value;
+                Texture2D texture3 = GlowTexturePurple.Value;
                 Color blueGlowColorOpacity = Color.Lerp(Color.White, invincible ? invincibleColor : Color.BlueViolet, 0.5f) * NPC.Opacity;
                 Color blueGlowColor = invincible ? invincibleColor : Color.BlueViolet;
 

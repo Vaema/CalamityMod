@@ -60,7 +60,9 @@ AbyssalMirror: {
 		Significantly reduces enemy aggression, even in the abyss
 		Stealth generates 25% faster when standing still and 12% faster while moving
 		Grants the ability to evade attacks, releasing a cloud of lumenyl fluid which damages and stuns nearby enemies
-		Evading an attack grants a lot of stealth but has a 90 second cooldown
+		Attacks that deal less than 5% of your max life in damage will not be evaded
+		The evade has a cooldown that ranges between 15 and 90 seconds depending on the evaded attack's damage
+		Evading an attack grants a lot of stealth
 		This cooldown is shared with all other dodges and reflects
 		'Light does not reach the depths of the ocean'
 		'''
@@ -81,7 +83,7 @@ AeroStone: {
 	DisplayName: Aero Stone
 	Tooltip:
 		'''
-		Provides an additional 25 flight time
+		Provides an additional 50 flight time
 		You slowly recover flight time while in the air if you are not flying or gliding
 		'One of the ancient relics'
 		'''
@@ -122,7 +124,9 @@ AmalgamatedBrain: {
 		10% increased damage
 		Shade rains down when you are hit
 		Grants the ability to dodge attacks
-		The dodge has a 90 second cooldown which is shared with all other dodges and reflects
+		Attacks that deal less than 5% of your max life in damage will not be dodged
+		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
+		This cooldown is shared with all other dodges and reflects
 		Temporarily increases critical strike chance and summon damage after a dodge
 		You will confuse nearby enemies when you are struck
 		'''
@@ -517,8 +521,9 @@ DeepDiver: {
 	DisplayName: Deep Diver
 	Tooltip:
 		'''
-		15% increased damage, movement speed and +15 defense while underwater
-		While underwater you gain the ability to dash great distances
+		Allows the ability to do a short ram dash
+		This dash can slam through enemies without taking damage and can be used quickly in succession
+		Provides greatly improved water mobility
 		'''
 }
 
@@ -606,7 +611,9 @@ EclipseMirror: {
 		Mobile stealth generation accelerates while not attacking
 		Stealth strikes only expend 50% of your max stealth
 		Grants the ability to evade attacks in a blast of darksun light, which inflicts extreme damage in a wide area
-		Evading an attack grants full stealth but has a 90 second cooldown
+		Attacks that deal less than 5% of your max life in damage will not be evaded
+		The evade has a cooldown that ranges between 15 and 90 seconds depending on the evaded attack's damage
+		Evading an attack grants full stealth
 		This cooldown is shared with all other dodges and reflects
 		'Its reflection shows naught but darkness'
 		'''
@@ -1630,11 +1637,12 @@ StatisNinjaBelt: {
 	DisplayName: Statis' Ninja Belt
 	Tooltip:
 		'''
-		6% increased jump speed and allows constant jumping
+		32% increased jump speed and allows constant jumping
 		Grants the ability to swim
 		Increased fall damage resistance by 35 blocks
 		Can climb walls, dash, and dodge attacks
-		The dodge has a 90 second cooldown
+		Attacks that deal less than 5% of your max life in damage will not be dodged
+		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
 		This cooldown is shared with all other dodges and reflects
 		'''
 }
@@ -1643,10 +1651,11 @@ StatisVoidSash: {
 	DisplayName: Statis' Void Sash
 	Tooltip:
 		'''
-		12% increased jump speed and allows constant jumping
+		32% increased jump speed and allows constant jumping
 		Grants immunity to fall damage
 		Can climb walls, dash, and dodge attacks
-		The dodge has a 90 second cooldown
+		Attacks that deal less than 5% of your max life in damage will not be dodged
+		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
 		This cooldown is shared with all other dodges and reflects
 		Dashes leave homing scythes in your wake
 		'''
@@ -1771,7 +1780,9 @@ TheAmalgam: {
 		15% increased damage
 		Shade rains down when you are hit
 		Grants the ability to dodge attacks
-		The dodge has a 90 second cooldown which is shared with all other dodges and reflects
+		Attacks that deal less than 5% of your max life in damage will not be dodged
+		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
+		This cooldown is shared with all other dodges and reflects
 		Temporarily increases critical strike chance and summon damage after a dodge
 		Nearby enemies receive a variety of sickness-related debuffs when you are hit
 		'''
@@ -1825,7 +1836,9 @@ TheEvolution: {
 		'''
 		You reflect projectiles when they hit you
 		Reflected projectiles deal no damage to you
-		This reflect has a 90 second cooldown which is shared with all other dodges and reflects
+		Projectiles that deal less than 5% of your max life in damage will not be reflected
+		The reflect has a cooldown that ranges between 15 and 90 seconds depending on the reflected projectile's damage
+		This cooldown is shared with all other dodges and reflects
 		After reflecting something, grants +1 HP/s life regen and accelerated life regen for 5 seconds
 		If the same enemy projectile type hits you again you will resist its damage by 15%
 		'''

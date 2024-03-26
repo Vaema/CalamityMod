@@ -30,6 +30,7 @@ using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -47,6 +48,12 @@ namespace CalamityMod.NPCs.DevourerofGods
     {
         public static int phase1IconIndex;
         public static int phase2IconIndex;
+
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> Texture_Glow2;
+        public static Asset<Texture2D> Phase2Texture;
+        public static Asset<Texture2D> Phase2Texture_Glow;
+        public static Asset<Texture2D> Phase2Texture_Glow2;
 
         internal static void LoadHeadIcons()
         {
@@ -168,6 +175,14 @@ namespace CalamityMod.NPCs.DevourerofGods
             value.Position.Y += 38f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
+                Phase2Texture = ModContent.Request<Texture2D>(Texture + "S", AssetRequestMode.AsyncLoad);
+                Phase2Texture_Glow = ModContent.Request<Texture2D>(Texture + "SGlow", AssetRequestMode.AsyncLoad);
+                Phase2Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "SGlow2", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -551,7 +566,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
 
                 // Dialogue the moment the second phase starts
-                if (NPC.localAI[2] == 60f)
+                if (NPC.localAI[2] == 60f && !bossRush)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.EdgyBossText5";
                     Color messageColor = Color.Cyan;
@@ -727,9 +742,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     calamityGlobalNPC.newAI[3] = 0f;
 
                                     // Anger message
-                                    string key = "Mods.CalamityMod.Status.Boss.EdgyBossText6";
-                                    Color messageColor = Color.Cyan;
-                                    CalamityUtils.DisplayLocalizedText(key, messageColor);
+                                    if (!bossRush)
+                                    {
+                                        string key = "Mods.CalamityMod.Status.Boss.EdgyBossText6";
+                                        Color messageColor = Color.Cyan;
+                                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+                                    }
 
                                     // Summon Cosmic Guardians
                                     SoundEngine.PlaySound(AttackSound with { Pitch = AttackSound.Pitch + extrapitch }, player.Center);
@@ -1373,7 +1391,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 NPC.velocity.Y = segmentVelocity;
 
                             // This bool exists to stop the strange wiggle behavior when worms are falling down
-                            bool slowXVelocity = Math.Abs(NPC.velocity.X) > segmentVelocity;
+                            bool slowXVelocity = Math.Abs(NPC.velocity.X) > turnSpeedCopy;
                             if ((Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < segmentVelocity * 2.2)
                             {
                                 if (NPC.velocity.X < 0f)
@@ -1578,9 +1596,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (revenge)
                             spawnDoGCountdown = 10;
 
-                        string key = "Mods.CalamityMod.Status.Boss.EdgyBossText";
-                        Color messageColor = Color.Cyan;
-                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+                        if (!bossRush)
+                        {
+                            string key = "Mods.CalamityMod.Status.Boss.EdgyBossText";
+                            Color messageColor = Color.Cyan;
+                            CalamityUtils.DisplayLocalizedText(key, messageColor);
+                        }
 
                         NPC.TargetClosest();
                         spawnedGuardians = true;
@@ -2149,7 +2170,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             NPC.velocity.Y = segmentVelocity;
 
                         // This bool exists to stop the strange wiggle behavior when worms are falling down
-                        bool slowXVelocity = Math.Abs(NPC.velocity.X) > segmentVelocity;
+                        bool slowXVelocity = Math.Abs(NPC.velocity.X) > turnSpeedCopy;
                         if ((Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < segmentVelocity * 2.2)
                         {
                             if (NPC.velocity.X < 0f)
@@ -2338,12 +2359,12 @@ namespace CalamityMod.NPCs.DevourerofGods
             float minimalDamageVelocity = segmentVelocity * 0.5f;
             if (NPC.velocity.Length() <= minimalContactDamageVelocity)
             {
-                NPC.damage = (int)(NPC.defDamage * 0.5f);
+                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
             }
             else
             {
                 float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(NPC.defDamage * 0.5f, NPC.defDamage, velocityDamageScalar);
+                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
             }
 
             if (NPC.life > Main.npc[(int)NPC.ai[0]].life)
@@ -2606,7 +2627,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             bool useOtherTextures = (Phase2Started && NPC.localAI[2] <= 60f) || NPC.IsABestiaryIconDummy;
-            Texture2D texture2D15 = useOtherTextures ? ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadS").Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[NPC.type].Value;
             Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / 2);
             if (NPC.IsABestiaryIconDummy)
                 NPC.frame = texture2D15.Frame();
@@ -2618,12 +2639,12 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if (!NPC.dontTakeDamage)
             {
-                texture2D15 = useOtherTextures ? ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadSGlow").Value : ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadGlow").Value;
+                texture2D15 = useOtherTextures ? Phase2Texture_Glow.Value : Texture_Glow.Value;
                 Color glowmaskLerp = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
 
                 spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-                texture2D15 = useOtherTextures ? ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadSGlow2").Value : ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadGlow2").Value;
+                texture2D15 = useOtherTextures ? Phase2Texture_Glow2.Value : Texture_Glow2.Value;
                 glowmaskLerp = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
                 spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
@@ -2654,10 +2675,11 @@ namespace CalamityMod.NPCs.DevourerofGods
                 string key2 = "Mods.CalamityMod.Status.Progression.DoGBossText2";
                 Color messageColor2 = Color.Orange;
                 string key3 = "Mods.CalamityMod.Status.Progression.DargonBossText";
+                Color messageColor3 = Color.Yellow;
 
                 CalamityUtils.DisplayLocalizedText(key, messageColor);
                 CalamityUtils.DisplayLocalizedText(key2, messageColor2);
-                CalamityUtils.DisplayLocalizedText(key3, messageColor2);
+                CalamityUtils.DisplayLocalizedText(key3, messageColor3);
             }
 
             // Mark DoG as dead
@@ -2884,7 +2906,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 200, true);
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 600, true);
 
-            if (target.Calamity().dogTextCooldown <= 0)
+            if (target.Calamity().dogTextCooldown <= 0 && !BossRushEvent.BossRushActive)
             {
                 string text = Utils.SelectRandom(Main.rand, new string[]
                 {

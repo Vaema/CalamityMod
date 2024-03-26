@@ -586,6 +586,8 @@ namespace CalamityMod
         }
 
         public static bool GetStealthProjectile(Projectile projectile) => projectile?.Calamity()?.stealthStrike ?? false;
+
+        public static void ConsumeStealth(Player player) => player?.Calamity()?.ConsumeStealthByAttacking();
         #endregion
 
         #region Rippers
@@ -1352,6 +1354,18 @@ namespace CalamityMod
                         if (!isValidProjectileArg(args[1]))
                             return new ArgumentException("ERROR: The first argument to \"GetStealthProjectile\" must be a Projectile.");
                         return GetStealthProjectile(castProjectile(args[1]));
+                    }
+
+                case "ConsumeStealth":
+                case "ConsumeStealthByAttacking":
+                case "UseStealth":
+                    {
+                        if (args.Length < 2)
+                            return new ArgumentNullException("ERROR: Must specify a Player object (or int index of a Player).");
+                        if (!isValidPlayerArg(args[1]))
+                            return new ArgumentException("ERROR: The first argument to \"ConsumeStealth\" must be a Player or an int.");
+                        ConsumeStealth(castPlayer(args[1]));
+                        return null;
                     }
 
                 case "GetRage":

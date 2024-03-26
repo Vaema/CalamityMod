@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Projectile.localAI[0] == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item73, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item73, Projectile.Center);
                 Projectile.localAI[0] += 1f;
             }
             for (int i = 0; i < 3; i++)

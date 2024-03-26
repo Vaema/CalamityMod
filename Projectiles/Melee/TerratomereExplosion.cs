@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
 
             // Determine frames. Once the maximum frame is reached the projectile dies.
             Projectile.frameCounter++;
-            if (Projectile.frameCounter % 8 == 7)
+            if (Projectile.frameCounter % 5 == 4)
                 Projectile.frame++;
             if (Projectile.frame >= 18)
                 Projectile.Kill();

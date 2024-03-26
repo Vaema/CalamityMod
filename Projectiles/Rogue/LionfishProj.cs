@@ -50,12 +50,12 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 if (Projectile.Calamity().stealthStrike)
                 {
-                    if (Projectile.timeLeft % 8 == 0 && Projectile.owner == Main.myPlayer)
+                    if (Projectile.timeLeft % 7 == 0 && Projectile.owner == Main.myPlayer)
                     {
                         Vector2 velocity = Projectile.DirectionFrom(Main.player[Projectile.owner].Center);
                         velocity *= Main.rand.NextFloat(4.5f, 6.5f);
                         velocity = velocity.RotatedBy((Main.rand.NextDouble() - 0.5) * Math.PI * 0.5, default);
-                        int spike = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.5f, Projectile.owner, -10f, 0f);
+                        int spike = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.5f, Projectile.owner, -10f, 1f);
                         if (spike.WithinBounds(Main.maxProjectiles))
                             Main.projectile[spike].DamageType = RogueDamageClass.Instance;
                     }
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.StickyProjAI(15);
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(6);
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(3);
         public override bool? CanDamage() => Projectile.ai[0] == 1f ? false : base.CanDamage();
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

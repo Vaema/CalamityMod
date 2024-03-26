@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Balancing;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -94,17 +95,11 @@ namespace CalamityMod.Projectiles.Melee
         {
             SoundEngine.PlaySound(SoundID.Item4, Projectile.position);
 
-            float healAmt = hit.Damage * 0.075f;
-            if ((int)healAmt == 0)
+            int heal = (int)Math.Round(hit.Damage * 0.075);
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (healAmt > CalamityMod.lifeStealCap)
-                healAmt = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], healAmt, ModContent.ProjectileType<EarthHealOrb>(), 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<EarthHealOrb>(), BalancingConstants.LifeStealRange);
         }
     }
 }

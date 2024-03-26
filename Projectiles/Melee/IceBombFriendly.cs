@@ -23,6 +23,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
+            Projectile.tileCollide = false;
         }
 
         public override bool? CanDamage() => Projectile.ai[0] >= 120f;

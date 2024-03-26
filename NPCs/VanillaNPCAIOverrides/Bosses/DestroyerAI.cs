@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Events;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -16,6 +17,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     public static class DestroyerAI
     {
         public const float DRIncraeseTime = 600f;
+        public const float DeathModeLaserBreathGateValue = 600f;
+        public const float LaserTelegraphTime = 120f;
+        public const float SparkTelegraphTime = 30f;
+        public const float FlightPhaseGateValue = 900f;
+        public const float FlightPhaseResetGateValue = FlightPhaseGateValue * 2f;
+        private const float Phase4FlightPhaseTimerSetValue = FlightPhaseGateValue * 0.5f;
+        private const float Phase5FlightPhaseTimerSetValue = FlightPhaseGateValue;
+        public const float PhaseTransitionTelegraphTime = 180f;
+        public const float GroundTelegraphStartGateValue = FlightPhaseResetGateValue - PhaseTransitionTelegraphTime;
+        public const float FlightTelegraphStartGateValue = FlightPhaseGateValue - PhaseTransitionTelegraphTime;
+        private const int OneInXChanceToFireLaser = 200;
 
         public static bool BuffedDestroyerAI(NPC npc, Mod mod)
         {
@@ -70,12 +82,33 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool phase5 = lifeRatio < (death ? 0.2f : 0.1f);
 
             // Flight timer
-            float newAISet = phase5 ? 900f : phase4 ? 450f : 0f;
-            calamityGlobalNPC.newAI[3] += 1f;
-            if (calamityGlobalNPC.newAI[3] >= 1800f)
+            if (startFlightPhase)
+                calamityGlobalNPC.newAI[3] += 1f;
+
+            // Force the timer to be at a certain value in later phases
+            float flightPhaseTimerSetValue = phase5 ? Phase5FlightPhaseTimerSetValue : phase4 ? Phase4FlightPhaseTimerSetValue : 0f;
+            if (calamityGlobalNPC.newAI[3] < flightPhaseTimerSetValue)
+                calamityGlobalNPC.newAI[3] = flightPhaseTimerSetValue;
+
+            // Return to ground phase, with less time spent in later phases
+            if (calamityGlobalNPC.newAI[3] >= FlightPhaseResetGateValue)
             {
-                calamityGlobalNPC.newAI[3] = newAISet;
+                calamityGlobalNPC.newAI[3] = flightPhaseTimerSetValue;
                 npc.TargetClosest();
+            }
+
+            // Spawn DR check
+            bool hasSpawnDR = calamityGlobalNPC.newAI[1] < DRIncraeseTime && calamityGlobalNPC.newAI[1] > 60f;
+
+            // Gradual color transition from ground to flight and vice versa
+            // 0f = Red, 1f = Purple
+            float phaseTransitionColorAmount = (hasSpawnDR || phase5) ? 1f : 0f;
+            if (!hasSpawnDR && !phase5)
+            {
+                if (calamityGlobalNPC.newAI[3] >= GroundTelegraphStartGateValue)
+                    phaseTransitionColorAmount = MathHelper.Clamp(1f - (calamityGlobalNPC.newAI[3] - GroundTelegraphStartGateValue) / PhaseTransitionTelegraphTime, 0f, 1f);
+                else if (calamityGlobalNPC.newAI[3] >= FlightTelegraphStartGateValue)
+                    phaseTransitionColorAmount = MathHelper.Clamp((calamityGlobalNPC.newAI[3] - FlightTelegraphStartGateValue) / PhaseTransitionTelegraphTime, 0f, 1f);
             }
 
             // Set worm variable for worms
@@ -98,12 +131,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float enrageScale = bossRush ? 1f : 0f;
             if (Main.dayTime || bossRush)
             {
-                npc.Calamity().CurrentlyEnraged = !bossRush;
+                calamityGlobalNPC.CurrentlyEnraged = !bossRush;
                 enrageScale += 2f;
             }
 
             // Phase for flying at the player
-            bool flyAtTarget = (calamityGlobalNPC.newAI[3] >= 900f && startFlightPhase) || (calamityGlobalNPC.newAI[1] < DRIncraeseTime && calamityGlobalNPC.newAI[1] > 60f);
+            bool flyAtTarget = (calamityGlobalNPC.newAI[3] >= FlightPhaseGateValue && startFlightPhase) || hasSpawnDR;
 
             // Dust on spawn and alpha effects
             if (npc.type == NPCID.TheDestroyer || (npc.type != NPCID.TheDestroyer && Main.npc[(int)npc.ai[1]].alpha < 128))
@@ -117,6 +150,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.dust[spawnDust].noLight = true;
                     }
                 }
+
                 npc.alpha -= 42;
                 if (npc.alpha < 0)
                     npc.alpha = 0;
@@ -169,6 +203,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Total segment variable
             int totalSegments = Main.getGoodWorld ? 100 : 80;
 
+            // Calculate aggression based on how many broken segments there are
+            float brokenSegmentAggressionMultiplier = 1f;
+            if (npc.type == NPCID.TheDestroyer && !oblivionAlive)
+            {
+                int numProbeSegments = 0;
+                for (int i = 0; i < Main.maxNPCs; i++)
+                {
+                    if (Main.npc[i].active && Main.npc[i].type == NPCID.TheDestroyerBody && Main.npc[i].ai[2] == 0f)
+                        numProbeSegments++;
+                }
+                brokenSegmentAggressionMultiplier += (1f - MathHelper.Clamp(numProbeSegments / (float)totalSegments, 0f, 1f)) * 0.25f;
+            }
+
             // Death Mode laser spit bool
             bool spitLaserSpreads = death;
 
@@ -178,6 +225,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Speed and movement variables
             float speed = masterMode ? 0.125f : 0.1f;
             float turnSpeed = masterMode ? 0.1875f : 0.15f;
+
+            // Max velocity
+            float segmentVelocity = flyAtTarget ? 15f : 20f;
+
+            // Increase velocity based on distance
+            float velocityMultiplier = increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
 
             // If Oblivion is alive, don't fly, don't spit laser spreads, use the default vanilla no fly zone, reduce segment count to 60, use base speed and use base turn speed
             if (oblivionAlive)
@@ -191,14 +244,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 noFlyZoneBoxHeight -= death ? 400 : (int)(400f * (1f - lifeRatio));
 
-                float speedBoost = death ? (0.14f * (1f - lifeRatio)) : (0.1f * (1f - lifeRatio));
-                float turnSpeedBoost = death ? (0.19f * (1f - lifeRatio)) : (0.15f * (1f - lifeRatio));
+                float segmentVelocityBoost = death ? (flyAtTarget ? 4.5f : 6f) * (1f - lifeRatio) : (flyAtTarget ? 3f : 4f) * (1f - lifeRatio);
+                float speedBoost = death ? (flyAtTarget ? 0.1125f : 0.15f) * (1f - lifeRatio) : (flyAtTarget ? 0.075f : 0.1f) * (1f - lifeRatio);
+                float turnSpeedBoost = death ? 0.18f * (1f - lifeRatio) : 0.12f * (1f - lifeRatio);
 
+                segmentVelocity += segmentVelocityBoost;
                 speed += speedBoost;
                 turnSpeed += turnSpeedBoost;
 
-                speed += 0.04f * enrageScale;
-                turnSpeed += 0.06f * enrageScale;
+                segmentVelocity += 5f * enrageScale;
+                speed += 0.05f * enrageScale;
+                turnSpeed += 0.075f * enrageScale;
 
                 if (flyAtTarget)
                 {
@@ -206,11 +262,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     speed *= speedMultiplier;
                 }
 
-                speed *= increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
-                turnSpeed *= increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
+                segmentVelocity *= velocityMultiplier;
+                speed *= velocityMultiplier;
+                turnSpeed *= velocityMultiplier;
+
+                segmentVelocity *= brokenSegmentAggressionMultiplier;
+                speed *= brokenSegmentAggressionMultiplier;
+                turnSpeed *= brokenSegmentAggressionMultiplier;
 
                 if (Main.getGoodWorld)
                 {
+                    segmentVelocity *= 1.2f;
                     speed *= 1.2f;
                     turnSpeed *= 1.2f;
                 }
@@ -231,24 +293,47 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         calamityGlobalNPC.newAI[2] -= 1f;
                 }
 
-                // Regenerate Probes in Master Mode
+                // Regenerate Probes in Master Mode if the number of Probes is less than 40 and the number of living NPCs is less than the segment count + 40 (this limit is here just in case)
                 if (masterMode && probeLaunched)
                 {
                     npc.localAI[2] += 1f;
                     if (npc.localAI[2] >= 600f)
                     {
-                        npc.ai[2] = 0f;
-                        npc.localAI[2] = 0f;
+                        int maxProbes = 40;
+                        bool regenerateProbeSegment = NPC.CountNPCS(NPCID.Probe) < maxProbes;
+                        if (regenerateProbeSegment)
+                        {
+                            int maxNPCs = totalSegments + maxProbes;
+                            int numNPCs = 0;
+                            for (int i = 0; i < Main.maxNPCs; i++)
+                            {
+                                if (Main.npc[i].active)
+                                {
+                                    numNPCs++;
+                                    if (numNPCs >= maxNPCs)
+                                    {
+                                        regenerateProbeSegment = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
 
-                        npc.netUpdate = true;
+                        if (regenerateProbeSegment)
+                        {
+                            npc.ai[2] = 0f;
+                            npc.netUpdate = true;
+                        }
+
+                        npc.localAI[2] = 0f;
                         npc.SyncVanillaLocalAI();
                     }
                 }
             }
 
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            if (npc.type == NPCID.TheDestroyer)
             {
-                if (npc.type == NPCID.TheDestroyer)
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     // Spawn segments from head
                     if (npc.ai[0] == 0f)
@@ -271,135 +356,266 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             index = segment;
                         }
                     }
-
-                    // Laser breath in Death Mode
-                    if (spitLaserSpreads)
-                    {
-                        float laserBreathGateValue = 600f;
-                        if (calamityGlobalNPC.newAI[0] < laserBreathGateValue)
-                            calamityGlobalNPC.newAI[0] += 1f;
-
-                        if (npc.SafeDirectionTo(player.Center).AngleBetween((npc.rotation - MathHelper.PiOver2).ToRotationVector2()) < MathHelper.ToRadians(18f) &&
-                            calamityGlobalNPC.newAI[0] >= laserBreathGateValue && Vector2.Distance(npc.Center, player.Center) > 480f &&
-                            Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
-                        {
-                            if (calamityGlobalNPC.newAI[0] % 30f == 0f)
-                            {
-                                float velocity = bossRush ? 6f : death ? 5.333f : 5f;
-                                int type = ProjectileID.DeathLaser;
-                                int damage = npc.GetProjectileDamage(type);
-
-                                // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                                {
-                                    if (!NPC.downedMechBossAny)
-                                        damage = (int)(damage * 0.8);
-                                    else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                        damage = (int)(damage * 0.9);
-                                }
-
-                                Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
-                                int numProj = calamityGlobalNPC.newAI[0] % 60f == 0f ? (masterMode ? 9 : 7) : (masterMode ? 6 : 4);
-                                int spread = masterMode ? 75 : 54;
-                                float rotation = MathHelper.ToRadians(spread);
-                                for (int i = 0; i < numProj; i++)
-                                {
-                                    Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, 1f, 0f);
-                                    Main.projectile[proj].timeLeft = 900;
-                                }
-                            }
-
-                            calamityGlobalNPC.newAI[0] += 1f;
-                            if (calamityGlobalNPC.newAI[0] > laserBreathGateValue + 60f)
-                                calamityGlobalNPC.newAI[0] = 0f;
-                        }
-                    }
                 }
 
-                // Fire lasers
-                if (npc.type == NPCID.TheDestroyerBody)
+                // Laser breath in Death Mode
+                if (spitLaserSpreads)
                 {
-                    // Laser rate of fire
-                    calamityGlobalNPC.newAI[0] += (float)Main.rand.Next(4);
-                    float shootProjectileTime = death ? 270 : 450;
-                    float bodySegmentTime = npc.ai[0] * 30f;
-                    float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
-
-                    // Shoot lasers
-                    // 50% chance to shoot harmless scrap if probe has been launched
-                    if (calamityGlobalNPC.newAI[0] >= shootProjectileGateValue)
+                    // Set laser color and type
+                    if (calamityGlobalNPC.destroyerLaserColor == -1)
                     {
-                        if (!masterMode)
+                        calamityGlobalNPC.destroyerLaserColor = phase3 ? 3 : phase2 ? 2 : 1;
+                        npc.SyncDestroyerLaserColor();
+                    }
+
+                    float laserBreathGateValue = DeathModeLaserBreathGateValue;
+                    if (calamityGlobalNPC.newAI[0] < laserBreathGateValue)
+                        calamityGlobalNPC.newAI[0] += 1f;
+
+                    // Sync newAI every 20 frames for the new telegraph
+                    if (calamityGlobalNPC.newAI[0] % 20f == 0f)
+                        npc.SyncExtraAI();
+
+                    if (npc.SafeDirectionTo(player.Center).AngleBetween((npc.rotation - MathHelper.PiOver2).ToRotationVector2()) < MathHelper.ToRadians(18f) &&
+                        calamityGlobalNPC.newAI[0] >= laserBreathGateValue && Vector2.Distance(npc.Center, player.Center) > 480f &&
+                        Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
+                    {
+                        if (calamityGlobalNPC.newAI[0] % 30f == 0f)
                         {
-                            calamityGlobalNPC.newAI[0] = 0f;
-                            npc.TargetClosest();
-                        }
-
-                        if (Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
-                        {
-                            if (masterMode)
+                            float velocity = bossRush ? 6f : death ? 5.333f : 5f;
+                            int type = ProjectileID.DeathLaser;
+                            switch (calamityGlobalNPC.destroyerLaserColor)
                             {
-                                calamityGlobalNPC.newAI[0] = 0f;
-                                npc.TargetClosest();
-                            }
-
-                            // Laser speed
-                            float projectileSpeed = 3.5f + Main.rand.NextFloat() * 1.5f;
-                            projectileSpeed += enrageScale;
-
-                            // Set projectile damage and type
-                            int projectileType = ProjectileID.DeathLaser;
-                            float laserSpawnDistance = 10f;
-                            int random = phase3 ? 4 : phase2 ? 3 : 2;
-                            switch (Main.rand.Next(random))
-                            {
+                                default:
                                 case 0:
+                                    break;
+
                                 case 1:
+                                    type = ModContent.ProjectileType<DestroyerCursedLaser>();
                                     break;
+
                                 case 2:
-                                    projectileType = ModContent.ProjectileType<DestroyerCursedLaser>();
-                                    break;
-                                case 3:
-                                    projectileType = ModContent.ProjectileType<DestroyerElectricLaser>();
+                                    type = ModContent.ProjectileType<DestroyerElectricLaser>();
                                     break;
                             }
-
-                            if (calamityGlobalNPC.newAI[2] > 0f || bossRush)
-                            {
-                                projectileType = ModContent.ProjectileType<DestroyerElectricLaser>();
-                                laserSpawnDistance = 20f;
-                            }
-
-                            bool weakLaser = false;
-                            if (probeLaunched)
-                            {
-                                weakLaser = true;
-                                projectileType = ProjectileID.EyeLaser;
-                                laserSpawnDistance = 0f;
-                            }
-
-                            // Get target vector
-                            Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
-                            Vector2 projectileSpawn = npc.Center + projectileVelocity * laserSpawnDistance;
-
-                            // Shoot projectile
-                            int damage = npc.GetProjectileDamage(projectileType);
+                            int damage = npc.GetProjectileDamage(type);
 
                             // Reduce mech boss projectile damage depending on the new ore progression changes
                             if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                             {
+                                double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
+                                double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
                                 if (!NPC.downedMechBossAny)
-                                    damage = (int)(damage * 0.8);
+                                    damage = (int)(damage * firstMechMultiplier);
                                 else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                    damage = (int)(damage * 0.9);
+                                    damage = (int)(damage * secondMechMultiplier);
                             }
 
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, weakLaser ? 0f : 1f, 0f);
-                            Main.projectile[proj].timeLeft = weakLaser ? 600 : 900;
-
-                            npc.netUpdate = true;
+                            Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
+                            int numProj = calamityGlobalNPC.newAI[0] % 60f == 0f ? (masterMode ? 9 : 7) : (masterMode ? 6 : 4);
+                            int spread = masterMode ? 75 : 54;
+                            float rotation = MathHelper.ToRadians(spread);
+                            for (int i = 0; i < numProj; i++)
+                            {
+                                Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 100f, perturbedSpeed, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                                    Main.projectile[proj].timeLeft = 1200;
+                                }
+                            }
                         }
+
+                        calamityGlobalNPC.newAI[0] += 1f;
+                        if (calamityGlobalNPC.newAI[0] > laserBreathGateValue + 60f)
+                        {
+                            calamityGlobalNPC.newAI[0] = 0f;
+                            calamityGlobalNPC.destroyerLaserColor = -1;
+                            npc.SyncDestroyerLaserColor();
+                            npc.SyncExtraAI();
+                        }
+                    }
+                }
+            }
+
+            // Fire lasers
+            if (npc.type == NPCID.TheDestroyerBody)
+            {
+                bool ableToFireLaser = calamityGlobalNPC.destroyerLaserColor != -1;
+
+                // Set laser color and type
+                if (calamityGlobalNPC.destroyerLaserColor == -1 && !probeLaunched && Main.rand.NextBool(OneInXChanceToFireLaser))
+                {
+                    int random = phase3 ? 4 : phase2 ? 3 : 2;
+                    switch (Main.rand.Next(random))
+                    {
+                        case 0:
+                        case 1:
+                            calamityGlobalNPC.destroyerLaserColor = 0;
+                            break;
+                        case 2:
+                            calamityGlobalNPC.destroyerLaserColor = 1;
+                            break;
+                        case 3:
+                            calamityGlobalNPC.destroyerLaserColor = 2;
+                            break;
+                    }
+
+                    if (calamityGlobalNPC.newAI[2] > 0f || bossRush)
+                        calamityGlobalNPC.destroyerLaserColor = 2;
+
+                    npc.SyncDestroyerLaserColor();
+                }
+
+                if (probeLaunched && ableToFireLaser)
+                {
+                    calamityGlobalNPC.destroyerLaserColor = -1;
+                    npc.SyncDestroyerLaserColor();
+                }
+
+                // Laser rate of fire
+                float shootProjectileTime = death ? 270f : 450f;
+                float bodySegmentTime = npc.ai[0] * 30f;
+                float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
+                float laserTimerIncrement = (calamityGlobalNPC.newAI[0] > shootProjectileGateValue - LaserTelegraphTime) ? 1f : 2f;
+                if (ableToFireLaser)
+                    calamityGlobalNPC.newAI[0] += laserTimerIncrement;
+
+                // Sync newAI every 20 frames for the new telegraph
+                if (calamityGlobalNPC.newAI[0] % 20f == 0f && ableToFireLaser)
+                    npc.SyncExtraAI();
+
+                Color telegraphColor = Color.Transparent;
+                switch (calamityGlobalNPC.destroyerLaserColor)
+                {
+                    case 0:
+                        telegraphColor = Color.Red;
+                        break;
+                    case 1:
+                        telegraphColor = Color.Green;
+                        break;
+                    case 2:
+                        telegraphColor = Color.Cyan;
+                        break;
+                }
+
+                if (calamityGlobalNPC.newAI[0] == shootProjectileGateValue - LaserTelegraphTime)
+                {
+                    Particle telegraph = new DestroyerReticleTelegraph(
+                        npc,
+                        telegraphColor,
+                        1.5f,
+                        0.15f,
+                        (int)LaserTelegraphTime);
+                    GeneralParticleHandler.SpawnParticle(telegraph); 
+                }
+
+                if (calamityGlobalNPC.newAI[0] == shootProjectileGateValue - SparkTelegraphTime)
+                {
+                    Particle spark = new DestroyerSparkTelegraph(
+                        npc,
+                        telegraphColor * 2f,
+                        Color.White,
+                        3f,
+                        30,
+                        Main.rand.NextFloat(MathHelper.ToRadians(3f)) * Main.rand.NextBool().ToDirectionInt());
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+
+                // Shoot lasers
+                // Shoot nothing if probe has been launched
+                if (calamityGlobalNPC.newAI[0] >= shootProjectileGateValue && ableToFireLaser)
+                {
+                    if (!masterMode)
+                    {
+                        int numProbeSegments = 0;
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            if (Main.npc[i].active && Main.npc[i].type == npc.type && Main.npc[i].ai[2] == 0f)
+                                numProbeSegments++;
+                        }
+                        float lerpAmount = MathHelper.Clamp(numProbeSegments / (float)totalSegments, 0f, 1f);
+                        float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
+                        calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
+                        npc.SyncExtraAI();
+                        npc.TargetClosest();
+                    }
+
+                    if (Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
+                    {
+                        if (masterMode)
+                        {
+                            int numProbeSegments = 0;
+                            for (int i = 0; i < Main.maxNPCs; i++)
+                            {
+                                if (Main.npc[i].active && Main.npc[i].type == npc.type && Main.npc[i].ai[2] == 0f)
+                                    numProbeSegments++;
+                            }
+                            float lerpAmount = MathHelper.Clamp(numProbeSegments / (float)totalSegments, 0f, 1f);
+                            float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
+                            calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
+                            npc.SyncExtraAI();
+                            npc.TargetClosest();
+                        }
+
+                        // Laser speed
+                        float projectileSpeed = 3.5f + Main.rand.NextFloat() * 1.5f;
+                        projectileSpeed += enrageScale;
+
+                        // Set projectile damage and type
+                        int projectileType = ProjectileID.DeathLaser;
+                        switch (calamityGlobalNPC.destroyerLaserColor)
+                        {
+                            default:
+                            case 0:
+                                break;
+
+                            case 1:
+                                projectileType = ModContent.ProjectileType<DestroyerCursedLaser>();
+                                break;
+
+                            case 2:
+                                projectileType = ModContent.ProjectileType<DestroyerElectricLaser>();
+                                break;
+                        }
+
+                        // Get target vector
+                        Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
+                        Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 100f;
+
+                        // Shoot projectile
+                        int damage = npc.GetProjectileDamage(projectileType);
+
+                        // Reduce mech boss projectile damage depending on the new ore progression changes
+                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                        {
+                            double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
+                            double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
+                            if (!NPC.downedMechBossAny)
+                                damage = (int)(damage * firstMechMultiplier);
+                            else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
+                                damage = (int)(damage * secondMechMultiplier);
+                        }
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, 1f, 0f);
+                            Main.projectile[proj].timeLeft = 1200;
+                        }
+
+                        npc.netUpdate = true;
+
+                        if (masterMode)
+                        {
+                            calamityGlobalNPC.destroyerLaserColor = -1;
+                            npc.SyncDestroyerLaserColor();
+                        }
+                    }
+
+                    if (!masterMode)
+                    {
+                        calamityGlobalNPC.destroyerLaserColor = -1;
+                        npc.SyncDestroyerLaserColor();
                     }
                 }
             }
@@ -486,8 +702,88 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else
                 npc.localAI[1] = 0f;
 
+            if (npc.type != NPCID.TheDestroyerBody || !probeLaunched)
+            {
+                Vector3 lightColor = Color.Red.ToVector3();
+                int x = (int)((npc.position.X - 8f) / 16f);
+                int x2 = (int)((npc.position.X + npc.width + 8f) / 16f);
+                int y = (int)((npc.position.Y - 8f) / 16f);
+                int y2 = (int)((npc.position.Y + npc.height + 8f) / 16f);
+                for (int l = x; l <= x2; l++)
+                {
+                    for (int m = y; m <= y2; m++)
+                    {
+                        if (Lighting.Brightness(l, m) == 0f)
+                            lightColor = Color.Black.ToVector3();
+                    }
+                }
+
+                if (lightColor != Color.Black.ToVector3())
+                {
+                    // Light colors
+                    Vector3 groundColor = new Vector3(0.3f, 0.1f, 0.05f);
+                    Vector3 flightColor = new Vector3(0.05f, 0.1f, 0.3f);
+                    Vector3 segmentColor = Vector3.Lerp(groundColor, flightColor, phaseTransitionColorAmount);
+                    Vector3 telegraphColor = groundColor;
+
+                    // Telegraph for the laser breath and body lasers
+                    float telegraphProgress = 0f;
+                    if (calamityGlobalNPC.destroyerLaserColor != -1)
+                    {
+                        if (npc.type == NPCID.TheDestroyer && spitLaserSpreads)
+                        {
+                            float telegraphGateValue = DeathModeLaserBreathGateValue - LaserTelegraphTime;
+                            if (calamityGlobalNPC.newAI[0] > telegraphGateValue)
+                            {
+                                switch (calamityGlobalNPC.destroyerLaserColor)
+                                {
+                                    default:
+                                    case 0:
+                                        break;
+
+                                    case 1:
+                                        telegraphColor = new Vector3(0.1f, 0.3f, 0.05f);
+                                        break;
+
+                                    case 2:
+                                        telegraphColor = new Vector3(0.05f, 0.2f, 0.2f);
+                                        break;
+                                }
+                                telegraphProgress = MathHelper.Clamp((calamityGlobalNPC.newAI[0] - telegraphGateValue) / LaserTelegraphTime, 0f, 1f);
+                            }
+                        }
+                        else if (npc.type == NPCID.TheDestroyerBody)
+                        {
+                            float shootProjectileTime = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 270f : 450f;
+                            float bodySegmentTime = npc.ai[0] * 30f;
+                            float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
+                            float telegraphGateValue = shootProjectileGateValue - LaserTelegraphTime;
+                            if (calamityGlobalNPC.newAI[0] > telegraphGateValue)
+                            {
+                                switch (calamityGlobalNPC.destroyerLaserColor)
+                                {
+                                    default:
+                                    case 0:
+                                        break;
+
+                                    case 1:
+                                        telegraphColor = new Vector3(0.1f, 0.3f, 0.05f);
+                                        break;
+
+                                    case 2:
+                                        telegraphColor = new Vector3(0.05f, 0.2f, 0.2f);
+                                        break;
+                                }
+                                telegraphProgress = MathHelper.Clamp((calamityGlobalNPC.newAI[0] - telegraphGateValue) / LaserTelegraphTime, 0f, 1f);
+                            }
+                        }
+                    }
+
+                    Lighting.AddLight(npc.Center, Vector3.Lerp(segmentColor, telegraphColor * 2f, telegraphProgress));
+                }
+            }
+
             // Despawn
-            float segmentVelocity = masterMode ? 20f : 16f;
             if (player.dead)
             {
                 shouldFly = false;
@@ -508,11 +804,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
             }
-
-            // Max velocity
-            float segmentVelocityBoost = death ? 6.5f * (1f - lifeRatio) : 5f * (1f - lifeRatio);
-            segmentVelocity += segmentVelocityBoost;
-            segmentVelocity += 4f * enrageScale;
 
             Vector2 npcCenter = npc.Center;
             float targetTilePosX = player.Center.X;
@@ -618,7 +909,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             soundDelay = 20f;
 
                         npc.soundDelay = (int)soundDelay;
-                        SoundEngine.PlaySound(SoundID.WormDig, npc.position);
+                        SoundEngine.PlaySound(SoundID.WormDig, npc.Center);
                     }
 
                     targetTileDist = (float)Math.Sqrt(targetTilePosX * targetTilePosX + targetTilePosY * targetTilePosY);
@@ -631,7 +922,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     bool flyWyvernMovement = false;
                     if (flyAtTarget)
                     {
-                        if (((npc.velocity.X > 0f && targetTilePosX < 0f) || (npc.velocity.X < 0f && targetTilePosX > 0f) || (npc.velocity.Y > 0f && targetTilePosY < 0f) || (npc.velocity.Y < 0f && targetTilePosY > 0f)) && Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y) > speed / 2f && targetTileDist < 400f)
+                        if (((npc.velocity.X > 0f && targetTilePosX < 0f) || (npc.velocity.X < 0f && targetTilePosX > 0f) || (npc.velocity.Y > 0f && targetTilePosY < 0f) || (npc.velocity.Y < 0f && targetTilePosY > 0f)) && Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y) > speed / 2f && targetTileDist < 600f)
                         {
                             flyWyvernMovement = true;
 
@@ -776,12 +1067,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 if (npc.velocity.Length() <= minimalContactDamageVelocity)
                 {
-                    npc.damage = (int)(npc.defDamage * 0.5f);
+                    npc.damage = (int)Math.Round(npc.defDamage * 0.5);
                 }
                 else
                 {
                     float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    npc.damage = (int)MathHelper.Lerp(npc.defDamage * 0.5f, npc.defDamage, velocityDamageScalar);
+                    npc.damage = (int)MathHelper.Lerp((float)Math.Round(npc.defDamage * 0.5), npc.defDamage, velocityDamageScalar);
                 }
             }
             else
@@ -879,6 +1170,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            int destroyerSegmentsCount = NPC.GetDestroyerSegmentsCount();
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (npc.ai[0] == 0f && npc.type == NPCID.TheDestroyer)
@@ -887,7 +1179,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.realLife = npc.whoAmI;
                     int num5 = 0;
                     int num6 = npc.whoAmI;
-                    int destroyerSegmentsCount = NPC.GetDestroyerSegmentsCount();
                     for (int j = 0; j <= destroyerSegmentsCount; j++)
                     {
                         int num7 = NPCID.TheDestroyerBody;
@@ -903,50 +1194,126 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         num6 = num5;
                     }
                 }
+            }
 
-                if (npc.type == NPCID.TheDestroyerBody)
+            if (npc.type == NPCID.TheDestroyerBody)
+            {
+                bool probeLaunched = npc.ai[2] == 1f;
+                bool ableToFireLaser = npc.Calamity().destroyerLaserColor != -1;
+
+                if (npc.Calamity().destroyerLaserColor == -1 && !probeLaunched && Main.rand.NextBool(OneInXChanceToFireLaser))
                 {
-                    npc.localAI[0] += Main.rand.Next(4);
-                    int chanceToFire = Main.rand.Next(1400, 26000);
-                    if (Main.expertMode)
-                        chanceToFire = (int)(chanceToFire * MathHelper.Lerp(Main.masterMode ? 0.5f : 0.7f, 1f, npc.life / (float)npc.lifeMax));
+                    npc.Calamity().destroyerLaserColor = 0;
+                    npc.SyncDestroyerLaserColor();
+                }
 
-                    if (npc.localAI[0] >= (float)chanceToFire)
+                if (probeLaunched && ableToFireLaser)
+                {
+                    npc.Calamity().destroyerLaserColor = -1;
+                    npc.SyncDestroyerLaserColor();
+                }
+
+                float shootProjectileTime = Main.masterMode ? 500f : Main.expertMode ? 700f : 900f;
+                float bodySegmentTime = npc.ai[0] * 30f;
+                float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
+
+                float laserTimerIncrement = (npc.localAI[0] > shootProjectileGateValue - LaserTelegraphTime) ? 1f : 2f;
+                if (ableToFireLaser)
+                    npc.localAI[0] += laserTimerIncrement;
+
+                // Sync newAI every 20 frames for the new telegraph
+                if (npc.localAI[0] % 20f == 0f && ableToFireLaser)
+                    npc.SyncVanillaLocalAI();
+
+                Color telegraphColor = Color.Transparent;
+                switch (npc.Calamity().destroyerLaserColor)
+                {
+                    case 0:
+                        telegraphColor = Color.Red;
+                        break;
+                    case 1:
+                        telegraphColor = Color.Green;
+                        break;
+                    case 2:
+                        telegraphColor = Color.Cyan;
+                        break;
+                }
+
+                if (npc.localAI[0] == shootProjectileGateValue - LaserTelegraphTime)
+                {
+                    Particle telegraph = new DestroyerReticleTelegraph(
+                        npc,
+                        telegraphColor,
+                        1.5f,
+                        0.15f,
+                        (int)LaserTelegraphTime);
+                    GeneralParticleHandler.SpawnParticle(telegraph);
+                }
+
+                if (npc.localAI[0] == shootProjectileGateValue - SparkTelegraphTime)
+                {
+                    Particle spark = new DestroyerSparkTelegraph(
+                        npc,
+                        telegraphColor * 2f,
+                        Color.White,
+                        3f,
+                        30,
+                        Main.rand.NextFloat(MathHelper.ToRadians(3f)) * Main.rand.NextBool().ToDirectionInt());
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+
+                if (npc.localAI[0] >= shootProjectileGateValue && ableToFireLaser)
+                {
+                    int numProbeSegments = 0;
+                    for (int i = 0; i < Main.maxNPCs; i++)
                     {
-                        npc.localAI[0] = 0f;
-                        npc.TargetClosest();
-                        if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                        {
-                            float laserVelocity = Main.masterMode ? 9f : Main.expertMode ? 8.5f : 8f;
-                            Vector2 vector = npc.Center;
-                            float num8 = Main.player[npc.target].Center.X - vector.X + (float)Main.rand.Next(-2, 3);
-                            float num9 = Main.player[npc.target].Center.Y - vector.Y + (float)Main.rand.Next(-2, 3);
-                            float num10 = (float)Math.Sqrt(num8 * num8 + num9 * num9);
-                            num10 = laserVelocity / num10;
-                            num8 *= num10;
-                            num9 *= num10;
-                            num8 += (float)Main.rand.Next(-2, 3) * 0.05f;
-                            num9 += (float)Main.rand.Next(-2, 3) * 0.05f;
-
-                            int type = ProjectileID.DeathLaser;
-                            int damage = npc.GetProjectileDamage(type);
-
-                            // Reduce mech boss projectile damage depending on the new ore progression changes
-                            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                            {
-                                if (!NPC.downedMechBossAny)
-                                    damage = (int)(damage * 0.8);
-                                else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                    damage = (int)(damage * 0.9);
-                            }
-
-                            vector.X += num8 * 5f;
-                            vector.Y += num9 * 5f;
-                            int num12 = Projectile.NewProjectile(npc.GetSource_FromAI(), vector.X, vector.Y, num8, num9, type, damage, 0f, Main.myPlayer);
-                            Main.projectile[num12].timeLeft = 600;
-                            npc.netUpdate = true;
-                        }
+                        if (Main.npc[i].active && Main.npc[i].type == npc.type && Main.npc[i].ai[2] == 0f)
+                            numProbeSegments++;
                     }
+                    float lerpAmount = MathHelper.Clamp(numProbeSegments / (float)destroyerSegmentsCount, 0f, 1f);
+                    float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
+                    npc.localAI[0] = laserShootTimeBonus;
+                    npc.SyncVanillaLocalAI();
+                    npc.TargetClosest();
+                    if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
+                    {
+                        float laserVelocity = (Main.masterMode ? 3.5f : Main.expertMode ? 3f : 2.5f) + Main.rand.NextFloat() * 1.5f;
+                        Vector2 vector = npc.Center;
+                        float num8 = Main.player[npc.target].Center.X - vector.X + (float)Main.rand.Next(-2, 3);
+                        float num9 = Main.player[npc.target].Center.Y - vector.Y + (float)Main.rand.Next(-2, 3);
+                        float num10 = (float)Math.Sqrt(num8 * num8 + num9 * num9);
+                        num10 = laserVelocity / num10;
+                        num8 *= num10;
+                        num9 *= num10;
+                        num8 += (float)Main.rand.Next(-2, 3) * 0.05f;
+                        num9 += (float)Main.rand.Next(-2, 3) * 0.05f;
+
+                        int type = ProjectileID.DeathLaser;
+                        int damage = npc.GetProjectileDamage(type);
+
+                        // Reduce mech boss projectile damage depending on the new ore progression changes
+                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                        {
+                            double firstMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic;
+                            double secondMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic;
+                            if (!NPC.downedMechBossAny)
+                                damage = (int)(damage * firstMechMultiplier);
+                            else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
+                                damage = (int)(damage * secondMechMultiplier);
+                        }
+
+                        Vector2 laserVelocityActual = new Vector2(num8, num9);
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            int num12 = Projectile.NewProjectile(npc.GetSource_FromAI(), vector + laserVelocityActual.SafeNormalize(Vector2.UnitY) * 100f, laserVelocityActual, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                            Main.projectile[num12].timeLeft = 1200;
+                        }
+
+                        npc.netUpdate = true;
+                    }
+
+                    npc.Calamity().destroyerLaserColor = -1;
+                    npc.SyncDestroyerLaserColor();
                 }
             }
 
@@ -959,6 +1326,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 if (npc.life > Main.npc[(int)npc.ai[1]].life)
                     npc.life = Main.npc[(int)npc.ai[1]].life;
+            }
+
+            // Calculate aggression based on how many broken segments there are
+            float brokenSegmentAggressionMultiplier = 1f;
+            if (npc.type == NPCID.TheDestroyer)
+            {
+                int numProbeSegments = 0;
+                for (int i = 0; i < Main.maxNPCs; i++)
+                {
+                    if (Main.npc[i].active && Main.npc[i].type == NPCID.TheDestroyerBody && Main.npc[i].ai[2] == 0f)
+                        numProbeSegments++;
+                }
+                brokenSegmentAggressionMultiplier += (1f - MathHelper.Clamp(numProbeSegments / (float)destroyerSegmentsCount, 0f, 1f)) * 0.25f;
             }
 
             int num13 = (int)(npc.position.X / 16f) - 1;
@@ -1002,7 +1382,46 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!flag2)
             {
                 if (npc.type != NPCID.TheDestroyerBody || npc.ai[2] != 1f)
-                    Lighting.AddLight((int)(npc.Center.X / 16f), (int)(npc.Center.Y / 16f), 0.3f, 0.1f, 0.05f);
+                {
+                    Vector3 lightColor = Color.Red.ToVector3();
+                    int x = (int)((npc.position.X - 8f) / 16f);
+                    int x2 = (int)((npc.position.X + npc.width + 8f) / 16f);
+                    int y = (int)((npc.position.Y - 8f) / 16f);
+                    int y2 = (int)((npc.position.Y + npc.height + 8f) / 16f);
+                    for (int l = x; l <= x2; l++)
+                    {
+                        for (int m = y; m <= y2; m++)
+                        {
+                            if (Lighting.Brightness(l, m) == 0f)
+                                lightColor = Color.Black.ToVector3();
+                        }
+                    }
+
+                    if (lightColor != Color.Black.ToVector3())
+                    {
+                        // Light colors
+                        Vector3 groundColor = new Vector3(0.3f, 0.1f, 0.05f);
+                        Vector3 segmentColor = groundColor;
+                        Vector3 telegraphColor = groundColor;
+
+                        // Telegraph for the laser breath and body lasers
+                        float telegraphProgress = 0f;
+                        if (npc.Calamity().destroyerLaserColor != -1)
+                        {
+                            if (npc.type == NPCID.TheDestroyerBody)
+                            {
+                                float shootProjectileTime = Main.masterMode ? 500f : Main.expertMode ? 700f : 900f;
+                                float bodySegmentTime = npc.ai[0] * 30f;
+                                float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
+                                float telegraphGateValue = shootProjectileGateValue - LaserTelegraphTime;
+                                if (npc.localAI[0] > telegraphGateValue)
+                                    telegraphProgress = MathHelper.Clamp((npc.localAI[0] - telegraphGateValue) / LaserTelegraphTime, 0f, 1f);
+                            }
+                        }
+
+                        Lighting.AddLight(npc.Center, Vector3.Lerp(segmentColor, telegraphColor * 2f, telegraphProgress));
+                    }
+                }
 
                 npc.localAI[1] = 1f;
                 if (npc.type == NPCID.TheDestroyer)
@@ -1034,18 +1453,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else
                 npc.localAI[1] = 0f;
 
-            float num18 = Main.masterMode ? 24f : Main.expertMode ? 20f : 16f;
+            float num18 = (Main.masterMode ? 24f : Main.expertMode ? 20f : 16f) * brokenSegmentAggressionMultiplier;
             if (Main.IsItDay() || Main.player[npc.target].dead)
             {
                 flag2 = false;
                 npc.velocity.Y += 1f;
-                if ((double)npc.position.Y > Main.worldSurface * 16.0)
+                if ((double)npc.position.Y > Main.worldSurface * 16D)
                 {
                     npc.velocity.Y += 1f;
                     num18 *= 2f;
                 }
 
-                if ((double)npc.position.Y > Main.rockLayer * 16.0)
+                if ((double)npc.position.Y > Main.rockLayer * 16D)
                 {
                     for (int n = 0; n < Main.maxNPCs; n++)
                     {
@@ -1059,8 +1478,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float num20 = 0.15f;
             if (Main.expertMode)
             {
-                num19 = Main.masterMode ? 0.15f : 0.125f;
-                num20 = Main.masterMode ? 0.225f : 0.1875f;
+                num19 = Main.masterMode ? 0.2f : 0.15f;
+                num20 = Main.masterMode ? 0.3f : 0.225f;
             }
 
             if (Main.getGoodWorld)
@@ -1068,6 +1487,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 num19 *= 1.2f;
                 num20 *= 1.2f;
             }
+
+            num19 *= brokenSegmentAggressionMultiplier;
+            num20 *= brokenSegmentAggressionMultiplier;
 
             Vector2 vector3 = npc.Center;
             float num21 = Main.player[npc.target].Center.X;
@@ -1303,12 +1725,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 if (npc.velocity.Length() <= minimalContactDamageVelocity)
                 {
-                    npc.damage = (int)(npc.defDamage * 0.5f);
+                    npc.damage = (int)Math.Round(npc.defDamage * 0.5);
                 }
                 else
                 {
                     float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    npc.damage = (int)MathHelper.Lerp(npc.defDamage * 0.5f, npc.defDamage, velocityDamageScalar);
+                    npc.damage = (int)MathHelper.Lerp((float)Math.Round(npc.defDamage * 0.5), npc.defDamage, velocityDamageScalar);
                 }
             }
             else
@@ -1494,10 +1916,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Reduce mech boss projectile damage depending on the new ore progression changes
                     if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                     {
+                        double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
+                        double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
                         if (!NPC.downedMechBossAny)
-                            damage = (int)(damage * 0.8);
+                            damage = (int)(damage * firstMechMultiplier);
                         else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                            damage = (int)(damage * 0.9);
+                            damage = (int)(damage * secondMechMultiplier);
                     }
 
                     int totalProjectiles = (CalamityWorld.death || bossRush) ? 3 : 1;
@@ -1522,12 +1946,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 velocityMultiplier = 0.8f;
                                 break;
                         }
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), probeCenter, npcCenter * velocityMultiplier, type, damage, 0f, Main.myPlayer);
+                        Vector2 laserVelocity = npcCenter * velocityMultiplier;
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), probeCenter + laserVelocity.SafeNormalize(Vector2.UnitY) * 50f, laserVelocity, type, damage, 0f, Main.myPlayer);
                     }
 
                     npc.netUpdate = true;
                 }
             }
+
+            int x = (int)npc.Center.X / 16;
+            int y = (int)npc.Center.Y / 16;
+            if (WorldGen.InWorld(x, y) && !WorldGen.SolidTile(x, y))
+                Lighting.AddLight((int)(npc.Center.X / 16f), (int)(npc.Center.Y / 16f), 0.3f, 0.1f, 0.05f);
 
             if (probeTargetX > 0f)
             {
@@ -1745,10 +2175,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Reduce mech boss projectile damage depending on the new ore progression changes
                     if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
                     {
+                        double firstMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic;
+                        double secondMechMultiplier = Main.expertMode ? CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert : CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic;
                         if (!NPC.downedMechBossAny)
-                            damage = (int)(damage * 0.8);
+                            damage = (int)(damage * firstMechMultiplier);
                         else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                            damage = (int)(damage * 0.9);
+                            damage = (int)(damage * secondMechMultiplier);
                     }
 
                     Vector2 vector3 = new Vector2(num4, num5);
@@ -1759,7 +2191,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         vector3 = v.SafeNormalize(Vector2.UnitY) * num12;
                     }
 
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector.X, vector.Y, vector3.X, vector3.Y, type, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector + vector3.SafeNormalize(Vector2.UnitY) * 50f, vector3, type, damage, 0f, Main.myPlayer);
                 }
             }
 

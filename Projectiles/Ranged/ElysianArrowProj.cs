@@ -51,7 +51,11 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 targetPosition = target == null ? Projectile.Center : target.Center;
             Vector2 spawnSpot = (target == null ? Projectile.Center : target.Center) + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-750, -950));
 
-            Vector2 velocity = (targetPosition - spawnSpot).SafeNormalize(Vector2.UnitX) * 20;
+            Vector2 velocity;
+            if (target == null)
+                velocity = (targetPosition - spawnSpot).SafeNormalize(Vector2.UnitX) * 20;
+            else
+                velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(spawnSpot, target, 20f, ElysianArrowRain.MaxUpdate);
 
             if (targetDist < 1400f)
             {

@@ -46,7 +46,6 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.netAlways = true;
             NPC.dontCountMe = true;
             NPC.chaseable = false;
-            NPC.canGhostHeal = false;
 
             if (BossRushEvent.BossRushActive)
                 NPC.scale *= 1.25f;

@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (Projectile.ai[0] == 0f || Main.zenithWorld)
-                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 120);
+                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
             else
                 target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
         }

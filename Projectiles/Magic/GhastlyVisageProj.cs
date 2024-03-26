@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = soundDelayer - soundDelayMult * aiSoundDelay;
 
                 if (isActive)
-                    SoundEngine.PlaySound(SoundID.Item117, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item117, Projectile.Center);
             }
             else if (Projectile.soundDelay <= 0 && canUseItem)
             {
@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = soundDelayer - soundDelayMult * aiSoundDelay;
                 if (Projectile.ai[0] != 1f && isActive)
                 {
-                    SoundEngine.PlaySound(SoundID.Item117, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item117, Projectile.Center);
                 }
                 Projectile.localAI[0] = 12f;
             }

@@ -54,8 +54,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             Vector2 etherealLanceDistance = new Vector2(0f, -450f);
             Vector2 sunDanceDistance = new Vector2(-80f, -500f);
 
-            float acceleration = death ? 0.55f : 0.48f;
-            float velocity = death ? 14f : 12f;
+            float acceleration = death ? 0.66f : 0.6f;
+            float velocity = death ? 16.5f : 15f;
             float movementDistanceGateValue = 40f;
             float despawnDistanceGateValue = 6400f;
 
@@ -316,7 +316,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
 
                         if (attackPatternLength % attackIncrement == phase2Attack7)
-                            attackType = 6;
+                        {
+                            if (phase3)
+                            {
+                                attackType = 4;
+
+                                // Adjust the upcoming Ethereal Lance attack depending on what random variable is chosen here.
+                                calamityGlobalNPC.newAI[3] = Main.rand.Next(2);
+
+                                // Sync the Calamity AI variables.
+                                npc.SyncExtraAI();
+                            }
+                            else
+                                attackType = 6;
+                        }
 
                         if (attackPatternLength % attackIncrement == phase2Attack8)
                         {
@@ -666,7 +679,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Increase durability.
                     calamityGlobalNPC.DR = shouldBeInPhase2ButIsStillInPhase1 ? 0.99f : (bossRush ? 0.99f : 0.575f);
 
-                    int totalSunDances = phase3 ? 1 : phase2 ? 2 : 3;
+                    int totalSunDances = phase2 ? 2 : 3;
                     float sunDanceGateValue = dayTimeEnrage ? 35f : death ? 40f : 50f;
                     float totalSunDancePhaseTime = totalSunDances * sunDanceGateValue;
 
@@ -685,7 +698,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         int sunDanceExtension = (int)(npc.ai[1] / sunDanceGateValue);
                         int targetFloatDirection = (targetData2.Center.X > npc.Center.X) ? 1 : 0;
-                        float projAmount = phase3 ? 12f : phase2 ? 8f : 6f;
+                        float projAmount = phase2 ? 8f : 6f;
                         float projRotation = 1f / projAmount;
                         for (float j = 0f; j < 1f; j += projRotation)
                         {
@@ -746,10 +759,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             totalProjectiles += 5f;
                             lanceSpacing += 50f;
                             lanceWallSize *= (masterMode ? 0.75f : 0.5f);
-
                             float direction = 1f;
-                            if (phase3)
-                                direction *= (Main.rand.NextBool() ? 1f : -1f);
 
                             int randomLanceWallType;
                             do randomLanceWallType = Main.rand.Next(numLanceWalls);
@@ -849,17 +859,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 case 8:
                 case 9:
 
-                    takeDamage = !(npc.ai[1] >= 6f) || !(npc.ai[1] <= 40f);
-
                     int chargeDirection = (npc.ai[0] != 8f) ? 1 : (-1);
 
                     AI_120_HallowBoss_DoMagicEffect(npc.Center, 5, Utils.GetLerpValue(40f, 90f, npc.ai[1], clamped: true), npc);
 
-                    float dashAcceleration = phase3 ? 0.08f : 0.05f;
-
-                    float chargeGateValue = phase3 ? 30f : 40f;
-                    float playChargeSoundTime = phase3 ? 15f : 20f;
-                    float chargeDuration = phase3 ? 35f : 50f;
+                    float chargeGateValue = 40f;
+                    float playChargeSoundTime = 20f;
+                    float chargeDuration = phase3 ? 40f : 50f;
+                    float slowDownTime = 30f;
+                    float totalPhaseTime = chargeGateValue + chargeDuration + slowDownTime;
                     float chargeStartDistance = phase3 ? 1000f : 800f;
                     float chargeVelocity = phase3 ? 100f : 70f;
                     float chargeAcceleration = phase3 ? 0.1f : 0.07f;
@@ -941,8 +949,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     npc.ai[1] += 1f;
-                    extraPhaseTime = (dayTimeEnrage ? 48f : 96f) * lessTimeSpentPerPhaseMultiplier;
-                    if (npc.ai[1] >= 150f + extraPhaseTime)
+                    extraPhaseTime = (dayTimeEnrage ? 24f : 48f) * lessTimeSpentPerPhaseMultiplier;
+                    if (npc.ai[1] >= totalPhaseTime + extraPhaseTime)
                     {
                         npc.ai[0] = 1f;
                         npc.ai[1] = 0f;
@@ -987,7 +995,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     break;
 
-                // Spawn Ethereal Lances around the target in seemingly random places (they will be made slower to make this easier to deal with).
+                // Spawn Ethereal Lances ahead of the target.
                 case 11:
 
                     // Avoid cheap bullshit.
@@ -1029,7 +1037,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (npc.Distance(targetCenter) > 2400f)
                                 continue;
 
-                            Vector2 straightLanceSpawnPredict = targetCenter + targetData6.Velocity * 90;
+                            Vector2 straightLanceSpawnPredict = targetCenter + (oppositeLance ? -targetData6.Velocity : targetData6.Velocity) * 90;
                             Vector2 straightLanceSpawnDirection = targetCenter + inverseTargetVel * spawnDistance;
                             if (straightLanceSpawnDirection.Distance(targetCenter) < spawnDistance)
                             {
@@ -1060,7 +1068,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 inverseTargetVel = oppositeLance ? player.velocity : -player.velocity;
                                 inverseTargetVel.SafeNormalize(-Vector2.UnitY);
                                 targetCenter = player.Center;
-                                Vector2 extraPlayerLancePredict = targetCenter + player.velocity * 90;
+                                Vector2 extraPlayerLancePredict = targetCenter + (oppositeLance ? -player.velocity : player.velocity) * 90;
                                 straightLanceSpawnDirection = targetCenter + inverseTargetVel * spawnDistance;
                                 if (straightLanceSpawnDirection.Distance(targetCenter) < spawnDistance)
                                 {
@@ -1252,9 +1260,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.dontTakeDamage = !takeDamage;
 
             if (phase3)
-                npc.defense = (int)(npc.defDefense * 0.5f);
+                npc.defense = (int)Math.Round(npc.defDefense * 0.8);
             else if (phase2)
-                npc.defense = (int)(npc.defDefense * 1.2f);
+                npc.defense = (int)Math.Round(npc.defDefense * 1.2);
             else
                 npc.defense = npc.defDefense;
 
@@ -1273,19 +1281,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            Vector2 stopMovingLocation = new Vector2(-150f, -250f);
-            Vector2 stopMovingLocation2 = new Vector2(150f, -250f);
-            Vector2 stopMovingLocation3 = new Vector2(0f, -350f);
-            Vector2 stopMovingLocation4 = new Vector2(0f, -350f);
+            Vector2 stopMovingLocation = new Vector2(-250f, -350f);
+            Vector2 stopMovingLocation3 = new Vector2(0f, -450f);
+            Vector2 stopMovingLocation4 = new Vector2(0f, -450f);
             Vector2 stopMovingLocation5 = new Vector2(-80f, -500f);
-            float moveSpeed = 0.5f;
-            float desiredVelocity = 12f;
-            float stopMovingDistance = 40f;
-            float despawnDistance = 6400f;
-            int lanceDamage = npc.GetProjectileDamage(ProjectileID.FairyQueenLance);
-            int rainbowStreakDamage = npc.GetProjectileDamage(ProjectileID.HallowBossRainbowStreak);
-            int lastingRainbowDamage = npc.GetProjectileDamage(ProjectileID.HallowBossLastingRainbow);
-            int sunDanceDamage = npc.GetProjectileDamage(ProjectileID.FairyQueenSunDance);
 
             // Rotation
             npc.rotation = npc.velocity.X * 0.005f;
@@ -1318,6 +1317,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int projectileDamageMultiplier = enraged ? 2 : 1;
 
             bool becomeVisible = true;
+
+            float moveSpeed = masterMode ? 0.6f : expertMode ? 0.55f : 0.5f;
+            float desiredVelocity = masterMode ? 14.4f : expertMode ? 13.2f : 12f;
+            float stopMovingDistance = 40f;
+            float despawnDistance = 6400f;
+            int lanceDamage = npc.GetProjectileDamage(ProjectileID.FairyQueenLance);
+            int rainbowStreakDamage = npc.GetProjectileDamage(ProjectileID.HallowBossRainbowStreak);
+            int lastingRainbowDamage = npc.GetProjectileDamage(ProjectileID.HallowBossLastingRainbow);
+            int sunDanceDamage = npc.GetProjectileDamage(ProjectileID.FairyQueenSunDance);
 
             lanceDamage *= projectileDamageMultiplier;
             rainbowStreakDamage *= projectileDamageMultiplier;
@@ -1530,7 +1538,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 phase = 2;
 
                             if (phaseIncrement % phaseDivisor == num54)
-                                phase = 6;
+                                phase = phase3 ? 4 : 6;
 
                             if (phaseIncrement % phaseDivisor == num54)
                                 phase = phase3 ? 7 : 6;
@@ -1836,7 +1844,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Increase durability.
                         calamityGlobalNPC.DR = shouldBeInPhase2ButIsStillInPhase1 ? 0.99f : (BossRushEvent.BossRushActive ? 0.99f : 0.575f);
 
-                        float extraPhaseTime = (masterMode ? 30 : expertMode ? 75 : 120) - reducedAttackCooldown;
+                        float extraPhaseTime = (masterMode ? 105 : expertMode ? 120 : 135) - reducedAttackCooldown;
                         Vector2 offset = new Vector2(0f, -100f);
                         Vector2 sunDanceSpawnLocation = npc.Center + offset;
                         NPCAimedTarget targetData = npc.GetTargetData();
@@ -1844,13 +1852,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.Distance(targetLocation + stopMovingLocation5) > stopMovingDistance)
                             npc.SimpleFlyMovement(npc.DirectionTo(targetLocation + stopMovingLocation5).SafeNormalize(Vector2.Zero) * desiredVelocity * 0.3f, moveSpeed * 0.7f);
 
-                        float phaseGateValue = phase3 ? (masterMode ? 60f : 120f) : 180f;
+                        float phaseGateValue = masterMode ? 120f : 180f;
                         int sunDanceGateValue = 60;
                         if ((int)npc.ai[1] % sunDanceGateValue == 0 && npc.ai[1] < phaseGateValue)
                         {
                             int sunDanceSpawnOffset = (int)npc.ai[1] / sunDanceGateValue;
                             int targetLocationX = ((targetData.Center.X > npc.Center.X) ? 1 : 0);
-                            float numSunDancePetals = phase3 ? (masterMode ? 12f : 9f) : expertMode ? 8f : 6f;
+                            float numSunDancePetals = masterMode ? 9f : expertMode ? 8f : 6f;
                             float sunDanceIncrement = 1f / numSunDancePetals;
                             for (float i = 0f; i < 1f; i += sunDanceIncrement)
                             {
@@ -1908,13 +1916,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 {
                                     numLances += 5f;
                                     distanceBetweenLances += 50f;
-
-                                    if (phase3)
-                                        num79 *= (Main.rand.NextBool() ? 1f : -1f);
-
                                     lanceWallLength *= (masterMode ? 0.75f : 0.5f);
                                 }
-
 
                                 switch (lanceWallType)
                                 {
@@ -1983,14 +1986,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 case 9:
                     {
                         float extraPhaseTime = 20 - reducedAttackCooldown;
-                        float startDashTime = phase3 ? 30f : 40f;
-                        float playDashSoundTime = phase3 ? 15f : 20f;
-                        float endDashTime = phase3 ? 65f : 90f;
+                        float startDashTime = 40f;
+                        float playDashSoundTime = 20f;
+                        float endDashTime = phase3 ? 75f : 90f;
                         int dashStartDistance = phase3 ? 750 : 550;
                         int dashVelocity = phase3 ? 80 : 50;
                         float dashAcceleration = phase3 ? 0.08f : 0.05f;
 
-                        takeDamage = !(npc.ai[1] >= 6f) || !(npc.ai[1] <= startDashTime);
                         int dashDirection = (npc.ai[0] != 8f ? 1 : -1);
                         AI_120_HallowBoss_DoMagicEffect(npc.Center, 5, Utils.GetLerpValue(startDashTime, endDashTime, npc.ai[1], clamped: true), npc);
 
@@ -2107,7 +2109,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     continue;
 
                                 int targetVelocityOffset = 90;
-                                Vector2 vector14 = targetCenter + targetData.Velocity * targetVelocityOffset;
+                                Vector2 vector14 = targetCenter + (oppositeLance ? -targetData.Velocity : targetData.Velocity) * targetVelocityOffset;
                                 Vector2 lanceSpawnLocation = targetCenter + vector13 * lanceSpawnOffset;
                                 if (lanceSpawnLocation.Distance(targetCenter) < lanceSpawnOffset)
                                 {
@@ -2137,7 +2139,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     lanceSpawnOffset = 100f;
                                     targetCenter = player.Center;
                                     targetVelocityOffset = 90;
-                                    Vector2 lanceDestination = targetCenter + player.velocity * targetVelocityOffset;
+                                    Vector2 lanceDestination = targetCenter + (oppositeLance ? -player.velocity : player.velocity) * targetVelocityOffset;
                                     lanceSpawnLocation = targetCenter + vector13 * lanceSpawnOffset;
                                     if (lanceSpawnLocation.Distance(targetCenter) < lanceSpawnOffset)
                                     {
@@ -2221,6 +2223,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         break;
                     }
+
                 case 13:
                     {
                         // Avoid cheap bullshit.
@@ -2305,9 +2308,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.dontTakeDamage = !takeDamage;
 
             if (phase3)
-                npc.defense = (int)(npc.defDefense * 0.5f);
+                npc.defense = (int)Math.Round(npc.defDefense * 0.8);
             else if (phase2)
-                npc.defense = (int)((float)npc.defDefense * 1.2f);
+                npc.defense = (int)Math.Round(npc.defDefense * 1.2);
             else
                 npc.defense = npc.defDefense;
 

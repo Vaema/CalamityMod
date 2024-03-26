@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Enemy
             if (Projectile.soundDelay == 0)
             {
                 Projectile.soundDelay = -1;
-                SoundEngine.PlaySound(SoundID.Item122, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item122, Projectile.Center);
             }
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] >= projTimer)

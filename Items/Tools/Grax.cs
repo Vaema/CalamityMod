@@ -29,8 +29,6 @@ namespace CalamityMod.Items.Tools
             Item.hammer = HammerPower;
             Item.axe = AxePower;
             Item.tileBoost += 5;
-
-            Item.scale = 1.5f;
             Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;

@@ -32,7 +32,6 @@ namespace CalamityMod.NPCs.Ravager
             AIType = -1;
             NPC.netAlways = true;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.HitSound = RavagerBody.HitSound;
             NPC.DeathSound = RavagerBody.LimbLossSound;

@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(PlasmaGrenade.ExplosionSound, Projectile.position);
+            SoundEngine.PlaySound(PlasmaGrenade.ExplosionSound, Projectile.Center);
             if (Projectile.Calamity().stealthStrike)
             {
                 if (Main.myPlayer == Projectile.owner)

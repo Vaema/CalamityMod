@@ -158,11 +158,11 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(BuffID.OnFire3, 240);
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int k = 0; k < 2; k++)
+                int maxProjectiles = 2;
+                for (int k = 0; k < maxProjectiles; k++)
                 {
-                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.InfernoFork, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-35, 36) * 0.2f, Main.rand.Next(-35, 36) * 0.2f, ModContent.ProjectileType<TinyFlare>(),
-                     (int)(Projectile.damage * 0.35), Projectile.knockBack * 0.35f, Main.myPlayer, 0f, 0f);
+                    Vector2 flareVelocity = Main.rand.NextVector2CircularEdge(3.5f, 3.5f) + Projectile.oldVelocity;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, flareVelocity, ModContent.ProjectileType<TinyFlare>(), (int)(Projectile.damage * 0.35), Projectile.knockBack * 0.35f, Main.myPlayer);
                 }
             }
         }

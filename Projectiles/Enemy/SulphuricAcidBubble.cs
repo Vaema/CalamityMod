@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item54, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item54, Projectile.Center);
 
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 60;

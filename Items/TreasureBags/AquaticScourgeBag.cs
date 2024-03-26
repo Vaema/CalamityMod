@@ -74,7 +74,6 @@ namespace CalamityMod.Items.TreasureBags
 
             // Equipment
             itemLoot.Add(ModContent.ItemType<AquaticEmblem>());
-            itemLoot.Add(ModContent.ItemType<DeepDiver>(), 10);
             itemLoot.Add(ModContent.ItemType<CorrosiveSpine>(), DropHelper.BagWeaponDropRateFraction);
             itemLoot.AddRevBagAccessories();
 

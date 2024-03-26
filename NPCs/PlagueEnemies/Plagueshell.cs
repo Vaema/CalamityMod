@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
@@ -56,7 +57,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
 
         public override void AI()
         {
-            NPC.damage = NPC.ai[0] == 3f ? (int)(NPC.defDamage * 1.8) : 0;
+            NPC.damage = NPC.ai[0] == 3f ? (int)Math.Round(NPC.defDamage * 1.4) : 0;
         }
 
         public override void HitEffect(NPC.HitInfo hit)

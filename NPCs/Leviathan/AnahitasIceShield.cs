@@ -31,7 +31,6 @@ namespace CalamityMod.NPCs.Leviathan
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.coldDamage = true;
             NPC.GetNPCDamage();

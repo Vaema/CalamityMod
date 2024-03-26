@@ -405,14 +405,18 @@ namespace CalamityMod.Items
             // Brain of Confusion, Black Belt and Master Ninja Gear have guaranteed dodges with a fixed cooldown.
             #region Guaranteed Dodge Tooltips
             string beltDodgeLine = "Grants the ability to dodge attacks\n" +
-                $"The dodge has a {BalancingConstants.BeltDodgeCooldown / 60} second cooldown which is shared with all other dodges and reflects";
+                "Attacks that deal less than 5% of your max life in damage will not be dodged\n" +
+                $"The dodge has a cooldown that ranges between {BalancingConstants.BeltDodgeCooldownMin / 60 } and {BalancingConstants.BeltDodgeCooldownMax / 60} seconds depending on the dodged attack's damage\n" +
+                "The cooldown is shared with all other dodges and reflects";
             if (item.type == ItemID.BlackBelt)
                 EditTooltipByNum(0, (line) => line.Text = beltDodgeLine);
             if (item.type == ItemID.MasterNinjaGear)
                 EditTooltipByNum(1, (line) => line.Text = beltDodgeLine);
 
             string brainDodgeLine = "Grants the ability to dodge attacks\n" +
-                $"The dodge has a {BalancingConstants.BrainDodgeCooldown / 60} second cooldown which is shared with all other dodges and reflects";
+                "Attacks that deal less than 5% of your max life in damage will not be dodged\n" +
+                $"The dodge has a cooldown that ranges between {BalancingConstants.BrainDodgeCooldownMin / 60} and {BalancingConstants.BrainDodgeCooldownMax / 60} seconds depending on the dodged attack's damage\n" +
+                "The cooldown is shared with all other dodges and reflects";
             if (item.type == ItemID.BrainOfConfusion)
                 EditTooltipByNum(0, (line) => line.Text = brainDodgeLine);
             #endregion
@@ -568,9 +572,13 @@ namespace CalamityMod.Items
             if (item.type == ItemID.FrozenShield)
                 EditTooltipByNum(1, (line) => line.Text = "Puts a shell around the owner when below 50% life that reduces damage by 15%");
 
-            // Ale and Sake rebalance.
+            // Ale and Sake rebalance and Alcohol Poisoning.
             if (item.type == ItemID.Ale || item.type == ItemID.Sake)
-                EditTooltipByNum(0, (line) => line.Text = "Increases melee damage by 10% and reduces defense by 5%");
+            {
+                EditTooltipByNum(0, (line) => line.Text = "Increases melee damage by 10% and reduces defense by 5%\n" + 
+                "Counts as an alcohol for Alcohol Poisoning\n" +
+                "Drinking more than 3 different alcohols might not end well with your liver");
+            }
 
             // Hellfire Treads buff.
             if (item.type == ItemID.HellfireTreads)

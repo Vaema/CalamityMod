@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Critters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -11,6 +12,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
 {
     public class NanodroidPlagueRed : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.Nanodroid.DisplayName");
         public override void SetStaticDefaults()
         {
@@ -18,6 +20,10 @@ namespace CalamityMod.NPCs.DraedonLabThings
             Main.npcFrameCount[NPC.type] = 8;
             NPCID.Sets.CountsAsCritter[NPC.type] = true;
             Main.npcCatchable[NPC.type] = true;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "_Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -74,7 +80,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D critterTexture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/DraedonLabThings/NanodroidPlagueRed_Glow").Value;
+            Texture2D glowmask = GlowTexture.Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             spriteBatch.Draw(critterTexture, drawPosition, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, direction, 0f);

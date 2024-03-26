@@ -55,12 +55,16 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Tiles.FurnitureAuric;
+using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
 using CalamityMod.Walls.DraedonStructures;
 using CalamityMod.World;
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent;
@@ -116,7 +120,6 @@ namespace CalamityMod.NPCs
         public bool IncreasedColdEffects_CryoStone = false;
 
         // Transformer effect
-
         public bool IncreasedElectricityEffects_Transformer = false;
 
         // Fireball, Cinnamon Roll and Hellfire Treads effects
@@ -152,6 +155,12 @@ namespace CalamityMod.NPCs
         public const float CatchUpDistance200Tiles = 3200f;
         public const float CatchUpDistance350Tiles = 5600f;
 
+        /// <summary>
+        /// Destroyer laser colors, used for telegraphs
+        /// None = -1, Red = 0, Green = 1, Cyan = 2
+        /// </summary>
+        public int destroyerLaserColor = -1;
+
         // Boss Zen distance
         private const float BossZenDistance = 6400f;
 
@@ -160,11 +169,17 @@ namespace CalamityMod.NPCs
 
         // Used to nerf Master Mode enemies
         public const double MasterModeEnemyHPMultiplier = 0.75;
-        public const double MasterModeEnemyDamageMultiplier = 0.85;
+        public const double MasterModeEnemyDamageMultiplier = 0.9;
 
         // Used to nerf Expert and Master Mode enemies
         public const float ExpertModeEnemyKnockbackMultiplier = 0.05f;
         public const float MasterModeEnemyKnockbackMultiplier = 0.1f;
+
+        // HP and damage multipliers for the Early Hardmode Progression Rework
+        public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic = 0.8;
+        public const double EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic = 0.9;
+        public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert = 0.9;
+        public const double EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert = 0.95;
 
         // Used to increase coin drops in Normal Mode
         private const double NPCValueMultiplier_NormalCalamity = 1.5;
@@ -391,6 +406,8 @@ namespace CalamityMod.NPCs
             myClone.canBreakPlayerDefense = canBreakPlayerDefense;
 
             myClone.miscDefenseLoss = miscDefenseLoss;
+
+            myClone.destroyerLaserColor = destroyerLaserColor;
 
             myClone.dashImmunityTime = new int[maxPlayerImmunities];
             for (int i = 0; i < maxPlayerImmunities; ++i)
@@ -656,9 +673,9 @@ namespace CalamityMod.NPCs
                 Item heldItem = Main.player[owner].ActiveItem();
                 int totalDamage = (int)Main.player[owner].GetTotalDamage<SummonDamageClass>().ApplyTo(150f);
                 bool forbidden = Main.player[owner].head == ArmorIDs.Head.AncientBattleArmor && Main.player[owner].body == ArmorIDs.Body.AncientBattleArmor && Main.player[owner].legs == ArmorIDs.Legs.AncientBattleArmor;
-                bool reducedNerf = Main.player[owner].Calamity().fearmongerSet || (forbidden && heldItem.CountsAsClass<MagicDamageClass>());
+                bool negateNerf = Main.player[owner].Calamity().fearmongerSet || (forbidden && heldItem.CountsAsClass<MagicDamageClass>());
 
-                double summonNerfMult = reducedNerf ? 0.75 : 0.5;
+                double summonNerfMult = negateNerf ? 1 : 0.75;
                 if (!Main.player[owner].Calamity().profanedCrystalBuffs)
                 {
                     if (heldItem.type > ItemID.None)
@@ -1106,6 +1123,13 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Set Defaults
+        public override void SetStaticDefaults()
+        {
+            // Set Plantera to be able to update oldPos[x]
+            // This is only used for her Rev+ AI charge attacks
+            NPCID.Sets.TrailingMode[NPCID.Plantera] = 1;
+        }
+
         public override void SetDefaults(NPC npc)
         {
             ShouldFallThroughPlatforms = false;
@@ -1196,7 +1220,11 @@ namespace CalamityMod.NPCs
                 case NPCID.CultistDragonBody4:
                 case NPCID.CultistDragonHead:
                 case NPCID.CultistDragonTail:
-                    npc.lifeMax = 40000;
+                    npc.lifeMax = 20000;
+                    break;
+
+                case NPCID.AncientCultistSquidhead:
+                    npc.lifeMax = 4000;
                     break;
 
                 case NPCID.DukeFishron:
@@ -1314,7 +1342,7 @@ namespace CalamityMod.NPCs
                 if (npc.type == NPCID.MoonLordCore)
                     npc.npcSlots = 36f;
             }
-            else if (npc.type == NPCID.CultistBoss || (npc.type >= NPCID.CultistDragonHead && npc.type <= NPCID.CultistDragonTail))
+            else if (npc.type == NPCID.CultistBoss || (npc.type >= NPCID.CultistDragonHead && npc.type <= NPCID.CultistDragonTail) || npc.type == NPCID.AncientCultistSquidhead)
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
 
@@ -1339,9 +1367,7 @@ namespace CalamityMod.NPCs
             }
             else if (npc.type == NPCID.GolemHeadFree)
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 2D);
-                npc.width = 88;
-                npc.height = 90;
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.7);
                 npc.dontTakeDamage = false;
             }
             else if (npc.type == NPCID.HallowBoss)
@@ -1466,11 +1492,6 @@ namespace CalamityMod.NPCs
             else if ((npc.type == NPCID.Wraith || npc.type == NPCID.Mimic || npc.type == NPCID.Reaper || npc.type == NPCID.PresentMimic || npc.type == NPCID.SandElemental || npc.type == NPCID.Ghost) && CalamityWorld.LegendaryMode)
             {
                 npc.knockBackResist = 0f;
-            }
-
-            if (CalamityLists.revengeanceLifeStealExceptionList.Contains(npc.type))
-            {
-                npc.canGhostHeal = false;
             }
         }
         #endregion
@@ -2358,6 +2379,12 @@ namespace CalamityMod.NPCs
                     canBreakPlayerDefense = true;
                     break;
 
+                // Fix drawing issues with Golem's Free Head
+                case NPCID.GolemHeadFree:
+                    npc.width = 88;
+                    npc.height = 90;
+                    break;
+
                 // Make Core hitbox bigger and reduce HP
                 case NPCID.MartianSaucerCore:
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.6);
@@ -2378,7 +2405,7 @@ namespace CalamityMod.NPCs
                     npc.dontTakeDamage = true;
                     break;
 
-                // Make Fishron's Bubbles immune to damage in Rev+ Master Mode
+                // Make Fishron and Anahita Bubbles immune to damage in Rev+ Master Mode
                 case NPCID.DetonatingBubble:
                     npc.dontTakeDamage = Main.masterMode && CalamityWorld.revenge;
                     break;
@@ -2394,8 +2421,9 @@ namespace CalamityMod.NPCs
                 {
                     if (CalamityLists.DestroyerIDs.Contains(npc.type) || npc.type == NPCID.Probe || CalamityLists.SkeletronPrimeIDs.Contains(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer)
                     {
-                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.8);
-                        npc.damage = (int)Math.Round(npc.damage * 0.8);
+                        double multiplier = Main.expertMode ? EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert : EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic;
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * multiplier);
+                        npc.damage = (int)Math.Round(npc.damage * multiplier);
                         npc.defDamage = npc.damage;
                     }
                 }
@@ -2403,8 +2431,9 @@ namespace CalamityMod.NPCs
                 {
                     if (CalamityLists.DestroyerIDs.Contains(npc.type) || npc.type == NPCID.Probe || CalamityLists.SkeletronPrimeIDs.Contains(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer)
                     {
-                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.9);
-                        npc.damage = (int)Math.Round(npc.damage * 0.9);
+                        double multiplier = Main.expertMode ? EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert : EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic;
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * multiplier);
+                        npc.damage = (int)Math.Round(npc.damage * multiplier);
                         npc.defDamage = npc.damage;
                     }
                 }
@@ -2416,6 +2445,12 @@ namespace CalamityMod.NPCs
                 if (npc.type == NPCID.ZombieMushroom || npc.type == NPCID.ZombieMushroomHat || npc.type == NPCID.AnomuraFungus || npc.type == NPCID.FungiBulb || npc.type == NPCID.MushiLadybug)
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
+                    npc.damage = (int)Math.Round(npc.damage * 0.5);
+                    npc.defDamage = npc.damage;
+                }
+
+                if (npc.type == NPCID.FungiSpore)
+                {
                     npc.damage = (int)Math.Round(npc.damage * 0.5);
                     npc.defDamage = npc.damage;
                 }
@@ -3157,9 +3192,13 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Strike NPC
-        // Incoming defense to this function is already affected by the vanilla debuffs Ichor (-15) and Betsy's Curse (-40), and cannot be below zero.
+        // Incoming defense to this function is already affected by the vanilla debuffs Ichor (-10) and Betsy's Curse (-40), and cannot be below zero.
         public override void ModifyIncomingHit(NPC npc, ref NPC.HitModifiers modifiers)
         {
+            // Reduce ichor debuff defense reduction from -15 to -10.
+            if (npc.ichor)
+                modifiers.Defense.Flat += 5;
+
             // Apply armor penetration based on Calamity debuffs. The hit system manages the sequencing.
             // Ozzatron 05JAN2023: fixed doubled armor pen, this time for real
             int defenseReduction = (marked > 0 && DR <= 0f ? MarkedforDeath.DefenseReduction : 0) + (wither > 0 ? WitherDebuff.DefenseReduction : 0) + miscDefenseLoss;
@@ -3175,13 +3214,7 @@ namespace CalamityMod.NPCs
             if (CalamityLists.AstrumDeusIDs.Contains(npc.type))
                 modifiers.FinalDamage *= 1f - MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / (newAI[0] != 0f ? 300f : 600f), 0f, 1f));
             if (eaterofWorldsResist)
-                modifiers.FinalDamage *= 0.01f;
-
-            // Large Deus worm takes reduced damage in order to last a long enough time.
-            // TODO -- WHY DOES DEUS HAVE THIS UNDOCUMENTED MULTIPLIER HERE??
-            // this should be in ModifyHitNPC for deus himself
-            if (CalamityLists.AstrumDeusIDs.Contains(npc.type) && newAI[0] == 0f)
-                modifiers.FinalDamage *= 0.8f;
+                modifiers.FinalDamage *= 0.05f;
         }
 
         // Directly modifies final damage incoming to an NPC based on their DR (damage reduction) stat added by Calamity.
@@ -3607,7 +3640,7 @@ namespace CalamityMod.NPCs
             // Adjust vanilla AI in Classic, Expert and Master
             // Fair contact damage and a few Expert/Master AI edits happen here
             // Deerclops doesn't deserve love so he's not here
-            else
+            else if (!CalamityMod.ExternalFlag_DisableNonRevBossAI)
             {
                 switch (npc.type)
                 {
@@ -3685,7 +3718,7 @@ namespace CalamityMod.NPCs
                     case NPCID.DukeFishron:
                         return DukeFishronAI.VanillaDukeFishronAI(npc, Mod);
 
-                    /*case NPCID.CultistBoss:
+                    case NPCID.CultistBoss:
                     case NPCID.CultistBossClone:
                         return CultistAI.VanillaCultistAI(npc, Mod);
                     case NPCID.AncientLight:
@@ -3693,7 +3726,7 @@ namespace CalamityMod.NPCs
                     case NPCID.AncientDoom:
                         return CultistAI.VanillaAncientDoomAI(npc, Mod);
 
-                    case NPCID.MoonLordCore:
+                    /*case NPCID.MoonLordCore:
                     case NPCID.MoonLordHand:
                     case NPCID.MoonLordHead:
                     case NPCID.MoonLordFreeEye:
@@ -4376,6 +4409,15 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            if (npc.type == NPCID.QueenSlimeMinionBlue)
+                return QueenSlimeAI.QueenSlimeCrystalSlimeAI(npc, Mod);
+
+            if (npc.type == NPCID.QueenSlimeMinionPink)
+                return QueenSlimeAI.QueenSlimeBouncySlimeAI(npc, Mod);
+
+            if (npc.type == NPCID.FungiBulb)
+                return RevengeanceAndDeathAI.BuffedPlantAI(npc, Mod);
+
             if (npc.type == NPCID.FungiSpore || npc.type == NPCID.Spore)
                 return RevengeanceAndDeathAI.BuffedSporeAI(npc, Mod);
 
@@ -4738,6 +4780,105 @@ namespace CalamityMod.NPCs
             // Fair contact damage
             switch (npc.type)
             {
+                case NPCID.DD2Betsy:
+                    npc.damage = npc.ai[0] == 2f ? npc.defDamage : 0;
+                    break;
+
+                case NPCID.DD2WyvernT1:
+                case NPCID.DD2WyvernT2:
+                case NPCID.DD2WyvernT3:
+                    npc.damage = npc.ai[0] == 2f ? npc.defDamage : 0;
+                    break;
+
+                case NPCID.DD2GoblinT1:
+                case NPCID.DD2GoblinT2:
+                case NPCID.DD2GoblinT3:
+                    npc.damage = (npc.ai[0] > 0f && npc.ai[0] < 24f) ? npc.defDamage : 0;
+                    break;
+
+                case NPCID.PumpkingBlade:
+                    npc.damage = (npc.ai[2] == 2f || npc.ai[2] == 5f) ? npc.defDamage : 0;
+                    break;
+
+                case NPCID.Mothron:
+                    npc.damage = npc.ai[0] == 3.2f ? (int)Math.Round(npc.defDamage * 1.3) : npc.ai[0] == 2f ? (int)Math.Round(npc.defDamage * 0.5) : 0;
+                    break;
+
+                case NPCID.MothronSpawn:
+                    npc.damage = npc.ai[0] == 2.1f ? npc.defDamage : 0;
+                    break;
+
+                case NPCID.Flocko:
+                    npc.damage = npc.ai[0] > 0f ? npc.defDamage : 0;
+                    break;
+
+                case NPCID.Mimic:
+                case NPCID.IceMimic:
+                case NPCID.PresentMimic:
+                    npc.damage = (npc.ai[0] == 0f || npc.velocity.Y == 0f) ? 0 : npc.defDamage;
+                    break;
+
+                case NPCID.BigMimicCorruption:
+                case NPCID.BigMimicCrimson:
+                case NPCID.BigMimicHallow:
+                case NPCID.BigMimicJungle:
+                    npc.damage = npc.ai[0] == 3f ? 0 : npc.defDamage;
+                    
+                    // Spend less time in closed state
+                    if (npc.ai[0] == 3f)
+                        npc.ai[1] += 0.5f;
+
+                    break;
+
+                case NPCID.DeadlySphere:
+                    npc.damage = npc.ai[0] == 1f ? npc.defDamage : 0;
+                    break;
+
+                case NPCID.NebulaHeadcrab:
+                    npc.damage = npc.ai[0] == 5f ? npc.defDamage : 0;
+                    break;
+
+                case NPCID.MartianDrone:
+                case NPCID.SolarCorite:
+                    npc.damage = (npc.ai[0] == 2f || npc.ai[0] == 3f) ? npc.defDamage : 0;
+                    break;
+
+                case NPCID.ArmedTorchZombie:
+                case NPCID.ArmedZombie:
+                case NPCID.ArmedZombieCenx:
+                case NPCID.ArmedZombieEskimo:
+                case NPCID.ArmedZombiePincussion:
+                case NPCID.ArmedZombieSlimed:
+                case NPCID.ArmedZombieSwamp:
+                case NPCID.ArmedZombieTwiggy:
+                case NPCID.Crawdad:
+                case NPCID.Crawdad2:
+                    npc.damage = npc.ai[2] == 0f ? 0 : (int)Math.Round(npc.defDamage * 1.4);
+                    break;
+
+                case NPCID.GraniteFlyer:
+                    npc.damage = npc.ai[0] == -1f ? 0 : npc.defDamage;
+                    break;
+
+                case NPCID.GraniteGolem:
+                    npc.damage = npc.ai[2] < 0f ? 0 : npc.defDamage;
+                    break;
+
+                case NPCID.Squid:
+                case NPCID.BlueJellyfish:
+                case NPCID.GreenJellyfish:
+                case NPCID.PinkJellyfish:
+                case NPCID.BloodJelly:
+                case NPCID.FungoFish:
+                    float damagingVelocity = npc.type == NPCID.GreenJellyfish ? 3.6f : 2.8f;
+                    npc.damage = (npc.dontTakeDamage || npc.velocity.Length() > damagingVelocity) ? npc.defDamage : 0;
+                    break;
+
+                case NPCID.Herpling:
+                case NPCID.Derpling:
+                    npc.damage = (npc.velocity.Y == 0f || npc.velocity.Length() < 3f) ? 0 : npc.defDamage;
+                    break;
+
                 case NPCID.BlueSlime:
                 case NPCID.MotherSlime:
                 case NPCID.LavaSlime:
@@ -4774,16 +4915,16 @@ namespace CalamityMod.NPCs
 
                 case NPCID.GiantShelly:
                 case NPCID.GiantShelly2:
-                    npc.damage = npc.ai[0] == 3f ? (int)(npc.defDamage * 1.35) : 0;
+                    npc.damage = npc.ai[0] == 3f ? (int)Math.Round(npc.defDamage * 1.2) : 0;
                     break;
 
                 case NPCID.GiantTortoise:
                 case NPCID.IceTortoise:
-                    npc.damage = npc.ai[0] == 3f ? (int)(npc.defDamage * 1.8) : 0;
+                    npc.damage = npc.ai[0] == 3f ? (int)Math.Round(npc.defDamage * 1.4) : 0;
                     break;
 
                 case NPCID.SolarSroller:
-                    npc.damage = npc.ai[0] == 6f ? (int)(npc.defDamage * 1.4) : 0;
+                    npc.damage = npc.ai[0] == 6f ? (int)Math.Round(npc.defDamage * 1.2) : 0;
                     break;
 
                 default:
@@ -5002,6 +5143,84 @@ namespace CalamityMod.NPCs
                 if (pearlAura > 0)
                     npc.velocity *= 0.9f;
             }
+
+            // Auric Ore/Repulsers reject Town NPCs and dummies
+            if ((NPCID.Sets.ActsLikeTownNPC[npc.type] || npc.townNPC) && !npc.dontTakeDamage || npc.type == NPCType<SuperDummyNPC>())
+            {
+                int auricOreID = TileType<AuricOre>();
+                int auricRepulserID = TileType<AuricRepulserPanelTile>();
+
+                // Get a list of tiles near the npc
+                // This is just Collision.GetEntityTiles but with a larger detection square because the sheer speed from auric boosts causes the detection to fail at higher speeds
+                List<Point> EdgeTiles = new List<Point>();
+                int extraDist = (int)(8 * npc.velocity.Length() / 6) + 1;
+                int left = (int)npc.position.X - extraDist;
+                int up = (int)npc.position.Y - extraDist;
+                int right = (int)npc.Right.X + extraDist;
+                int down = (int)npc.Bottom.Y + extraDist;
+                if (left % 16 == 0)
+                {
+                    left--;
+                }
+
+                if (up % 16 == 0)
+                {
+                    up--;
+                }
+
+                if (right % 16 == 0)
+                {
+                    right++;
+                }
+
+                if (down % 16 == 0)
+                {
+                    down++;
+                }
+
+                int width = right / 16 - left / 16;
+                int height = down / 16 - up / 16;
+                left /= 16;
+                up /= 16;
+                for (int i = left; i <= left + width; i++)
+                {
+                    EdgeTiles.Add(new Point(i, up));
+                    EdgeTiles.Add(new Point(i, up + height));
+                }
+
+                for (int j = up; j < up + height; j++)
+                {
+                    EdgeTiles.Add(new Point(left, j));
+                    EdgeTiles.Add(new Point(left + width, j));
+                }
+                foreach (Point touchedTile in EdgeTiles)
+                {
+                    Tile tile = Framing.GetTileSafely(touchedTile);
+                    if (!tile.HasTile || !tile.HasUnactuatedTile)
+                        continue;
+                    if (tile.TileType != auricOreID && tile.TileType != auricRepulserID)
+                        continue;
+
+                    // Force Auric Ore to animate with its crackling electricity
+                    if (tile.TileType == auricOreID)
+                    {
+                        AuricOre.Animate = true;
+                    }
+
+                    var yeetVec = Vector2.Normalize(npc.Center - touchedTile.ToWorldCoordinates());
+                    npc.velocity += yeetVec * 20f;
+                    // Speed must be clamped or they start clipping through tiles very easily
+                    float clampedSpeed = MathHelper.Clamp(npc.velocity.Length(), -40, 40);
+                    npc.velocity = npc.velocity.SafeNormalize(Vector2.Zero) * clampedSpeed;
+                    if (tile.TileType == auricOreID)
+                    {
+                        npc.SimpleStrikeNPC((int)(npc.lifeMax * 0.2f), 0);
+                        npc.AddBuff(BuffID.Electrified, 300);
+                    }
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), npc.Center);
+                    break;
+                }
+            }
         }
         #endregion
 
@@ -5024,28 +5243,58 @@ namespace CalamityMod.NPCs
             {
                 case NPCID.VileSpitEaterOfWorlds:
                 case NPCID.VileSpit:
-                    target.AddBuff(BuffType<BrainRot>(), 240);
+
+                    target.AddBuff(BuffType<BrainRot>(), 180);
+                    if (Main.rand.NextBool(10))
+                        target.AddBuff(BuffID.Weak, 3600);
+                    else if (Main.rand.NextBool(5))
+                        target.AddBuff(BuffID.Weak, 720);
+                    else if (Main.rand.NextBool(2))
+                        target.AddBuff(BuffID.Weak, 120);
+                    else
+                        target.AddBuff(BuffID.Weak, 60);
+
                     break;
 
                 case NPCID.ShadowFlameApparition:
-                    target.AddBuff(BuffType<Shadowflame>(), 180);
+                    target.AddBuff(BuffType<Shadowflame>(), 120);
                     break;
+
                 case NPCID.ChaosBall:
                     if (Main.hardMode || CalamityPlayer.areThereAnyDamnBosses)
-                        target.AddBuff(BuffType<Shadowflame>(), 180);
+                        target.AddBuff(BuffType<Shadowflame>(), 120);
+                    break;
+
+                case NPCID.EyeofCthulhu:
+                    if (npc.ai[0] > 2f)
+                        target.AddBuff(BuffID.Bleeding, 180);
+                    break;
+
+                case NPCID.WallofFlesh:
+                    target.AddBuff(BuffID.Bleeding, 300);
                     break;
 
                 case NPCID.Spazmatism:
                     if (npc.ai[0] != 1f && npc.ai[0] != 2f && npc.ai[0] != 0f)
-                        target.AddBuff(BuffID.Bleeding, 600);
+                        target.AddBuff(BuffID.Bleeding, 300);
+                    break;
+
+                case NPCID.SkeletronPrime:
+                    if (npc.ai[1] == 1f || npc.ai[1] == 2f)
+                        target.AddBuff(BuffID.Bleeding, 300);
+                    break;
+
+                case NPCID.PrimeSaw:
+                    target.AddBuff(BuffID.Bleeding, 180);
                     break;
 
                 case NPCID.Plantera:
                     if (npc.life < npc.lifeMax / 2)
-                        target.AddBuff(BuffID.Poisoned, 600);
+                        target.AddBuff(BuffID.Poisoned, 300);
                     break;
+
                 case NPCID.PlanterasTentacle:
-                    target.AddBuff(BuffID.Poisoned, 300);
+                    target.AddBuff(BuffID.Poisoned, 120);
                     break;
 
                 case NPCID.Golem:
@@ -5059,34 +5308,25 @@ namespace CalamityMod.NPCs
                     target.AddBuff(BuffType<ArmorCrunch>(), 240);
                     break;
 
-                case NPCID.AncientDoom:
-                    target.AddBuff(BuffType<Shadowflame>(), 180);
-                    break;
                 case NPCID.AncientLight:
                     target.AddBuff(BuffType<HolyFlames>(), 120);
                     break;
 
                 case NPCID.HallowBoss:
-                    target.AddBuff(Main.dayTime ? BuffType<HolyFlames>() : BuffType<Nightwither>(), 320);
+                    target.AddBuff(Main.dayTime ? BuffType<HolyFlames>() : BuffType<Nightwither>(), 240);
                     break;
 
                 case NPCID.BloodNautilus:
-                    target.AddBuff(BuffType<BurningBlood>(), 480);
+                    target.AddBuff(BuffType<BurningBlood>(), 300);
                     break;
 
                 case NPCID.GoblinShark:
                 case NPCID.BloodEelHead:
-                    target.AddBuff(BuffType<BurningBlood>(), 300);
-                    break;
-                case NPCID.BloodEelBody:
                     target.AddBuff(BuffType<BurningBlood>(), 180);
-                    break;
-                case NPCID.BloodEelTail:
-                    target.AddBuff(BuffType<BurningBlood>(), 120);
                     break;
 
                 case NPCID.Lavabat:
-                    target.AddBuff(BuffID.OnFire, 180);
+                    target.AddBuff(BuffID.OnFire, 120);
                     break;
 
                 case NPCID.RuneWizard:
@@ -5145,7 +5385,7 @@ namespace CalamityMod.NPCs
                 switch (npc.type)
                 {
                     case NPCID.Hellbat:
-                        target.AddBuff(BuffID.OnFire, 120);
+                        target.AddBuff(BuffID.OnFire, 60);
                         break;
 
                     default:
@@ -6150,21 +6390,21 @@ namespace CalamityMod.NPCs
                 return null;
 
             if (Main.LocalPlayer.Calamity().trippy || (npc.type == NPCID.KingSlime && CalamityWorld.LegendaryMode && CalamityWorld.revenge))
-                return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, npc.alpha);
+                return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
             if (npc.type == NPCID.QueenBee && Main.zenithWorld)
             {
                 if (npc.life / (float)npc.lifeMax < 0.5f)
-                    return new Color(0, 255, 0, npc.alpha);
+                    return new Color(0, 255, 0, 255 - npc.alpha);
                 else
-                    return new Color(255, 0, 0, npc.alpha);
+                    return new Color(255, 0, 0, 255 - npc.alpha);
             }
 
             if (npc.HasBuff<Enraged>())
-                return new Color(200, 50, 50, npc.alpha);
+                return new Color(200, 50, 50, 255 - npc.alpha);
 
             if (npc.Calamity().kamiFlu > 0 && !CalamityLists.kamiDebuffColorImmuneList.Contains(npc.type))
-                return new Color(51, 197, 108, npc.alpha);
+                return new Color(51, 197, 108, 255 - npc.alpha);
 
             if (npc.type == NPCID.VileSpit || npc.type == NPCID.VileSpitEaterOfWorlds)
                 return new Color(150, 200, 0, npc.alpha);
@@ -6251,23 +6491,23 @@ namespace CalamityMod.NPCs
                     if (npc.shadowFlame)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.ShadowFlame].Value);
                     if (npc.oiled)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Oiled].Value);
+                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Oiled").Value);
                     if (npc.javelined)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.BoneJavelin].Value);
                     if (npc.daybreak)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Daybreak].Value);
+                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Daybroken").Value);
                     if (npc.celled)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.StardustMinionBleed].Value);
+                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Celled").Value);
                     if (npc.dryadBane)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.DryadsWardDebuff].Value);
+                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/DryadsBane").Value);
                     if (npc.dryadWard)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.DryadsWard].Value);
                     if (npc.soulDrain && npc.realLife == -1)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.SoulDrain].Value);
                     if (npc.onFire3) // Hellfire
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.OnFire3].Value);
+                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Hellfire").Value);
                     if (npc.onFrostBurn2) // Frostbite
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Frostburn2].Value);
+                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/Frostbite").Value);
                     if (npc.tentacleSpiked)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.TentacleSpike].Value);
 
@@ -6287,7 +6527,7 @@ namespace CalamityMod.NPCs
                     if (npc.stinky)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Stinky].Value);
                     if (npc.betsysCurse)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.BetsysCurse].Value);
+                        currentDebuffs.Add(Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/BetsysCurse").Value);
                     if (npc.dripping)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Wet].Value);
                     if (npc.drippingSlime)
@@ -6360,6 +6600,16 @@ namespace CalamityMod.NPCs
                 Vector2 eyesDrawPosition = headDrawPosition - npc.scale * new Vector2(1f, 12f);
                 Rectangle eyesFrame = new Rectangle(0, 0, TextureAssets.Golem[1].Value.Width, TextureAssets.Golem[1].Value.Height / 2);
                 spriteBatch.Draw(TextureAssets.Golem[1].Value, eyesDrawPosition, eyesFrame, eyeColor, 0f, eyesFrame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
+
+                // Draw the glowmasks.
+                int frameCounter = (int)npc.frameCounter / 4;
+                Rectangle frame = TextureAssets.Extra[106].Value.Frame(1, 8);
+                frame.Y += frame.Height * 2 * frameCounter + npc.frame.Y;
+                Rectangle glowFrame = frame;
+                spriteBatch.Draw(TextureAssets.Extra[106].Value, eyesDrawPosition, glowFrame, eyeColor, 0f, glowFrame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
+                frame = npc.frame;
+                Rectangle glowFrame2 = frame;
+                spriteBatch.Draw(TextureAssets.Extra[107].Value, eyesDrawPosition, glowFrame2, eyeColor, 0f, glowFrame2.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
                 return false;
             }
 
@@ -6367,41 +6617,119 @@ namespace CalamityMod.NPCs
             {
                 SpriteEffects spriteEffects = SpriteEffects.None;
                 if (npc.spriteDirection == 1)
-                {
                     spriteEffects = SpriteEffects.FlipHorizontally;
-                }
 
-                Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[npc.type].Value.Width / 2, TextureAssets.Npc[npc.type].Value.Height / Main.npcFrameCount[npc.type] / 2);
-                Color rainbow = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, 0);
+                Color rainbow = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
                 Color alphaColor = npc.GetAlpha(rainbow);
                 float RGBMult = 0.99f;
                 alphaColor.R = (byte)(alphaColor.R * RGBMult);
                 alphaColor.G = (byte)(alphaColor.G * RGBMult);
                 alphaColor.B = (byte)(alphaColor.B * RGBMult);
                 alphaColor.A = (byte)(alphaColor.A * RGBMult);
-                float xOffset = screenPos.X + npc.width / 2 - TextureAssets.Npc[npc.type].Value.Width * npc.scale / 2f + halfSizeTexture.X * npc.scale;
-                float yOffset = screenPos.Y + npc.height - TextureAssets.Npc[npc.type].Value.Height * npc.scale / Main.npcFrameCount[npc.type] + 4f + halfSizeTexture.Y * npc.scale + npc.gfxOffY;
-                for (int i = 0; i < 4; i++)
+                int totalAfterimages = Main.player[Main.myPlayer].Calamity().trippyLevel == 3 ? 16 : (Main.player[Main.myPlayer].Calamity().trippyLevel == 2 ? 12 : 4);
+                for (int i = 0; i < totalAfterimages; i++)
                 {
-                    Vector2 position9 = npc.position;
-                    float num214 = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
-                    float num215 = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
+                    Vector2 position = npc.position;
+                    float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[Main.myPlayer].Center.X);
+                    float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[Main.myPlayer].Center.Y);
 
-                    if (i == 0 || i == 2)
-                        position9.X = Main.LocalPlayer.Center.X + num214;
-                    else
-                        position9.X = Main.LocalPlayer.Center.X - num214;
+                    float smallDistanceMult = 0.48f;
+                    float largeDistanceMult = 1.33f;
+                    bool whatTheFuck = Main.player[Main.myPlayer].Calamity().trippyLevel == 3;
 
-                    position9.X -= npc.width / 2;
+                    switch (i)
+                    {
+                        case 0:
+                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
+                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                            break;
 
-                    if (i == 0 || i == 1)
-                        position9.Y = Main.LocalPlayer.Center.Y + num215;
-                    else
-                        position9.Y = Main.LocalPlayer.Center.Y - num215;
+                        case 1:
+                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
+                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY;
+                            break;
 
-                    position9.Y -= npc.height / 2;
+                        case 2:
+                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX;
+                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                            break;
 
-                    Main.spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position9.X - xOffset, position9.Y - yOffset), new Microsoft.Xna.Framework.Rectangle?(npc.frame), alphaColor, npc.rotation, halfSizeTexture, npc.scale, spriteEffects, 0f);
+                        case 3:
+                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX;
+                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY;
+                            break;
+
+                        case 4: // 1 o'clock position
+                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
+                            break;
+
+                        case 5: // 4 o'clock position
+                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
+                            break;
+
+                        case 6: // 7 o'clock position
+                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
+                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
+                            break;
+
+                        case 7: // 10 o'clock position
+                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
+                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
+                            break;
+
+                        case 8: // 11 o'clock position
+                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            break;
+
+                        case 9: // 2 o'clock position
+                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.Y = Main.player[Main.myPlayer].Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
+                            break;
+
+                        case 10: // 5 o'clock position
+                            position.X = Main.player[Main.myPlayer].Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
+                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            break;
+
+                        case 11: // 8 o'clock position
+                            position.X = Main.player[Main.myPlayer].Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
+                            position.Y = Main.player[Main.myPlayer].Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
+                            break;
+
+                        case 12:
+                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX * 0.5f;
+                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY * 0.5f;
+                            break;
+
+                        case 13:
+                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX * 0.5f;
+                            position.Y = Main.player[Main.myPlayer].Center.Y - distanceFromTargetY * 0.5f;
+                            break;
+
+                        case 14:
+                            position.X = Main.player[Main.myPlayer].Center.X + distanceFromTargetX * 0.5f;
+                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY * 0.5f;
+                            break;
+
+                        case 15:
+                            position.X = Main.player[Main.myPlayer].Center.X - distanceFromTargetX * 0.5f;
+                            position.Y = Main.player[Main.myPlayer].Center.Y + distanceFromTargetY * 0.5f;
+                            break;
+
+
+                        default:
+                            break;
+                    }
+
+                    position.X -= npc.width / 2;
+                    position.Y -= npc.height / 2;
+
+                    Vector2 halfSize = npc.frame.Size() / 2;
+
+                    spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)TextureAssets.Npc[npc.type].Width() * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)TextureAssets.Npc[npc.type].Height() * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, alphaColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
                 }
             }
             else
@@ -6469,6 +6797,10 @@ namespace CalamityMod.NPCs
 
         public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+
             // Energy shield
             if (npc.type == NPCID.CultistBoss || npc.type == NPCID.CultistBossClone)
             {
@@ -6501,7 +6833,7 @@ namespace CalamityMod.NPCs
                 intensity *= intensityAndOpacityMult;
                 opacity *= intensityAndOpacityMult;
 
-                Texture2D forcefieldTexture = Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/ForcefieldTexture").Value;
+                Texture2D forcefieldTexture = SupremeCalamitas.SupremeCalamitas.ForcefieldTexture.Value;
 
                 if (npc.type == NPCID.CultistBoss)
                     GameShaders.Misc["CalamityMod:SupremeShield"].SetShaderTexture(Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/EternityStreak"));
@@ -6528,7 +6860,161 @@ namespace CalamityMod.NPCs
                 spriteBatch.ExitShaderRegion();
             }
 
-            if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
+            // Destroyer drawing and laser telegraphs
+            else if (CalamityLists.DestroyerIDs.Contains(npc.type))
+            {
+                Texture2D npcTexture = TextureAssets.Npc[npc.type].Value;
+                int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
+
+                Vector2 halfSize = npc.frame.Size() / 2;
+                SpriteEffects spriteEffects = SpriteEffects.None;
+                if (npc.spriteDirection == 1)
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+
+                if (npc.type == NPCID.TheDestroyerBody)
+                {
+                    if (npc.ai[2] == 0f)
+                        npc.frame.Y = 0;
+                    else
+                        npc.frame.Y = frameHeight;
+                }
+
+                Color segmentDrawColor = npc.GetAlpha(drawColor);
+
+                // Check if Destroyer is behind tiles and, if so, how much of the segment is behind tiles and adjust color accordingly
+                int x = (int)((npc.position.X - 8f) / 16f);
+                int x2 = (int)((npc.position.X + npc.width + 8f) / 16f);
+                int y = (int)((npc.position.Y - 8f) / 16f);
+                int y2 = (int)((npc.position.Y + npc.height + 8f) / 16f);
+                for (int l = x; l <= x2; l++)
+                {
+                    for (int m = y; m <= y2; m++)
+                    {
+                        if (Lighting.Brightness(l, m) == 0f)
+                            segmentDrawColor = Color.Black;
+                    }
+                }
+
+                // Draw segments
+                spriteBatch.Draw(npcTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY),
+                    npc.frame, segmentDrawColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+
+                // Draw lights
+                if (npc.ai[2] == 0f && segmentDrawColor != Color.Black)
+                {
+                    // This life ratio is fine now because all Destroyer segments update to have the same amount of life every frame
+                    float destroyerLifeRatio = npc.life / (float)npc.lifeMax;
+
+                    bool phase5 = destroyerLifeRatio < (death ? 0.2f : 0.1f);
+
+                    // Spawn DR check
+                    bool hasSpawnDR = newAI[1] < DestroyerAI.DRIncraeseTime && newAI[1] > 60f;
+
+                    // Gradual color transition from ground to flight and vice versa
+                    // 0f = Red, 1f = Purple
+                    float phaseTransitionColorAmount = (hasSpawnDR || phase5) ? 1f : 0f;
+                    if (!hasSpawnDR && !phase5)
+                    {
+                        if (newAI[3] >= DestroyerAI.GroundTelegraphStartGateValue)
+                            phaseTransitionColorAmount = MathHelper.Clamp(1f - (newAI[3] - DestroyerAI.GroundTelegraphStartGateValue) / DestroyerAI.PhaseTransitionTelegraphTime, 0f, 1f);
+                        else if (newAI[3] >= DestroyerAI.FlightTelegraphStartGateValue)
+                            phaseTransitionColorAmount = MathHelper.Clamp((newAI[3] - DestroyerAI.FlightTelegraphStartGateValue) / DestroyerAI.PhaseTransitionTelegraphTime, 0f, 1f);
+                    }
+
+                    // Light colors
+                    int alpha = 192;
+                    Color groundColor = new Color(150, 0, 0, alpha);
+                    Color flightColor = revenge ? new Color(0, 0, 150, alpha) : groundColor;
+                    Color segmentColor = Color.Lerp(groundColor, flightColor, phaseTransitionColorAmount);
+                    Color telegraphColor_Red = new Color(255, 125, 125, alpha);
+                    Color telegraphColor_Green = new Color(125, 255, 125, alpha);
+                    Color telegraphColor_Cyan = new Color(0, 255, 255, alpha);
+                    Color telegraphColor = telegraphColor_Red;
+
+                    // Telegraph for the laser breath and body lasers
+                    float telegraphProgress = 0f;
+                    if (destroyerLaserColor != -1)
+                    {
+                        if (npc.type == NPCID.TheDestroyer && death)
+                        {
+                            float telegraphGateValue = DestroyerAI.DeathModeLaserBreathGateValue - DestroyerAI.LaserTelegraphTime;
+                            if (newAI[0] > telegraphGateValue)
+                            {
+                                switch (destroyerLaserColor)
+                                {
+                                    default:
+                                    case 0:
+                                        break;
+
+                                    case 1:
+                                        telegraphColor = telegraphColor_Green;
+                                        break;
+
+                                    case 2:
+                                        telegraphColor = telegraphColor_Cyan;
+                                        break;
+                                }
+                                telegraphProgress = MathHelper.Clamp((newAI[0] - telegraphGateValue) / DestroyerAI.LaserTelegraphTime, 0f, 1f);
+                            }
+                        }
+                        else if (npc.type == NPCID.TheDestroyerBody && revenge)
+                        {
+                            float shootProjectileTime = death ? 270f : 450f;
+                            float bodySegmentTime = npc.ai[0] * 30f;
+                            float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
+                            float telegraphGateValue = shootProjectileGateValue - DestroyerAI.LaserTelegraphTime;
+                            if (newAI[0] > telegraphGateValue)
+                            {
+                                switch (destroyerLaserColor)
+                                {
+                                    default:
+                                    case 0:
+                                        break;
+
+                                    case 1:
+                                        telegraphColor = telegraphColor_Green;
+                                        break;
+
+                                    case 2:
+                                        telegraphColor = telegraphColor_Cyan;
+                                        break;
+                                }
+                                telegraphProgress = MathHelper.Clamp((newAI[0] - telegraphGateValue) / DestroyerAI.LaserTelegraphTime, 0f, 1f);
+                            }
+                        }
+                        else if (npc.type == NPCID.TheDestroyerBody)
+                        {
+                            float shootProjectileTime = Main.masterMode ? 500f : Main.expertMode ? 700f : 900f;
+                            float bodySegmentTime = npc.ai[0] * 30f;
+                            float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
+                            float telegraphGateValue = shootProjectileGateValue - DestroyerAI.LaserTelegraphTime;
+                            if (npc.localAI[0] > telegraphGateValue)
+                                telegraphProgress = MathHelper.Clamp((npc.localAI[0] - telegraphGateValue) / DestroyerAI.LaserTelegraphTime, 0f, 1f);
+                        }
+                    }
+
+                    Texture2D glowTexture = CalamityMod.DestroyerGlowmasks[0].Value;
+                    switch (npc.type)
+                    {
+                        default:
+                        case NPCID.TheDestroyer:
+                            break;
+
+                        case NPCID.TheDestroyerBody:
+                            glowTexture = CalamityMod.DestroyerGlowmasks[1].Value;
+                            break;
+
+                        case NPCID.TheDestroyerTail:
+                            glowTexture = CalamityMod.DestroyerGlowmasks[2].Value;
+                            break;
+                    }
+
+                    float alphaMultiplier = 1f - npc.alpha / 255f;
+                    spriteBatch.Draw(glowTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, Color.Lerp(segmentColor, telegraphColor, telegraphProgress) * alphaMultiplier, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                }
+            }
+
+            if (revenge)
             {
                 // Create additional afterimages in the cardinal directions in Rev+
                 if (npc.type == NPCID.BrainofCthulhu)
@@ -6545,7 +7031,7 @@ namespace CalamityMod.NPCs
                         currentColor.G = (byte)((float)(int)currentColor.G * opacity);
                         currentColor.B = (byte)((float)(int)currentColor.B * opacity);
                         currentColor.A = (byte)((float)(int)currentColor.A * opacity);
-                        int totalAfterimages = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 12 : 4;
+                        int totalAfterimages = death ? 12 : 4;
                         for (int i = 0; i < totalAfterimages; i++)
                         {
                             Vector2 position = npc.position;
@@ -6655,10 +7141,9 @@ namespace CalamityMod.NPCs
                         if (npc.spriteDirection == 1)
                             spriteEffects = SpriteEffects.FlipHorizontally;
 
-                        Vector2 glowOffset = Vector2.UnitY * 8f;
                         for (int i = 0; i < 2; i++)
                         {
-                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, npc.Center - screenPos + new Vector2(0, npc.gfxOffY) - glowOffset, npc.frame,
+                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame,
                                 drawColor2, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
                         }
                     }
@@ -6752,106 +7237,92 @@ namespace CalamityMod.NPCs
                     spriteBatch.Draw(npcTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
 
                     Color eyesColor = new Color(200, 200, 200, 0);
-                    if ((Main.masterMode || BossRushEvent.BossRushActive) && CalamityWorld.revenge)
+                    if (masterMode && revenge)
                     {
-                        eyesColor = npc.type == ModContent.NPCType<SkeletronPrime2>() ? new Color(150, 100, 255, 0) : new Color(255, 255, 0, 0);
+                        int alpha = 192;
+                        eyesColor = npc.type == NPCType<SkeletronPrime2>() ? new Color(150, 100, 255, alpha) : new Color(255, 255, 0, alpha);
+                        Texture2D glowTexture = SkeletronPrime2.EyeTexture.Value;
                         for (int i = 0; i < 3; i++)
-                            spriteBatch.Draw(TextureAssets.BoneEyes.Value, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, eyesColor, npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
+                            spriteBatch.Draw(glowTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, eyesColor, npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
                     }
                     else
                         spriteBatch.Draw(TextureAssets.BoneEyes.Value, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, eyesColor, npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
                 }
-                else if (CalamityLists.DestroyerIDs.Contains(npc.type))
-                {
-                    Texture2D npcTexture = TextureAssets.Npc[npc.type].Value;
-                    int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
 
-                    Vector2 halfSize = npc.frame.Size() / 2;
+                else if (npc.type == NPCID.Plantera)
+                {
+                    // Percent life remaining
+                    float lifeRatio = npc.life / (float)npc.lifeMax;
+
+                    Texture2D npcTexture = TextureAssets.Npc[npc.type].Value;
+
                     SpriteEffects spriteEffects = SpriteEffects.None;
                     if (npc.spriteDirection == 1)
                         spriteEffects = SpriteEffects.FlipHorizontally;
 
-                    if (npc.type == NPCID.TheDestroyerBody)
-                    {
-                        if (npc.ai[2] == 0f)
-                            npc.frame.Y = 0;
-                        else
-                            npc.frame.Y = frameHeight;
-                    }
+                    Color originalColor = npc.GetAlpha(drawColor);
+                    Color newColor = new Color(100, 255, 100, 255);
+                    Vector2 glowOffset = Vector2.UnitY * -4f;
+                    Vector2 drawPosition = npc.Center - screenPos + new Vector2(0, npc.gfxOffY) + glowOffset;
+                    Vector2 origin = npc.frame.Size() / 2;
 
-                    Color segmentDrawColor = npc.GetAlpha(drawColor);
-
-                    // Check if Destroyer is behind tiles and if so, how much of the segment is behind tiles and adjust color accordingly
-                    int x = (int)((npc.position.X - 8f) / 16f);
-                    int x2 = (int)((npc.position.X + npc.width + 8f) / 16f);
-                    int y = (int)((npc.position.Y - 8f) / 16f);
-                    int y2 = (int)((npc.position.Y + npc.height + 8f) / 16f);
-                    for (int l = x; l <= x2; l++)
+                    bool phase2 = lifeRatio <= 0.5f;
+                    if (!phase2)
                     {
-                        for (int m = y; m <= y2; m++)
+                        float telegraphTimer = Math.Abs(npc.ai[1]);
+                        bool startSeedGatlingSporeGasTelegraph = npc.ai[1] > PlanteraAI.SeedGatlingColorChangeGateValue;
+                        bool endSeedGatlingSporeGasTelegraph = npc.ai[1] < -PlanteraAI.SeedGatlingDuration + PlanteraAI.SeedGatlingColorChangeDuration;
+                        if (startSeedGatlingSporeGasTelegraph)
                         {
-                            if (Lighting.Brightness(l, m) == 0f)
-                                segmentDrawColor = Color.Black;
+                            float telegraphScalar = MathHelper.Clamp((telegraphTimer - PlanteraAI.SeedGatlingColorChangeGateValue) / PlanteraAI.SeedGatlingColorChangeDuration, 0f, 1f);
+                            Color telegraphColor = Color.Lerp(originalColor, newColor, telegraphScalar);
+                            spriteBatch.Draw(npcTexture, drawPosition, npc.frame, telegraphColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+                        }
+
+                        // -300 to -120
+                        else if (endSeedGatlingSporeGasTelegraph)
+                        {
+                            float telegraphScalar = MathHelper.Clamp((telegraphTimer - (PlanteraAI.SeedGatlingDuration - PlanteraAI.SeedGatlingColorChangeDuration)) / PlanteraAI.SeedGatlingColorChangeDuration, 0f, 1f);
+                            Color telegraphColor = Color.Lerp(originalColor, newColor, telegraphScalar);
+                            spriteBatch.Draw(npcTexture, drawPosition, npc.frame, telegraphColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
                         }
                     }
-
-                    // Draw segments
-                    spriteBatch.Draw(npcTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY),
-                        npc.frame, segmentDrawColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
-
-                    // Draw lights
-                    if (npc.ai[2] == 0f && segmentDrawColor != Color.Black)
+                    else
                     {
-                        float destroyerLifeRatio = 1f;
-                        if (npc.realLife >= 0)
-                            destroyerLifeRatio = Main.npc[npc.realLife].life / (float)Main.npc[npc.realLife].lifeMax;
-
-                        float shootProjectile = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 180 : 300;
-                        float timer = npc.ai[0] * 30f;
-                        float shootProjectileGateValue = timer + shootProjectile;
-                        float glowDuration = 120f;
-                        float startGlowingGateValue = shootProjectileGateValue - glowDuration;
-
-                        if ((newAI[3] >= 900f && destroyerLifeRatio < 0.5f) || (newAI[1] < 600f && newAI[1] > 60f))
+                        float telegraphTimer = Math.Abs(npc.ai[3]);
+                        bool startChargeTelegraph = npc.ai[3] > PlanteraAI.ChargeTelegraphColorChangeGateValue;
+                        bool endChargeTelegraph = npc.ai[3] <= -2f;
+                        if (startChargeTelegraph)
                         {
-                            Color drawColor2 = new Color(50, 50, 255, 0) * (1f - npc.alpha / 255f);
-                            for (int i = 0; i < 3; i++)
+                            float telegraphScalar = MathHelper.Clamp((telegraphTimer - PlanteraAI.ChargeTelegraphColorChangeGateValue) / PlanteraAI.SeedGatlingColorChangeDuration, 0f, 1f);
+                            Color telegraphColor = Color.Lerp(originalColor, newColor, telegraphScalar);
+                            spriteBatch.Draw(npcTexture, drawPosition, npc.frame, telegraphColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+                        }
+
+                        // -195 to -2
+                        else if (endChargeTelegraph)
+                        {
+                            float telegraphScalar = MathHelper.Clamp((Math.Abs(PlanteraAI.StopChargeGateValue) - telegraphTimer) / Math.Abs(PlanteraAI.StopChargeGateValue), 0f, 1f);
+                            Color telegraphColor = Color.Lerp(originalColor, newColor, telegraphScalar);
+
+                            if (CalamityConfig.Instance.Afterimages)
                             {
-                                spriteBatch.Draw(TextureAssets.Dest[npc.type - NPCID.TheDestroyer].Value, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame,
-                                    drawColor2, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                                int afterimageAmount = 10;
+                                int afterImageIncrement = 2;
+                                for (int j = 0; j < afterimageAmount; j += afterImageIncrement)
+                                {
+                                    Color afterimageColor = telegraphColor;
+                                    afterimageColor = Color.Lerp(afterimageColor, originalColor, 0.5f);
+                                    afterimageColor = npc.GetAlpha(afterimageColor);
+                                    afterimageColor *= (afterimageAmount - j) / 15f;
+                                    Vector2 afterimagePos = npc.oldPos[j] + new Vector2(npc.width, npc.height) / 2f - screenPos;
+                                    afterimagePos -= new Vector2(npcTexture.Width, npcTexture.Height / Main.npcFrameCount[npc.type]) * npc.scale / 2f;
+                                    afterimagePos += origin * npc.scale + new Vector2(0f, npc.gfxOffY) + glowOffset;
+                                    spriteBatch.Draw(npcTexture, afterimagePos, npc.frame, afterimageColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+                                }
                             }
 
-                            // Glow telegraph for lasers
-                            /*if (newAI[0] > startGlowingGateValue)
-                            {
-                                Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-                                Color bloom = drawColor2;
-                                bloom = Main.hslToRgb((Main.rgbToHsl(bloom).X + 0.02f) % 1, Main.rgbToHsl(bloom).Y, Main.rgbToHsl(bloom).Z);
-                                float scalingFactor = (newAI[0] - startGlowingGateValue) / glowDuration;
-                                float opacity = (float)Math.Sin(MathHelper.PiOver2 + scalingFactor * MathHelper.PiOver2);
-                                float properBloomSize = (float)npc.height / (float)bloomTexture.Height;
-                                float scale = scalingFactor;
-                                spriteBatch.Draw(bloomTexture, npc.Center - Main.screenPosition, null, bloom * opacity * 0.5f, 0, bloomTexture.Size() / 2f, scale * 1f * properBloomSize, SpriteEffects.None, 0);
-                            }*/
-                        }
-                        else
-                        {
-                            Color drawColor2 = new Color(255, 255, 255, 0) * (1f - npc.alpha / 255f);
-                            spriteBatch.Draw(TextureAssets.Dest[npc.type - NPCID.TheDestroyer].Value, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame,
-                                drawColor2, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
-
-                            // Glow telegraph for lasers
-                            /*if (newAI[0] > startGlowingGateValue)
-                            {
-                                Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-                                Color bloom = drawColor2;
-                                bloom = Main.hslToRgb((Main.rgbToHsl(bloom).X + 0.02f) % 1, Main.rgbToHsl(bloom).Y, Main.rgbToHsl(bloom).Z);
-                                float scalingFactor = (newAI[0] - startGlowingGateValue) / glowDuration;
-                                float opacity = (float)Math.Sin(MathHelper.PiOver2 + scalingFactor * MathHelper.PiOver2);
-                                float properBloomSize = (float)npc.height / (float)bloomTexture.Height;
-                                float scale = scalingFactor;
-                                spriteBatch.Draw(bloomTexture, npc.Center - Main.screenPosition, null, bloom * opacity * 0.5f, 0, bloomTexture.Size() / 2f, scale * 1f * properBloomSize, SpriteEffects.None, 0);
-                            }*/
+                            spriteBatch.Draw(npcTexture, drawPosition, npc.frame, telegraphColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
                         }
                     }
                 }

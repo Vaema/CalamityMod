@@ -33,12 +33,18 @@
 
         // Dodge cooldowns (in frames)
         // TODO -- Some of these could be moved to the respective item files
-        internal static readonly int BeltDodgeCooldown = 5400;
-        internal static readonly int BrainDodgeCooldown = 5400;
-        internal static readonly int AmalgamDodgeCooldown = 5400;
-        internal static readonly int MirrorDodgeCooldown = 5400;
-        internal static readonly int DaedalusReflectCooldown = 5400;
-        internal static readonly int EvolutionReflectCooldown = 5400;
+        internal static readonly int BeltDodgeCooldownMin = 900;
+        internal static readonly int BeltDodgeCooldownMax = 5400;
+        internal static readonly int BrainDodgeCooldownMin = 900;
+        internal static readonly int BrainDodgeCooldownMax = 5400;
+        internal static readonly int AmalgamDodgeCooldownMin = 900;
+        internal static readonly int AmalgamDodgeCooldownMax = 5400;
+        internal static readonly int MirrorDodgeCooldownMin = 900;
+        internal static readonly int MirrorDodgeCooldownMax = 5400;
+        internal static readonly int DaedalusReflectCooldownMin = 900;
+        internal static readonly int DaedalusReflectCooldownMax = 5400;
+        internal static readonly int EvolutionReflectCooldownMin = 900;
+        internal static readonly int EvolutionReflectCooldownMax = 5400;
         #endregion
 
         #region Damage
@@ -77,6 +83,54 @@
 
         // Nebula Armor Mana Booster
         // nothing here yet
+        #endregion
+
+        #region Life Steal
+        // Life steal accessories require a more strict cooldown due to their ease of use and global application
+        internal static readonly float LifeStealAccessoryCooldownMultiplier = 3f;
+
+        // Life steal cooldown multipliers used for armor set bonuses
+        internal static readonly float LifeStealSetBonusCooldownMultiplier = 2f;
+        internal static readonly float LifeStealReaverTankCooldownMultiplier = 4f;
+
+        // The range was buffed in vanilla from 1200 to 3000 in 1.4.4, and I agree with that decision
+        internal static readonly float LifeStealRange = 3000f;
+
+        // Life steal caps (aka, how much life steal the player is allowed before it goes on cooldown)
+        internal static readonly float LifeStealCap_Classic = 60f;
+        internal static readonly float LifeStealCap_Expert = 50f;
+        internal static readonly float LifeStealCap_Revengeance = 40f;
+        internal static readonly float LifeStealCap_Death = 30f;
+
+        // Master nerfs the life steal cap by 10, resulting in 40 in non-Rev Master, 30 in Rev Master, and 20 in Death Master
+        internal static readonly float LifeStealCapReduction_Master = 10f;
+
+        // The base life steal cooldowns from vanilla
+        internal static readonly float LifeStealRecoveryRate_Classic = 0.6f;
+        internal static readonly float LifeStealRecoveryRate_Expert = 0.5f;
+
+        // The calculations below show the time (in frames) for 10 life steal cooldown to recover in each difficulty
+        // Classic: 10 / 0.2 = 50
+        // Expert: 10 / 0.15 = 66.667
+        // Revengeance: 10 / 0.125 = 80
+        // Death: 10 / 0.1 = 100
+        // Master: 10 / 0.1 = 100
+        // Revengeance Master: 10 / 0.075 = 133.333
+        // Death Master: 10 / 0.05 = 200
+        // Nerfs the life steal recovery rate in Classic from 0.6/s to 0.2/s
+        internal static readonly float LifeStealRecoveryRateReduction_Classic = 0.4f;
+
+        // Nerfs the life steal recovery rate in Expert from 0.5/s to 0.15/s
+        internal static readonly float LifeStealRecoveryRateReduction_Expert = 0.35f;
+
+        // Nerfs the life steal recovery rate in Revengeance from 0.5/s to 0.125/s
+        internal static readonly float LifeStealRecoveryRateReduction_Revengeance = 0.375f;
+
+        // Nerfs the life steal recovery rate in Death from 0.5/s to 0.1/s
+        internal static readonly float LifeStealRecoveryRateReduction_Death = 0.4f;
+
+        // Nerfs the life steal recovery rate in Master by 0.05/s, resulting in 0.1/s in non-Rev Master, 0.075/s in Rev Master, and 0.05/s in Death Master
+        internal static readonly float LifeStealRecoveryRateReduction_Master = 0.05f;
         #endregion
 
         #region Rogue Base Stats
@@ -143,10 +197,16 @@
         internal static readonly int RageFadeTime = CalamityUtils.SecondsToFrames(30);
         internal static readonly float DefaultRageDamageBoost = 0.35f; // +35%
 
-        internal static readonly float AdrenalineDamageBoost = 2f; // +200%
-        internal static readonly float AdrenalineDamagePerBooster = 0.15f; // +15%
+        internal static readonly float AdrenalineDamageBoost = 1.5f; // +150%
+        internal static readonly float AdrenalineDamagePerBooster = 0.2f; // +20%
         internal static readonly float FullAdrenalineDR = 0.5f; // 50%
         internal static readonly float AdrenalineDRPerBooster = 0.05f; // +5% per booster
+
+        internal static readonly int AdrenalinePauseAfterDamage = CalamityUtils.SecondsToFrames(1);
+        internal static readonly float MinimumAdrenalineLoss = 0.1f; // No matter how small a hit, you will always lose at least 10% current Adrenaline
+        internal static readonly float AdrenalineFalloffTinyHitHealthRatio = 0.05f; // Hits for 5% max HP or less result in less Adrenaline loss
+
+        internal static readonly float TrueMeleeRipperReductionFactor = 0.5f; // True melee benefits less from rippers to prevent excessive melting.
         #endregion
 
         // TODO -- NPC classification is not done consistently with predictable thresholds.

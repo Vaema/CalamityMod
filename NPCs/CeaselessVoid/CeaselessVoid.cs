@@ -17,6 +17,7 @@ using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -33,6 +34,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/CeaselessVoidDeath");
         public static readonly SoundStyle BuildupSound = new("CalamityMod/Sounds/Custom/CeaselessVoidDeathBuild");
 
+        public static Asset<Texture2D> GlowTexture;
+
         public bool playedbuildsound = false;
 
         public override void SetStaticDefaults()
@@ -46,6 +49,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -169,7 +176,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/CeaselessVoid/CeaselessVoidGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color cyanLerp = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
             if (CalamityConfig.Instance.Afterimages)

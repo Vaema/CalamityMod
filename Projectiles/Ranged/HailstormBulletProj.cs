@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.coldDamage = true;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 2;
             Projectile.extraUpdates = 15;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Ranged
                     WaterFlavoredParticle subTrail = new WaterFlavoredParticle(Projectile.Center + velocity * 4.5f + addedPlacement, velocity * 7, false, 6, 0.65f, Color.SkyBlue);
                     GeneralParticleHandler.SpawnParticle(subTrail);
                 }
-                int onHitDamage = Owner.CalcIntDamage<RangedDamageClass>(0.5f * Projectile.damage);
+                int onHitDamage = Owner.CalcIntDamage<RangedDamageClass>(0.33f * Projectile.damage);
                 Owner.ApplyDamageToNPC(target, onHitDamage, 0f, 0, false);
             }
         }

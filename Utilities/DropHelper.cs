@@ -595,7 +595,6 @@ namespace CalamityMod
         public static IItemDropRuleCondition Post3Mechs(bool ui = true) => If(() => NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3, ui, CalamityUtils.GetTextValue("Condition.Drops.Downed3Mechs"));
         public static IItemDropRuleCondition PostCal(bool ui = true) => If(() => DownedBossSystem.downedCalamitasClone, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedCal"));
         public static IItemDropRuleCondition PostPlant(bool ui = true) => If(() => NPC.downedPlantBoss, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedPlant"));
-        public static IItemDropRuleCondition PostCalPlant(bool ui = true) => If(() => DownedBossSystem.downedCalamitasClone || NPC.downedPlantBoss, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedCalPlant"));
         public static IItemDropRuleCondition PostLevi(bool ui = true) => If(() => DownedBossSystem.downedLeviathan, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedLebi"));
         public static IItemDropRuleCondition PostAureus(bool ui = true) => If(() => DownedBossSystem.downedAstrumAureus, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedAureus"));
         public static IItemDropRuleCondition PostGolem(bool ui = true) => If(() => NPC.downedGolemBoss, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedGolem"));

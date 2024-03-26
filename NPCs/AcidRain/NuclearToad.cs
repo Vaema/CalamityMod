@@ -8,6 +8,7 @@ using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
@@ -36,6 +37,8 @@ namespace CalamityMod.NPCs.AcidRain
 
         public const float ExplosionTelegraphTime = 120f;
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 5;
@@ -43,6 +46,10 @@ namespace CalamityMod.NPCs.AcidRain
             value.Position.Y += 8;
             value.PortraitPositionYOverride = 28f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -206,6 +213,6 @@ namespace CalamityMod.NPCs.AcidRain
                 target.AddBuff(ModContent.BuffType<Irradiated>(), 120);
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => CalamityGlobalNPC.DrawGlowmask(NPC, spriteBatch, ModContent.Request<Texture2D>(Texture + "Glow").Value, true);
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => CalamityGlobalNPC.DrawGlowmask(NPC, spriteBatch, GlowTexture.Value, true);
     }
 }

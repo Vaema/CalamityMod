@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
 
-            int size = NPCHit ? 50 : 70; //Bigger explosion if no npc is hit
+            int size = NPCHit ? 60 : 90; //Bigger explosion if no npc is hit
             Projectile.scale = (size / (float)Projectile.height) * Projectile.scale;
 
             Projectile.position -= Vector2.One * (size - Projectile.width) * 0.5f;

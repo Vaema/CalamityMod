@@ -40,7 +40,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.knockBackResist = 0.8f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath15;
             NPC.Calamity().VulnerableToSickness = false;

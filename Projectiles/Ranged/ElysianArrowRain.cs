@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        public static int MaxUpdate = 7;
         private int Lifetime = 110;
         private static Color ShaderColorOne = Color.Khaki;
         private static Color ShaderColorTwo = Color.White;
@@ -37,7 +38,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = Lifetime;
-            Projectile.extraUpdates = 6;
+            Projectile.MaxUpdates = MaxUpdate;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -126,7 +127,11 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 targetPosition = Projectile.numHits == 1 ? (target == null ? Projectile.Center : target.Center) : altSpawn;
                 Vector2 spawnSpot = (Projectile.numHits == 1 ? (target == null ? Projectile.Center : target.Center) : altSpawn) + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(750, 950));
 
-                Vector2 velocity = (targetPosition - spawnSpot).SafeNormalize(Vector2.UnitX) * 20;
+                Vector2 velocity;
+                if (target == null)
+                    velocity = (targetPosition - spawnSpot).SafeNormalize(Vector2.UnitX) * 20;
+                else
+                    velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(spawnSpot, target, 20f, MaxUpdate);
 
                 if (targetDist < 1400f)
                 {

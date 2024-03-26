@@ -24,30 +24,46 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.tileCollide = true;
             Projectile.ignoreWater = false;
-            Projectile.timeLeft = 420;
+            Projectile.timeLeft = 840;
+            Projectile.extraUpdates = 2;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
         public override void AI()
         {
-            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
-            if (Projectile.velocity.Y <= 8f)
+            if (Main.rand.NextBool())
             {
-                Projectile.velocity.Y += 0.15f;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.JungleTorch);
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.65f, 0.8f);
+                dust.velocity = -Projectile.velocity * 0.4f;
             }
-            Projectile.tileCollide = Projectile.timeLeft <= 300;
+
+            if (Projectile.ai[0] < 3)
+            {
+                if (Projectile.timeLeft == 839)
+                    Projectile.velocity *= 0.5f;
+                Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
+                if (Projectile.velocity.Y <= 12f)
+                {
+                    Projectile.velocity.Y += 0.15f;
+                }
+                Projectile.tileCollide = Projectile.timeLeft <= 300;
+            }
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             // Water drip
             for (int i = 0; i < 4; i++)
             {
-                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, 2, 2, DustID.Rain, 0f, 0f, 0, new Color(112, 150, 42, 127), 1f);
+                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, 2, 2, DustID.JungleTorch, 0f, 0f, 0, new Color(112, 150, 42, 127), 1f);
                 Dust dust = Main.dust[idx];
                 dust.position.X -= 2f;
                 Main.dust[idx].alpha = 38;
-                Main.dust[idx].velocity *= 0.1f;
+                Main.dust[idx].velocity *= Projectile.velocity.RotatedByRandom(0.3f) * 0.4f;
                 Main.dust[idx].velocity -= Projectile.velocity * 0.025f;
-                Main.dust[idx].scale = 0.75f;
+                Main.dust[idx].scale = 0.85f;
             }
             return true;
         }

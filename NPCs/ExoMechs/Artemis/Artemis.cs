@@ -13,6 +13,7 @@ using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
@@ -40,6 +41,8 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
         public static readonly SoundStyle LaserShotgunSound = new("CalamityMod/Sounds/Custom/ExoMechs/ArtemisShotgunLaser") { Volume = 1.2f };
 
         public static readonly SoundStyle SpinLaserbeamSound = new("CalamityMod/Sounds/Custom/ExoMechs/ArtemisSpinLaserbeam") { Volume = 1.3f };
+
+        public static Asset<Texture2D> GlowTexture;
 
         internal static void LoadHeadIcons()
         {
@@ -168,6 +171,10 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 Rotation = MathHelper.Pi - MathHelper.PiOver4
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -1491,7 +1498,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 }
             }
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Artemis/ArtemisGlow").Value;
+            texture = GlowTexture.Value;
             if (CalamityConfig.Instance.Afterimages && !NPC.IsABestiaryIconDummy)
             {
                 for (int i = 1; i < numAfterimages; i += 2)
