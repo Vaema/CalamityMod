@@ -17,15 +17,18 @@ namespace CalamityMod.Items.Weapons.Melee
         private int time = 0;
         private Color mainColor;
         private int swordDirection;
+        private int useTime = 20;
+        private int opacityAdjust = 0;
+        private float smearOpacity = 0;
+        private bool smearGrowth = true;
         public override void SetDefaults()
         {
             Item.width = 78;
             Item.height = 78;
-            Item.damage = 40;
+            Item.damage = 100;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 25;
+            Item.useTime = Item.useAnimation = useTime;
             Item.useTurn = true;
             Item.knockBack = 7f;
             Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/TerratomereSwing") with { Volume = 0.3f, Pitch = 0.5f };
@@ -47,9 +50,17 @@ namespace CalamityMod.Items.Weapons.Melee
             time = 0;
             swingRoatation = 0;
             mainColor = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
+            opacityAdjust = 0;
+            smearOpacity = 0;
         }
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
+            opacityAdjust++;
+            if (opacityAdjust >= 5 && opacityAdjust <= 15 && smearOpacity < 0.9f)
+                smearOpacity += 0.1f;
+            else if (smearOpacity > 0)
+                smearOpacity -= 0.2f;
+
             time++;
             swingRoatation += swordDirection == 1 ? 0.13f : -0.13f;
 
@@ -59,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 swingRoatation *= -1;
                 swordDirection = player.direction;
             }
-            Particle Smear = new SemiCircularSmearFade(player.Center, Vector2.Zero, mainColor * 0.8f, Rot, Main.rand.NextFloat(1.75f, 1.8f), new Vector2(1, 1), 2, true, false, true, player.direction);
+            Particle Smear = new SemiCircularSmearFade(player.Center, Vector2.Zero, mainColor * smearOpacity, Rot, Main.rand.NextFloat(1.75f, 1.8f), new Vector2(1, 1), 2, true, false, true, player.direction);
             GeneralParticleHandler.SpawnParticle(Smear);
 
             if (Main.rand.NextBool(3))
@@ -71,6 +82,10 @@ namespace CalamityMod.Items.Weapons.Melee
                 dust.color = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
                 dust.noGravity = true;
             }
+        }
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GreatswordofJudgementGlow").Value);
         }
         public override void AddRecipes()
         {

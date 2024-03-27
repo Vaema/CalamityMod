@@ -52,7 +52,7 @@ namespace CalamityMod
         /// <param name="typeOneIncrement">If mode 1 is used, this controls the loop increment. Set it to more than 1 to skip afterimages.</param>
         /// <param name="texture">The texture to draw. Set to <b>null</b> to draw the projectile's own loaded texture.</param>
         /// <param name="drawCentered">If <b>false</b>, the afterimages will be centered on the projectile's position instead of its own center.</param>
-        public static void DrawAfterimagesCentered(Projectile proj, int mode, Color lightColor, int typeOneIncrement = 1, Texture2D texture = null, bool drawCentered = true)
+        public static void DrawAfterimagesCentered(Projectile proj, int mode, Color lightColor, int typeOneIncrement = 1, Texture2D texture = null, bool drawCentered = true, bool shrink = false)
         {
             if (texture is null)
                 texture = TextureAssets.Projectile[proj.type].Value;
@@ -85,8 +85,9 @@ namespace CalamityMod
                         {
                             Vector2 drawPos = proj.oldPos[i] + centerOffset - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
                             // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
-                            Color color = alphaColor * ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
-                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, rotation, origin, scale, spriteEffects, 0f);
+                            float interpolant = ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
+                            Color color = alphaColor * interpolant;
+                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, rotation, origin, shrink ? scale * interpolant : scale, spriteEffects, 0f);
                         }
                         break;
 
@@ -102,13 +103,14 @@ namespace CalamityMod
                         while (k < afterimageCount)
                         {
                             Vector2 drawPos = proj.oldPos[k] + centerOffset - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
+                            float interpolant = ((float)(proj.oldPos.Length - k) / (float)proj.oldPos.Length);
                             // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS EITHER.
                             if (k > 0)
                             {
                                 float colorMult = (float)(afterimageCount - k);
                                 drawColor *= colorMult / afterimageColorCount;
                             }
-                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), drawColor, rotation, origin, scale, spriteEffects, 0f);
+                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), drawColor, rotation, origin, shrink ? scale * interpolant : scale, spriteEffects, 0f);
                             k += increment;
                         }
                         break;
@@ -123,8 +125,10 @@ namespace CalamityMod
 
                             Vector2 drawPos = proj.oldPos[i] + centerOffset - Main.screenPosition + new Vector2(0f, proj.gfxOffY);
                             // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
-                            Color color = alphaColor * ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
-                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, afterimageRot, origin, scale, sfxForThisAfterimage, 0f);
+                            float interpolant = ((float)(proj.oldPos.Length - i) / (float)proj.oldPos.Length);
+                            Color color = alphaColor * interpolant;
+
+                            Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(rectangle), color, afterimageRot, origin, shrink ? scale * interpolant : scale, sfxForThisAfterimage, 0f);
                         }
                         break;
 

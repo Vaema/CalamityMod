@@ -3,7 +3,12 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using CalamityMod.Particles;
 using Terraria.ModLoader;
+using CalamityMod.Projectiles.Ranged;
+using Microsoft.Xna.Framework.Graphics;
+using System.ComponentModel;
+
 namespace CalamityMod.Projectiles.Melee
 {
     public class JudgementProj : ModProjectile, ILocalizedModType
@@ -12,67 +17,110 @@ namespace CalamityMod.Projectiles.Melee
         public ref float time => ref Projectile.ai[0];
         public float hitboxSize = 10;
         public Color mainColor;
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-        }
+        public float fade = 1;
         public override void SetDefaults()
         {
-            Projectile.width = 132;
-            Projectile.height = 30;
+            Projectile.width = 336;
+            Projectile.height = 274;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.timeLeft = 450;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.extraUpdates = 15;
+            Projectile.extraUpdates = 9;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
+            Vector2 topCorner = Projectile.Center + (Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(100f)) * Projectile.scale) * 157;
+            Vector2 bottomCorner = Projectile.Center + (Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-100f)) * Projectile.scale) * 157;
+
             if (time == 0)
             {
-                Projectile.scale = 0.25f;
-                Projectile.velocity *= 0.75f;
+                Projectile.scale = 0.0875f;
+                Projectile.velocity *= 0.9f;
                 mainColor = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
             }
 
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             if (time < 200)
             {
-                Projectile.scale += 0.008f;
-                hitboxSize += 0.55f;
+                Projectile.scale += 0.0026f;
+                hitboxSize += 0.4525f;
+                Projectile.velocity *= 0.995f;
+                // Spawn 3
+                if (time % 50 == 0 && time > 10)
+                {
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2Circular(hitboxSize * 0.8f, hitboxSize * 0.8f) - Projectile.velocity * 2, (-Projectile.velocity * 3).RotatedByRandom(0.9f), ModContent.ProjectileType<StarofJudgement>(), (int)(Projectile.damage * 0.2f), 3f, Projectile.owner, 0f);
+                }
             }
-            Projectile.velocity *= 0.995f;
-
-            if (time < 300 && time > 20 && Main.rand.NextBool(3))
+            else
             {
-                Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(hitboxSize, hitboxSize), 66);
-                trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f);
-                trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.85f, 1.5f);
-                trailDust.color = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
-                trailDust.noGravity = true;
+                Projectile.velocity *= 0.975f;
+            }
+            if (time > 300 && fade > 0)
+                fade -= 0.0065f;
+
+            if (time < 250 && time > 20)
+            {
+                if (time < 200)
+                {
+                    if (Projectile.timeLeft % 4 == 0)
+                    {
+                        SparkParticle spark = new SparkParticle(topCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(185f)), false, 15, 1f, mainColor * 0.25f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    if (Projectile.timeLeft % 4 == 0)
+                    {
+                        SparkParticle spark = new SparkParticle(bottomCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-185f)), false, 15, 1f, mainColor * 0.25f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                }
+
+                if (Main.rand.NextBool(3))
+                {
+                    Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(hitboxSize, hitboxSize) - Projectile.velocity * 2, 66);
+                    trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f) - (time < 150 ? 0 : time * 0.001f);
+                    trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.85f, 1.5f);
+                    trailDust.color = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
+                    trailDust.noGravity = true;
+                }
+
+                if (Main.rand.NextBool(12))
+                {
+                    GlowOrbParticle orb = new GlowOrbParticle(topCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(170f)) * Main.rand.NextFloat(10f, 30f), false, 17, Main.rand.NextFloat(0.4f, 0.75f), mainColor, true, true);
+                    GeneralParticleHandler.SpawnParticle(orb);
+                    GlowOrbParticle orb2 = new GlowOrbParticle(bottomCorner, Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(-170f)) * Main.rand.NextFloat(10f, 30f), false, 17, Main.rand.NextFloat(0.4f, 0.75f), mainColor, true, true);
+                    GeneralParticleHandler.SpawnParticle(orb2);
+                }
             }
 
             time++;
         }
-
-        public override void OnKill(int timeLeft)
+        public override Color? GetAlpha(Color lightColor)
         {
-            //Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y - 100, 0f, 0f, ModContent.ProjectileType<WhiteBoltAura>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
+            Color color = Color.White;
+            color.A = (byte)(color.A * fade);
+            return color;
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesFromEdge(Projectile, 0, mainColor == Color.MediumPurple ? Color.MediumOrchid : Color.MediumPurple);
-            return true;
+            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Main.spriteBatch.EnterShaderRegion(BlendState.NonPremultiplied);
+            
+            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+            Main.spriteBatch.ExitShaderRegion();
+            return false;
         }
-        public override Color? GetAlpha(Color lightColor)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            return mainColor;
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.88f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, hitboxSize, targetHitbox);
     }
