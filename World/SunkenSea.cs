@@ -70,13 +70,13 @@ namespace CalamityMod.World
             }
 
             //place little islands
-            for (int MoundX = startPosX - biomeSize + 35; MoundX <= startPosX + biomeSize - 35; MoundX += WorldGen.genRand.Next(30, 60))
+            for (int MoundX = startPosX - biomeSize + 35; MoundX <= startPosX + biomeSize - 35; MoundX += WorldGen.genRand.Next(60, 120))
             {
 				int MoundY = startPosY + 60;
 
 				ShapeData mound = new ShapeData();
 				GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
-				WorldUtils.Gen(new Point(MoundX, MoundY), new Shapes.Mound(18, 45), Actions.Chain(new GenAction[]
+				WorldUtils.Gen(new Point(MoundX, MoundY), new Shapes.Mound(30, 45), Actions.Chain(new GenAction[]
 				{
 					blotchMod.Output(mound)
 				}));
@@ -85,11 +85,8 @@ namespace CalamityMod.World
 					new Actions.Clear(), new Actions.PlaceTile((ushort)ModContent.TileType<Runestone>())
 				}));
 
-                //randomly place a wall pillar above an island
-                if (WorldGen.genRand.NextBool())
-                {
-                    PlaceShoresWallPillar(startPosY, MoundX);
-                }
+                //place a wall pillar above an island
+                PlaceShoresWallPillar(startPosY, MoundX);
 			}
 
             //clear the tops off of the mounds so they have flat surfaces the player can walk on
@@ -112,9 +109,9 @@ namespace CalamityMod.World
             }
 
             //slope tiles
-            for (int X = startPosX - biomeSize; X <= startPosX + biomeSize; X += 25)
+            for (int X = startPosX - biomeSize; X <= startPosX + biomeSize; X++)
             {
-                for (int Y = startPosY - 50; Y <= startPosY + 50; Y += 20)
+                for (int Y = startPosY - 50; Y <= startPosY + 50; Y++)
                 {
                     Tile.SmoothSlope(X, Y);
                 }
