@@ -135,6 +135,7 @@ namespace CalamityMod.Systems
                     SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
                     SunkenSea.PlaceSunkenSeaAmbience();
                     SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceTimelessShores(sunkenSeaX, sunkenSeaY);
                 }));
             }
 
