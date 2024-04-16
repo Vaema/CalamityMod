@@ -52,14 +52,23 @@ namespace CalamityMod.Projectiles.Ranged
         {
             SoundEngine.PlaySound(SoundID.Item178, Projectile.Center); // Probably placeholder sound?
 
-            for (int d = 0; d < 8; d++)
+            for (int s = 0; s < 7; s++)
             {
-                Vector2 dustVel = Main.rand.NextVector2CircularEdge(1f, 1f);
-                dustVel.SafeNormalize(Vector2.Zero);
-                dustVel *= Main.rand.NextFloat(3f, 7f);
+                Vector2 sparkVelocity = new Vector2();
+                if (Projectile.velocity.X != oldVelocity.X && oldVelocity.X < 0)
+                    sparkVelocity = new Vector2(6.5f, 0f);
+                else if (Projectile.velocity.X != oldVelocity.X && oldVelocity.X >= 0)
+                    sparkVelocity = new Vector2(-6.5f, 0f);
+                else if (Projectile.velocity.Y != oldVelocity.Y && oldVelocity.Y < 0)
+                    sparkVelocity = new Vector2(0f, 6.5f);
+                else if (Projectile.velocity.Y != oldVelocity.Y && oldVelocity.Y >= 0)
+                    sparkVelocity = new Vector2(0f, -6.5f);
 
-                Dust collisionDust = Dust.NewDustPerfect(Projectile.Center, 84, dustVel);
-                collisionDust.noGravity = true;
+                Vector2 sparkLocation = sparkVelocity.X > 0f ? new Vector2(Projectile.Center.X - Projectile.width / 2, Projectile.Center.Y) : (sparkVelocity.X < 0f ? new Vector2(Projectile.Center.X + Projectile.width / 2, Projectile.Center.Y) : (sparkVelocity.Y > 0f ? new Vector2(Projectile.Center.X, Projectile.Center.Y - Projectile.height / 2) : new Vector2(Projectile.Center.X, Projectile.Center.Y + Projectile.height / 2)));
+                sparkVelocity = sparkVelocity.RotatedBy(Main.rand.NextFloat(-MathHelper.PiOver2, MathHelper.PiOver2));
+
+                Particle collisionSparks = new AltLineParticle(sparkLocation, sparkVelocity, false, 30, 0.6f, new Color(250, 250, 107));
+                GeneralParticleHandler.SpawnParticle(collisionSparks);
             }
 
             Projectile.penetrate--;
