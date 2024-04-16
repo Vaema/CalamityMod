@@ -8,40 +8,38 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Butcher : ModItem, ILocalizedModType
+    [LegacyName("Butcher")]
+    public class Buzzkill : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public const float ShootSpeed = 18f;
         public override void SetDefaults()
         {
             Item.width = 20;
             Item.height = 12;
             Item.damage = 15;
-            Item.useTime = 40;
-            Item.useAnimation = 40;
+            Item.useTime = 20;
+            Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 1f;
             Item.value = CalamityGlobalItem.Rarity4BuyPrice;
             Item.rare = ItemRarityID.LightRed;
-            Item.UseSound = SoundID.Item38;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.DamageType = DamageClass.Ranged;
             Item.channel = true;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<ButcherGun>();
-            Item.shootSpeed = 12f;
-            Item.useAmmo = AmmoID.Bullet;
+            Item.shoot = ModContent.ProjectileType<BuzzkillHoldout>();
+            Item.shootSpeed = ShootSpeed;
             Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
-        // Spawning the holdout cannot consume ammo
-        public override bool CanConsumeAmmo(Item ammo, Player player) => !Main.rand.NextBool(4) && player.ownedProjectileCounts[Item.shoot] > 0;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ButcherGun>(), damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<BuzzkillHoldout>(), damage, knockback, player.whoAmI, 0f, 0f);
             return false;
         }
 

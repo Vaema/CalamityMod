@@ -200,13 +200,9 @@ BulletFilledShotgun: {
 		'''
 }
 
-Butcher: {
-	DisplayName: Butcher
-	Tooltip:
-		'''
-		Fires bullets faster and more accurately the longer you hold the trigger
-		25% chance to save ammo
-		'''
+Buzzkill: {
+	DisplayName: Buzzkill
+	Tooltip: Rapidly fires sawblades that slice through enemies and bounce off tiles
 }
 
 ChickenCannon: {
