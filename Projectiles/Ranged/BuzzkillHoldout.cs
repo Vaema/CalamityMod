@@ -17,11 +17,17 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float Time => ref Projectile.ai[0];
         public const float ChargeupTime = 90f;
 
+        // These variables control the saw visually disappearing from the holdout when it fires.
+        public bool NoSawOnHoldout = false;
+        public int NoSawDuration = 0;
+
+        public int Recoil = 0;
+
         Player player => Main.player[Projectile.owner];
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Projectile.type] = 5;
         }
 
         public override void SetDefaults()
@@ -49,13 +55,18 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.frame > 0)
             {
-                Projectile.frameCounter++;
-                if (Projectile.frameCounter >= 3)
+                if (NoSawOnHoldout)
+                    Projectile.frame = 4;
+                else
                 {
-                    Projectile.frameCounter = 0;
-                    Projectile.frame++;
-                    if (Projectile.frame > 3)
-                        Projectile.frame = 1;
+                    Projectile.frameCounter++;
+                    if (Projectile.frameCounter >= 3)
+                    {
+                        Projectile.frameCounter = 0;
+                        Projectile.frame++;
+                        if (Projectile.frame > 3)
+                            Projectile.frame = 1;
+                    }
                 }
             }
 
@@ -65,17 +76,31 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     // Insert charge-up sound
                     Main.NewText("Insert charge-up sound");
+
+                    // Reset recoil
                 }
                 if (Time > 30f && Projectile.frame == 0)
                     Projectile.frame = 1;
             }
             else
             {
+                if (NoSawDuration > 0)
+                {
+                    NoSawDuration--;
+                    if (NoSawDuration == 0)
+                        NoSawOnHoldout = false;
+                }
+
                 if (Time % player.ActiveItem().useTime == 0)
                 {
                     SoundEngine.PlaySound(SoundID.DD2_BallistaTowerShot, weaponTipPos);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), weaponTipPos, Projectile.velocity.SafeNormalize(Vector2.UnitY) * Buzzkill.ShootSpeed, ModContent.ProjectileType<BuzzkillSaw>(), Projectile.damage, Projectile.knockBack, Main.myPlayer);
+                    NoSawOnHoldout = true;
+                    NoSawDuration = player.ActiveItem().useTime / 2;
+                    Recoil = 10;
                 }
+                if (Recoil > 0)
+                    Recoil--;
             }
 
 
@@ -100,7 +125,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.netUpdate = true;
                 }
             }
-            Vector2 holdoutOffset = Projectile.velocity * 20f + new Vector2(0f, -5f);
+            Vector2 holdoutOffset = Projectile.velocity * MathHelper.Clamp(20f - Recoil, 0f, 20f) + new Vector2(0f, -5f);
             Projectile.Center = armPosition + holdoutOffset;
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Projectile.spriteDirection = Projectile.direction;

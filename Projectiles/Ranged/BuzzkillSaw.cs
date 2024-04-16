@@ -133,8 +133,8 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.ai[1] > 10)
             {
                 Texture2D slashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BuzzkillSawSlash").Value;
-                Color drawColor = Color.White;
-                Main.EntitySpriteDraw(slashTexture, Projectile.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(-10f, 10f), Main.rand.NextFloat(-10f, 10f)), null, drawColor, Projectile.ai[1] * 7f, slashTexture.Size() / 2, 1f, SpriteEffects.None);
+                Color drawColor = new Color(200, 200, 200, 100);
+                Main.EntitySpriteDraw(slashTexture, Projectile.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f)), null, drawColor, Projectile.ai[1] * 7f, slashTexture.Size() / 2, 1f, SpriteEffects.None);
 
                 if (Projectile.ai[1] % 4 == 0)
                 {

@@ -19,8 +19,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.width = 20;
             Item.height = 12;
             Item.damage = 15;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 1f;
             Item.value = CalamityGlobalItem.Rarity4BuyPrice;
