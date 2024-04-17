@@ -187,7 +187,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
 
         // The holdout can deal damage; you're literally spinning up a buzzsaw at the end, after all.
-        public override bool? CanDamage() => Time > 30f;
+        public override bool? CanDamage() => Time > 30f && !NoSawOnHoldout;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Laceration>(), 180);
 
@@ -196,9 +196,9 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 weaponTipPos = player.RotatedRelativePoint(player.MountedCenter, true) + Projectile.velocity * Projectile.width * 0.5f;
             hitbox = new Rectangle((int)weaponTipPos.X - 19, (int)weaponTipPos.Y - 20, 38, 40);
 
-            if (Time / ChargeupTime >= 1f && !NoSawOnHoldout)
+            if (Time / ChargeupTime >= 1f)
                 hitbox.Inflate(60, 60);
-            else if (Time / ChargeupTime >= 0.25f && !NoSawOnHoldout)
+            else if (Time / ChargeupTime >= 0.25f)
                 hitbox.Inflate(25, 25);
         }
 
