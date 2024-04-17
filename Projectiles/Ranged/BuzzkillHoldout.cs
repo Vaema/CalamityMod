@@ -46,7 +46,14 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localNPCHitCooldown = 10;
         }
 
-        public override void KillHoldoutLogic() { }
+        public override void KillHoldoutLogic()
+        {
+            if (HeldItem.type != Owner.ActiveItem().type)
+            {
+                Projectile.Kill();
+                Projectile.netUpdate = true;
+            }
+        }
 
         public override void HoldoutAI()
         {
