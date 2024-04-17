@@ -1,5 +1,7 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -15,13 +17,13 @@ namespace CalamityMod.Projectiles.Ranged
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Buzzkill>();
 
         public ref float Time => ref Projectile.ai[0];
-        public const float ChargeupTime = 90f;
+        public const float ChargeupTime = 150f;
 
-        // These variables control the saw visually disappearing from the holdout when it fires.
+        // Controls the saw visually disappearing from the holdout when it fires.
         public bool NoSawOnHoldout = false;
-        public int NoSawDuration = 0;
+        // The current recoil of the weapon.
+        public float Recoil = 0f;
 
-        public int Recoil = 0;
 
         Player player => Main.player[Projectile.owner];
 
@@ -39,6 +41,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.ignoreWater = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -49,9 +53,53 @@ namespace CalamityMod.Projectiles.Ranged
             Time++;
 
             if (player.CantUseHoldout())
-                Projectile.Kill();
+            {
+                if (Projectile.ai[1] < 1f)
+                {
+                    Projectile.ai[1] = 1f;
+                    Projectile.timeLeft = 30;
+                    SoundEngine.PlaySound(SoundID.DD2_BallistaTowerShot, weaponTipPos);
+
+                    float sawDamageMult = MathHelper.Clamp(MathHelper.Lerp(1f, 4f, Time / ChargeupTime), 1f, 4f) / 2f; // The damage must be divided by 2 to offset the holdout having 2x base damage.
+                    int sawPierce = (int)MathHelper.Clamp(MathHelper.Lerp(2f, 6f, Time / ChargeupTime), 2f, 6f);
+
+                    bool useSmallSlash = (Time / ChargeupTime) >= 0.25f;
+                    bool useLargeSlash = (Time / ChargeupTime) >= 1f;
+                    float ai0 = 0;
+                    if (useSmallSlash)
+                        ai0++;
+                    if (useLargeSlash)
+                        ai0++;
+
+                    int buzzsaw = Projectile.NewProjectile(Projectile.GetSource_FromThis(), weaponTipPos, Projectile.velocity.SafeNormalize(Vector2.UnitY) * Buzzkill.ShootSpeed, ModContent.ProjectileType<BuzzkillSaw>(), (int)(Projectile.damage * sawDamageMult), (int)(Projectile.knockBack * (sawDamageMult / 2)), Main.myPlayer, ai0);
+                    Main.projectile[buzzsaw].penetrate = sawPierce;
+
+                    NoSawOnHoldout = true;
+                    Recoil = 4f + 8f * Math.Clamp(Time / ChargeupTime, 0f, 1f);
+
+                    for (int s = 0; s < 3; s++)
+                    {
+                        Vector2 sparkVelocity = new Vector2(6.5f, 0f);
+                        sparkVelocity = sparkVelocity.RotatedBy(Projectile.rotation + Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4) + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0));
+                        
+                        Particle weaponShootSparks = new AltLineParticle(weaponTipPos, sparkVelocity, false, 40, 0.7f, new Color(250, 250, 107));
+                        GeneralParticleHandler.SpawnParticle(weaponShootSparks);
+                    }
+                    for (int s2 = 0; s2 < 3; s2++)
+                    {
+                        Vector2 sparkVelocity = new Vector2(6.5f, 0f);
+                        sparkVelocity = sparkVelocity.RotatedBy(Projectile.rotation + Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4) + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0));
+
+                        Particle weaponShootSparks2 = new AltSparkParticle(weaponTipPos, sparkVelocity, false, 40, 0.7f, new Color(250, 250, 107));
+                        GeneralParticleHandler.SpawnParticle(weaponShootSparks2);
+                    }
+                }
+            }
             else
                 Projectile.timeLeft = 2;
+
+            if (Recoil > 0f)
+                Recoil--;
 
             if (Projectile.frame > 0)
             {
@@ -70,39 +118,46 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
+            if (Time > 30f && !NoSawOnHoldout)
+            {
+                if (Time % 3 == 0)
+                {
+                    Vector2 sparkVel = Main.rand.NextVector2CircularEdge(1f, 1f);
+                    sparkVel.SafeNormalize(Vector2.Zero);
+                    sparkVel *= Main.rand.NextFloat(3f, 4.5f) + (MathHelper.Clamp(Time / ChargeupTime, 0f, 1f) * 4);
+
+                    Particle buzzsawSparks = new AltLineParticle(weaponTipPos, sparkVel, false, 10, Utils.GetLerpValue(0.05f, 0.65f, Time / ChargeupTime, true), new Color(250, 250, 107));
+                    GeneralParticleHandler.SpawnParticle(buzzsawSparks);
+                }
+            }
+
             if (Time < ChargeupTime)
             {
                 if (Time == 1f)
                 {
                     // Insert charge-up sound
                     Main.NewText("Insert charge-up sound");
-
-                    // Reset recoil
                 }
+
                 if (Time > 30f && Projectile.frame == 0)
                     Projectile.frame = 1;
+
+                if (Time == ChargeupTime - 1)
+                {
+                    // Insert full charge sound
+                    Main.NewText("Insert full-charge sound maybe?");
+                }
             }
             else
             {
-                if (NoSawDuration > 0)
+                if (Time % 3 == 0)
                 {
-                    NoSawDuration--;
-                    if (NoSawDuration == 0)
-                        NoSawOnHoldout = false;
+                    Vector2 smokeVelocity = new Vector2(0f, Main.rand.NextFloat(-7f, -12f));
+                    smokeVelocity = smokeVelocity.RotatedByRandom(MathHelper.Pi / 8);
+                    Particle fullChargeSmoke = new HeavySmokeParticle(weaponTipPos + new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f)), smokeVelocity, Color.Gray, 30, 0.65f, 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), true);
+                    GeneralParticleHandler.SpawnParticle(fullChargeSmoke);
                 }
-
-                if (Time % player.ActiveItem().useTime == 0)
-                {
-                    SoundEngine.PlaySound(SoundID.DD2_BallistaTowerShot, weaponTipPos);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), weaponTipPos, Projectile.velocity.SafeNormalize(Vector2.UnitY) * Buzzkill.ShootSpeed, ModContent.ProjectileType<BuzzkillSaw>(), Projectile.damage, Projectile.knockBack, Main.myPlayer);
-                    NoSawOnHoldout = true;
-                    NoSawDuration = player.ActiveItem().useTime / 2;
-                    Recoil = 10;
-                }
-                if (Recoil > 0)
-                    Recoil--;
             }
-
 
             UpdateProjectileHeldValues(armPos);
             player.ChangeDir(Projectile.direction);
@@ -131,6 +186,42 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.spriteDirection = Projectile.direction;
         }
 
-        public override bool? CanDamage() => false;
+        // The holdout can deal damage; you're literally spinning up a buzzsaw at the end, after all.
+        public override bool? CanDamage() => Time > 30f;
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Laceration>(), 180);
+
+        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        {
+            Vector2 weaponTipPos = player.RotatedRelativePoint(player.MountedCenter, true) + Projectile.velocity * Projectile.width * 0.5f;
+            hitbox = new Rectangle((int)weaponTipPos.X - 19, (int)weaponTipPos.Y - 20, 38, 40);
+
+            if (Time / ChargeupTime >= 1f && !NoSawOnHoldout)
+                hitbox.Inflate(60, 60);
+            else if (Time / ChargeupTime >= 0.25f && !NoSawOnHoldout)
+                hitbox.Inflate(25, 25);
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Vector2 weaponTipPos = player.RotatedRelativePoint(player.MountedCenter, true) + Projectile.velocity * Projectile.width * 0.5f;
+            if (Time > 30f && !NoSawOnHoldout)
+            {
+                if (Time / ChargeupTime >= 1f)
+                {
+                    Texture2D largeSlashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BuzzkillSawLargeSlash").Value;
+                    Color drawColorLarge = new Color(200, 200, 200, 100);
+                    Main.EntitySpriteDraw(largeSlashTexture, weaponTipPos - Main.screenPosition + new Vector2(Main.rand.NextFloat(-8f, 8f), Main.rand.NextFloat(-8f, 8f)), null, drawColorLarge, -(Time * 7f), largeSlashTexture.Size() / 2, 1f, SpriteEffects.None);
+                }
+
+                if (Time / ChargeupTime >= 0.25f)
+                {
+                    Texture2D smallSlashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BuzzkillSawSmallSlash").Value;
+                    Color drawColorSmall = new Color(200, 200, 200, 100);
+                    Main.EntitySpriteDraw(smallSlashTexture, weaponTipPos - Main.screenPosition + new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f)), null, drawColorSmall, Time * 7f, smallSlashTexture.Size() / 2, 1f, SpriteEffects.None);
+                }
+            }
+            return true;
+        }
     }
 }

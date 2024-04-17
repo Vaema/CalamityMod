@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -24,9 +25,9 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.timeLeft = 480;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 1; // Saw pierce is set when the saw is spawned, due to it being dynamic based on charge.
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
+            Projectile.localNPCHitCooldown = 15;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
@@ -89,6 +90,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<Laceration>(), 120);
+
             for (int p = 0; p < 6; p++)
             {
                 Particle hitSparks = new AltLineParticle(target.Center, new Vector2(Main.rand.NextFloat(-6.5f, 6.5f), Main.rand.NextFloat(-6.5f, 6.5f)), false, 30, 0.6f, new Color(112, 16, 16));
@@ -100,6 +103,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/CeramicImpact", 2), Projectile.Center);
 
+            // TODO - Change this dust
             for (int d = 0; d < 8; d++)
             {
                 Vector2 dustVel = Main.rand.NextVector2CircularEdge(1f, 1f);
@@ -128,13 +132,35 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
+        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        {
+            if (Projectile.ai[0] == 2f)
+                hitbox.Inflate(60, 60);
+            else if (Projectile.ai[0] == 1f)
+                hitbox.Inflate(25, 25);
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.ai[1] > 10)
+            if (Projectile.ai[0] >= 2f)
             {
-                Texture2D slashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BuzzkillSawSlash").Value;
+                Texture2D largeSlashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BuzzkillSawLargeSlash").Value;
                 Color drawColor = new Color(200, 200, 200, 100);
-                Main.EntitySpriteDraw(slashTexture, Projectile.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f)), null, drawColor, Projectile.ai[1] * 7f, slashTexture.Size() / 2, 1f, SpriteEffects.None);
+                Main.EntitySpriteDraw(largeSlashTexture, Projectile.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(-8f, 8f), Main.rand.NextFloat(-8f, 8f)), null, drawColor, -(Projectile.ai[1] * 7f), largeSlashTexture.Size() / 2, 1f, SpriteEffects.None);
+
+                if (Projectile.ai[1] % 4 == 0)
+                {
+                    Vector2 randomParticleOffset = new Vector2(Main.rand.NextFloat(-Projectile.width * 1.75f, Projectile.width * 1.75f), Main.rand.NextFloat(-Projectile.width * 1.75f, Projectile.width * 1.75f));
+                    float randomParticleScale = Main.rand.NextFloat(0.65f, 0.95f);
+                    Particle bloomCircle = new BloomParticle(Projectile.Center + randomParticleOffset, Projectile.velocity, Main.rand.NextBool() ? Color.White : new Color(112, 16, 16), randomParticleScale, randomParticleScale, 4, false);
+                    GeneralParticleHandler.SpawnParticle(bloomCircle);
+                }
+            }
+            if (Projectile.ai[0] >= 1f)
+            {
+                Texture2D smallSlashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BuzzkillSawSmallSlash").Value;
+                Color drawColor = new Color(200, 200, 200, 100);
+                Main.EntitySpriteDraw(smallSlashTexture, Projectile.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f)), null, drawColor, Projectile.ai[1] * 7f, smallSlashTexture.Size() / 2, 1f, SpriteEffects.None);
 
                 if (Projectile.ai[1] % 4 == 0)
                 {

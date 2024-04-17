@@ -39,7 +39,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<BuzzkillHoldout>(), damage, knockback, player.whoAmI, 0f, 0f);
+            // The holdout deals 2x base damage.
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<BuzzkillHoldout>(), damage * 2, knockback, player.whoAmI, 0f, 0f);
             return false;
         }
 

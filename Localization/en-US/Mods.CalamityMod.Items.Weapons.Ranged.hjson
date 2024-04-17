@@ -202,7 +202,13 @@ BulletFilledShotgun: {
 
 Buzzkill: {
 	DisplayName: Buzzkill
-	Tooltip: Rapidly fires sawblades that slice through enemies and bounce off tiles
+	Tooltip:
+		'''
+		Hold <left> to charge up a powerful buzzsaw that deals close-range damage
+		Fired buzzsaws slice through foes, making them bleed, and can bounce off tiles
+		The longer it is charged, the more damage and more pierce the buzzsaw has
+		'Not to be confused with the Sawed-On Shotgun'
+		'''
 }
 
 ChickenCannon: {
