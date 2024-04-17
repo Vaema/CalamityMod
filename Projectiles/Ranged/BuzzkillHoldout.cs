@@ -22,6 +22,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override float OffsetXDownwards => 5f;
         public override float BaseOffsetY => -10f;
         public override float OffsetYDownwards => 10f;
+        public override Vector2 GunTipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.28f;
 
         public ref float Time => ref Projectile.ai[0];
         public const float ChargeupTime = 150f;
@@ -160,7 +161,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
 
         // The holdout can deal damage; you're literally spinning up a buzzsaw at the end, after all.
-        public override bool? CanDamage() => Time > 30f && !NoSawOnHoldout;
+        public override bool? CanDamage() => !NoSawOnHoldout;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Laceration>(), 180);
 
