@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 1f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -55,8 +55,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient(ItemID.Shotgun).
                 AddIngredient(ItemID.IllegalGunParts).
-                AddRecipeGroup("AnyCobaltBar", 5).
-                AddIngredient<EssenceofHavoc>(4).
+                AddRecipeGroup("AnyCobaltBar", 10).
                 AddTile(TileID.Anvils).
                 Register();
         }
