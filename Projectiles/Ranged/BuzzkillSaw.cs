@@ -53,8 +53,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            SoundEngine.PlaySound(Main.zenithWorld ? TileCollideGFB : SoundID.Item178, Projectile.Center); // Placeholder sound? Could fit
-
             for (int s = 0; s < 7; s++)
             {
                 Vector2 sparkVelocity = new Vector2();
@@ -81,6 +79,8 @@ namespace CalamityMod.Projectiles.Ranged
             }
             else
             {
+                SoundEngine.PlaySound(Main.zenithWorld ? TileCollideGFB : SoundID.Item178, Projectile.Center); // Placeholder sound
+
                 if (Projectile.velocity.X != oldVelocity.X)
                     Projectile.velocity.X = -oldVelocity.X;
                 if (Projectile.velocity.Y != oldVelocity.Y)

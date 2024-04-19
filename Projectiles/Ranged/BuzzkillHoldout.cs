@@ -151,12 +151,6 @@ namespace CalamityMod.Projectiles.Ranged
 
                 if (Time > 30f && Projectile.frame == 0)
                     Projectile.frame = 1;
-
-                if (Time == ChargeupTime - 1)
-                {
-                    // Insert full charge sound
-                    //Main.NewText("Insert full-charge sound maybe?");
-                }
             }
             else
             {
