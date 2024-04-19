@@ -5,6 +5,7 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -26,6 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public ref float Time => ref Projectile.ai[0];
         public const float ChargeupTime = 120f;
+        public SlotId ChargeIdle;
 
         // Controls the saw visually disappearing from the holdout when it fires.
         public bool NoSawOnHoldout = false;
@@ -59,11 +61,18 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Time++;
 
+            ActiveSound Idle;
+            if (SoundEngine.TryGetActiveSound(ChargeIdle, out Idle) && Idle.IsPlaying)
+                Idle.Position = GunTipPosition;
+
             if (Owner.CantUseHoldout())
             {
                 if (Projectile.ai[1] < 1f)
                 {
                     KeepRefreshingLifetime = false;
+
+                    if (SoundEngine.TryGetActiveSound(ChargeIdle, out Idle))
+                        Idle?.Stop();
 
                     Projectile.ai[1] = 1f;
                     Projectile.timeLeft = 30;
@@ -151,6 +160,9 @@ namespace CalamityMod.Projectiles.Ranged
             }
             else
             {
+                if ((Time + 240) % 360 == 0)
+                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawIdle") { Volume = Main.zenithWorld ? 1f : 0.5f }, GunTipPosition);
+
                 if (Time % 3 == 0)
                 {
                     Vector2 smokeVelocity = new Vector2(0f, Main.rand.NextFloat(-7f, -12f));
@@ -170,7 +182,11 @@ namespace CalamityMod.Projectiles.Ranged
         // The holdout can deal damage; you're literally spinning up a buzzsaw at the end, after all.
         public override bool? CanDamage() => !NoSawOnHoldout;
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Laceration>(), 240);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<Laceration>(), 240);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") { Volume = 0.7f }, GunTipPosition);
+        }
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
