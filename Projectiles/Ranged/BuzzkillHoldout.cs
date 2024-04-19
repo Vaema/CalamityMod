@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override Vector2 GunTipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.28f;
 
         public ref float Time => ref Projectile.ai[0];
-        public const float ChargeupTime = 150f;
+        public const float ChargeupTime = 120f;
 
         // Controls the saw visually disappearing from the holdout when it fires.
         public bool NoSawOnHoldout = false;
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.timeLeft = 30;
                     SoundEngine.PlaySound(SoundID.DD2_BallistaTowerShot, GunTipPosition);
 
-                    float sawDamageMult = MathHelper.Clamp(MathHelper.Lerp(1f, 4f, Time / ChargeupTime), 1f, 4f) / 2f; // The damage must be divided by 2 to offset the holdout having 2x base damage.
+                    float sawDamageMult = MathHelper.Clamp(MathHelper.Lerp(1f, 5f, Time / ChargeupTime), 1f, 4f) / 1.6f; // The damage must be divided by 1.6 to offset the holdout having 1.6x base damage.
                     int sawPierce = (int)MathHelper.Clamp(MathHelper.Lerp(2f, 6f, Time / ChargeupTime), 2f, 6f);
 
                     bool useSmallSlash = (Time / ChargeupTime) >= 0.25f;
@@ -137,7 +137,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Time == 1f)
                 {
                     // Insert charge-up sound
-                    Main.NewText("Insert charge-up sound");
+                    //Main.NewText("Insert charge-up sound");
                 }
 
                 if (Time > 30f && Projectile.frame == 0)
@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Time == ChargeupTime - 1)
                 {
                     // Insert full charge sound
-                    Main.NewText("Insert full-charge sound maybe?");
+                    //Main.NewText("Insert full-charge sound maybe?");
                 }
             }
             else
@@ -170,16 +170,16 @@ namespace CalamityMod.Projectiles.Ranged
         // The holdout can deal damage; you're literally spinning up a buzzsaw at the end, after all.
         public override bool? CanDamage() => !NoSawOnHoldout;
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Laceration>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Laceration>(), 240);
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
             hitbox = new Rectangle((int)GunTipPosition.X - 19, (int)GunTipPosition.Y - 20, 38, 40);
 
             if (Time / ChargeupTime >= 1f)
-                hitbox.Inflate(60, 60);
+                hitbox.Inflate(65, 65);
             else if (Time / ChargeupTime >= 0.25f)
-                hitbox.Inflate(25, 25);
+                hitbox.Inflate(28, 28);
         }
 
         public override bool PreDraw(ref Color lightColor)

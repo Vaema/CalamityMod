@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public const float ShootSpeed = 18f;
+        public const float ShootSpeed = 15f;
 
         public override void SetStaticDefaults()
         {
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 20;
             Item.height = 12;
-            Item.damage = 15;
+            Item.damage = 52;
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -41,12 +41,15 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.Calamity().canFirePointBlankShots = true;
         }
 
+        // Terraria seems to really dislike high crit values in SetDefaults
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 21;
+
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            // The holdout deals 2x base damage.
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<BuzzkillHoldout>(), damage * 2, knockback, player.whoAmI, 0f, 0f);
+            // The holdout deals 1.6x base damage.
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<BuzzkillHoldout>(), (int)(damage * 1.6), knockback, player.whoAmI, 0f, 0f);
             return false;
         }
 
