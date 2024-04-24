@@ -68,6 +68,7 @@ DrizzlefishFireSplit.DisplayName: Drizzlefish Flames
 DWArrow.DisplayName: Death's Arrow
 ElementalFire.DisplayName: Elemental Fire
 ElementalFlare.DisplayName: Elemental Flare
+ElementalSawProj.DisplayName: Elemental Buzzsaw
 ElysianArrowProj.DisplayName: Elysian Arrow
 ElysianArrowRain.DisplayName: Elysian Light
 EmesisGore.DisplayName: Rotten Gore
@@ -165,7 +166,6 @@ PristineFire.DisplayName: Pristine Fire
 PristineSecondary.DisplayName: Pristine Lingering Fire
 PumplerGrenade.DisplayName: Squash Shell
 P90Round.DisplayName: Armor-piercing Round
-RainbowBlast.DisplayName: Blast
 RainbowFront.DisplayName: Rainbow
 RainbowTrail.DisplayName: Rainbow
 RealmRavagerBullet.DisplayName: Explosive Bullet

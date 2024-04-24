@@ -207,7 +207,7 @@ Buzzkill: {
 	Tooltip:
 		'''
 		Hold <left> to charge up a powerful buzzsaw that deals close-range damage
-		Fired buzzsaws slice through foes, making them bleed, and can bounce off tiles
+		Fired buzzsaws slice through foes, lacerating them, and can bounce off tiles
 		The longer it is charged, the more damage and pierce the buzzsaw has
 		Does not consume ammo
 		'Not to be confused with the Sawed-On Shotgun'
@@ -441,11 +441,17 @@ Drataliornus: {
 		'''
 }
 
-ElementalBlaster: {
-	DisplayName: Elemental Blaster
+ElementalSaw: {
+	DisplayName: Elemental Saw
 	Tooltip:
 		'''
-		Fires a storm of rainbow blasts
+		Hold <left> to charge up a powerful elemental buzzsaw that deals close-range damage
+		Fired buzzsaws lacerate foes and inflict Elemental Mix, and can bounce off tiles
+		The longer it is charged, the more damage and pierce the buzzsaw has
+		Buzzsaws return to the player after exhausting their pierce, releasing homing bolts
+		Press <right> to propel a short distance and fire a lingering buzzsaw towards the cursor
+		This dash has a {0} second cooldown
+		While on cooldown, buzzsaws slightly home to the cursor and release homing bolts faster while returning
 		Does not consume ammo
 		'''
 }

@@ -1,11 +1,11 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.timeLeft = 30;
                     SoundEngine.PlaySound(SoundID.DD2_BallistaTowerShot, GunTipPosition);
 
-                    float sawDamageMult = MathHelper.Clamp(MathHelper.Lerp(1f, 5f, Time / ChargeupTime), 1f, 4f) / 1.6f; // The damage must be divided by 1.6 to offset the holdout having 1.6x base damage.
+                    float sawDamageMult = MathHelper.Clamp(MathHelper.Lerp(1f, 5f, Time / ChargeupTime), 1f, 5f) / 1.6f; // The damage must be divided by 1.6 to offset the holdout having 1.6x base damage.
                     int sawPierce = (int)MathHelper.Clamp(MathHelper.Lerp(2f, 6f, Time / ChargeupTime), 2f, 6f);
 
                     bool useSmallSlash = (Time / ChargeupTime) >= 0.25f;
