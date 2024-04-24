@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 4.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<AmidiasTridentProj>();
             Item.shootSpeed = 6f;

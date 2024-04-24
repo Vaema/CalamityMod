@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.noUseGraphic = true;
             Item.useAmmo = AmmoID.Rocket;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.9f, PitchVariance = 0.1f };

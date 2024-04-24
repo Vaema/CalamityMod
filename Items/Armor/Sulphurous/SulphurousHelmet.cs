@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Armor.Sulphurous
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.defense = 5;
         }

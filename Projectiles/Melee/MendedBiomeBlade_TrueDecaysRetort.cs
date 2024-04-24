@@ -132,7 +132,10 @@ namespace CalamityMod.Projectiles.Melee
             Owner.Calamity().LungingDown = true;
             PowerLungeStart = Owner.Center;
             dashTimer = 1f;
-            Owner.GiveIFrames(TrueBiomeBlade.EvilAttunement_SlashIFrames);
+
+            // 17APR2024: Ozzatron: Biome Blade's lunge gives iframes when striking enemies in a similar manner to a ram dash.
+            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+            Owner.GiveUniversalIFrames(TrueBiomeBlade.EvilAttunement_SlashIFrames);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects(Main.player[Projectile.owner].moonLeech);
@@ -160,7 +163,11 @@ namespace CalamityMod.Projectiles.Melee
             bounceStrength *= Owner.velocity.Y == 0 ? 0.2f : 1f; //Reduce the bounce if the player is on the ground
             Owner.velocity = -direction.SafeNormalize(Vector2.Zero) * MathHelper.Clamp(bounceStrength, 0f, 22f);
             CanBounce = 0f;
-            Owner.GiveIFrames(TrueBiomeBlade.EvilAttunement_BounceIFrames); // i frames for free!
+
+            // 17APR2024: Ozzatron: Biome Blade's bounce gives iframes when striking enemies in a similar manner to a bonk dash.
+            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+            Owner.GiveUniversalIFrames(TrueBiomeBlade.EvilAttunement_BounceIFrames);
+
             if (Owner.whoAmI == Main.myPlayer)
             {
                 if (Owner.HeldItem.ModItem is TrueBiomeBlade sword)

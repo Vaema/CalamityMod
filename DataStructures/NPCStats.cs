@@ -609,8 +609,7 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<CorruptSlimeSpawn>(), ModContent.ProjectileType<ShadeNimbusHostile>()), new int[] { 36, 56, 68, 80, 114 } },
                 { new Tuple<int, int>(ModContent.NPCType<CrimsonSlimeSpawn2>(), ModContent.ProjectileType<CrimsonSpike>()), new int[] { 24, 48, 60, 72, 96 } },
 
-                { new Tuple<int, int>(NPCID.WallofFleshEye, ProjectileID.EyeLaser), new int[] { 26, 52, 68, 80, 114 } },
-                { new Tuple<int, int>(NPCID.WallofFleshEye, ProjectileID.DeathLaser), new int[] { 36, 72, 88, 104, 150 } },
+                { new Tuple<int, int>(NPCID.WallofFleshEye, ProjectileID.EyeLaser), new int[] { 36, 72, 88, 104, 150 } },
                 { new Tuple<int, int>(NPCID.WallofFlesh, ProjectileID.DemonSickle), new int[] { 52, 92, 112, 132, 168 } },
                 { new Tuple<int, int>(NPCID.WallofFlesh, ProjectileID.Fireball), new int[] { 36, 72, 88, 104, 150 } },
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
@@ -6,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.UI
@@ -29,9 +31,9 @@ namespace CalamityMod.UI
 
         private static Texture2D GetApplicableBorder(CalamityPlayer modPlayer)
         {
-            if (modPlayer.Player.equippedWings != null && modPlayer.Player.wingTimeMax == 0)
+            if (modPlayer.Player.equippedWings != null && modPlayer.Player.wingTimeMax == 0 && modPlayer.Player.mount._data.flightTimeMax == 0)
                 return disabledBarTexture;
-            if (modPlayer.infiniteFlight && completedAnimation)
+            if ((modPlayer.infiniteFlight || RidingInfiniteFlightMount(modPlayer.Player)) && completedAnimation)
                 return infiniteBarTexture;
             if (modPlayer.weakPetrification || modPlayer.vHex || modPlayer.icarusFolly || modPlayer.DoGExtremeGravity)
                 return limitedBarTexture;
@@ -42,16 +44,18 @@ namespace CalamityMod.UI
         {
             Player player = modPlayer.Player;
             object result;
-            if (player.equippedWings != null && player.wingTimeMax == 0)
+            if (player.equippedWings != null && player.wingTimeMax == 0 && !(player.mount.Active && player.mount._data.flightTimeMax > 0))
                 result = 0;
-            if (modPlayer.infiniteFlight && completedAnimation)
+            if ((modPlayer.infiniteFlight || RidingInfiniteFlightMount(modPlayer.Player)) && completedAnimation)
             {
                 result = "∞"; //infinite flight
             }
             else
             {
-                int currentFlight = (int)player.wingTime;
-                int maxFlight = player.wingTimeMax;
+                bool ridingLimitedFlightMount = player.mount.Active && player.mount._data.flightTimeMax > 0;
+
+                int currentFlight = ridingLimitedFlightMount ? player.mount._flyTime + (int)(player.mount._data.fatigueMax - player.mount._fatigue) : (int)player.wingTime;
+                int maxFlight = ridingLimitedFlightMount ? player.mount._data.flightTimeMax + (int)player.mount._data.fatigueMax : player.wingTimeMax;
                 return (Math.Min(100f * currentFlight / maxFlight, 100f)).ToString("0.00"); // why the FUCK can wingtime be higher than max wingtime?????????
             }
 
@@ -101,7 +105,7 @@ namespace CalamityMod.UI
             CalamityPlayer modPlayer = player.Calamity();
 
             // If not drawing the flight bar, save its latest position to config and leave.
-            if (CalamityConfig.Instance.FlightBar && player.wingsLogic > 0)
+            if (CalamityConfig.Instance.FlightBar && (player.wingsLogic > 0 || (player.mount.Active && player.mount._data.flightTimeMax > 0)))
             {
                 DrawFlightBar(spriteBatch, modPlayer, screenPos);
             }
@@ -136,7 +140,7 @@ namespace CalamityMod.UI
                 if (!CalamityConfig.Instance.MeterPosLock)
                     Main.LocalPlayer.mouseInterface = true;
 
-                if (modPlayer.Player.equippedWings != null && modPlayer.Player.wingTimeMax > 0) //equipped wings and max wingtime above 0 (so not disabled bar)
+                if (modPlayer.Player.equippedWings != null && modPlayer.Player.wingTimeMax > 0 || (player.mount.Active && modPlayer.Player.mount._data.flightTimeMax > 0)) //equipped wings or riding a flying mount and max wingtime/flighttime above 0 (so not disabled bar)
                 {
                     string textToDisplay = CalamityUtils.GetText("UI.Flight").Format((GetFlightTime(modPlayer).ToString() + (modPlayer.infiniteFlight ? "" : "%"))); //the percent is here and not in localisation otherwise it looks like a dick when it's infinite flight
                     Main.instance.MouseText(textToDisplay, 0, 0, -1, -1, -1, -1);
@@ -186,8 +190,10 @@ namespace CalamityMod.UI
         {
             float uiScale = Main.UIScale;
             Player player = modPlayer.Player;
-            float flightRatio = Math.Min(player.wingTime / player.wingTimeMax, 1f); // why the FUCK can wingtime be higher than max wingtime?????????
-            if (!completedAnimation && FlightAnimFrame == -1 && modPlayer.infiniteFlight)
+            float flightRatio = 1;
+            if (!modPlayer.infiniteFlight && !RidingInfiniteFlightMount(player))
+                flightRatio = player.mount.Active && player.mount._data.flightTimeMax > 0 ? Math.Min((float)(player.mount._flyTime + (player.mount._data.fatigueMax - player.mount._fatigue)) / (player.mount._data.flightTimeMax + player.mount._data.fatigueMax), 1f) : Math.Min(player.wingTime / player.wingTimeMax, 1f); // why the FUCK can wingtime be higher than max wingtime?????????
+            if (!completedAnimation && FlightAnimFrame == -1 && (modPlayer.infiniteFlight || RidingInfiniteFlightMount(modPlayer.Player)))
                 FlightAnimFrame++;
             if (FlightAnimFrame > -1) //animation started, complete it.
             {
@@ -198,7 +204,7 @@ namespace CalamityMod.UI
                     {
                         FlightAnimFrame = -1;
                         FlightAnimTimer = 0;
-                        completedAnimation = modPlayer.infiniteFlight; //completed animation sets to true if infinite flight still exists
+                        completedAnimation = modPlayer.infiniteFlight || RidingInfiniteFlightMount(modPlayer.Player); //completed animation sets to true if infinite flight still exists
                     }
                     else
                     {
@@ -236,5 +242,17 @@ namespace CalamityMod.UI
                 spriteBatch.Draw(flightBarAnimTexture, screenPos + sizeDiffOffset, animCropRect, Color.White, 0f, origin * Main.UIScale, uiScale, SpriteEffects.None, 0);
             }
         }
+
+        private static bool RidingInfiniteFlightMount(Player player)
+        {
+            if (player.mount.Active && (player.mount._data.fatigueMax >= int.MaxValue - 1 || infiniteFlightMounts.Contains(player.mount.Type)))
+                return true;
+            return false;
+        }
+
+        public static List<int> infiniteFlightMounts = new List<int>
+        {
+            MountID.UFO, MountID.Drill, MountID.PirateShip, MountID.WitchBroom, MountID.CuteFishron
+        };
     }
 }

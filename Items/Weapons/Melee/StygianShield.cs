@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<StygianShieldAttack>();
             Item.shootSpeed = 10f;
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true; // Donor: Cin2Win
             Item.UseSound = null;

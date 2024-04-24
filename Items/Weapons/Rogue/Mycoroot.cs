@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.shoot = ModContent.ProjectileType<MycorootProj>();
             Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;

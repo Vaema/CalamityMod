@@ -18,6 +18,18 @@
         internal const float BalloonJumpSpeedBoost = 0.75f;
         #endregion
 
+        #region Immunity Frames
+        // Default immunity frame rules
+        internal const int VanillaDefaultIFrames = 40;
+        internal const int VanillaParryIFrames = 60;
+        internal const int VanillaDodgeIFrames = 80;
+
+        // In vanilla, the Cross Necklace grants +40 iframes to all hits except for in PvP (where it does nothing)
+        // and Brand of the Inferno (where it only gives +30 instead).
+        internal const int CrossNecklaceIFrameBoost = 40;
+        internal const int CrossNecklaceIFrameBoost_Parry = 30;
+        #endregion
+
         #region Dashes and Dodges
         // Dash cooldowns (in frames)
         internal const int UniversalDashCooldown = 30;

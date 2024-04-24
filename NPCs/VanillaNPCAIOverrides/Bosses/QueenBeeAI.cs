@@ -226,15 +226,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     // Velocity for the charges
                     if (masterMode)
-                        npc.ai[3] = charging ? ((phase6 ? 27f : phase5 ? 16f : phase4 ? 27f : phase2 ? 22f : 17f) + 6f * enrageScale) : 0f;
+                        npc.ai[3] = charging ? ((phase6 ? 27f : phase5 ? 16f : phase4 ? 27f : phase2 ? 22f : 17f) + 3f * enrageScale) : 0f;
                     else
-                        npc.ai[3] = charging ? ((phase6 ? 25f : phase5 ? 14f : phase4 ? 25f : phase2 ? 20f : 15f) + 6f * enrageScale) : 0f;
+                        npc.ai[3] = charging ? ((phase6 ? 25f : phase5 ? 14f : phase4 ? 25f : phase2 ? 20f : 15f) + 3f * enrageScale) : 0f;
 
                     // Distance for the charges
                     if (masterMode)
-                        calamityGlobalNPC.newAI[1] = charging ? ((phase6 ? 700f : phase5 ? 300f : phase4 ? 600f : phase2 ? 500f : 400f) - 100f * enrageScale) : 0f;
+                        calamityGlobalNPC.newAI[1] = charging ? ((phase6 ? 700f : phase5 ? 300f : phase4 ? 600f : phase2 ? 500f : 400f) - 50f * enrageScale) : 0f;
                     else
-                        calamityGlobalNPC.newAI[1] = charging ? ((phase6 ? 750f : phase5 ? 350f : phase4 ? 650f : phase2 ? 550f : 450f) - 100f * enrageScale) : 0f;
+                        calamityGlobalNPC.newAI[1] = charging ? ((phase6 ? 750f : phase5 ? 350f : phase4 ? 650f : phase2 ? 550f : 450f) - 50f * enrageScale) : 0f;
 
                     npc.SyncExtraAI();
                 }
@@ -317,8 +317,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[0] = 0f;
                     float chargeVelocityX = (phase4 ? 24f : phase2 ? 20f : 16f) + 8f * enrageScale;
                     float chargeVelocityY = (phase4 ? 18f : phase2 ? 15f : 12f) + 6f * enrageScale;
-                    float chargeAccelerationX = (phase4 ? 0.9f : phase2 ? 0.7f : 0.5f) + 0.5f * enrageScale;
-                    float chargeAccelerationY = (phase4 ? 0.45f : phase2 ? 0.35f : 0.25f) + 0.25f * enrageScale;
+                    float chargeAccelerationX = (phase4 ? 0.9f : phase2 ? 0.7f : 0.5f) + 0.25f * enrageScale;
+                    float chargeAccelerationY = (phase4 ? 0.45f : phase2 ? 0.35f : 0.25f) + 0.125f * enrageScale;
 
                     if (masterMode)
                     {
@@ -397,7 +397,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         shouldCharge = true;
                     }
                     if (enrageScale > 0f && shouldCharge)
-                        npc.velocity *= MathHelper.Lerp(0.3f, masterMode ? 0.8f : 1f, 1f - enrageScale / maxEnrageScale);
+                        npc.velocity *= MathHelper.Lerp(0.5f, masterMode ? 0.9f : 1f, 1f - enrageScale / maxEnrageScale);
 
                     // Keep moving
                     if (npc.ai[2] != 1f)
@@ -408,9 +408,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         float accelerateGateValue = phase6 ? 30f : phase5 ? 10f : 90f;
                         if (masterMode)
-                            accelerateGateValue *= 0.5f;
+                            accelerateGateValue *= 0.75f;
                         if (enrageScale > 0f)
-                            accelerateGateValue *= 0.5f;
+                            accelerateGateValue *= 0.75f;
 
                         calamityGlobalNPC.newAI[0] += 1f;
                         if (calamityGlobalNPC.newAI[0] > accelerateGateValue)
@@ -513,7 +513,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         chargeDeceleration += 0.1f;
                     }
                     if (enrageScale > 0f)
-                        npc.velocity *= MathHelper.Lerp(0.5f, 1f, 1f - enrageScale / maxEnrageScale);
+                        npc.velocity *= MathHelper.Lerp(0.7f, 1f, 1f - enrageScale / maxEnrageScale);
 
                     if (Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y) < chargeDeceleration)
                     {

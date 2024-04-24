@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.knockBack = 3.5f;
             Item.UseSound = ShootSound;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<CosmicFire>();

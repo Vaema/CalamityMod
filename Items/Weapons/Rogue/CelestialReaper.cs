@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.shoot = ModContent.ProjectileType<CelestialReaperProjectile>();
             Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;

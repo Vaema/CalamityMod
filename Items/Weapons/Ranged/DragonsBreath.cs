@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Gel;
 
             Item.rare = ModContent.RarityType<Violet>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
         public override bool CanConsumeAmmo(Item ammo, Player player) => !StrongShotMode && Main.rand.NextFloat() > 0.80f;
 

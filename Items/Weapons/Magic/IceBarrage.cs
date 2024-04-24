@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noMelee = true;
             Item.UseSound = CastSound;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
 

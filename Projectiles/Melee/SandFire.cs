@@ -17,9 +17,10 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.height = 6;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
+            Projectile.extraUpdates = 2;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.timeLeft = 60;
+            Projectile.timeLeft = 200;
         }
 
         public override void AI()
@@ -37,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 12f, 20f);
+            CalamityUtils.HomeInOnNPC(Projectile, true, 2000f, 10f, 20f);
         }
 
         public override void OnKill(int timeLeft)

@@ -127,7 +127,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ProjectileID.PurificationPowder;
             Item.knockBack = 5f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shootSpeed = 12f;
         }

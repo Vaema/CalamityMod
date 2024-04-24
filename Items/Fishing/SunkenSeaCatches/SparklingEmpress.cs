@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.shootSpeed = 14f;
             Item.shoot = ModContent.ProjectileType<SparklingLaser>();
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
         }
 
         //Looks scuffed with the laser when there is offset

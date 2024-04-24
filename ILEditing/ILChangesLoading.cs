@@ -10,6 +10,7 @@ using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.GameContent.Liquid;
+using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
 using Terraria.Graphics.Light;
 using Terraria.ModLoader;
@@ -80,6 +81,8 @@ namespace CalamityMod.ILEditing
             On_NPC.Collision_DecideFallThroughPlatforms += EnableCalamityBossPlatformCollision;
             IL_Wiring.HitWireSingle += AddTwinklersToStatue;
             On_Player.UpdateItemDye += FindCalamityItemDyeShader;
+            On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
+            On_Item.GetShimmered += ShimmerEffectEdits;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;

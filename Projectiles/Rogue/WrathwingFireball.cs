@@ -26,14 +26,14 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
-            AIType = ProjectileID.DD2BetsyFireball;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
         public override void AI()
         {
             // Cancel out the first ten frames of Betsy fireball gravity, and half of all gravity thereafter
-            Projectile.velocity.Y -= 0.1f;
+            Projectile.velocity.Y += 0.2f;
+            Projectile.velocity.X *= 0.99f;
 
             // Animation
             Projectile.frameCounter++;

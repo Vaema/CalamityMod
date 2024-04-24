@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 89;
             Item.knockBack = 12;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.useTime = 21;
             Item.useAnimation = 21;

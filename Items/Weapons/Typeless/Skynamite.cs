@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice / 10; // Crafted 10 at a time
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice / 10; // Crafted 10 at a time
             Item.rare = ItemRarityID.Orange;
         }
 

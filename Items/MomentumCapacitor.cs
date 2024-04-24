@@ -17,7 +17,7 @@ namespace CalamityMod.Items
         {
             Item.width = 28;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
 
             Item.useStyle = ItemUseStyleID.HoldUp;

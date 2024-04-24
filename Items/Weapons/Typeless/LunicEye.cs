@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.height = 36;
             Item.DamageType = AverageDamageClass.Instance;
             Item.damage = 9;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.useAnimation = 15;
             Item.useTime = 15;

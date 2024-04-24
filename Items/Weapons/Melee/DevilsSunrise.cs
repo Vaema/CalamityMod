@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = false;
             Item.useStyle = ItemUseStyleID.Shoot;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
 

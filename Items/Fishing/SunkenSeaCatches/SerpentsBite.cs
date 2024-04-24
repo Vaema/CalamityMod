@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
             Item.height = 32;
             Item.shootSpeed = SerpentsBiteHook.LaunchSpeed; // how quickly the hook is shot.
             Item.shoot = ProjectileType<SerpentsBiteHook>();
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
         }
     }

@@ -1,5 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -16,24 +20,35 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = false;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 30;
+            Projectile.timeLeft = 2;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = -1;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.ai[1] == 0)
+                target.AddBuff(BuffID.Daybreak, 300);
+            if (Projectile.ai[1] == 1)
+                    target.AddBuff(BuffID.Electrified, 300);
+            if (Projectile.ai[1] == 2)
+                target.AddBuff(ModContent.BuffType<Plague>(), 300);
+
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.8f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
 
-        public override void AI()
+        public override void OnKill(int timeLeft)
         {
-            Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.75f / 255f, (255 - Projectile.alpha) * 0.5f / 255f, (255 - Projectile.alpha) * 0.01f / 255f);
-            Vector2 dustVel = CalamityUtils.RandomVelocity(120f, 36f, 108f, 1f);
-            int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool() ? 221 : 244, 0f, 0f, 100, default, 2f);
-            Dust dust = Main.dust[idx];
-            dust.noGravity = true;
-            dust.position.X = Projectile.Center.X;
-            dust.position.Y = Projectile.Center.Y;
-            dust.position.X += Main.rand.NextFloat(-10f, 10f);
-            dust.position.Y += Main.rand.NextFloat(-10f, 10f);
-            dust.velocity = dustVel;
+            
         }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            return false;
+        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 400, targetHitbox);
     }
 }

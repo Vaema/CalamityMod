@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 75;
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<DevourerofCodsBobber>();
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
 

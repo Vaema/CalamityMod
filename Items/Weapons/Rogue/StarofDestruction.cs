@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 10f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.shoot = ModContent.ProjectileType<DestructionStar>();
             Item.shootSpeed = 5f;

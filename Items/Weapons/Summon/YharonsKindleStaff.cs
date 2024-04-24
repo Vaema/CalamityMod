@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useTime = Item.useAnimation = 10;
             Item.noMelee = true;
             Item.knockBack = 7f;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.UseSound = CommonCalamitySounds.FlareSound;
             Item.autoReuse = true;

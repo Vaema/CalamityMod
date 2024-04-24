@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useAnimation = 33;
             Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.shoot = ModContent.ProjectileType<EradicatorProjectile>();
             Item.shootSpeed = Speed;

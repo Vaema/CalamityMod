@@ -182,7 +182,11 @@ namespace CalamityMod.Projectiles.Melee
                 Shred += 62; //Augment the shredspeed
                 if (Owner.velocity.Y > 0)
                     Owner.velocity.Y = -2f; //Get "stuck" into the enemy partly
-                Owner.GiveIFrames(BrokenBiomeBlade.HotAttunement_ShredIFrames); // i framez.
+
+                // 17APR2024: Ozzatron: Broken Biome Blade's pogo gives iframes when striking enemies in a similar manner to a bonk dash.
+                // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                Owner.GiveUniversalIFrames(BrokenBiomeBlade.HotAttunement_ShredIFrames);
+
                 PogoCooldown = 20;
             }
         }

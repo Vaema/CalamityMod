@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Events;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.UI;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -288,7 +289,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (npc.ai[0] >= 30f && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     npc.ai[1] = 0f;
-                    npc.ai[0] = 0f;
+                    npc.ai[0] = -15f;
                     npc.netUpdate = true;
                     npc.TargetClosest();
                 }
@@ -296,7 +297,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (Main.netMode == NetmodeID.MultiplayerClient && npc.ai[0] >= 60f)
                 {
                     npc.ai[1] = 0f;
-                    npc.ai[0] = 0f;
+                    npc.ai[0] = -15f;
                     npc.TargetClosest();
                 }
 
@@ -749,7 +750,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (npc.ai[0] >= 30f && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     npc.ai[1] = 0f;
-                    npc.ai[0] = 0f;
+                    npc.ai[0] = -15f;
                     npc.netUpdate = true;
                     npc.TargetClosest();
                 }
@@ -757,7 +758,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (Main.netMode == NetmodeID.MultiplayerClient && npc.ai[0] >= 60f)
                 {
                     npc.ai[1] = 0f;
-                    npc.ai[0] = 0f;
+                    npc.ai[0] = -15f;
                     npc.TargetClosest();
                 }
 
@@ -782,22 +783,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (!flag7)
                 {
-                    npc.ai[0] += 2f;
-                    if ((double)npc.life < (double)npc.lifeMax * 0.8)
-                        npc.ai[0] += 1f;
-
-                    if ((double)npc.life < (double)npc.lifeMax * 0.6)
-                        npc.ai[0] += 1f;
-
-                    if ((double)npc.life < (double)npc.lifeMax * 0.4)
-                        npc.ai[0] += 2f;
-
-                    if ((double)npc.life < (double)npc.lifeMax * 0.2)
-                        npc.ai[0] += 3f;
-
-                    if ((double)npc.life < (double)npc.lifeMax * 0.1)
-                        npc.ai[0] += 4f;
-
+                    npc.ai[0] += (MathHelper.Lerp(1f, 13f, 1f - npc.life / (float)npc.lifeMax));
                     if (npc.ai[0] >= 0f)
                     {
                         // Set damage
@@ -809,21 +795,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             npc.velocity.Y = -13f;
                             npc.velocity.X += (Main.masterMode ? 5.25f : 3.5f) * (float)npc.direction;
-                            npc.ai[0] = -(Main.masterMode ? 160f : 200f);
+                            npc.ai[0] = -(Main.masterMode ? 140f : 180f);
                             npc.ai[1] = 0f;
                         }
                         else if (npc.ai[1] == 2f)
                         {
                             npc.velocity.Y = -6f;
                             npc.velocity.X += (Main.masterMode ? 6.75f : 4.5f) * (float)npc.direction;
-                            npc.ai[0] = -(Main.masterMode ? 100f : 120f);
+                            npc.ai[0] = -(Main.masterMode ? 80f : 100f);
                             npc.ai[1] += 1f;
                         }
                         else
                         {
                             npc.velocity.Y = -8f;
                             npc.velocity.X += (Main.masterMode ? 6f : 4f) * (float)npc.direction;
-                            npc.ai[0] = -(Main.masterMode ? 100f : 120f);
+                            npc.ai[0] = -(Main.masterMode ? 80f : 100f);
                             npc.ai[1] += 1f;
                         }
                     }
@@ -905,7 +891,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static void GetPlaceToTeleportTo(NPC npc)
         {
             npc.TargetClosest(false);
-            float distanceAhead = 640f;
+            float distanceAhead = 800f;
             Vector2 randomDefault = Main.rand.NextBool() ? Vector2.UnitX : -Vector2.UnitX;
             Vector2 vectorAimedAheadOfTarget = Main.player[npc.target].Center + new Vector2((float)Math.Round(Main.player[npc.target].velocity.X), 0f).SafeNormalize(randomDefault) * distanceAhead;
             Point predictiveTeleportPoint = vectorAimedAheadOfTarget.ToTileCoordinates();

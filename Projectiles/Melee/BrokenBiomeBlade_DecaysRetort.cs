@@ -113,7 +113,10 @@ namespace CalamityMod.Projectiles.Melee
             bounceStrength *= Owner.velocity.Y == 0 ? 0.2f : 1f; //Reduce the bounce if the player is on the ground
             Owner.velocity = -direction.SafeNormalize(Vector2.Zero) * MathHelper.Clamp(bounceStrength, 0f, 22f);
             CanBounce = 0f;
-            Owner.GiveIFrames(BrokenBiomeBlade.EvilAttunement_BounceIFrames); // i frames for free!
+
+            // 17APR2024: Ozzatron: Broken Biome Blade's lunge gives iframes when striking enemies in a similar manner to a bonk dash.
+            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+            Owner.GiveUniversalIFrames(BrokenBiomeBlade.EvilAttunement_BounceIFrames);
         }
 
         public override bool PreDraw(ref Color lightColor)

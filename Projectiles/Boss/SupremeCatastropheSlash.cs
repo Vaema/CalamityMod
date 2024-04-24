@@ -200,7 +200,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.ai[1] == 0f)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/SupremeCatastropheSlashAlt").Value;
 
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             drawPosition -= Projectile.velocity.SafeNormalize(Vector2.UnitX) * 38f;
             Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
 
@@ -222,6 +222,6 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || Projectile.Opacity != 1f && Projectile.ai[2] < 4 || !dashSlashExplode && Projectile.ai[2] >= 4)
                 return;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, (Projectile.ai[1] == 5 ? 70 : Projectile.ai[2] >= 4 ? 100 : 50), targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, (Projectile.ai[1] == 5 ? 70 : Projectile.ai[2] >= 4 ? 100 : 43), targetHitbox);
     }
 }

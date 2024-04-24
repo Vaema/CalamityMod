@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shootSpeed = 10f; // Affects bullet speed
             Item.DamageType = DamageClass.Summon;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
 

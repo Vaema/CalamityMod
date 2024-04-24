@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.noUseGraphic = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
 
             Item.UseSound = SoundID.Item1;

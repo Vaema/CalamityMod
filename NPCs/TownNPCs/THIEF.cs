@@ -111,6 +111,7 @@ namespace CalamityMod.NPCs.TownNPCs
             "Goose", // <@!591421917706321962> (DullElili#8016)
             "Jackson", // <@!525827730646892549> (ChowChow, Sin of Sleep Schedules#1235)
             "Altarca", // <@!1140673052108128337> (altarca_27226_49175)
+            "Jackie", // <@!353241811717718016> (jackalchan)
 
             // Original names
             this.GetLocalizedValue("Name.Laura"),

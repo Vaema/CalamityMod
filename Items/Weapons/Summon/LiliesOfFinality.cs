@@ -49,35 +49,33 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = 36;
             Item.height = 50;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = RarityType<Violet>();
             Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.UseSound = new("CalamityMod/Sounds/Item/LiliesOfFinalitySummonSpawn");
         }
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0 && player.maxMinions - player.slotsMinions >= 2;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.maxMinions - player.slotsMinions >= 2)
+            Projectile.NewProjectileDirect(source, Main.MouseWorld, new Vector2(-1f, -1f) * 3f, type, damage, knockback, player.whoAmI);
+            Projectile.NewProjectileDirect(source, Main.MouseWorld, new Vector2(1f, -1f) * 3f, ProjectileType<LiliesOfFinalityAriane>(), damage, knockback, player.whoAmI);
+
+            if (Main.dedServ)
+                return false;
+
+            int dustAmount = Main.rand.Next(30, 40 + 1);
+            for (int i = 0; i < dustAmount; i++)
             {
-                Projectile.NewProjectileDirect(source, Main.MouseWorld, new Vector2(-1f, -1f) * 3f, type, damage, knockback, player.whoAmI);
-                Projectile.NewProjectileDirect(source, Main.MouseWorld, new Vector2(1f, -1f) * 3f, ProjectileType<LiliesOfFinalityAriane>(), damage, knockback, player.whoAmI);
-
-                if (Main.dedServ)
-                    return false;
-
-                int dustAmount = Main.rand.Next(30, 40 + 1);
-                for (int i = 0; i < dustAmount; i++)
-                {
-                    float angle = MathHelper.TwoPi / dustAmount * i;
-                    Vector2 dustVelocity = angle.ToRotationVector2() * Main.rand.NextFloat(3f, 6f);
-                    Dust spawnDust = Dust.NewDustPerfect(
-                        Main.MouseWorld,
-                        CommonDustID,
-                        dustVelocity,
-                        Scale: Main.rand.NextFloat(1.2f, 1.5f));
-                    spawnDust.noGravity = true;
-                }
+                float angle = MathHelper.TwoPi / dustAmount * i;
+                Vector2 dustVelocity = angle.ToRotationVector2() * Main.rand.NextFloat(3f, 6f);
+                Dust spawnDust = Dust.NewDustPerfect(
+                    Main.MouseWorld,
+                    CommonDustID,
+                    dustVelocity,
+                    Scale: Main.rand.NextFloat(1.2f, 1.5f));
+                spawnDust.noGravity = true;
             }
             return false;
         }

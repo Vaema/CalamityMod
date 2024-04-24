@@ -12,6 +12,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -419,7 +420,7 @@ namespace CalamityMod.NPCs.Other
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Rectangle frameUsed = texture.Frame(2, 7, 0, 1); // the idle frame by default
             Rectangle squintFrame = texture.Frame(2, 7, 0, 0);
 

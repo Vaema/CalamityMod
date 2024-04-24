@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 10;
             Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<WulfrumBobber>();
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
         }
 
         public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)

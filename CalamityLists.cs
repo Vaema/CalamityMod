@@ -94,13 +94,6 @@ namespace CalamityMod
         public static List<int> frostMoonBuffList;
         public static List<int> eclipseBuffList;
         public static List<int> eventProjectileBuffList;
-        public static List<int> revengeanceEnemyBuffList25Percent;
-        public static List<int> revengeanceEnemyBuffList20Percent;
-        public static List<int> revengeanceEnemyBuffList15Percent;
-        public static List<int> revengeanceEnemyBuffList10Percent;
-        public static List<int> revengeanceProjectileBuffList25Percent;
-        public static List<int> revengeanceProjectileBuffList20Percent;
-        public static List<int> revengeanceProjectileBuffList15Percent;
         public static List<int> noRageWormSegmentList;
         public static List<int> needsDebuffIconDisplayList;
         public static List<int> scopedWeaponList;
@@ -908,12 +901,16 @@ namespace CalamityMod
             enemyImmunityList = new List<int>()
             {
                 NPCID.KingSlime,
+                NPCType<KingSlimeJewel>(),
+                NPCType<KingSlimeJewel2>(),
+                NPCType<KingSlimeJewel3>(),
                 NPCID.EaterofWorldsHead,
                 NPCID.EaterofWorldsBody,
                 NPCID.EaterofWorldsTail,
                 NPCID.BrainofCthulhu,
                 NPCID.Creeper,
                 NPCID.EyeofCthulhu,
+                NPCType<BloodlettingServant>(),
                 NPCID.QueenBee,
                 NPCID.SkeletronHead,
                 NPCID.SkeletronHand,
@@ -1370,143 +1367,6 @@ namespace CalamityMod
                 ProjectileID.EyeLaser,
                 ProjectileID.Nail,
                 ProjectileID.DrManFlyFlask
-            };
-
-            // Enemies that inflict an average of 1 to 50 damage in Expert Mode
-            revengeanceEnemyBuffList25Percent = new List<int>()
-            {
-                NPCID.GiantWormHead,
-                NPCID.BlazingWheel,
-                NPCType<Cnidrion>(),
-                NPCType<PrismBack>(),
-                NPCType<GhostBell>()
-            };
-
-            // Enemies that inflict an average of 51 to 100 damage in Expert Mode
-            revengeanceEnemyBuffList20Percent = new List<int>()
-            {
-                NPCID.DevourerHead,
-                NPCID.MeteorHead,
-                NPCID.BoneSerpentHead,
-                NPCID.ManEater,
-                NPCID.Snatcher,
-                NPCID.Piranha,
-                NPCID.Shark,
-                NPCID.SpikeBall,
-                NPCID.DiggerHead,
-                NPCID.WallCreeper,
-                NPCID.WallCreeperWall,
-                NPCID.Lihzahrd,
-                NPCID.Pumpking,
-                NPCID.SlimeSpiked,
-                NPCType<EutrophicRay>(),
-                NPCType<Clam>(),
-                NPCType<SeaSerpent1>(),
-                NPCType<GiantClam>(),
-                NPCType<FearlessGoldfishWarrior>()
-            };
-
-            // Enemies that inflict an average of 101 to 200 damage in Expert Mode
-            revengeanceEnemyBuffList15Percent = new List<int>()
-            {
-                NPCID.DD2Betsy,
-                NPCID.Mimic,
-                NPCID.WyvernHead,
-                NPCID.SeekerHead,
-                NPCID.AnglerFish,
-                NPCID.Werewolf,
-                NPCID.Wraith,
-                NPCID.Arapaima,
-                NPCID.BlackRecluse,
-                NPCID.BlackRecluseWall,
-                NPCID.AngryTrapper,
-                NPCID.LihzahrdCrawler,
-                NPCID.PirateCaptain,
-                NPCID.FlyingSnake,
-                NPCID.Reaper,
-                NPCID.Paladin,
-                NPCID.BoneLee,
-                NPCID.MourningWood,
-                NPCID.PumpkingBlade,
-                NPCID.PresentMimic,
-                NPCID.Everscream,
-                NPCID.IceQueen,
-                NPCID.SantaNK1,
-                NPCID.StardustWormHead,
-                NPCID.Butcher,
-                NPCID.Psycho,
-                NPCID.DeadlySphere,
-                NPCID.BigMimicCorruption,
-                NPCID.BigMimicCrimson,
-                NPCID.BigMimicHallow,
-                NPCID.Mothron,
-                NPCID.DuneSplicerHead,
-                NPCID.SandShark,
-                NPCID.SandsharkCorrupt,
-                NPCID.SandsharkCrimson,
-                NPCID.SandsharkHallow,
-                NPCType<Atlas>(),
-                NPCType<ArmoredDiggerHead>(),
-                NPCType<GreatSandShark>(),
-                NPCType<Horse>(),
-                NPCType<ScornEater>(),
-                NPCType<BlindedAngler>()
-            };
-
-            // Enemies that inflict an average of 201 to 400 damage in Expert Mode
-            revengeanceEnemyBuffList10Percent = new List<int>()
-            {
-                NPCID.SolarCrawltipedeHead,
-                NPCType<BobbitWormHead>(),
-                NPCType<ColossalSquid>(),
-                NPCType<EidolonWyrmHead>(),
-                NPCType<GulperEelHead>(),
-                NPCType<Mauler>(),
-                NPCType<ReaperShark>()
-            };
-
-            revengeanceProjectileBuffList25Percent = new List<int>()
-            {
-                ProjectileID.SandBallFalling,
-                ProjectileID.AshBallFalling,
-                ProjectileID.EbonsandBallFalling,
-                ProjectileID.PearlSandBallFalling,
-                ProjectileID.CrimsandBallFalling,
-                ProjectileID.GeyserTrap
-            };
-
-            revengeanceProjectileBuffList20Percent = new List<int>()
-            {
-                ProjectileID.PoisonDartTrap,
-                ProjectileID.DemonSickle,
-                ProjectileID.SandnadoHostile,
-                ProjectileID.DD2BetsyFireball,
-                ProjectileID.DD2BetsyFlameBreath
-            };
-
-            revengeanceProjectileBuffList15Percent = new List<int>()
-            {
-                ProjectileID.SpikyBallTrap,
-                ProjectileID.SpearTrap,
-                ProjectileID.FlamethrowerTrap,
-                ProjectileID.FlamesTrap,
-                ProjectileID.PaladinsHammerHostile,
-                ProjectileID.FlamingWood,
-                ProjectileID.FlamingScythe,
-                ProjectileID.FrostWave,
-                ProjectileID.Present,
-                ProjectileID.Spike,
-                ProjectileID.SaucerDeathray,
-                ProjectileID.NebulaBolt,
-                ProjectileID.NebulaSphere,
-                ProjectileID.NebulaLaser,
-                ProjectileID.StardustSoldierLaser,
-                ProjectileID.VortexLaser,
-                ProjectileID.VortexVortexLightning,
-                ProjectileID.VortexLightning,
-                ProjectileID.VortexAcid,
-                ProjectileType<PearlBurst>(),
-                ProjectileType<PearlRain>()
             };
 
             noRageWormSegmentList = new List<int>()
@@ -2029,6 +1889,7 @@ namespace CalamityMod
                 ProjectileID.NettleBurstEnd,
                 ProjectileID.NettleBurstLeft,
                 ProjectileID.NettleBurstRight,
+                ProjectileType<AtlantisSpear>(),
                 ProjectileType<AuroraFire>(),
                 ProjectileType<BallisticPoisonCloud>(),
                 ProjectileType<DuststormCloudHitbox>()
@@ -2776,13 +2637,6 @@ namespace CalamityMod
             frostMoonBuffList = null;
             eclipseBuffList = null;
             eventProjectileBuffList = null;
-            revengeanceEnemyBuffList25Percent = null;
-            revengeanceEnemyBuffList20Percent = null;
-            revengeanceEnemyBuffList15Percent = null;
-            revengeanceEnemyBuffList10Percent = null;
-            revengeanceProjectileBuffList25Percent = null;
-            revengeanceProjectileBuffList20Percent = null;
-            revengeanceProjectileBuffList15Percent = null;
             noRageWormSegmentList = null;
             needsDebuffIconDisplayList = null;
             scopedWeaponList = null;

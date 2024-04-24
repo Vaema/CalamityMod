@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Armor.Silva
         {
             Item.width = 28;
             Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 13; //110
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

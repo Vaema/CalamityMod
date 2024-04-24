@@ -305,9 +305,15 @@ CalamityConfig: {
 			'''
 	}
 
-	Screenshake: {
-		Label: "[i:CalamityMod/WavePounder] Screenshake"
-		Tooltip: Enable or disable all screen-shaking effects.
+	ScreenshakePower: {
+		Label: "[i:CalamityMod/WavePounder] Screenshake Power"
+		Tooltip:
+			'''
+			How intense screen-shaking effects are.
+			Set to zero to disable screen-shaking entirely.
+			[c/FF232C:All screen-shake visuals are balanced around a value of 1.]
+			[c/FF232C:Higher values may be nauseating or otherwise bad for some.]
+			'''
 	}
 
 	ShopNewAlert: {

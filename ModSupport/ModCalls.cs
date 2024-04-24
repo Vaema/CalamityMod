@@ -16,6 +16,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent.UI.Elements;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -553,6 +554,23 @@ namespace CalamityMod
             DifficultyModeSystem.Difficulties.Add(newMode);
             DifficultyModeSystem.CalculateDifficultyData();
         }
+
+        public static void AddWorldScreenDifficulty(string name, Func<AWorldListItem, bool> function, Color color, int index = -1)
+        {
+            // Construct the difficulty
+            WorldSelectionDifficultySystem.WorldDifficulty difficulty = new WorldSelectionDifficultySystem.WorldDifficulty(name, function, color);
+
+            // Add the new difficulty 
+            // If no index was provided, just add it to the end of the list, otherwise insert it at the desired spot on the list
+            if (index == -1)
+            {
+                WorldSelectionDifficultySystem.WorldDifficulties.Add(difficulty);
+            }
+            else
+            {
+                WorldSelectionDifficultySystem.WorldDifficulties.Insert(index, difficulty);
+            }
+        }
         #endregion
 
         #region Rogue Class
@@ -1001,9 +1019,6 @@ namespace CalamityMod
                 "StarlightFuelCell" => player.Calamity().adrenalineBoostTwo,
                 "Ectoheart" => player.Calamity().adrenalineBoostThree,
 
-                "HermitsBox" => player.Calamity().healToFull,
-                "HermitsBoxofOneHundredMedicines" => player.Calamity().healToFull,
-
                 "CelestialOnion" => player.Calamity().extraAccessoryML,
 
                 _ => false, // Return false if no case is found
@@ -1032,9 +1047,6 @@ namespace CalamityMod
                 case "ElectrolyteGelPack": player.Calamity().adrenalineBoostOne = value; break;
                 case "StarlightFuelCell": player.Calamity().adrenalineBoostTwo = value; break;
                 case "Ectoheart": player.Calamity().adrenalineBoostThree = value; break;
-
-                case "HermitsBox": player.Calamity().healToFull = value; break;
-                case "HermitsBoxofOneHundredMedicines": player.Calamity().healToFull = value; break;
 
                 case "CelestialOnion": player.Calamity().extraAccessoryML = value; break;
             };
@@ -1167,6 +1179,36 @@ namespace CalamityMod
                         return new ArgumentException("ERROR: A class inheriting from 'DifficultyMode' must be provided.");
                     AddCustomDifficulty(mode);
                     return null;
+
+                case "AddWorldScreenDifficulty":
+                case "AddWorldSelectionDifficulty":
+                    {
+                        if (args.Length < 2)
+                            return new ArgumentNullException("ERROR: Must specify a difficulty mode name as a string.");
+                        if (args.Length < 3)
+                            return new ArgumentNullException("ERROR: Must specify a Func<AWorldListItem, bool>.");
+                        if (args.Length < 4)
+                            return new ArgumentNullException("ERROR: Must specify a Color.");
+
+                        if (args.Length >= 5)
+                        {
+                            if (!(args[4] is int))
+                                return new ArgumentException("ERROR: The fourth argument to \"AddWorldScreenDifficulty\" must be an int.");
+                        }
+                        if (!(args[3] is Color color))
+                            return new ArgumentException("ERROR: The third argument to \"AddWorldScreenDifficulty\" must be a Color.");
+                        if (!(args[2] is Func<AWorldListItem, bool> worldFunction))
+                            return new ArgumentException("ERROR: The second argument to \"AddWorldScreenDifficulty\" must be a Func<AWorldListItem, bool>.");
+                        if (!(args[1] is string))
+                            return new ArgumentException("ERROR: The first argument to \"AddWorldScreenDifficulty\" must be a string.");
+
+                        if (args.Length >= 5)
+                            AddWorldScreenDifficulty(args[1].ToString(), worldFunction, color, (int)args[4]);
+                        else
+                            AddWorldScreenDifficulty(args[1].ToString(), worldFunction, color);
+                        return null;
+                    }
+
 
                 case "GetLight":
                 case "GetLightLevel":

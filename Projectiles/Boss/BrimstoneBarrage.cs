@@ -16,6 +16,7 @@ namespace CalamityMod.Projectiles.Boss
     public class BrimstoneBarrage : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+        public int time = 0;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
@@ -97,7 +98,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // This only runs for SCal projectiles.
-            if (Projectile.ai[1] == 2f)
+            if (Projectile.ai[1] == 2f || (Projectile.ai[1] == 4f && time > 10))
             {
                 if (targetDist < 1400f)
                 {
@@ -128,6 +129,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             Lighting.AddLight(Projectile.Center, 0.75f * Projectile.Opacity, 0f, 0f);
+            time++;
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;

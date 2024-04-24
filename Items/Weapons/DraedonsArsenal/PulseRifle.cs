@@ -19,6 +19,9 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/PulseRifleFire");
 
+        private int BaseDamage = 1000;
+        public int FiringTimer = 30;
+
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
@@ -26,17 +29,17 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 62;
             Item.height = 22;
             Item.DamageType = DamageClass.Ranged;
-            Item.damage = 1200;
+            Item.damage = BaseDamage;
             Item.knockBack = 0f;
-            Item.useTime = 35;
-            Item.useAnimation = 35;
+            Item.useTime = 55;
+            Item.useAnimation = 55;
             Item.autoReuse = true;
 
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = FireSound;
+            Item.UseSound = null;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
 
             Item.shoot = ModContent.ProjectileType<PulseRifleShot>();
@@ -49,16 +52,9 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (velocity.Length() > 5f)
-            {
-                velocity.Normalize();
-                velocity *= 5f;
-            }
+            SoundEngine.PlaySound(FireSound with { Volume = 0.7f, Pitch = 0.3f });
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<PulseRifleShot>(), damage, knockback, player.whoAmI, 0f, 0f);
 
-            float SpeedX = velocity.X + (float)Main.rand.Next(-1, 2) * 0.05f;
-            float SpeedY = velocity.Y + (float)Main.rand.Next(-1, 2) * 0.05f;
-
-            Projectile.NewProjectile(source, position, new Vector2(SpeedX, SpeedY), ModContent.ProjectileType<PulseRifleShot>(), damage, knockback, player.whoAmI, 0f, 0f);
             return false;
         }
 

@@ -173,11 +173,12 @@ VanquisherArrow: {
 		'''
 }
 
-VeriumBullet: {
-	DisplayName: Verium Bullet
+VeriumBolt: {
+	DisplayName: Verium Bolt
 	Tooltip:
 		'''
-		There is no escape!
-		Homes in after striking an enemy
+		Marks enemies on hit, dealing extra damage after a short time
+		This damage stacks based on how many bolts hit the enemy
+		'There is no escape...'
 		'''
 }

@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 15;
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<CraniumSmasherProj>();
             Item.shootSpeed = 20f;

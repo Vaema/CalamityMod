@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = Yharon.ShortRoarSound;
             Item.channel = true;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
 

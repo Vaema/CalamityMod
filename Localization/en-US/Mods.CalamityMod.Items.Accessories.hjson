@@ -2029,6 +2029,11 @@ AbandonedWulfrumHelmet: {
 		'''
 }
 
+CrystalHeartVodka: {
+	DisplayName: Crystal Heart Vodka
+	Tooltip: "'Tastes like strawberry cream liqueur (and estrogen)'"
+}
+
 CocosFeather: {
 	DisplayName: Coco's Feather
 	Tooltip: ""

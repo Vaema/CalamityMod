@@ -13,6 +13,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Items/Ammo/IcicleArrow";
         public bool falling = false;
         public Vector2 startVelocity;
+        public bool setFallingStats = false;
 
         public override void SetDefaults()
         {
@@ -23,10 +24,10 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.arrow = true;
             Projectile.coldDamage = true;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 8;
-            Projectile.timeLeft = 1200;
+            Projectile.extraUpdates = 6;
+            Projectile.timeLeft = 1000;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10 * Projectile.extraUpdates;
+            Projectile.localNPCHitCooldown = 15 * Projectile.extraUpdates;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
@@ -50,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Projectile.velocity *= 0.99f;
                 Projectile.alpha += 1;
-                if (Projectile.localAI[0] == 250)
+                if (Projectile.localAI[0] == 200)
                 {
                     for (int k = 0; k < 10; k++)
                     {
@@ -60,14 +61,20 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                     Projectile.alpha = 255;
                     Projectile.velocity = new Vector2(0, 0.3f);
-                    Projectile.penetrate = 2;
-                    Projectile.ExpandHitboxBy(50);
 
                     falling = true;
                 }
             }
             else
             {
+                if (!setFallingStats)
+                {
+                    Projectile.tileCollide = false;
+                    Projectile.penetrate = 2;
+                    Projectile.numHits = 1;
+                    Projectile.ExpandHitboxBy(50);
+                    setFallingStats = true;
+                }
                 if (Projectile.Calamity().allProjectilesHome)
                     Projectile.Calamity().allProjectilesHome = false; // Prevent the icicle effect from breaking with Arterial Assault
 
@@ -82,7 +89,7 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                 }
 
-                if (Projectile.localAI[0] < 350)
+                if (Projectile.localAI[0] < 320)
                     Projectile.velocity *= 1.033f;
                 else
                     Projectile.tileCollide = true;
@@ -98,12 +105,13 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.Calamity().allProjectilesHome = false; // Prevent the icicle effect from breaking with Arterial Assault
             if (!falling)
             {
+                Projectile.localAI[0] = 100;
                 SoundEngine.PlaySound(SoundID.Item50 with { Volume = 0.35f, Pitch = -0.2f, PitchVariance = 0.2f }, Projectile.Center);
-                Projectile.velocity = new Vector2(0, -5.5f).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.75f, 1.1f);
-                for (int k = 0; k < 3; k++)
+                Projectile.velocity = new Vector2(0, -6.5f).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.75f, 1.1f);
+                for (int k = 0; k < 2; k++)
                 {
                     Vector2 velocity = startVelocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.3f, 0.85f);
-                    WaterFlavoredParticle burst = new WaterFlavoredParticle(Projectile.Center + velocity * 3f, velocity, false, 5, 0.65f, Color.SkyBlue);
+                    WaterFlavoredParticle burst = new WaterFlavoredParticle(Projectile.Center + velocity * 3f, velocity * 0.5f, false, 8, 0.65f, Color.SkyBlue);
                     GeneralParticleHandler.SpawnParticle(burst);
                 }
             }
@@ -111,7 +119,12 @@ namespace CalamityMod.Projectiles.Ranged
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (falling)
-                Projectile.damage = (int)(Projectile.damage * 1.35f);
+                modifiers.SourceDamage *= 1.35f;
+
+            if (Projectile.numHits > 1 && falling)
+                Projectile.damage = (int)(Projectile.damage * 0.6f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
         public override void OnKill(int timeLeft)
         {
@@ -127,7 +140,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (!falling)
             {
-                Projectile.tileCollide = false;
+                Projectile.localAI[0] = 100;
                 SoundEngine.PlaySound(SoundID.Item50 with { Volume = 0.35f, Pitch = -0.2f, PitchVariance = 0.2f }, Projectile.Center);
                 for (int k = 0; k < 7; k++)
                 {
@@ -135,7 +148,7 @@ namespace CalamityMod.Projectiles.Ranged
                     dust2.scale = Main.rand.NextFloat(0.75f, 0.95f);
                     dust2.noGravity = false;
                 }
-                Projectile.velocity = new Vector2(0, -7.5f).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.75f, 1.1f);
+                Projectile.velocity = new Vector2(0, -6.5f).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.75f, 1.1f);
                 return false;
             }
             else

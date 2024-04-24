@@ -641,6 +641,11 @@ AstralFountainItem: {
 	Tooltip: ""
 }
 
+BrimstoneLavaFountainItem: {
+	DisplayName: Brimstone Lava Fountain
+	Tooltip: ""
+}
+
 SulphurousFountainItem: {
 	DisplayName: Sulphuric Water Fountain
 	Tooltip: ""

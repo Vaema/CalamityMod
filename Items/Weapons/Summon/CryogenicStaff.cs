@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.autoReuse = true;
             Item.knockBack = 4f;
 
-            Item.value = CalamityGlobalItem.Rarity6BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.Calamity().devItem = true;
 

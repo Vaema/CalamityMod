@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 4.5f;
             Item.autoReuse = false;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
             Item.UseSound = SoundID.Item71;

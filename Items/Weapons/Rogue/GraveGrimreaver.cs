@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shoot = ModContent.ProjectileType<GraveGrimreaverProjectile>();
             Item.shootSpeed = 16.5f;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.Calamity().donorItem = true;
         }

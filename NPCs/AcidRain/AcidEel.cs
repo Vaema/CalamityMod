@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.Graphics.Shaders;
@@ -200,7 +201,7 @@ namespace CalamityMod.NPCs.AcidRain
                 return false;
             }
 
-            Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D headTexture = TextureAssets.Npc[NPC.type].Value;
             Texture2D tailTexture = TailTexture.Value;
             Vector2[] segmentPositions = (Vector2[])NPC.oldPos.Clone();
 

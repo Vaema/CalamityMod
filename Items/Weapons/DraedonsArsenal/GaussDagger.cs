@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.useTurn = true;
             Item.knockBack = 7f;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
 
             Item.UseSound = SoundID.Item1;

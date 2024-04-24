@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<TenebreusTidesProjectile>();
             Item.shootSpeed = 12f;
 
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.Calamity().donorItem = true;
 

@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.damage = 30;
             Item.knockBack = 9f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
             Item.defense = 12;

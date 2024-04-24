@@ -71,12 +71,12 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player Owner = Main.player[Projectile.owner];
-            target.AddBuff(BuffID.Frostburn2, 120);
+            target.AddBuff(BuffID.Frostburn, 120);
             if (hit.Crit)
             {
                 SoundStyle crit = new("CalamityMod/Sounds/NPCHit/CryogenPhaseTransitionCrack");
                 SoundEngine.PlaySound(crit with { Volume = 0.35f, Pitch = 1f }, Projectile.Center);
-                target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
+                target.AddBuff(BuffID.Frostburn2, 300);
                 int points = 6;
                 float radians = MathHelper.TwoPi / points;
                 Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
@@ -88,9 +88,17 @@ namespace CalamityMod.Projectiles.Ranged
                     WaterFlavoredParticle subTrail = new WaterFlavoredParticle(Projectile.Center + velocity * 4.5f + addedPlacement, velocity * 7, false, 6, 0.65f, Color.SkyBlue);
                     GeneralParticleHandler.SpawnParticle(subTrail);
                 }
-                int onHitDamage = Owner.CalcIntDamage<RangedDamageClass>(0.33f * Projectile.damage);
+                int onHitDamage = Owner.CalcIntDamage<RangedDamageClass>(0.48f * Projectile.damage);
                 Owner.ApplyDamageToNPC(target, onHitDamage, 0f, 0, false);
             }
+        }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.5f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
 
         public override bool PreDraw(ref Color lightColor)

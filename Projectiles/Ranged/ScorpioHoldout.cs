@@ -1,32 +1,29 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
-using Terraria.ModLoader;
 using static CalamityMod.Items.Weapons.Ranged.Scorpio;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ScorpioHoldout : ModProjectile, ILocalizedModType
+    public class ScorpioHoldout : BaseGunHoldoutProjectile
     {
-        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Scorpio>();
-        public override string Texture => "CalamityMod/Items/Weapons/Ranged/Scorpio";
+        public override int AssociatedItemID => ItemType<Scorpio>();
+        public override Vector2 GunTipPosition => base.GunTipPosition - Vector2.UnitY.RotatedBy(Projectile.rotation) * 10f * Projectile.direction;
+        public override float RecoilResolveSpeed => 0.1f;
+        public override float MaxOffsetLengthFromArm => 15f;
+        public override float OffsetXUpwards => -12f;
+        public override float BaseOffsetY => -10f;
+        public override float OffsetYDownwards => 10f;
 
-        public Player Owner { get; set; }
         public ref float ShootingTimer => ref Projectile.ai[0];
         public ref float TimerBetweenBursts => ref Projectile.ai[1];
         public ref float ChargeLV => ref Projectile.ai[2];
-        public ref float OffsetLengthScalar => ref Projectile.localAI[0];
-
-        // The maximum amount that the gun is away from the player's hands.
-        public const float MaxOffsetScalarLength = 15f;
 
         // The type of dust used in the effects and the color of the particles that it'll use depending on the type of rocket used.
         // It'll carry over to the projectiles that it shoots.
@@ -34,59 +31,30 @@ namespace CalamityMod.Projectiles.Ranged
         public static Color EffectsColor { get; set; }
         public static Color StaticEffectsColor = Color.Turquoise;
 
-        public override void SetDefaults()
+        public override void HoldoutAI()
         {
-            Projectile.width = Projectile.height = 96;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.netImportant = true;
-        }
-
-        public override void AI()
-        {
-            // If there's no player, or the player is the server, or the owner's stunned, there'll be no holdout.
-            if (Owner.CantUseHoldout())
-            {
-                Projectile.Kill();
-                NetUpdate();
-                return;
-            }
-
-            // The center of the player, taking into account if they have a mount or not.
-            Vector2 ownerPosition = Owner.MountedCenter;
-
-            // The vector between the player and the mouse.
-            Vector2 ownerToMouse = Owner.Calamity().mouseWorld - ownerPosition;
-
-            // Deals with the holdout's rotation and direction, the owner's arms, etc.
-            ManageHoldout(ownerPosition, ownerToMouse);
-
-            // If the timer reaches Item.useTime, it'll shoot.
-            // It'll shoot once immediately as the timer reaches.
-            Item heldItem = Owner.ActiveItem();
-
             // If the player's pressing RMB, it'll shoot the big rocket.
             if (Owner.Calamity().mouseRight && ChargeLV >= 3)
             {
-                ShootRocket(heldItem, true);
-                ShootingTimer = heldItem.useAnimation; // If you time your nukes well, you can reset the burst rocket cooldown
+                ShootRocket(HeldItem, true);
+                ShootingTimer = HeldItem.useAnimation; // If you time your nukes well, you can reset the burst rocket cooldown
                 ChargeLV = -1;
             }
 
-            if (ShootingTimer >= heldItem.useAnimation)
+            if (ShootingTimer >= HeldItem.useAnimation)
             {
-                if (ShootingTimer == heldItem.useAnimation && ChargeLV < 3)
+                if (ShootingTimer == HeldItem.useAnimation && ChargeLV < 3)
                     ChargeLV++;
 
                 // Shooting the burst of small rockets.
                 // The time is adapted to the speed modifier from the reforge.
-                int adaptedTimeBetweenBursts = TimeBetweenBursts * heldItem.useAnimation / OriginalUseTime;
+                int adaptedTimeBetweenBursts = TimeBetweenBursts * HeldItem.useAnimation / OriginalUseTime;
 
                 if (ShootingTimer % adaptedTimeBetweenBursts == 0f)
-                    ShootRocket(heldItem, false);
+                    ShootRocket(HeldItem, false);
 
                 // Resets the timers when everything has been shot.
-                if (ShootingTimer >= heldItem.useAnimation + adaptedTimeBetweenBursts * (ProjectilesPerBurst - 1))
+                if (ShootingTimer >= HeldItem.useAnimation + adaptedTimeBetweenBursts * (ProjectilesPerBurst - 1))
                 {
                     ShootingTimer = 0f;
                     TimerBetweenBursts = 0f;
@@ -94,52 +62,15 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
-            // When we change the distance of the gun from the arms for the recoil,
-            // recover to the original position smoothly.
-            if (OffsetLengthScalar != MaxOffsetScalarLength)
-                OffsetLengthScalar = MathHelper.Lerp(OffsetLengthScalar, MaxOffsetScalarLength, 0.1f);
-
             ShootingTimer++;
-        }
 
-        #region AI Methods
-
-        public void ManageHoldout(Vector2 mountedCenter, Vector2 ownerToMouse)
-        {
-            Vector2 rotationVector = Projectile.rotation.ToRotationVector2();
-            float velocityRotation = Projectile.velocity.ToRotation();
-            float proximityLookingUpwards = Vector2.Dot(ownerToMouse.SafeNormalize(Vector2.Zero), -Vector2.UnitY);
-            int direction = MathF.Sign(ownerToMouse.X);
-
-            Vector2 armPosition = Owner.RotatedRelativePoint(mountedCenter, true);
-            Vector2 lengthOffset = rotationVector * OffsetLengthScalar;
-            Vector2 armOffset = new Vector2(Utils.Remap(proximityLookingUpwards, -1f, 1f, 0f, -12f) * direction, -10f + Utils.Remap(MathF.Abs(proximityLookingUpwards), 0f, 1f, 0f, proximityLookingUpwards > 0f ? 0f : 10f));
-            Projectile.Center = armPosition + lengthOffset + armOffset;
-            Projectile.velocity = velocityRotation.AngleTowards(ownerToMouse.ToRotation(), 0.2f).ToRotationVector2();
-            Projectile.rotation = velocityRotation;
-            Projectile.timeLeft = 2;
-
-            Owner.heldProj = Projectile.whoAmI;
-            Owner.itemTime = Owner.itemAnimation = 2;
-            Owner.itemRotation = (Projectile.velocity * Projectile.direction).ToRotation();
-
-            Projectile.spriteDirection = Projectile.direction = direction;
-            Owner.ChangeDir(direction);
-
-            float armRotation = Projectile.rotation - MathHelper.PiOver2; // -Pi/2 because the arms rotation starts with arms pointing down.
-            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, armRotation);
-            Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, armRotation + MathHelper.ToRadians(15f) * direction);
-
-            // Inside here go all the things that dedicated servers shouldn't spend resources on.
-            // Like visuals and sounds.
             if (Main.dedServ)
                 return;
 
             // Charge level visuals here
-            Vector2 nuzzlePosition = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.Zero) * 48f + (-Vector2.UnitY.RotatedBy(Projectile.rotation) * 10f) * Projectile.direction;
             if (ChargeLV == 1 && ShootingTimer % 3 == 0)
             {
-                Vector2 position = nuzzlePosition - Projectile.velocity * 95;
+                Vector2 position = GunTipPosition - Projectile.velocity * 95;
                 Vector2 velocity = (-Projectile.velocity * 5).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.6f, 1.4f);
                 SquishyLightParticle energy = new(position, velocity, Main.rand.NextFloat(0.12f, 0.14f), StaticEffectsColor, Main.rand.Next(3, 5 + 1), 1, 1.5f);
                 GeneralParticleHandler.SpawnParticle(energy);
@@ -148,7 +79,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (ChargeLV == 2 & ShootingTimer % 2 == 0)
             {
-                Vector2 position = nuzzlePosition - Projectile.velocity * 95;
+                Vector2 position = GunTipPosition - Projectile.velocity * 95;
                 Vector2 velocity = (-Projectile.velocity * 5).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.9f, 1.9f);
                 SquishyLightParticle energy = new(position, velocity, Main.rand.NextFloat(0.18f, 0.22f), StaticEffectsColor, Main.rand.Next(3, 5 + 1), 1, 1.5f);
                 GeneralParticleHandler.SpawnParticle(energy);
@@ -157,7 +88,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (ChargeLV >= 3)
             {
-                Vector2 position = nuzzlePosition - Projectile.velocity * 95;
+                Vector2 position = GunTipPosition - Projectile.velocity * 95;
                 Vector2 velocity = (-Projectile.velocity * 5).RotatedByRandom(0.75f) * Main.rand.NextFloat(1.2f, 2.3f);
                 SquishyLightParticle energy = new(position, velocity, Main.rand.NextFloat(0.24f, 0.34f), StaticEffectsColor, Main.rand.Next(3, 5 + 1), 1, 1.5f);
                 GeneralParticleHandler.SpawnParticle(energy);
@@ -169,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (ChargeLV == 0 && ShootingTimer % 3 == 0)
             {
-                Vector2 position = nuzzlePosition - Projectile.velocity * 95;
+                Vector2 position = GunTipPosition - Projectile.velocity * 95;
                 Vector2 velocity = (-Projectile.velocity * 4).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.9f, 2f);
                 Particle smoke = new HeavySmokeParticle(position, velocity, Color.SlateGray, Main.rand.Next(40, 60 + 1), Main.rand.NextFloat(0.3f, 0.6f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), true, required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
@@ -186,9 +117,6 @@ namespace CalamityMod.Projectiles.Ranged
         {
             // We use the velocity of this projectile as its direction vector.
             Vector2 projectileVelocity = Projectile.velocity.SafeNormalize(Vector2.Zero);
-
-            // The position of the tip of the gun.
-            Vector2 nuzzlePosition = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.Zero) * 48f + (-Vector2.UnitY.RotatedBy(Projectile.rotation) * 10f) * Projectile.direction;
 
             // Every time we shoot we use ammo.
             // With this method we also use the item's stats, like the shoot speed, or the type of ammo it was used.
@@ -218,7 +146,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Spawns the projectile.
             Projectile.NewProjectileDirect(
                 Projectile.GetSource_FromThis(),
-                nuzzlePosition,
+                GunTipPosition,
                 projectileVelocity.RotatedByRandom(isRMB ? 0f : MathHelper.PiOver4) * projSpeed * (isRMB ? 1f : Main.rand.NextFloat(0.8f, 1f)),
                 isRMB ? ProjectileType<ScorpioLargeRocket>() : ProjectileType<ScorpioRocket>(),
                 damage,
@@ -241,13 +169,13 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(RocketShoot with { Pitch = ChargeLV * 0.055f }, Projectile.Center);
 
             // By decreasing the offset length of the gun from the arms, we give an effect of recoil.
-            OffsetLengthScalar -= isRMB ? 30f : 5f;
+            OffsetLengthFromArm -= isRMB ? 30f : 5f;
 
             int dustAmount = Main.rand.Next(10, 15 + 1);
             for (int i = 0; i < dustAmount; i++)
             {
                 Dust shootDust = Dust.NewDustPerfect(
-                    nuzzlePosition,
+                    GunTipPosition,
                     DustEffectsID,
                     projectileVelocity.RotatedByRandom(MathHelper.PiOver2 - MathHelper.ToRadians(15f)) * Main.rand.NextFloat(6f, 10f));
                 shootDust.noGravity = true;
@@ -256,7 +184,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             Particle shootPulse = new DirectionalPulseRing(
-                nuzzlePosition,
+                GunTipPosition,
                 Vector2.Zero,
                 Color.Gray * 0.7f,
                 new Vector2(0.5f, 1f),
@@ -274,23 +202,10 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.netSpam = 9;
         }
 
-        #endregion
-
-        public override void OnSpawn(IEntitySource source)
-        {
-            Owner = Main.player[Projectile.owner];
-            OffsetLengthScalar = MaxOffsetScalarLength;
-        }
-
-        // Because we use the velocity as a direction, we don't need it to change its position.
-        public override bool ShouldUpdatePosition() => false;
-
-        public override bool? CanDamage() => false;
-
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = Request<Texture2D>(Texture).Value;
-            Texture2D glowTexture = Request<Texture2D>("CalamityMod/Projectiles/Ranged/ScorpioHoldout_Glow").Value;
+            Texture2D glowTexture = Request<Texture2D>(GlowTexture).Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color drawColor = Projectile.GetAlpha(lightColor);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);

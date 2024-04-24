@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 25;
             Item.shootSpeed = 14.5f;
             Item.shoot = ModContent.ProjectileType<HeronBobber>();
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
         }
 

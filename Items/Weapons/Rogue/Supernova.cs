@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 18f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ModContent.ProjectileType<SupernovaBomb>();
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;

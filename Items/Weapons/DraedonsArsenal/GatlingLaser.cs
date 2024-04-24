@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = FireSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
 
             Item.shoot = ModContent.ProjectileType<GatlingLaserProj>();

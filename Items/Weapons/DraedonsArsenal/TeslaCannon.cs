@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = FireSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
 
             Item.shoot = ModContent.ProjectileType<TeslaCannonShot>();

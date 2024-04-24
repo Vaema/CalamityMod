@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.UseSound = SoundID.Item45;
             Item.autoReuse = true;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<ArtifactOfResilienceBulwark>();
             Item.shootSpeed = 0f;

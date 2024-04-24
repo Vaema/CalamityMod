@@ -125,6 +125,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public int alicornFrame = 0;
         public int alicornFrameCounter = 0;
         public int dashVisualCounter = 0;
+        public int brothersPause = 15; // Helps prevent telefragging
 
         public float shieldOpacity = 1f;
         public float shieldRotation = 0f;
@@ -534,6 +535,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 NPC.spriteDirection = (player.Center.X < NPC.Center.X).ToDirectionInt();
             #endregion
             #region Forcefield and Shield Logic
+
+            // Shield effect rotation
+            rotateToPlayer = rotateToPlayer.AngleLerp((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation() + MathHelper.PiOver2, 0.04f);
+            rotateAwayPlayer = rotateAwayPlayer.AngleLerp((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation() - MathHelper.PiOver2, 0.04f);
 
             if (hitTimer > 0)
                 hitTimer--;
@@ -2024,39 +2029,50 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             {
                 if (lifeRatio < 0.45f && !enteredBrothersPhase)
                 {
-                    enteredBrothersPhase = true;
-                    attackCastDelay = brothersSpawnCastTime;
-                    NPC.netUpdate = true;
-                    if (!teleport)
+                    if (brothersPause == 0)
                     {
-                        Dust.QuickDustLine(NPC.Center, player.Center + new Vector2(0, -155), 500f, cirrus ? Color.Pink : Color.Red);
-                        NPC.velocity = Vector2.Zero;
-                        NPC.Center = player.Center + new Vector2(0, -155);
-                        Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
-                        GeneralParticleHandler.SpawnParticle(pulse);
-                        for (int x = 0; x < Main.maxProjectiles; x++)
+                        enteredBrothersPhase = true;
+                        attackCastDelay = brothersSpawnCastTime;
+                        NPC.netUpdate = true;
+                        if (!teleport)
                         {
-                            Projectile projectile = Main.projectile[x];
-                            if (projectile.active)
+                            Dust.QuickDustLine(NPC.Center, player.Center + new Vector2(0, -155), 500f, cirrus ? Color.Pink : Color.Red);
+                            NPC.velocity = Vector2.Zero;
+                            NPC.Center = player.Center + new Vector2(0, -175);
+                            Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
+                            GeneralParticleHandler.SpawnParticle(pulse);
+                            for (int x = 0; x < Main.maxProjectiles; x++)
                             {
-                                if (projectile.type == bulletHellblast ||
-                                    projectile.type == barrage ||
-                                    projectile.type == wave)
+                                Projectile projectile = Main.projectile[x];
+                                if (projectile.active)
                                 {
-                                    if (projectile.timeLeft > 60)
-                                        projectile.timeLeft = 60;
-                                }
-                                else if (projectile.type == fireblast || projectile.type == gigablast)
-                                {
-                                    projectile.ai[2] = 1f;
+                                    if (projectile.type == bulletHellblast ||
+                                        projectile.type == barrage ||
+                                        projectile.type == wave)
+                                    {
+                                        if (projectile.timeLeft > 60)
+                                            projectile.timeLeft = 60;
+                                    }
+                                    else if (projectile.type == fireblast || projectile.type == gigablast)
+                                    {
+                                        projectile.ai[2] = 1f;
 
-                                    if (projectile.timeLeft > 15)
-                                        projectile.timeLeft = 15;
+                                        if (projectile.timeLeft > 15)
+                                            projectile.timeLeft = 15;
+                                    }
                                 }
                             }
+                            teleport = true;
                         }
-                        teleport = true;
                     }
+                    else
+                    {
+                        brothersPause--;
+                        NPC.dontTakeDamage = true;
+                        NPC.velocity *= 0.85f;
+                        return;
+                    }
+                    
                 }
             }
 
@@ -2288,9 +2304,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
-                                        float projectileVelocityToPass = projectileVelocity.Length() * 2f;
+                                        float projectileVelocityToPass = projectileVelocity.Length() * 1.3f;
                                         Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, j / (float)(numProj - 1)));
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, perturbedSpeed, randomShot, barrageDamage, 0f, Main.myPlayer, 0, 2f, projectileVelocityToPass);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, perturbedSpeed, randomShot, barrageDamage, 0f, Main.myPlayer, 0, 4f, projectileVelocityToPass);
                                         NPC.netUpdate = true;
                                     }
                                 }
@@ -2845,9 +2861,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
-                                        float projectileVelocityToPass = projectileVelocity.Length() * 2f;
+                                        float projectileVelocityToPass = projectileVelocity.Length() * 1.3f;
                                         Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, j / (float)(numProj - 1)));
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, perturbedSpeed, randomShot, barrageDamage, 0f, Main.myPlayer, 0f, 2f, projectileVelocityToPass);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, perturbedSpeed, randomShot, barrageDamage, 0f, Main.myPlayer, 0f, 4f, projectileVelocityToPass);
                                         NPC.netUpdate = true;
                                     }
                                 }
@@ -3085,6 +3101,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             // Bonus visuals
             if (!canDespawn && !hasDoneDeathAnim && shieldOpacity >= 0.9f)
             {
+                NPC.damage = NPC.defDamage;
                 if (dashVisualCounter < 9)
                     dashVisualCounter++;
                 else
@@ -3108,7 +3125,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
             }
             else
+            {
+                NPC.damage = 0;
                 dashVisualCounter = 0;
+            }
             #endregion
         }
 
@@ -3315,8 +3335,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    CalamityUtils.SpawnBossBetter(catastropheSpawnPosition, cirrus ? ModContent.NPCType<DevourerofGodsHead>() : ModContent.NPCType<SupremeCatastrophe>());
-                    CalamityUtils.SpawnBossBetter(cataclysmSpawnPosition, cirrus ? ModContent.NPCType<DevourerofGodsHead>() : ModContent.NPCType<SupremeCataclysm>());
+                    bool broDirection = Main.rand.NextBool();
+                    CalamityUtils.SpawnBossBetter(catastropheSpawnPosition, cirrus ? ModContent.NPCType<DevourerofGodsHead>() : ModContent.NPCType<SupremeCatastrophe>(), null, broDirection == false ? 1 : -1);
+                    CalamityUtils.SpawnBossBetter(cataclysmSpawnPosition, cirrus ? ModContent.NPCType<DevourerofGodsHead>() : ModContent.NPCType<SupremeCataclysm>(), null, broDirection == true ? 1 : -1);
                 }
 
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCKilled/RavagerDeath1") with { Pitch = -0.2f }, cataclysmSpawnPosition);
@@ -3716,9 +3737,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             GameShaders.Misc["CalamityMod:SupremeShield"].Apply();
 
             Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/CentralGold").Value;
-
-            rotateToPlayer = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation() + MathHelper.PiOver2;
-            rotateAwayPlayer = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation() - MathHelper.PiOver2;
 
             Texture2D immuneTex = ModContent.Request<Texture2D>("CalamityMod/Particles/SemiCircularSmearVertical").Value;
             if (postMusicHit)

@@ -566,8 +566,10 @@ namespace CalamityMod.CalPlayer
                         if (Player.whoAmI == Main.myPlayer)
                             Player.ApplyDamageToNPC(n, (int)Damage, Knockback, hitDirection, false);
 
+                        // 17APR2024: Ozzatron: Dash iframes are not boosted by Cross Necklace at all and are fixed.
                         n.Calamity().dashImmunityTime[Player.whoAmI] = NPCImmuneTime;
-                        Player.GiveIFrames(PlayerImmuneTime, false);
+                        Player.GiveUniversalIFrames(PlayerImmuneTime, false);
+
                         totalHurtNPCs++;
                         break;
                     }

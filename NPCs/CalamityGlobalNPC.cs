@@ -51,6 +51,7 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
@@ -58,6 +59,7 @@ using CalamityMod.Systems;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
+using CalamityMod.UI.DebuffSystem;
 using CalamityMod.Walls.DraedonStructures;
 using CalamityMod.World;
 using Microsoft.CodeAnalysis;
@@ -223,6 +225,10 @@ namespace CalamityMod.NPCs
         public const int knockbackResistanceMin = 180;
         public int knockbackResistanceTimer = 0;
 
+        // Used for particle drawing on NPCs affected by vanilla Cobalt/Mythril weapons
+        public bool isNerfedByCobalt = false;
+        public bool isNerfedByMythril = false;
+
         // Debuffs
         public int vaporfied = 0;
         public int timeSlow = 0;
@@ -246,6 +252,11 @@ namespace CalamityMod.NPCs
         public int pFlames = 0;
         public int aCrunch = 0;
         public int crumble = 0;
+
+        public const int veriumDoomTime = 90;
+        public int veriumDoomTimer = 0;
+        public int veriumDoomStacks = 0;
+        public bool veriumDoomMarked = false;
 
         // Soma Prime Shred deals damage with DirectStrikes instead of with direct debuff damage
         // It also stacks, scales with ranged damage, and can crit, meaning it needs to know who applied it most recently
@@ -435,6 +446,9 @@ namespace CalamityMod.NPCs
             myClone.bossCanBeKnockedBack = bossCanBeKnockedBack;
             myClone.knockbackResistanceTimer = knockbackResistanceTimer;
 
+            myClone.isNerfedByCobalt = isNerfedByCobalt;
+            myClone.isNerfedByMythril = isNerfedByMythril;
+
             myClone.vaporfied = vaporfied;
             myClone.timeSlow = timeSlow;
             myClone.gState = gState;
@@ -457,6 +471,10 @@ namespace CalamityMod.NPCs
             myClone.pFlames = pFlames;
             myClone.aCrunch = aCrunch;
             myClone.crumble = crumble;
+
+            myClone.veriumDoomTimer = veriumDoomTimer;
+            myClone.veriumDoomStacks = veriumDoomStacks;
+            myClone.veriumDoomMarked = veriumDoomMarked;
 
             myClone.somaShredStacks = somaShredStacks;
             myClone.somaShredApplicator = somaShredApplicator;
@@ -2503,41 +2521,6 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (CalamityWorld.revenge)
-            {
-                double damageMultiplier = 1D;
-                bool containsNPC = false;
-                if (CalamityLists.revengeanceEnemyBuffList25Percent.Contains(npc.type))
-                {
-                    damageMultiplier += 0.25;
-                    containsNPC = true;
-                }
-                else if (CalamityLists.revengeanceEnemyBuffList20Percent.Contains(npc.type))
-                {
-                    damageMultiplier += 0.2;
-                    containsNPC = true;
-                }
-                else if (CalamityLists.revengeanceEnemyBuffList15Percent.Contains(npc.type))
-                {
-                    damageMultiplier += 0.15;
-                    containsNPC = true;
-                }
-                else if (CalamityLists.revengeanceEnemyBuffList10Percent.Contains(npc.type))
-                {
-                    damageMultiplier += 0.1;
-                    containsNPC = true;
-                }
-
-                if (containsNPC)
-                {
-                    if (CalamityWorld.death)
-                        damageMultiplier += (damageMultiplier - 1D) * 0.6;
-
-                    npc.damage = (int)Math.Round(npc.damage * damageMultiplier);
-                    npc.defDamage = npc.damage;
-                }
-            }
-
             // Nerf KB resist in Expert and Master using this roundabout method
             if (Main.expertMode)
                 AdjustExpertModeStatScaling(npc);
@@ -3213,13 +3196,12 @@ namespace CalamityMod.NPCs
             ApplyDR(npc, ref modifiers);
 
             // Damage reduction on spawn for certain worm bosses.
-            bool eaterofWorldsResist = CalamityLists.EaterofWorldsIDs.Contains(npc.type) && BossRushEvent.BossRushActive;
+            if (CalamityLists.EaterofWorldsIDs.Contains(npc.type))
+                modifiers.FinalDamage *= 1f - MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.8f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f));
             if (CalamityLists.DestroyerIDs.Contains(npc.type))
                 modifiers.FinalDamage *= 1f - MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncraeseTime, 0f, 1f));
             if (CalamityLists.AstrumDeusIDs.Contains(npc.type))
                 modifiers.FinalDamage *= 1f - MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / (newAI[0] != 0f ? 300f : 600f), 0f, 1f));
-            if (eaterofWorldsResist)
-                modifiers.FinalDamage *= 0.05f;
         }
 
         // Directly modifies final damage incoming to an NPC based on their DR (damage reduction) stat added by Calamity.
@@ -5095,6 +5077,25 @@ namespace CalamityMod.NPCs
             if (RancorBurnTime > 0)
                 RancorBurnTime--;
 
+            if (veriumDoomTimer > 0)
+                veriumDoomTimer--;
+            if (veriumDoomTimer == 0 && veriumDoomMarked)
+            {
+                for (int d = 0; d < 14 + veriumDoomStacks; d++)
+                {
+                    Particle sparks = new LineParticle(npc.Center, new Vector2(Main.rand.NextFloat(-9f, 9f), Main.rand.NextFloat(-9f, 9f)), false, 45, 0.9f, Main.rand.NextBool() ? Color.Cyan : Color.SkyBlue);
+                    GeneralParticleHandler.SpawnParticle(sparks);
+                }
+                //Particle boop = new CustomPulse(npc.Center, Vector2.Zero, new Color(233, 95, 212), "CalamityMod/Particles/Sparkle2", Vector2.One, Main.rand.NextFloat(-5f, 5f), 0.8f + (float)(0.04 * veriumDoomStacks), 1.6f + (float)(0.08 * veriumDoomStacks), 40);
+                //GeneralParticleHandler.SpawnParticle(boop);
+
+                SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCHit/CryogenHit", 3) { Volume = 0.6f}, npc.Center);
+                Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), 100 + (15 * veriumDoomStacks), 0, Main.myPlayer, 200f);
+                
+                veriumDoomMarked = false;
+                veriumDoomStacks = 0;
+            }
+
             // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
             if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
                 return;
@@ -6324,6 +6325,18 @@ namespace CalamityMod.NPCs
             if (vaporfied > 0)
                 Vaporfied.DrawEffects(npc, ref drawColor);
 
+            if (veriumDoomTimer > 0)
+            {
+                int sparkleChance = Math.Max(2, 8 - (veriumDoomStacks / 2));
+                if (veriumDoomTimer % sparkleChance == 0)
+                {
+                    float veriumRatio = (float)veriumDoomTimer / (float)veriumDoomTime;
+                    Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
+                    Particle markedSparkle = new CustomPulse(randPosition, Vector2.Zero, Color.Lerp(new Color(103, 230, 240), new Color(255, 110, 220), 1 - veriumRatio), "CalamityMod/Particles/Sparkle", Vector2.One, Main.rand.NextFloat(-0.75f, 0.75f), 0.9f, 1.1f, 35);
+                    GeneralParticleHandler.SpawnParticle(markedSparkle);
+                }
+            }
+
             // TODO -- These debuff visuals cannot be moved because they correspond to vanilla debuffs
             if (electrified > 0)
             {
@@ -6360,6 +6373,31 @@ namespace CalamityMod.NPCs
                         Main.dust[dust].noGravity = false;
                         Main.dust[dust].scale *= 0.5f;
                     }
+                }
+            }
+
+            // Cobalt and Mythril weapon particle effects
+            if (isNerfedByCobalt)
+            {
+                if (Main.rand.NextBool(5))
+                {
+                    Vector2 spawnLocation = new Vector2(Main.rand.NextFloat(npc.position.X, npc.position.X + npc.width), Main.rand.NextFloat(npc.position.Y, npc.position.Y + npc.height));
+                    Vector2 velocity = new Vector2(0f, MathHelper.Max(Main.rand.NextFloat(4f, 6f) * ((npc.height - (spawnLocation.Y - npc.position.Y)) / 65), 0.6f));
+
+                    Particle cobaltArrow = new StatDownArrow(spawnLocation, velocity, new Color(27, 141, 235), new Color(0, 94, 181), 0.75f, 15);
+                    GeneralParticleHandler.SpawnParticle(cobaltArrow);
+                }
+            }
+
+            if (isNerfedByMythril)
+            {
+                if (Main.rand.NextBool(5))
+                {
+                    Vector2 spawnLocation = new Vector2(Main.rand.NextFloat(npc.position.X, npc.position.X + npc.width), Main.rand.NextFloat(npc.position.Y, npc.position.Y + npc.height));
+                    Vector2 velocity = new Vector2(0f, MathHelper.Max(Main.rand.NextFloat(4f, 6f) * ((npc.height - (spawnLocation.Y - npc.position.Y)) / 65), 0.6f));
+
+                    Particle mythrilArrow = new StatDownArrow(spawnLocation, velocity, new Color(35, 217, 144), new Color(23, 145, 97), 0.75f, 15);
+                    GeneralParticleHandler.SpawnParticle(mythrilArrow);
                 }
             }
 
@@ -7315,6 +7353,32 @@ namespace CalamityMod.NPCs
                     }
                 }
 
+                // Laser telegraph
+                else if (npc.type == NPCID.WallofFleshEye && Main.wofNPCIndex >= 0)
+                {
+                    bool enraged = npc.localAI[3] > 0f;
+                    float eyeTelegraphGateValue = WallOfFleshAI.LaserShootGateValue - WallOfFleshAI.LaserShootTelegraphTime;
+                    if (npc.localAI[1] > eyeTelegraphGateValue || npc.localAI[2] > 0f || enraged)
+                    {
+                        Texture2D glowTexture = CalamityMod.WallOfFleshEyeGlowmask.Value;
+                        Vector2 halfSize = npc.frame.Size() / 2;
+                        SpriteEffects spriteEffects = SpriteEffects.None;
+                        if (npc.spriteDirection == 1)
+                            spriteEffects = SpriteEffects.FlipHorizontally;
+
+                        float colorScale = enraged ? MathHelper.Clamp(npc.localAI[3] / WallOfFleshAI.EnragedLaserFiringDuration, 0f, 1f) :
+                            npc.localAI[2] > 0f ? 1f - ((npc.localAI[2] - 1f) / WallOfFleshAI.TotalLasersPerBarrage) :
+                            MathHelper.Clamp((npc.localAI[1] - eyeTelegraphGateValue) / WallOfFleshAI.LaserShootTelegraphTime, 0f, 1f);
+
+                        Color drawColor2 = new Color(100, 0, 200, 192) * colorScale;
+                        for (int i = 0; i < 2; i++)
+                        {
+                            spriteBatch.Draw(glowTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame,
+                                drawColor2, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                        }
+                    }
+                }
+
                 // His afterimages I can't get to work, so fuck it
                 else if (npc.type == NPCID.SkeletronPrime || npc.type == ModContent.NPCType<SkeletronPrime2>())
                 {
@@ -7475,6 +7539,16 @@ namespace CalamityMod.NPCs
 
         public override bool? DrawHealthBar(NPC npc, byte hbPosition, ref float scale, ref Vector2 position)
         {
+            if ((CalamityWorld.revenge && Main.masterMode) || BossRushEvent.BossRushActive)
+            {
+                if (npc.type == NPCID.Creeper)
+                {
+                    bool brainIsInPhase2 = Main.npc[NPC.crimsonBoss].ai[0] < 0f;
+                    if (brainIsInPhase2)
+                        return false;
+                }
+            }
+
             if (CalamityWorld.death)
             {
                 switch (npc.type)
@@ -7489,10 +7563,12 @@ namespace CalamityMod.NPCs
                     case NPCID.DuneSplicerBody:
                     case NPCID.DuneSplicerTail:
                         return true;
+
                     default:
                         break;
                 }
             }
+
             return null;
         }
 
@@ -8425,6 +8501,39 @@ namespace CalamityMod.NPCs
             float knockBackResistMult = Main.masterMode ? MasterModeEnemyKnockbackMultiplier : ExpertModeEnemyKnockbackMultiplier;
             float knockBackResistReduction = npc.knockBackResist * knockBackResistMult;
             npc.knockBackResist += knockBackResistReduction;
+        }
+        #endregion
+
+        #region Bestiary
+        public override void SetBestiary(NPC npc, Terraria.GameContent.Bestiary.BestiaryDatabase database, Terraria.GameContent.Bestiary.BestiaryEntry bestiaryEntry)
+        {
+            // Create a string array containing all an NPC's debuff resistances
+            string[] elements = new string[5]
+            {
+                NPCDebuffResistText(npc.Calamity().VulnerableToHeat, CalamityUtils.GetTextValue("UI.DebuffSystem.Heat")),
+                NPCDebuffResistText(npc.Calamity().VulnerableToSickness, CalamityUtils.GetTextValue("UI.DebuffSystem.Sickness")),
+                NPCDebuffResistText(npc.Calamity().VulnerableToCold, CalamityUtils.GetTextValue("UI.DebuffSystem.Cold")),
+                NPCDebuffResistText(npc.Calamity().VulnerableToElectricity, CalamityUtils.GetTextValue("UI.DebuffSystem.Electricity")),
+                NPCDebuffResistText(npc.Calamity().VulnerableToWater, CalamityUtils.GetTextValue("UI.DebuffSystem.Water"))
+            };
+
+            // Insert the debuff info into the NPC's bestiary entry
+            bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements));
+        }
+
+        public static string NPCDebuffResistText(bool? effectiveness, string name)
+        {
+            string result = CalamityUtils.GetTextValue("UI.DebuffSystem.Neutral");
+            if (effectiveness == true)
+            {
+                result = CalamityUtils.GetTextValue("UI.DebuffSystem.Weak");
+            }
+            else if (effectiveness == false)
+            {
+                result = CalamityUtils.GetTextValue("UI.DebuffSystem.Resistant");
+            }
+            result += " " + CalamityUtils.GetTextValue("UI.DebuffSystem.To") + " " + name;
+            return result;
         }
         #endregion
     }

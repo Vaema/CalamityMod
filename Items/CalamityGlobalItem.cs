@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Net.Sockets;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
@@ -1849,72 +1847,85 @@ namespace CalamityMod.Items
         }
         #endregion
 
-        #region Money From Rarity
-        public static readonly int Rarity0BuyPrice = Item.buyPrice(0, 0, 50, 0);
-        public static readonly int Rarity1BuyPrice = Item.buyPrice(0, 1, 0, 0);
-        public static readonly int Rarity2BuyPrice = Item.buyPrice(0, 2, 0, 0);
-        public static readonly int Rarity3BuyPrice = Item.buyPrice(0, 4, 0, 0);
-        public static readonly int Rarity4BuyPrice = Item.buyPrice(0, 12, 0, 0);
-        public static readonly int Rarity5BuyPrice = Item.buyPrice(0, 24, 0, 0);
-        public static readonly int Rarity6BuyPrice = Item.buyPrice(0, 36, 0, 0);
-        public static readonly int Rarity7BuyPrice = Item.buyPrice(0, 48, 0, 0);
-        public static readonly int Rarity8BuyPrice = Item.buyPrice(0, 60, 0, 0);
-        public static readonly int Rarity9BuyPrice = Item.buyPrice(0, 80, 0, 0);
-        public static readonly int Rarity10BuyPrice = Item.buyPrice(1, 0, 0, 0);
-        public static readonly int Rarity11BuyPrice = Item.buyPrice(1, 10, 0, 0);
-        public static readonly int Rarity12BuyPrice = Item.buyPrice(1, 20, 0, 0);
-        public static readonly int Rarity13BuyPrice = Item.buyPrice(1, 30, 0, 0);
-        public static readonly int Rarity14BuyPrice = Item.buyPrice(1, 40, 0, 0);
-        public static readonly int Rarity15BuyPrice = Item.buyPrice(1, 50, 0, 0);
-        public static readonly int Rarity16BuyPrice = Item.buyPrice(2, 0, 0, 0);
+        #region Rarity Price Table
+        // Base numeric rarity pricing guide.
+        private static readonly int Rarity0BuyPrice = Item.buyPrice(0, 0, 50, 0);
+        private static readonly int Rarity1BuyPrice = Item.buyPrice(0, 1, 0, 0);
+        private static readonly int Rarity2BuyPrice = Item.buyPrice(0, 2, 0, 0);
+        private static readonly int Rarity3BuyPrice = Item.buyPrice(0, 4, 0, 0);
+        private static readonly int Rarity4BuyPrice = Item.buyPrice(0, 12, 0, 0);
+        private static readonly int Rarity5BuyPrice = Item.buyPrice(0, 24, 0, 0);
+        private static readonly int Rarity6BuyPrice = Item.buyPrice(0, 36, 0, 0);
+        private static readonly int Rarity7BuyPrice = Item.buyPrice(0, 48, 0, 0);
+        private static readonly int Rarity8BuyPrice = Item.buyPrice(0, 60, 0, 0);
+        private static readonly int Rarity9BuyPrice = Item.buyPrice(0, 80, 0, 0);
+        private static readonly int Rarity10BuyPrice = Item.buyPrice(1, 0, 0, 0); // Highest raw rarity used by vanilla items (ML drops)
+        private static readonly int Rarity11BuyPrice = Item.buyPrice(1, 20, 0, 0); // End of vanilla rarities
+        private static readonly int Rarity12BuyPrice = Item.buyPrice(1, 50, 0, 0);
+        private static readonly int Rarity13BuyPrice = Item.buyPrice(1, 75, 0, 0);
+        private static readonly int Rarity14BuyPrice = Item.buyPrice(2, 0, 0, 0);
+        private static readonly int Rarity15BuyPrice = Item.buyPrice(2, 40, 0, 0);
+        private static readonly int Rarity16BuyPrice = Item.buyPrice(2, 80, 0, 0);
+        private static readonly int Rarity17BuyPrice = Item.buyPrice(3, 20, 0, 0); // This is Calamity's "plus" rarity (similar to vanilla 11 / Purple). Nothing uses it.
 
-        public static readonly int RarityWhiteBuyPrice = Item.buyPrice(0, 0, 50, 0);
-        public static readonly int RarityBlueBuyPrice = Item.buyPrice(0, 1, 0, 0);
-        public static readonly int RarityGreenBuyPrice = Item.buyPrice(0, 2, 0, 0);
-        public static readonly int RarityOrangeBuyPrice = Item.buyPrice(0, 4, 0, 0);
-        public static readonly int RarityLightRedBuyPrice = Item.buyPrice(0, 12, 0, 0);
-        public static readonly int RarityPinkBuyPrice = Item.buyPrice(0, 24, 0, 0);
-        public static readonly int RarityLightPurpleBuyPrice = Item.buyPrice(0, 36, 0, 0);
-        public static readonly int RarityLimeBuyPrice = Item.buyPrice(0, 48, 0, 0);
-        public static readonly int RarityYellowBuyPrice = Item.buyPrice(0, 60, 0, 0);
-        public static readonly int RarityCyanBuyPrice = Item.buyPrice(0, 80, 0, 0);
-        public static readonly int RarityRedBuyPrice = Item.buyPrice(1, 0, 0, 0);
-        public static readonly int RarityPurpleBuyPrice = Item.buyPrice(1, 10, 0, 0);
-        public static readonly int RarityTurquoiseBuyPrice = Item.buyPrice(1, 20, 0, 0);
-        public static readonly int RarityPureGreenBuyPrice = Item.buyPrice(1, 30, 0, 0);
-        public static readonly int RarityDarkBlueBuyPrice = Item.buyPrice(1, 40, 0, 0);
-        public static readonly int RarityVioletBuyPrice = Item.buyPrice(1, 50, 0, 0);
-        public static readonly int RarityHotPinkBuyPrice = Item.buyPrice(2, 0, 0, 0);
+        private static readonly int[] RarityBuyPriceArray = new int[] {
+            Rarity0BuyPrice,
+            Rarity1BuyPrice,
+            Rarity2BuyPrice,
+            Rarity3BuyPrice,
+            Rarity4BuyPrice,
+            Rarity5BuyPrice,
+            Rarity6BuyPrice,
+            Rarity7BuyPrice,
+            Rarity8BuyPrice,
+            Rarity9BuyPrice,
+            Rarity10BuyPrice,
+            Rarity11BuyPrice,
+            Rarity12BuyPrice,
+            Rarity13BuyPrice,
+            Rarity14BuyPrice,
+            Rarity15BuyPrice,
+            Rarity16BuyPrice,
+            Rarity17BuyPrice,
+        };
 
+        // Canonical names which are implemented as properties that reference the base numeric rarity prices.
+        // Also serves as a convenient counter for the number of items Calamity adds of each rarity.
+        public static int RarityWhiteBuyPrice => Rarity0BuyPrice;
+        public static int RarityBlueBuyPrice => Rarity1BuyPrice;
+        public static int RarityGreenBuyPrice => Rarity2BuyPrice;
+        public static int RarityOrangeBuyPrice => Rarity3BuyPrice;
+        public static int RarityLightRedBuyPrice => Rarity4BuyPrice;
+        public static int RarityPinkBuyPrice => Rarity5BuyPrice;
+        public static int RarityLightPurpleBuyPrice => Rarity6BuyPrice;
+        public static int RarityLimeBuyPrice => Rarity7BuyPrice;
+        public static int RarityYellowBuyPrice => Rarity8BuyPrice;
+        public static int RarityCyanBuyPrice => Rarity9BuyPrice;
+        public static int RarityRedBuyPrice => Rarity10BuyPrice;
+        public static int RarityPurpleBuyPrice => Rarity11BuyPrice;
+        public static int RarityTurquoiseBuyPrice => Rarity12BuyPrice;
+        public static int RarityPureGreenBuyPrice => Rarity13BuyPrice;
+        public static int RarityDarkBlueBuyPrice => Rarity14BuyPrice;
+        public static int RarityVioletBuyPrice => Rarity15BuyPrice;
+        public static int RarityHotPinkBuyPrice => Rarity16BuyPrice;
+        public static int RarityCalamityRedBuyPrice => Rarity17BuyPrice;
+        #endregion
+
+        //
+        // !! WARNING !!
+        //
+        // 17APR2024: Ozzatron:
+        // THESE FUNCTIONS MAY SHOW ZERO REFERENCES BUT ARE ACTIVELY USED BY MULTIPLE CALAMITY ADDONS, INCLUDING CATALYST.
+        // DO NOT TOUCH. IF YOU DO, THESE ADDONS WILL BREAK!
+        //
+        #region Rarity / Price Helper Functions
         public static int GetBuyPrice(int rarity)
         {
-            switch (rarity)
-            {
-                case 0:
-                    return Rarity0BuyPrice;
-                case 1:
-                    return Rarity1BuyPrice;
-                case 2:
-                    return Rarity2BuyPrice;
-                case 3:
-                    return Rarity3BuyPrice;
-                case 4:
-                    return Rarity4BuyPrice;
-                case 5:
-                    return Rarity5BuyPrice;
-                case 6:
-                    return Rarity6BuyPrice;
-                case 7:
-                    return Rarity7BuyPrice;
-                case 8:
-                    return Rarity8BuyPrice;
-                case 9:
-                    return Rarity9BuyPrice;
-                case 10:
-                    return Rarity10BuyPrice;
-                case 11:
-                    return Rarity11BuyPrice;
-            }
+            // Vanilla rarities go directly to the array.
+            if (rarity >= ItemRarityID.White && rarity <= ItemRarityID.Purple)
+                return RarityBuyPriceArray[rarity];
+
+            // Calamity rarities aren't guaranteed to have the monotonic IDs, so they're handled directly.
             if (rarity == ModContent.RarityType<Turquoise>())
                 return RarityTurquoiseBuyPrice;
             if (rarity == ModContent.RarityType<PureGreen>())
@@ -1925,15 +1936,14 @@ namespace CalamityMod.Items
                 return RarityVioletBuyPrice;
             if (rarity == ModContent.RarityType<HotPink>())
                 return RarityHotPinkBuyPrice;
+            if (rarity == ModContent.RarityType<CalamityRed>())
+                return RarityCalamityRedBuyPrice;
 
             // Return 0 if it's not a progression based or other mod's rarity
             return 0;
         }
 
-        public static int GetBuyPrice(Item item)
-        {
-            return GetBuyPrice(item.rare);
-        }
+        public static int GetBuyPrice(Item item) => GetBuyPrice(item.rare);
         #endregion
     }
 }

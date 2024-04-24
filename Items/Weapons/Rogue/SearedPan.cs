@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useLimitPerAnimation = 1;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.shoot = ModContent.ProjectileType<SearedPanProjectile>();
             Item.shootSpeed = 15f;

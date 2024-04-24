@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Armor.GemTech
             Item.width = 48;
             Item.height = 32;
             Item.defense = 31;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
         }

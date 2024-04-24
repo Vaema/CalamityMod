@@ -54,7 +54,9 @@ namespace CalamityMod.CalPlayer
         #region Dodges
         private void SpectralVeilDodge()
         {
-            Player.GiveIFrames(spectralVeilImmunity, true); //Set immunity before setting this variable to 0
+            // 17APR2024: Ozzatron: Spectral Veil counts as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+            int spectralVeilIFrames = spectralVeilImmunity + (Player.longInvince ? BalancingConstants.CrossNecklaceIFrameBoost : 0);
+            Player.GiveUniversalIFrames(spectralVeilIFrames, true);
             rogueStealth = rogueStealthMax;
             spectralVeilImmunity = 0;
 
@@ -79,7 +81,10 @@ namespace CalamityMod.CalPlayer
 
         private void GodSlayerDodge()
         {
-            Player.GiveIFrames(Player.longInvince ? 100 : 60, true);
+            // 17APR2024: Ozzatron: God Slayer Dodge is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+            int godSlayerDodgeIFrames = Player.ComputeDodgeIFrames();
+            Player.GiveUniversalIFrames(godSlayerDodgeIFrames, true);
+
             SoundEngine.PlaySound(SoundID.Item67, Player.Center);
 
             for (int j = 0; j < 30; j++)
@@ -114,7 +119,9 @@ namespace CalamityMod.CalPlayer
                 Player.AddCooldown(Cooldowns.CounterScarf.ID, duration);
             }
 
-            Player.GiveIFrames(Player.longInvince ? 100 : 60, true);
+            // 17APR2024: Ozzatron: Counter Scarf is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+            int counterScarfIFrames = Player.ComputeDodgeIFrames();
+            Player.GiveUniversalIFrames(counterScarfIFrames, true);
 
             for (int j = 0; j < 100; j++)
             {
@@ -151,10 +158,10 @@ namespace CalamityMod.CalPlayer
                 int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.MirrorDodgeCooldownMin, BalancingConstants.MirrorDodgeCooldownMax, cooldownDurationScalar);
                 Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, "abyssmirror");
 
-                // TODO -- why is this here?
-                Player.noKnockback = true;
+                // 17APR2024: Ozzatron: Abyssal Mirror is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                int abyssalMirrorDodgeIFrames = Player.ComputeDodgeIFrames();
+                Player.GiveUniversalIFrames(abyssalMirrorDodgeIFrames, true);
 
-                Player.GiveIFrames(Player.longInvince ? 100 : 60, true);
                 rogueStealth += 0.5f;
                 SoundEngine.PlaySound(SilvaHeadSummon.ActivationSound, Player.Center);
 
@@ -195,10 +202,10 @@ namespace CalamityMod.CalPlayer
                 int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.MirrorDodgeCooldownMin, BalancingConstants.MirrorDodgeCooldownMax, cooldownDurationScalar);
                 Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, "eclipsemirror");
 
-                // TODO -- why is this here?
-                Player.noKnockback = true;
+                // 17APR2024: Ozzatron: Eclipse Mirror is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                int eclipseMirrorDodgeIFrames = Player.ComputeDodgeIFrames();
+                Player.GiveUniversalIFrames(eclipseMirrorDodgeIFrames, true);
 
-                Player.GiveIFrames(Player.longInvince ? 100 : 60, true);
                 rogueStealth += 0.5f;
                 SoundEngine.PlaySound(SoundID.Item68, Player.Center);
 
@@ -915,7 +922,10 @@ namespace CalamityMod.CalPlayer
                         proj.velocity *= -2f;
                         proj.extraUpdates += 1;
                         proj.penetrate = 1;
-                        Player.GiveIFrames(20, false);
+
+                        // 17APR2024: Ozzatron: The Evolution is a reflect which also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                        int evolutionIFrames = Player.ComputeReflectIFrames();
+                        Player.GiveUniversalIFrames(evolutionIFrames, true);
 
                         modifiers.SetMaxDamage(1);
                         evolutionLifeRegenCounter = 300;
@@ -976,35 +986,6 @@ namespace CalamityMod.CalPlayer
                 // 120 in normal, 144 in expert, 216 in master
                 else if (proj.type == ProjectileID.SpearTrap)
                     modifiers.SourceDamage *= 0.6f;
-            }
-
-            if (CalamityWorld.revenge)
-            {
-                double damageMultiplier = 1D;
-                bool containsProjectile = false;
-                if (CalamityLists.revengeanceProjectileBuffList25Percent.Contains(proj.type))
-                {
-                    damageMultiplier += 0.25;
-                    containsProjectile = true;
-                }
-                else if (CalamityLists.revengeanceProjectileBuffList20Percent.Contains(proj.type))
-                {
-                    damageMultiplier += 0.2;
-                    containsProjectile = true;
-                }
-                else if (CalamityLists.revengeanceProjectileBuffList15Percent.Contains(proj.type))
-                {
-                    damageMultiplier += 0.15;
-                    containsProjectile = true;
-                }
-
-                if (containsProjectile)
-                {
-                    if (CalamityWorld.death)
-                        damageMultiplier += (damageMultiplier - 1D) * 0.6;
-
-                    modifiers.SourceDamage *= (float)damageMultiplier;
-                }
             }
 
             // Reduce damage dealt by rainbow trails depending on how faded they are.
@@ -1420,7 +1401,10 @@ namespace CalamityMod.CalPlayer
                         proj.velocity *= -1f;
                         proj.damage = (int)Player.GetBestClassDamage().ApplyTo(proj.damage * 8);
                         proj.penetrate = 1;
-                        Player.GiveIFrames(20, false);
+
+                        // 17APR2024: Ozzatron: The Transformer is a reflect which also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                        int transformerIFrames = Player.ComputeReflectIFrames();
+                        Player.GiveUniversalIFrames(transformerIFrames, true);
                     }
                 }
 
@@ -1445,7 +1429,10 @@ namespace CalamityMod.CalPlayer
                         proj.friendly = true;
                         proj.velocity *= -1f;
                         proj.penetrate = 1;
-                        Player.GiveIFrames(20, false);
+
+                        // 17APR2024: Ozzatron: The Daedalus Reflect set bonus also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                        int daedalusReflectIFrames = Player.ComputeReflectIFrames();
+                        Player.GiveUniversalIFrames(daedalusReflectIFrames, true);
 
                         int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.DaedalusReflectCooldownMin, BalancingConstants.DaedalusReflectCooldownMax, cooldownDurationScalar);
                         Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
@@ -1499,8 +1486,11 @@ namespace CalamityMod.CalPlayer
 
                             Projectile.NewProjectile(Player.GetSource_FromThis(), n.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0, Main.myPlayer);
 
+                            // 17APR2024: Ozzatron: Gravistar Sabaton gives iframes when passing through enemies for projectile safety.
+                            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
                             n.Calamity().dashImmunityTime[Player.whoAmI] = 4;
-                            Player.GiveIFrames(5, false);
+                            Player.GiveUniversalIFrames(GravistarSabaton.PassthroughIFrames, false);
+
                             return true;
                         }
                     }
@@ -1679,8 +1669,12 @@ namespace CalamityMod.CalPlayer
                 {
                     if (!Player.HasCooldown(ParryCooldown.ID))
                     {
-                        Player.GiveIFrames(60, true);
+                        // 17APR2024: Ozzatron: Blazing Core is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+                        int blazingCoreParryIFrames = Player.ComputeParryIFrames();
+                        Player.GiveUniversalIFrames(blazingCoreParryIFrames, true);
+
                         blazingCoreEmpoweredParry = true;
+
                         modifiers.SetMaxDamage(1); //ONLY REDUCE DAMAGE IF NOT ON COOLDOWN
                         modifiers.DisableSound(); //prevents hurt sound from playing, had no idea this was a thing
                     }
@@ -1699,8 +1693,12 @@ namespace CalamityMod.CalPlayer
                 {
                     if (!Player.HasCooldown(ParryCooldown.ID))
                     {
-                        Player.GiveIFrames(60, true);
+                        // 17APR2024: Ozzatron: Flame-Licked Shell is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+                        int flameLickedShellParryIFrames = Player.ComputeParryIFrames();
+                        Player.GiveUniversalIFrames(flameLickedShellParryIFrames, true);
+
                         flameLickedShellEmpoweredParry = true;
+
                         modifiers.FinalDamage *= 0.1f; //90% dr
                         modifiers.DisableSound();
                     }
@@ -1736,9 +1734,9 @@ namespace CalamityMod.CalPlayer
             // If the shield(s) completely absorb the hit, iframes are granted on the spot and the hit is marked to be dodged.
             // Shields are drained in order of progression, so your weaker shields will break first.
             // Damage can and will be blocked by multiple shields if it has to be.
+            bool shieldsFullyAbsorbedHit = false;
             if (HasAnyEnergyShield)
             {
-                bool shieldsFullyAbsorbedHit = false;
                 bool shieldsTookHit = false;
                 bool anyShieldBroke = false;
                 int totalDamageBlocked = 0;
@@ -1883,8 +1881,9 @@ namespace CalamityMod.CalPlayer
                     Rectangle location = new Rectangle((int)Player.position.X, (int)Player.position.Y - 16, Player.width, Player.height);
                     CombatText.NewText(location, Color.LightBlue, Language.GetTextValue(shieldDamageText));
 
-                    // Give the player iframes for taking the a shield hit, regardless of whether or not the shields broke
-                    Player.GiveIFrames(Player.longInvince ? 100 : 60, true);
+                    // Give the player iframes for taking a shield hit, regardless of whether or not the shields broke.
+                    int shieldHitIFrames = Player.ComputeHitIFrames(info);
+                    Player.GiveIFrames(info.CooldownCounter, shieldHitIFrames, true);
 
                     // Spawn particles when hit with the shields up, regardless of whether or not the shields broke.
                     // More particles spawn if a shield broke.
@@ -1926,7 +1925,7 @@ namespace CalamityMod.CalPlayer
                         masterChefDurabilityCD.timeLeft = LunicCorpsShieldDurability;
 
                     // Update PSA/PSC durability on the cooldown rack
-                    if ((pSoulArtifact && (!profanedCrystal || profanedCrystalBuffs)) && cooldowns.TryGetValue(Cooldowns.ProfanedSoulShield.ID, out var profanedSoulDurabilityCD))
+                    if (pSoulArtifact && (!profanedCrystal || profanedCrystalBuffs) && cooldowns.TryGetValue(Cooldowns.ProfanedSoulShield.ID, out var profanedSoulDurabilityCD))
                         profanedSoulDurabilityCD.timeLeft = pSoulShieldDurability;
 
                     // Update Sponge durability on the cooldown rack.
@@ -1954,7 +1953,7 @@ namespace CalamityMod.CalPlayer
                         Player.AddCooldown(SpongeRecharge.ID, TheSponge.ShieldRechargeDelay, true);
                 }
 
-                // If the shields completely absorbed the hit, mark the player as dodging this damage instance later down the chain with a "Free Dodge".
+                // If the shields completely absorbed the hit, then delete the hit using reflection.
                 if (shieldsFullyAbsorbedHit)
                 {
                     freeDodgeFromShieldAbsorption = true;
@@ -1970,7 +1969,7 @@ namespace CalamityMod.CalPlayer
             // Otherwise, it reduces the damage of any hit to 5, which allows for full iframes.
             // It then applies the full hit (minus that 5 damage) to its own bleedout buffer.
             // Hits for less than 5 damage are ignored entirely and allowed to strike the player as normal.
-            if (chaliceOfTheBloodGod && !freeDodgeFromShieldAbsorption && info.Damage > ChaliceOfTheBloodGod.MinAllowedDamage)
+            if (chaliceOfTheBloodGod && !shieldsFullyAbsorbedHit && info.Damage > ChaliceOfTheBloodGod.MinAllowedDamage)
             {
                 int bleedoutToApply = info.Damage - ChaliceOfTheBloodGod.MinAllowedDamage;
                 chaliceBleedoutBuffer += bleedoutToApply;
@@ -2375,40 +2374,8 @@ namespace CalamityMod.CalPlayer
 
             if (Player.whoAmI == Main.myPlayer)
             {
-                int iFramesToAdd = 0;
-                if (godSlayerThrowing && hurtInfo.Damage > 80)
-                    iFramesToAdd += 30;
-                if (statigelSet && hurtInfo.Damage > 100)
-                    iFramesToAdd += 30;
-
-                // Deific Amulet provides 10 to 40 bonus immunity frames when you get hit which scale with your missing health.
-                // If you only take 1 damage, you get 5 iframes.
-                // This effect is inherited by Rampart of Deities.
-                if (dAmulet)
-                {
-                    if (hurtInfo.Damage > 1)
-                    {
-                        float lifeRatio = (float)Player.statLife / Player.statLifeMax2;
-                        float iframeEffectivenessRatio = Utils.GetLerpValue(1.0f, 0.25f, lifeRatio, true);
-
-                        iFramesToAdd += (int)(iframeEffectivenessRatio * DeificAmulet.MaxBonusIFrames);
-                    }
-                    else
-                        iFramesToAdd += 5;
-                }
-
-                // Ozzatron 20FEB2024: Moved extra iframes from Seraph Tracers to Rampart of Deities to counteract its loss of Charm of Myths
-                // This stacks with the above Deific Amulet effect
-                if (rampartOfDeities && hurtInfo.Damage > 200)
-                    iFramesToAdd += 30;
-
-                if (fabsolVodka)
-                {
-                    if (hurtInfo.Damage == 1)
-                        iFramesToAdd += 5;
-                    else
-                        iFramesToAdd += 10;
-                }
+                // Add extra iframes on hit based on various Calamity effects.
+                int iFramesToAdd = Player.GetExtraHitIFrames(hurtInfo);
 
                 // Give bonus immunity frames based on the type of damage dealt
                 if (hurtInfo.CooldownCounter != -1)

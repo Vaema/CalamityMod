@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<RelicOfDeliveranceSpear>();
             Item.Calamity().CannotBeEnchanted = true;

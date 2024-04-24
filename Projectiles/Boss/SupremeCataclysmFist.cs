@@ -20,6 +20,7 @@ namespace CalamityMod.Projectiles.Boss
         public ref float Time => ref Projectile.ai[0];
         public Vector2 shootVel;
         public int rotDirection = 1;
+        public bool broIsAlive = true;
 
         public override void SetStaticDefaults()
         {
@@ -56,6 +57,7 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.timeLeft = 240;
                     rotDirection = Main.rand.NextBool() ? -1 : 1;
                     Projectile.velocity *= 5.5f;
+                    broIsAlive = NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>());
                 }
                 else
                 {
@@ -74,19 +76,46 @@ namespace CalamityMod.Projectiles.Boss
                 // Adds rotation, but it's SUPER unfair a lot of the time
                 //shootVel = shootVel.RotatedBy(Time * 0.00011f * rotDirection);
 
+
+                if (Projectile.timeLeft == 205) // Fist direction telegraphs
+                {
+                    for (int k = 0; k < 28; k++)
+                    {
+                        Vector2 vel1 = -shootVel * MathHelper.Clamp(Time * 0.1f, 1, 1.8f);
+                        GlowSparkParticle spark = new GlowSparkParticle(Projectile.Center + vel1 * (9 + k * 11), vel1, false, 7, 0.17f, Color.Lerp(Color.Red, Color.Magenta, 0.5f) * 0.5f, new Vector2(0.9f, 0.4f), true, false);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    if (broIsAlive == false)
+                    {
+                        for (int k = 0; k < 28; k++)
+                        {
+                            Vector2 vel2 = (-shootVel * MathHelper.Clamp(Time * 0.1f, 1, 1.8f)).RotatedBy(MathHelper.ToRadians(120f));
+                            GlowSparkParticle spark2 = new GlowSparkParticle(Projectile.Center + vel2 * (9 + k * 11), vel2, false, 7, 0.17f, Color.Lerp(Color.Red, Color.Magenta, 0.5f) * 0.5f, new Vector2(0.9f, 0.4f), true, false);
+                            GeneralParticleHandler.SpawnParticle(spark2);
+                        }
+                        for (int k = 0; k < 28; k++)
+                        {
+                            Vector2 vel3 = (-shootVel * MathHelper.Clamp(Time * 0.1f, 1, 1.8f)).RotatedBy(MathHelper.ToRadians(-120f));
+                            GlowSparkParticle spark3 = new GlowSparkParticle(Projectile.Center + vel3 * (9 + k * 11), vel3, false, 7, 0.17f, Color.Lerp(Color.Red, Color.Magenta, 0.5f) * 0.5f, new Vector2(0.9f, 0.4f), true, false);
+                            GeneralParticleHandler.SpawnParticle(spark3);
+                        }
+                    }
+                }
+
                 if (Projectile.timeLeft <= 200 && Time % 3 == 0)
                 {
-                    Vector2 randPos = shootVel.RotatedBy(MathHelper.ToRadians(90f)) * Main.rand.NextFloat(-25, 25);
+                    Vector2 randPos = (-shootVel * 1.5f).RotatedByRandom(1) * Main.rand.NextFloat(5, 15);
                     int type = ModContent.ProjectileType<SupremeCataclysmFist>();
                     SoundEngine.PlaySound(SupremeCalamitas.BrimstoneShotSound with { Volume = 1.2f, Pitch = 0.55f }, Projectile.Center);
-                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + randPos, (-shootVel * MathHelper.Clamp(Time * 0.1f, 1, 1.8f)) * Main.rand.NextFloat(0.75f, 1f), type, Projectile.damage, 0f, Main.myPlayer, 0f, Main.rand.Next(0, 1 + 1), 0);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + randPos, (-shootVel * MathHelper.Clamp(Time * 0.02f, 0.1f, 1.8f)) * Main.rand.NextFloat(0.75f, 1f), type, Projectile.damage, 0f, Main.myPlayer, 0f, Main.rand.Next(0, 1 + 1), 0);
                 }
-                if (Projectile.timeLeft <= 200 && Time % 3 == 0 && NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == false)
+                if (Projectile.timeLeft <= 200 && Time % 3 == 0 && broIsAlive == false)
                 {
-                    Vector2 randPos = shootVel.RotatedBy(MathHelper.ToRadians(90f)) * Main.rand.NextFloat(-25, 25);
+                    Vector2 randPos = (-shootVel * 1.5f).RotatedBy(MathHelper.ToRadians(120f)).RotatedByRandom(1) * Main.rand.NextFloat(5, 15);
+                    Vector2 randPos2 = (-shootVel * 1.5f).RotatedBy(MathHelper.ToRadians(-120f)).RotatedByRandom(1) * Main.rand.NextFloat(5, 15);
                     int type = ModContent.ProjectileType<SupremeCataclysmFist>();
-                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + randPos, (-shootVel * MathHelper.Clamp(Time * 0.1f, 1, 1.8f)).RotatedBy(MathHelper.ToRadians(120f)) * Main.rand.NextFloat(0.75f, 1f), type, Projectile.damage, 0f, Main.myPlayer, 0f, Main.rand.Next(0, 1 + 1), 0);
-                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + randPos, (-shootVel * MathHelper.Clamp(Time * 0.1f, 1, 1.8f)).RotatedBy(MathHelper.ToRadians(-120f)) * Main.rand.NextFloat(0.75f, 1f), type, Projectile.damage, 0f, Main.myPlayer, 0f, Main.rand.Next(0, 1 + 1), 0);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + randPos, (-shootVel * MathHelper.Clamp(Time * 0.02f, 0.1f, 1.8f)).RotatedBy(MathHelper.ToRadians(120f)) * Main.rand.NextFloat(0.75f, 1f), type, Projectile.damage, 0f, Main.myPlayer, 0f, Main.rand.Next(0, 1 + 1), 0);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + randPos2, (-shootVel * MathHelper.Clamp(Time * 0.02f, 0.1f, 1.8f)).RotatedBy(MathHelper.ToRadians(-120f)) * Main.rand.NextFloat(0.75f, 1f), type, Projectile.damage, 0f, Main.myPlayer, 0f, Main.rand.Next(0, 1 + 1), 0);
                 }
                 if (Projectile.timeLeft == 1)
                 {

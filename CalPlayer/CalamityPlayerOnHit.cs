@@ -86,6 +86,7 @@ namespace CalamityMod.CalPlayer
             {
                 case ItemID.CobaltSword:
                     target.Calamity().miscDefenseLoss = (int)(target.defense * 0.25);
+                    target.Calamity().isNerfedByCobalt = true;
                     break;
 
                 case ItemID.PalladiumSword:
@@ -96,6 +97,7 @@ namespace CalamityMod.CalPlayer
 
                 case ItemID.MythrilSword:
                     target.damage = (int)(target.defDamage * 0.9);
+                    target.Calamity().isNerfedByMythril = true;
                     break;
 
                 case ItemID.OrichalcumSword:
@@ -215,6 +217,7 @@ namespace CalamityMod.CalPlayer
             {
                 case ProjectileID.CobaltNaginata:
                     target.Calamity().miscDefenseLoss = (int)(target.defense * 0.25);
+                    target.Calamity().isNerfedByCobalt = true;
                     break;
 
                 case ProjectileID.PalladiumPike:
@@ -225,6 +228,7 @@ namespace CalamityMod.CalPlayer
 
                 case ProjectileID.MythrilHalberd:
                     target.damage = (int)(target.defDamage * 0.9);
+                    target.Calamity().isNerfedByMythril = true;
                     break;
 
                 case ProjectileID.OrichalcumHalberd:

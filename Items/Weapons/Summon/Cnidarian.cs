@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shootSpeed = 10f;
 
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
         }
 
         public override bool CanUseItem(Player player)

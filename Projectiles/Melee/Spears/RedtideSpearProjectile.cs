@@ -307,9 +307,13 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
             target.AddBuff(BuffID.Poisoned, 180);
 
-            //Give a sliver of iframes to the player so its safer to ram into hordes (which is fun and should be encouraged)
             if (CurrentAttackState == AttackState.RunAttack)
-                Owner.GiveIFrames(5);
+            {
+                // 17APR2024: Ozzatron: Redtide Spear's charge gives iframes when striking enemies in a similar manner to a ram dash.
+                // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                int redtideRamIFrames = 5;
+                Owner.GiveUniversalIFrames(redtideRamIFrames);
+            }
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

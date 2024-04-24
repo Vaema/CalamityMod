@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 0.5f;
             Item.UseSound = SoundID.Item102;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ModContent.ProjectileType<SparkInfernal>();
             Item.shootSpeed = 24f;
             Item.rare = ModContent.RarityType<Violet>();

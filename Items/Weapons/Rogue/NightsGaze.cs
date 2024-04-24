@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.maxStack = 1;
             Item.shoot = ModContent.ProjectileType<NightsGazeProjectile>();
             Item.shootSpeed = 30f;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.DamageType = RogueDamageClass.Instance;
         }

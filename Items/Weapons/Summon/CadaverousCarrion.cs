@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.UseSound = SoundID.NPCDeath13;
             Item.shoot = ModContent.ProjectileType<OldDukeHeadCorpse>();
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

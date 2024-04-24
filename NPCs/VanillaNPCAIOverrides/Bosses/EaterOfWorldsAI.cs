@@ -13,6 +13,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     public static class EaterOfWorldsAI
     {
         private const int TotalMasterModeWorms = 4;
+        public const float DRIncreaseTime = 600f;
 
         public static bool BuffedEaterofWorldsAI(NPC npc, Mod mod)
         {
@@ -48,7 +49,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (tile.WallType == WallID.EbonstoneUnsafe)
                 enrage = false;
 
-            float enrageScale = bossRush ? 1.5f : 0f;
+            float enrageScale = bossRush ? 0.5f : 0f;
             if (((npc.position.Y / 16f) < Main.worldSurface && enrage) || bossRush)
             {
                 calamityGlobalNPC.CurrentlyEnraged = !bossRush;
@@ -70,7 +71,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float lifeRatio = MathHelper.Clamp(segmentCount / totalSegments, 0f, 1f);
 
             // 10 seconds of resistance to prevent spawn killing
-            if (calamityGlobalNPC.newAI[1] < 600f && bossRush)
+            if (calamityGlobalNPC.newAI[1] < DRIncreaseTime)
                 calamityGlobalNPC.newAI[1] += 1f;
 
             // Phases
@@ -140,8 +141,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             cursedFlameDirection.Y -= targetYDirection;
 
                             int type = (death && phase3) ? ModContent.ProjectileType<ShadowflameFireball>() : ProjectileID.CursedFlameHostile;
-                            float homeIn = death ? (phase4 ? 2f : 0f) : 0f;
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), cursedFlameDirection.X, cursedFlameDirection.Y, targetXDirection, targetYDirection, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, homeIn);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), cursedFlameDirection.X, cursedFlameDirection.Y, targetXDirection, targetYDirection, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -357,12 +357,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (phase6)
             {
-                segmentVelocity += 4f * (enrageScale + 1f);
+                segmentVelocity += (death ? 2.4f : 4f) * (enrageScale + 1f);
                 segmentAcceleration += 0.2f * (enrageScale + 1f);
             }
             else if (phase5)
             {
-                segmentVelocity += 3f * (enrageScale + 1f);
+                segmentVelocity += (death ? 2.2f : 3f) * (enrageScale + 1f);
                 segmentAcceleration += 0.15f * (enrageScale + 1f);
             }
             else if (phase4)
@@ -434,9 +434,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else
             {
                 // Prevent new heads from being slowed when they spawn
-                if (calamityGlobalNPC.newAI[1] < 3f)
+                if (calamityGlobalNPC.newAI[2] < 3f)
                 {
-                    calamityGlobalNPC.newAI[1] += 1f;
+                    calamityGlobalNPC.newAI[2] += 1f;
 
                     // Set velocity for when a new head spawns
                     // Only set this if the head is far enough away from the player, to avoid unfair hits
@@ -616,11 +616,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         // Limit this variable so that the following calculation never goes too low
                         numHeads--;
-                        if (numHeads > 8)
-                            numHeads = 8;
+                        if (numHeads > 7)
+                            numHeads = 7;
 
-                        float pushDistanceLowerLimit = 16f - numHeads;
-                        float pushDistanceUpperLimit = 160f - numHeads * 10f;
+                        float pushDistanceLowerLimit = 14f - numHeads;
+                        float pushDistanceUpperLimit = 140f - numHeads * 10f;
                         float pushDistance = MathHelper.Lerp(pushDistanceLowerLimit, pushDistanceUpperLimit, 1f - lifeRatio) * npc.scale;
                         float pushVelocity = 0.25f + enrageScale * 0.125f;
                         for (int i = 0; i < Main.maxNPCs; i++)

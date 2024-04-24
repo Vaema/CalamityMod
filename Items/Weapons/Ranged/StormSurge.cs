@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item122;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.autoReuse = true; //GRRRRRRRRRRRRRRRR false begone
             Item.shoot = ModContent.ProjectileType<StormSurgeTornado>();

@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice / 4; // This buy price is intentionally reduced due to how common this item is.
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<AshenStalactiteProj>();
             Item.shootSpeed = 15f;

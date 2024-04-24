@@ -205,7 +205,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (timer >= shootRate - 35)
             {
                 Vector2 shootVelocity = (Target.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * 5f;
-                GlowOrbParticle spark2 = new GlowOrbParticle(NPC.Center + shootVelocity * 7, (shootVelocity * Main.rand.NextFloat(0.6f, 1.1f)) * 1.8f + NPC.velocity * 0.5f, false, 15, Main.rand.NextFloat(0.65f, 0.7f), Main.rand.NextBool() ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
+                GlowOrbParticle spark2 = new GlowOrbParticle(NPC.Center + shootVelocity * 7, (shootVelocity * Main.rand.NextFloat(0.6f, 1.1f)) * 1.8f + NPC.velocity * 0.5f, false, 15, Main.rand.NextFloat(0.7f, 0.75f), Main.rand.NextBool() ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
                 GeneralParticleHandler.SpawnParticle(spark2);
             }
 

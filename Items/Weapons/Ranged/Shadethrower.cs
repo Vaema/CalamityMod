@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.knockBack = 1.5f;
             Item.UseSound = SoundID.Item34;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ShadeFire>();

@@ -1520,6 +1520,8 @@ namespace CalamityMod.CalPlayer
                 ChlorophyteHealDelay--;
             if (monolithAccursedShader > 0)
                 monolithAccursedShader--;
+            if (BrimstoneLavaFountainCounter > 0)
+                BrimstoneLavaFountainCounter--;
             if (miningSetCooldown > 0)
                 miningSetCooldown--;
             if (RustyMedallionCooldown > 0)
@@ -1654,8 +1656,10 @@ namespace CalamityMod.CalPlayer
             if (tarraThrowing)
             {
                 // The iframes from the evasion are disabled by dodge disabling effects.
+                // 17APR2024: Ozzatron: Tarragon Immunity is meant to be a full invulnerability effect, so universal iframes are granted throughout its duration.
+                // It has no interaction with Cross Necklace.
                 if (tarragonImmunity && !disableAllDodges)
-                    Player.GiveIFrames(2, true);
+                    Player.GiveUniversalIFrames(2, true);
 
                 if (tarraThrowingCrits >= 50)
                 {
@@ -2958,9 +2962,9 @@ namespace CalamityMod.CalPlayer
             // The player's true max life value with Calamity adjustments
             actualMaxLife = Player.statLifeMax2;
 
-            if (thirdSageH && !Player.dead && healToFull)
+            if (!Player.dead && healToFull)
             {
-                thirdSageH = false;
+                healToFull = false;
                 Player.statLife = actualMaxLife;
             }
 

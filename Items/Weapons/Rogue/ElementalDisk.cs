@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 16;
             Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<ElementalDiskProj>();
             Item.shootSpeed = 15f;

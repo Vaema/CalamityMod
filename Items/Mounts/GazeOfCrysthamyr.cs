@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Mounts
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.HoldUp;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
 

@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.UseSound = SoundID.Item33;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<GammaLaser>();

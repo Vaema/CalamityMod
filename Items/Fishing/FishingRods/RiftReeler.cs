@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 45;
             Item.shootSpeed = 17f;
             Item.shoot = ModContent.ProjectileType<RiftReelerBobber>();
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 

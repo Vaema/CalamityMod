@@ -73,7 +73,9 @@ namespace CalamityMod.Projectiles.Melee
 
         internal void ReelBack()
         {
-            Owner.GiveIFrames(PhosphorescentGauntlet.OnHitIFrames);
+            // 17APR2024: Ozzatron: Phosphorescent Gauntlet gives iframes when striking enemies in a similar manner to a bonk dash.
+            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+            Owner.GiveUniversalIFrames(PhosphorescentGauntlet.OnHitIFrames);
 
             // Create some visual effects.
             if (!Main.dedServ)

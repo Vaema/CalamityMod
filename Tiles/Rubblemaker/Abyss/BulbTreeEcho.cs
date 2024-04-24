@@ -41,9 +41,9 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 49f / 500f;
-            g = 159f / 500f;
-            b = 242f / 500f;
+            r = 0.098f;
+            g = 0.318f;
+            b = 0.484f;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

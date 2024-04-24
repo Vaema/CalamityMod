@@ -58,15 +58,14 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.ai[1] > 0f)
             {
-                bool eaterOfWorlds = Projectile.ai[1] == 2f;
                 int playerTracker = (int)Player.FindClosest(Projectile.Center, 1, 1);
                 Vector2 playerDirection = Main.player[playerTracker].Center - Projectile.Center;
                 Projectile.ai[0] += 1f;
                 if (Projectile.ai[0] >= 60f)
                 {
-                    if (Projectile.ai[0] < (eaterOfWorlds ? 180f : 240f))
+                    if (Projectile.ai[0] < 240f)
                     {
-                        float inertia = eaterOfWorlds ? 30f : 25f;
+                        float inertia = 25f;
                         float scaleFactor = Projectile.velocity.Length();
                         playerDirection.Normalize();
                         playerDirection *= scaleFactor;
@@ -74,7 +73,7 @@ namespace CalamityMod.Projectiles.Boss
                         Projectile.velocity.Normalize();
                         Projectile.velocity *= scaleFactor;
                     }
-                    else if (Projectile.velocity.Length() < (eaterOfWorlds ? 12f : 18f))
+                    else if (Projectile.velocity.Length() < 18f)
                     {
                         Projectile.tileCollide = true;
                         Projectile.velocity *= 1.02f;

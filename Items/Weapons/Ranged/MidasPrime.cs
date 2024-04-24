@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.25f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = ShootSound;
             Item.autoReuse = true;
@@ -56,12 +56,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.altFunctionUse == 2)
             {
                 // player.CanBuyItem() breaks if the player has more than 2,147 platinum coins and was never fixed
-                // This alternative method works no matter how much money the player has
-                long cashAvailable = Utils.CoinsCount(out bool overflow, player.inventory);
-                if (cashAvailable < 100 && !overflow)
-                    return false;
-
-                return player.GetActiveRicoshotCoinCount() < 4;
+                // 20APR2024: Ozzatron: The method was instead replaced with player.CanAfford, which is immune to overflow
+                // Additionally, CanAfford checks your Piggy Bank, Safe, etc., meaning Midas Prime can use coins from there
+                bool hasAtLeastOneSilver = player.CanAfford(100);
+                return hasAtLeastOneSilver && player.GetActiveRicoshotCoinCount() < 4;
             }
             return true;
         }
@@ -71,10 +69,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             // Remove either 1 gold (if possible) or 1 silver (otherwise) when using right click
             if (player.altFunctionUse == 2)
             {
-                long cashAvailable = Utils.CoinsCount(out bool overflow, player.inventory);
+                // 20APR2024: Ozzatron: Use CanAfford (new function) to sum money across all the player's banks
+                // If they have a sum total of at least 1 gold everywhere, they can toss a gold coin
+                bool hasAtLeastOneGold = player.CanAfford(10000);
 
                 // If the player has at least 1 gold in their inventory, spend it and use a gold coin
-                if (overflow || (cashAvailable >= 10000 && (Main.LocalPlayer.InventoryHas(ItemID.GoldCoin) || Main.LocalPlayer.InventoryHas(ItemID.PlatinumCoin))))
+                if (hasAtLeastOneGold)
                 {
                     player.BuyItem(10000);
                     nextShotGoldCoin = true;

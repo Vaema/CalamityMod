@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = Item.useAnimation = 13;
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.shoot = ModContent.ProjectileType<WrathwingSpear>();
             Item.shootSpeed = 28f;

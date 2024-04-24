@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 28;
             Item.height = 26;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

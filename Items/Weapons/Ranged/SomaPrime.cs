@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 94;
             Item.height = 34;
-            Item.damage = 370;
+            Item.damage = 400;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 5;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 9f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
             Item.Calamity().canFirePointBlankShots = true;

@@ -923,7 +923,10 @@ namespace CalamityMod.NPCs.Yharon
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Vector2 center = player.Center + new Vector2(0f, -540f);
+                                float bulletHellTeleportLocationDistance = 540f;
+                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
+                                Vector2 teleportLocation = player.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
+                                Vector2 center = player.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
@@ -1297,7 +1300,10 @@ namespace CalamityMod.NPCs.Yharon
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Vector2 center = player.Center + new Vector2(0f, -540f);
+                                float bulletHellTeleportLocationDistance = 540f;
+                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
+                                Vector2 teleportLocation = player.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
+                                Vector2 center = player.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
@@ -2042,7 +2048,10 @@ namespace CalamityMod.NPCs.Yharon
                                         NPC.SpawnOnPlayer(NPC.FindClosestPlayer(), ModContent.NPCType<Bumblefuck>());
                                 }
 
-                                Vector2 center = targetData.Center + new Vector2(0f, -540f);
+                                float bulletHellTeleportLocationDistance = 540f;
+                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
+                                Vector2 teleportLocation = targetData.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
+                                Vector2 center = targetData.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();

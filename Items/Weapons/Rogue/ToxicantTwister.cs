@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 18f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

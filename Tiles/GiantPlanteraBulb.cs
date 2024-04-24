@@ -195,9 +195,9 @@ namespace CalamityMod.Tiles
         {
             if (Main.hardMode)
             {
-                r = 243f / 500f; // ~123
-                g = 82f / 500f; // ~41
-                b = 171f / 500f; // ~87
+                r = 0.486f;
+                g = 0.164f;
+                b = 0.342f;
             }
         }
 

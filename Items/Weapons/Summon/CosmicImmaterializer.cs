@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useTime = Item.useAnimation = 10;
             Item.noMelee = true;
             Item.knockBack = 0f;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.UseSound = SoundID.Item60;
             Item.shoot = ModContent.ProjectileType<CosmicEnergySpiral>();
             Item.shootSpeed = 10f;

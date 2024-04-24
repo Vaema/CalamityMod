@@ -1,4 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Ammo;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Mono.Cecil;
+using SteelSeries.GameSense;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -11,6 +15,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         private static int NumAnimationFrames = 5;
         private static int AnimationFrameTime = 9;
+        public int time = 0;
 
         public override void SetStaticDefaults()
         {
@@ -25,12 +30,18 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.ignoreWater = true;
             Projectile.penetrate = 1;
-            Projectile.extraUpdates = 3;
-            Projectile.timeLeft = 180;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.tileCollide = false;
+            Projectile.extraUpdates = 5;
+            Projectile.timeLeft = 300;
         }
 
         public override void AI()
         {
+            Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+
             DrawOffsetX = -40;
             DrawOriginOffsetY = -3;
             DrawOriginOffsetX = 18;
@@ -39,13 +50,23 @@ namespace CalamityMod.Projectiles.Melee
             // Light
             Lighting.AddLight(Projectile.Center, 0.45f, 0.1f, 0.1f);
 
-            // Spawn dust with a 1/2 chance
-            if (Main.rand.NextBool())
+            if (time > 8f && targetDist < 1400f)
             {
-                int idx = Dust.NewDust(Projectile.Center, 1, 1, DustID.GemRuby);
-                Main.dust[idx].position = Projectile.Center;
-                Main.dust[idx].noGravity = true;
-                Main.dust[idx].velocity *= 0.6f;
+                SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity * 1.5f, -Projectile.velocity * Main.rand.NextFloat(0.3f, 1.5f), false, 8, 0.8f, Color.Lerp(Color.DarkOrchid, Color.IndianRed, Main.rand.NextFloat(0, 1)) * 0.7f);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+            if (time > 8f && targetDist < 1400f)
+            {
+                Particle spark = new SparkParticle(Projectile.Center + Projectile.velocity * 2f, Projectile.velocity, false, 2, 1.9f, Color.Lerp(Color.DarkOrchid, Color.IndianRed, Main.rand.NextFloat(0, 1)) * 0.85f);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+
+            if (time > 8 && Main.rand.NextBool())
+            {
+                Vector2 dustvel = -Projectile.velocity;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, 267, dustvel * Main.rand.NextFloat(0.1f, 1.2f), 0, default, Main.rand.NextFloat(0.7f, 0.9f));
+                dust.noGravity = true;
+                dust.color = Color.Lerp(Color.DarkOrchid, Color.IndianRed, Main.rand.NextFloat(0, 1));
             }
 
             // Update animation
@@ -57,6 +78,8 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.frame >= NumAnimationFrames)
                 Projectile.frame = 0;
+
+            time++;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -69,34 +92,38 @@ namespace CalamityMod.Projectiles.Melee
         {
             SoundEngine.PlaySound(SoundID.NPCDeath55, Projectile.Center);
 
-            // Transform the projectile's hitbox into a big explosion
-            Projectile.position = Projectile.Center;
-            Projectile.width = Projectile.height = 140;
-            Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-
-            Vector2 corner = Projectile.position;
-            for (int i = 0; i < 50; i++)
+            if (Projectile.owner == Main.myPlayer)
             {
-                int idx = Dust.NewDust(corner, Projectile.width, Projectile.height, DustID.GemAmethyst, 0f, 0f, 0, new Color(210, 0, 255), 2.2f);
-                Main.dust[idx].noGravity = true;
-                Main.dust[idx].velocity *= 2.5f;
-
-                idx = Dust.NewDust(corner, Projectile.width, Projectile.height, DustID.Ice_Purple, 0f, 0f, 100, new Color(210, 0, 255), 1.8f);
-                Main.dust[idx].noGravity = true;
-                Main.dust[idx].velocity *= 1.8f;
-
-                idx = Dust.NewDust(corner, Projectile.width, Projectile.height, DustID.UndergroundHallowedEnemies, 0f, 0f, 100, new Color(210, 0, 255), 1.0f);
-                Main.dust[idx].noGravity = true;
-                Main.dust[idx].velocity *= 4.0f;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<AtaraxiaBoom>(), Projectile.damage / 2, 0, Projectile.owner, 1f, 0f, 0f);
             }
-
-            // Make the projectile ignore iframes while exploding
-            Projectile.maxPenetrate = -1;
-            Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.Damage();
+            for (int k = 0; k < 10; k++)
+            {
+                Vector2 velocity = new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.2f);
+                float colorRando = Main.rand.NextFloat(0, 1);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity, 278, velocity * Main.rand.NextFloat(0.2f, 1f));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.3f, 0.65f);
+                dust.color = Color.Lerp(Color.DarkOrchid, Color.IndianRed, colorRando);
+                dust.noLight = true;
+                dust.noLightEmittence = true;
+            }
+            for (int k = 0; k < 10; k++)
+            {
+                Vector2 velocity = new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.2f);
+                float colorRando = Main.rand.NextFloat(0, 1);
+                Particle spark = new GlowSparkParticle(Projectile.Center + velocity, velocity, false, 11, Main.rand.NextFloat(0.015f, 0.025f), Color.Lerp(Color.DarkOrchid, Color.IndianRed, colorRando), new Vector2(2.2f, 0.9f), true);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+            for (float k = 0; k < 3; k++)
+            {
+                float colorRando = Main.rand.NextFloat(0, 1);
+                int partLifetime = Main.rand.Next(13, 15 + 1);
+                float scale = Main.rand.NextFloat(0.12f, 0.18f);
+                Vector2 spawnPos = Projectile.Center + (Main.rand.NextVector2Circular(20, 20) * (k + 1));
+                Particle blastRing = new CustomPulse(spawnPos, Vector2.Zero, Color.Lerp(Color.DarkOrchid, Color.IndianRed, colorRando) * 0.6f, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.07f, scale, partLifetime);
+                GeneralParticleHandler.SpawnParticle(blastRing);
+            }
         }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 30, targetHitbox);
     }
 }

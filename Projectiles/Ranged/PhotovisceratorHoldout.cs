@@ -225,7 +225,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             SoundEngine.PlaySound(HalleysInferno.ShootSound with { Volume = 0.4f }, Owner.MountedCenter);
 
-            int rightClickDamage = (int)(0.5f * damage);
+            int rightClickDamage = (int)(0.65f * damage);
             Projectile.NewProjectile(source, position, velocity, ProjectileType<ExoFlareCluster>(), rightClickDamage, knockback, Projectile.owner);
         }
 

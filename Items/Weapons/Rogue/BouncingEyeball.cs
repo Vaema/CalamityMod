@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 3.5f;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item1;

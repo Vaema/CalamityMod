@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ProjectileType<ExobladeProj>();
             Item.shootSpeed = 9f;
             Item.rare = RarityType<Violet>();
