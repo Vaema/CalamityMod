@@ -66,16 +66,16 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Vector2 sparkVelocity = new Vector2();
                 if (Projectile.velocity.X != oldVelocity.X && oldVelocity.X < 0)
-                    sparkVelocity = new Vector2(6.5f, 0f);
+                    sparkVelocity = Vector2.UnitX * 6.5f;
                 else if (Projectile.velocity.X != oldVelocity.X && oldVelocity.X >= 0)
-                    sparkVelocity = new Vector2(-6.5f, 0f);
+                    sparkVelocity = Vector2.UnitX * -6.5f;
                 else if (Projectile.velocity.Y != oldVelocity.Y && oldVelocity.Y < 0)
-                    sparkVelocity = new Vector2(0f, 6.5f);
+                    sparkVelocity = Vector2.UnitY * 6.5f;
                 else if (Projectile.velocity.Y != oldVelocity.Y && oldVelocity.Y >= 0)
-                    sparkVelocity = new Vector2(0f, -6.5f);
+                    sparkVelocity = Vector2.UnitY * -6.5f;
 
-                Vector2 sparkLocation = sparkVelocity.X > 0f ? new Vector2(Projectile.Center.X - Projectile.width / 2, Projectile.Center.Y) : (sparkVelocity.X < 0f ? new Vector2(Projectile.Center.X + Projectile.width / 2, Projectile.Center.Y) : (sparkVelocity.Y > 0f ? new Vector2(Projectile.Center.X, Projectile.Center.Y - Projectile.height / 2) : new Vector2(Projectile.Center.X, Projectile.Center.Y + Projectile.height / 2)));
-                sparkVelocity = sparkVelocity.RotatedBy(Main.rand.NextFloat(-MathHelper.PiOver2, MathHelper.PiOver2));
+                Vector2 sparkLocation = sparkVelocity.X > 0f ? Projectile.Left : (sparkVelocity.X < 0f ? Projectile.Right : (sparkVelocity.Y > 0f ? Projectile.Top : Projectile.Bottom));
+                sparkVelocity = sparkVelocity.RotatedByRandom(MathHelper.PiOver2);
 
                 Particle collisionSparks = new AltLineParticle(sparkLocation, sparkVelocity, false, 30, 0.6f, new Color(250, 250, 107));
                 GeneralParticleHandler.SpawnParticle(collisionSparks);
@@ -104,9 +104,12 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(ModContent.BuffType<Laceration>(), 150);
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice"), Projectile.Center);
 
-            for (int p = 0; p < 6; p++)
+            int bloodCount = 6 + 12 * (int)SawLevel;
+            for (int p = 0; p < bloodCount; p++)
             {
-                Particle hitSparks = new AltLineParticle(target.Center, new Vector2(Main.rand.NextFloat(-6.5f, 6.5f), Main.rand.NextFloat(-6.5f, 6.5f)), false, 30, 0.6f, new Color(112, 16, 16));
+                Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * (Main.rand.NextFloat(0.4f, 0.6f) + (Main.rand.NextFloat(0.2f, 0.6f) * SawLevel));
+                float scale = Main.rand.NextFloat(0.5f, 0.8f) + Main.rand.NextFloat(0.2f, 0.8f) * SawLevel;
+                Particle hitSparks = new AltLineParticle(target.Center, velocity, false, 30, scale, new Color(112, 16, 16));
                 GeneralParticleHandler.SpawnParticle(hitSparks);
             }
         }
@@ -130,16 +133,16 @@ namespace CalamityMod.Projectiles.Ranged
             switch (goreToExclude)
             {
                 case 0:
-                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, 4f)), Mod.Find<ModGore>("BuzzkillSaw2").Type, 0.8f);
-                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, 4f)), Mod.Find<ModGore>("BuzzkillSaw3").Type, 0.8f);
+                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(4f, 4f), Mod.Find<ModGore>("BuzzkillSaw2").Type, 0.8f);
+                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(4f, 4f), Mod.Find<ModGore>("BuzzkillSaw3").Type, 0.8f);
                     break;
                 case 1:
-                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, 4f)), Mod.Find<ModGore>("BuzzkillSaw1").Type, 0.8f);
-                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, 4f)), Mod.Find<ModGore>("BuzzkillSaw3").Type, 0.8f);
+                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(4f, 4f), Mod.Find<ModGore>("BuzzkillSaw1").Type, 0.8f);
+                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(4f, 4f), Mod.Find<ModGore>("BuzzkillSaw3").Type, 0.8f);
                     break;
                 case 2:
-                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, 4f)), Mod.Find<ModGore>("BuzzkillSaw1").Type, 0.8f);
-                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, 4f)), Mod.Find<ModGore>("BuzzkillSaw2").Type, 0.8f);
+                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(4f, 4f), Mod.Find<ModGore>("BuzzkillSaw1").Type, 0.8f);
+                    Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(4f, 4f), Mod.Find<ModGore>("BuzzkillSaw2").Type, 0.8f);
                     break;
             }
         }
