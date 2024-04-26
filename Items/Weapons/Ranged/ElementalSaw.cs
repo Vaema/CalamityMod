@@ -5,6 +5,7 @@ using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
@@ -69,6 +70,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 {
                     player.AddCooldown(ElementalSawBoost.ID, DashCooldown);
                     player.Calamity().sBlasterDashActivated = true;
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), player.Center);
 
                     // Throws a lingering saw at the cursor
                     Vector2 mouseDist = Main.MouseWorld - player.Center;

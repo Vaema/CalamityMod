@@ -63,6 +63,10 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.myPlayer == Projectile.owner)
                 Owner.Calamity().rightClickListener = true;
 
+            ActiveSound Idle;
+            if (SoundEngine.TryGetActiveSound(ChargeIdle, out Idle) && Idle.IsPlaying)
+                Idle.Position = GunTipPosition;
+
             if (Owner.CantUseHoldout())
             {
                 if (Projectile.ai[1] < 1f)
@@ -70,6 +74,8 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.ai[1] = 1f;
                     KeepRefreshingLifetime = false;
                     Projectile.timeLeft = 30;
+                    if (SoundEngine.TryGetActiveSound(ChargeIdle, out Idle))
+                        Idle?.Stop();
 
                     SoundEngine.PlaySound(SoundID.DD2_BallistaTowerShot, GunTipPosition); // Placeholder?
                     float sawDamageMult = MathHelper.Clamp(MathHelper.Lerp(1f, 5f, Time / ChargeupTime), 1f, 5f) / 2f; // The damage must be divided by 2 to offset the holdout having 2x base damage.
@@ -96,6 +102,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Owner.AddCooldown(ElementalSawBoost.ID, ElementalSaw.DashCooldown);
                 Owner.Calamity().sBlasterDashActivated = true;
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), Owner.Center);
 
                 // Throws a lingering saw at the cursor
                 Vector2 mouseDist = Main.MouseWorld - Owner.Center;
@@ -140,6 +147,28 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.frame++;
                     if (Projectile.frame > 3)
                         Projectile.frame = 0;
+                }
+            }
+
+            if (Time < ChargeupTime)
+            {
+                if (Time == 1f)
+                {
+                    // Insert charge-up sound
+                }
+            }
+            else
+            {
+                if ((Time + 240) % 360 == 0)
+                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawIdle") { Volume = Main.zenithWorld ? 1f : 0.5f }, GunTipPosition);
+
+                if (Time % 3 == 0)
+                {
+                    Vector2 smokeVelocity = new Vector2(0f, Main.rand.NextFloat(-7f, -12f));
+                    smokeVelocity = smokeVelocity.RotatedByRandom(MathHelper.Pi / 8);
+                    Color smokeColor = Main.rand.NextBool() ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : Color.Gray;
+                    Particle fullChargeSmoke = new HeavySmokeParticle(GunTipPosition + new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f)), smokeVelocity, smokeColor, 30, 0.65f, 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), true);
+                    GeneralParticleHandler.SpawnParticle(fullChargeSmoke);
                 }
             }
         }
