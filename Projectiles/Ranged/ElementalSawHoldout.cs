@@ -190,7 +190,7 @@ namespace CalamityMod.Projectiles.Ranged
             hitbox = new Rectangle((int)GunTipPosition.X - 23, (int)GunTipPosition.Y - 23, 46, 46);
 
             if (Time / ChargeupTime >= 1f)
-                hitbox.Inflate(70, 70);
+                hitbox.Inflate(72, 72);
             else if (Time / ChargeupTime >= 0.25f)
                 hitbox.Inflate(32, 32);
         }

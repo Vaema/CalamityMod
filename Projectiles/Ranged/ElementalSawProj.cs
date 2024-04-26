@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Ranged
             // While empowered, the saws while slightly home in on the cursor
             if (Empowered && !Returning && Projectile.ai[1] > 30)
             {
-                float homingTurnSpeed = 0.09f;
+                float homingTurnSpeed = 0.11f;
                 Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.MouseWorld).ToRotation(), homingTurnSpeed).ToRotationVector2() * ElementalSaw.ShootSpeed;
             }
 
@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.Ranged
                     }
 
                     // Continously spawn homing bolts as it returns while empowered
-                    if (ReturnTimer % 8 == 0 && Empowered)
+                    if (ReturnTimer % 7 == 0 && Empowered)
                     {
                         Vector2 randVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.Pi / 3) / 2;
                         if (Main.myPlayer == Projectile.owner)
@@ -205,7 +205,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
             if (Projectile.ai[0] == 2f)
-                hitbox.Inflate(70, 70);
+                hitbox.Inflate(72, 72);
             else if (Projectile.ai[0] == 1f)
                 hitbox.Inflate(32, 32);
         }
