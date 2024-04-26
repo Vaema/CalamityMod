@@ -251,7 +251,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.type != ModContent.ProjectileType<PlantationStaffTentacle>() || !MainMinion.active || MainMinion.type != ModContent.ProjectileType<PlantationStaffSummon>())
                 return;
 
-            Texture2D texture = TextureAssets.Projectile[MainMinion.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[MainMinion.type].Value;
             int height = texture.Height / Main.projFrames[MainMinion.type];
             int frameHeight = height * MainMinion.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;

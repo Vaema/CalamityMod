@@ -158,7 +158,7 @@ namespace CalamityMod.Projectiles.Melee
             bool hyperBlade = fullyVisibleDuration == DefiledGreatsword.ProjectileFullyVisibleDuration + DefiledGreatsword.ProjectileFullyVisibleDurationIncreasePerAdditionalProjectile;
             bool sunlightBlade = fullyVisibleDuration == DefiledGreatsword.ProjectileFullyVisibleDuration + DefiledGreatsword.ProjectileFullyVisibleDurationIncreasePerAdditionalProjectile * 2f;
 
-            Texture2D asset = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D asset = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Microsoft.Xna.Framework.Rectangle rectangle = asset.Frame(1, 4);
             Vector2 origin = rectangle.Size() / 2f;
             float num = Projectile.scale * 1.1f;

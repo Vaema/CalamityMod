@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texLight = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texLight = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D texDark = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/NychthemeronOrb2").Value;
             if (Projectile.ai[0] == 0f)
             {

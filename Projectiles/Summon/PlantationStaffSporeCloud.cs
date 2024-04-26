@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (RandomTexture == 1f)
                 tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/PlantationStaffSporeCloud2").Value;
             if (RandomTexture == 2f)

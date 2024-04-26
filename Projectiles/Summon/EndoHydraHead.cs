@@ -229,7 +229,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // PreDraw is used instead of PostDraw because of draw order. Drawing the chains after the head
             // would cause them to be drawn on top of the head, which we do not want.
-            Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(headTexture,
                              Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,
                              headTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame),

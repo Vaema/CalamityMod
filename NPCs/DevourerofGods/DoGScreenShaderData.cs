@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (DoGIndex == -1)
             {
                 UpdateDoGIndex();
-                if (DoGIndex == -1)
+                if (DoGIndex == -1 && Main.LocalPlayer.Calamity().monolithDevourerPShader <= 0 && Main.LocalPlayer.Calamity().monolithDevourerBShader <= 0)
                     Filters.Scene["CalamityMod:DevourerofGodsHead"].Deactivate();
             }
         }
@@ -49,6 +49,10 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (DoGIndex != -1)
             {
                 UseTargetPosition(Main.npc[DoGIndex].Center);
+            }
+            else if (Main.LocalPlayer.Calamity().monolithDevourerPShader > 0 || Main.LocalPlayer.Calamity().monolithDevourerBShader > 0)
+            {
+                UseTargetPosition(Main.LocalPlayer.Center);
             }
             base.Apply();
         }

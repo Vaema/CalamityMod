@@ -192,7 +192,7 @@ namespace CalamityMod.Projectiles.Rogue
                 PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * 86f, false,
                     shader: GameShaders.Misc["CalamityMod:OverpoweredTouhouSpearShader"]), 60);
 
-                Texture2D spearTexture = ModContent.Request<Texture2D>(Texture).Value;
+                Texture2D spearTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
                 for (int i = 0; i < 7; i++)
                 {

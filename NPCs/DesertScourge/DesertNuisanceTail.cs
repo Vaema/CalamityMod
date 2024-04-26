@@ -20,8 +20,8 @@ namespace CalamityMod.NPCs.DesertScourge
         public override void SetDefaults()
         {
             NPC.GetNPCDamage();
-            NPC.width = 32;
-            NPC.height = 32;
+            NPC.width = 88;
+            NPC.height = 88;
 
             NPC.defense = 7;
             if (Main.getGoodWorld)
@@ -50,11 +50,18 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void AI()
         {
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
+
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 
             if (NPC.life > Main.npc[(int)NPC.ai[1]].life)
                 NPC.life = Main.npc[(int)NPC.ai[1]].life;
+
+            // Percent life remaining
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
@@ -116,7 +123,9 @@ namespace CalamityMod.NPCs.DesertScourge
                 }
                 NPC.rotation = (float)System.Math.Atan2((double)playerYPos, (double)playerXPos) + MathHelper.PiOver2;
                 playerDistance = (float)System.Math.Sqrt((double)(playerXPos * playerXPos + playerYPos * playerYPos));
-                playerDistance = (playerDistance - (float)(NPC.width)) / playerDistance;
+
+                int segmentOffset = 62;
+                playerDistance = (playerDistance - segmentOffset) / playerDistance;
                 playerXPos *= playerDistance;
                 playerYPos *= playerDistance;
                 NPC.velocity = Vector2.Zero;
@@ -130,7 +139,13 @@ namespace CalamityMod.NPCs.DesertScourge
             }
 
             // Calculate contact damage based on velocity
-            float maxChaseSpeed = 16f;
+            float maxChaseSpeed = Main.zenithWorld ? DesertNuisanceHead.SegmentVelocity_ZenithSeed :
+                Main.getGoodWorld ? DesertNuisanceHead.SegmentVelocity_GoodWorld :
+                masterMode ? DesertNuisanceHead.SegmentVelocity_Master :
+                DesertNuisanceHead.SegmentVelocity_Expert;
+            if (masterMode)
+                maxChaseSpeed += maxChaseSpeed * 0.5f * (1f - lifeRatio);
+
             float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
             float minimalDamageVelocity = maxChaseSpeed * 0.5f;
             float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
@@ -145,6 +160,26 @@ namespace CalamityMod.NPCs.DesertScourge
             }
         }
 
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+        {
+            Rectangle targetHitbox = target.Hitbox;
+
+            float hitboxTopLeft = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
+            float hitboxTopRight = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
+            float hitboxBotLeft = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
+            float hitboxBotRight = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
+
+            float minDist = hitboxTopLeft;
+            if (hitboxTopRight < minDist)
+                minDist = hitboxTopRight;
+            if (hitboxBotLeft < minDist)
+                minDist = hitboxBotLeft;
+            if (hitboxBotRight < minDist)
+                minDist = hitboxBotRight;
+
+            return minDist <= 30f * NPC.scale;
+        }
+
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
@@ -153,7 +188,7 @@ namespace CalamityMod.NPCs.DesertScourge
             if (NPC.life <= 0)
             {
                 if (Main.netMode != NetmodeID.Server)
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeTail").Type, 0.65f);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeNuisanceTail").Type, NPC.scale);
 
                 for (int k = 0; k < 10; k++)
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);

@@ -36,10 +36,10 @@ namespace CalamityMod.NPCs.Yharon
 
         public override void Update(GameTime gameTime)
         {
-            if (YIndex == -1 || BossRushEvent.BossRushActive)
+            if ((YIndex == -1 && Main.LocalPlayer.Calamity().monolithYharonShader <= 0) || BossRushEvent.BossRushActive)
             {
                 UpdateYIndex();
-                if (YIndex == -1 || BossRushEvent.BossRushActive)
+                if ((YIndex == -1 && Main.LocalPlayer.Calamity().monolithYharonShader <= 0) || BossRushEvent.BossRushActive)
                     Filters.Scene["CalamityMod:Yharon"].Deactivate();
             }
         }
@@ -50,6 +50,10 @@ namespace CalamityMod.NPCs.Yharon
             if (YIndex != -1)
             {
                 UseTargetPosition(Main.npc[YIndex].Center);
+            }
+            if (Main.LocalPlayer.Calamity().monolithYharonShader > 0)
+            {
+                UseTargetPosition(Main.LocalPlayer.Center);
             }
             base.Apply();
         }

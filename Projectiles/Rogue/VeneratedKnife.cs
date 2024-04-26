@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.ai[0] == 0f)
             {
-                Texture2D knife1 = ModContent.Request<Texture2D>(Texture).Value;
+                Texture2D knife1 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
                 CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 3, knife1);
             }
             else if (Projectile.ai[0] == 1f)

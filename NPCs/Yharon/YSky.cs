@@ -16,10 +16,10 @@ namespace CalamityMod.NPCs.Yharon
 
         public override void Update(GameTime gameTime)
         {
-            if (YIndex == -1 || BossRushEvent.BossRushActive)
+            if ((YIndex == -1 && Main.LocalPlayer.Calamity().monolithYharonShader <= 0) || BossRushEvent.BossRushActive)
             {
                 UpdateYIndex();
-                if (YIndex == -1 || BossRushEvent.BossRushActive)
+                if ((YIndex == -1 && Main.LocalPlayer.Calamity().monolithYharonShader <= 0) || BossRushEvent.BossRushActive)
                     isActive = false;
             }
 
@@ -56,7 +56,7 @@ namespace CalamityMod.NPCs.Yharon
         private bool UpdateYIndex()
         {
             int YType = ModContent.NPCType<Yharon>();
-            if (YIndex >= 0 && Main.npc[YIndex].active && Main.npc[YIndex].type == YType)
+            if ((YIndex >= 0 && Main.npc[YIndex].active && Main.npc[YIndex].type == YType) || Main.LocalPlayer.Calamity().monolithYharonShader > 0)
             {
                 return true;
             }

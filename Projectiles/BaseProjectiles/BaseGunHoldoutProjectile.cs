@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -137,7 +138,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = Request<Texture2D>(Texture).Width();
+            Projectile.width = Projectile.height = TextureAssets.Item[AssociatedItemID].Width();
             Projectile.tileCollide = false;
             Projectile.netImportant = true;
         }
@@ -234,7 +235,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Request<Texture2D>(Texture).Value;
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;

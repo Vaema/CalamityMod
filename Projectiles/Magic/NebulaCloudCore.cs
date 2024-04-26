@@ -260,7 +260,7 @@ namespace CalamityMod.Projectiles.Magic
             float rotationScale = 0.95f + (Projectile.rotation * 0.75f).ToRotationVector2().Y * 0.1f;
             cloudColor *= rotationScale;
             float cloudScale = 0.6f + Projectile.scale * 0.6f * rotationScale;
-            Texture2D coreTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D coreTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D nebulaCloudTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/NebulaCloud", AssetRequestMode.ImmediateLoad).Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             Vector2 coreOrigin = coreTexture.Size() / new Vector2(0, Main.projFrames[Projectile.type]) * 0.5f;

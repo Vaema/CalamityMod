@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.DesertScourge
     public class DesertScourgeHead : ModNPC
     {
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-        private bool TailSpawned = false;
+        private bool tailSpawned = false;
         public bool playRoarSound = false;
 
         public const float SegmentVelocity_Normal = 12f;
@@ -53,7 +53,7 @@ namespace CalamityMod.NPCs.DesertScourge
         public const float BurrowDistance_BossRush = 400f;
         public const float OpenMouthForBiteDistance = 220f;
 
-        private const int OpenMouthStopFrame = 6;
+        private const int OpenMouthStopFrame = 4;
 
         public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/DesertScourgeRoar");
 
@@ -64,14 +64,14 @@ namespace CalamityMod.NPCs.DesertScourge
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                Scale = 0.75f,
-                PortraitScale = 0.6f,
+                Scale = 0.65f,
+                PortraitScale = 0.7f,
                 CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/DesertScourge_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 40
             };
-            value.Position.X += 95;
-            value.Position.Y += 45;
+            value.Position.X += 65;
+            value.Position.Y += 35;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
@@ -238,9 +238,9 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                if (!TailSpawned && NPC.ai[0] == 0f)
+                if (!tailSpawned && NPC.ai[0] == 0f)
                 {
-                    int Previous = NPC.whoAmI;
+                    int previous = NPC.whoAmI;
                     int minLength = death ? 24 : revenge ? 21 : expertMode ? 18 : 15;
                     if (Main.getGoodWorld)
                         minLength *= 3;
@@ -268,13 +268,13 @@ namespace CalamityMod.NPCs.DesertScourge
 
                         Main.npc[lol].ai[2] = NPC.whoAmI;
                         Main.npc[lol].realLife = NPC.whoAmI;
-                        Main.npc[lol].ai[1] = Previous;
-                        Main.npc[Previous].ai[0] = lol;
+                        Main.npc[lol].ai[1] = previous;
+                        Main.npc[previous].ai[0] = lol;
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, lol, 0f, 0f, 0f, 0);
-                        Previous = lol;
+                        previous = lol;
                     }
 
-                    TailSpawned = true;
+                    tailSpawned = true;
                 }
             }
 
@@ -417,7 +417,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 // Spit a huge spread of sand upwards that falls down
                 SoundEngine.PlaySound(SoundID.NPCDeath13, NPC.Center);
                 float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 16f : bossRush ? 9f : death ? 7f : 6f;
-                int type = ModContent.ProjectileType<GreatSandBlast>();
+                int type = ModContent.ProjectileType<DesertScourgeSpit>();
                 int damage = NPC.GetProjectileDamage(type);
                 Vector2 projectileVelocity = Vector2.Normalize(NPC.Center + NPC.velocity * 10f - NPC.Center) * velocity;
                 int numProj = bossRush ? 30 : death ? 24 : revenge ? 20 : expertMode ? 16 : 12;
@@ -648,7 +648,7 @@ namespace CalamityMod.NPCs.DesertScourge
             if (hitboxBotRight < minDist)
                 minDist = hitboxBotRight;
 
-            return minDist <= 60f;
+            return minDist <= 60f * NPC.scale;
         }
 
         public override void FindFrame(int frameHeight)
@@ -675,7 +675,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 }
 
                 NPC.frameCounter += 1D;
-                if (NPC.frameCounter > 6D)
+                if (NPC.frameCounter > 4D)
                 {
                     NPC.frame.Y += frameHeight;
                     NPC.frameCounter = 0D;
@@ -691,7 +691,7 @@ namespace CalamityMod.NPCs.DesertScourge
             else if (openMouth || aboutToSpitSpread)
             {
                 NPC.frameCounter += 1D;
-                if (NPC.frameCounter > 6D)
+                if (NPC.frameCounter > 4D)
                 {
                     NPC.frame.Y += frameHeight;
                     NPC.frameCounter = 0D;
@@ -715,7 +715,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     else
                     {
                         NPC.frameCounter += 1D;
-                        if (NPC.frameCounter > 6D)
+                        if (NPC.frameCounter > 4D)
                         {
                             NPC.frame.Y -= frameHeight;
                             NPC.frameCounter = 0D;

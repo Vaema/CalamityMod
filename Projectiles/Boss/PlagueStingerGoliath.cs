@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void PostDraw(Color lightColor)
         {
             Vector2 center = new Vector2(Projectile.Center.X, Projectile.Center.Y);
-            Vector2 textureArea = new Vector2(ModContent.Request<Texture2D>(Texture).Value.Width / 2, ModContent.Request<Texture2D>(Texture).Value.Height / 2);
+            Vector2 textureArea = new Vector2(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Width / 2, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / 2);
             Vector2 drawArea = center - Main.screenPosition;
             drawArea -= new Vector2(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/PlagueStingerGoliathGlow").Value.Width, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/PlagueStingerGoliathGlow").Value.Height) * 1f / 2f;
             drawArea += textureArea * 1f + new Vector2(0f, 4f + Projectile.gfxOffY);

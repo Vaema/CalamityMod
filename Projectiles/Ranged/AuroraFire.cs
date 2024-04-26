@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.SetBlendState(BlendState.Additive);
-            Texture2D fog = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D fog = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float opacity = Utils.GetLerpValue(0f, 0.08f, LightPower, true) * Projectile.Opacity * 0.3f;
             Main.EntitySpriteDraw(fog, drawPosition, null, OrangeFogColor * opacity, Projectile.rotation + OrangeFogRot, fog.Size() * 0.5f, Projectile.scale * OrangeFogScale, SpriteEffects.None);

@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D sprite = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Color drawColour = Color.White;
             Rectangle sourceRect = new Rectangle(Projectile.width * (int)Projectile.localAI[1], Projectile.height * (int)Projectile.localAI[0], Projectile.width, Projectile.height);

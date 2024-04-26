@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 maxLength = Main.MouseWorld - Main.player[Projectile.owner].Center;
 
-                DrawLaser(ModContent.Request<Texture2D>(Texture).Value, Main.player[Projectile.owner].Center,
+                DrawLaser(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, Main.player[Projectile.owner].Center,
                     Projectile.velocity, 15f, Projectile.damage, -MathHelper.PiOver2, Projectile.scale, maxLength.Length(), new Color(Main.DiscoR, 0, 255), (int)MOVE_DISTANCE);
             }
             return false;

@@ -186,7 +186,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle sourceRectangle = new Rectangle(0, 0, texture.Width + 12, texture.Height + 12);
             Vector2 origin = sourceRectangle.Size() / 2f;
 

@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Summon
             float currentFade = Utils.GetLerpValue(0f, 5f, Projectile.timeLeft, true) * Utils.GetLerpValue(Projectile.ai[0], Projectile.ai[0] - 5f, Projectile.timeLeft, true);
             currentFade *= (1f + 0.2f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 30f * MathHelper.Pi * 3f)) * 0.8f;
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Color baseColor = new Color(150, 100, 255, 255) * Projectile.Opacity;
             baseColor *= 0.5f;

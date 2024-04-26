@@ -332,7 +332,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Main.spriteBatch.ExitShaderRegion();
 
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int frameY = frameHeight * Projectile.frame;
             float scale = Projectile.scale;

@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Environment
             if (Projectile.localAI[0] == 1f)
                 return;
 
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float opacity = Projectile.Opacity * 0.45f;

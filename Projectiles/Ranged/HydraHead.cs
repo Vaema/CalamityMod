@@ -229,7 +229,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             bool shouldFlip = Math.Abs(Projectile.rotation) > MathHelper.PiOver2;
-            Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(headTexture,
                              Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,
                              null,

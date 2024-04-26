@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Magic
             if ((Projectile.timeLeft > 596 && Projectile.ai[0] == 0f) || (Projectile.timeLeft > 599 && Projectile.ai[0] > 0f))
                 return false;
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             int height = texture.Height / Main.projFrames[Projectile.type];
             int frameHeight = height * Projectile.frame;

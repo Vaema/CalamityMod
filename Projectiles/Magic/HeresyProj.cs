@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             float glowOutwardness = MathHelper.SmoothStep(0f, 4f, Utils.GetLerpValue(90f, 270f, Time, true));
-            Texture2D bookTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D bookTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = bookTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Vector2 drawPosition;
             Vector2 origin = frame.Size() * 0.5f;

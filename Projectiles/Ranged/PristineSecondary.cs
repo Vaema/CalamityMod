@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Main.spriteBatch.SetBlendState(BlendState.Additive);
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float opacity = Utils.GetLerpValue(0f, 0.08f, LightPower, true) * Projectile.Opacity * 0.5f;
             Color drawColor = FogColor * opacity;

@@ -3,14 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.MusicBoxes
 {
-    [LegacyName("DraedonsAmbienceMusicBoxTile")]
-    public class DraedonsAmbienceMusicBox : ModTile
+    [LegacyName("DraedonsAmbienceMusicBoxTile", "DraedonsAmbienceMusicBox")]
+    public class DraedonExoSelectMusicBox : ModTile
     {
         public override void SetStaticDefaults()
         {
@@ -31,7 +30,7 @@ namespace CalamityMod.Tiles.MusicBoxes
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
-            player.cursorItemIconID = ModContent.ItemType<Items.Placeables.MusicBoxes.DraedonsAmbienceMusicBox>();
+            player.cursorItemIconID = ModContent.ItemType<Items.Placeables.MusicBoxes.DraedonExoSelectMusicBox>();
         }
 
         public override bool CreateDust(int i, int j, ref int type)

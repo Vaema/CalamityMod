@@ -16,7 +16,9 @@ namespace CalamityMod
         {
             if (!Main.dedServ)
             {
-                AddMusicBox("Sounds/Music/DraedonsAmbience", ModContent.ItemType<Items.Placeables.MusicBoxes.DraedonsAmbienceMusicBox>(), ModContent.TileType<Tiles.MusicBoxes.DraedonsAmbienceMusicBox>());
+                // 24APR2024: Ozzatron: unclear why these two songs are even in main mod, but I don't want to break precedent
+                AddMusicBox("Sounds/Music/DraedonExoSelect", ModContent.ItemType<Items.Placeables.MusicBoxes.DraedonExoSelectMusicBox>(), ModContent.TileType<Tiles.MusicBoxes.DraedonExoSelectMusicBox>());
+                AddMusicBox("Sounds/Music/DraedonTalk", ModContent.ItemType<Items.Placeables.MusicBoxes.DraedonTalkMusicBox>(), ModContent.TileType<Tiles.MusicBoxes.DraedonTalkMusicBox>());
             }
         }
     }

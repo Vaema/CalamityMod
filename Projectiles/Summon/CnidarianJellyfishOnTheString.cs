@@ -241,7 +241,7 @@ namespace CalamityMod.Projectiles.Summon
 
             PrimitiveRenderer.RenderTrail(segmentPositions, new(PrimWidthFunction, PrimColorFunction), 66);
 
-            Texture2D tex = Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Vector2 squish = new Vector2(2 - StretchRatio(), StretchRatio());
 

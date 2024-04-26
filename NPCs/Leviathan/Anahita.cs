@@ -20,6 +20,9 @@ namespace CalamityMod.NPCs.Leviathan
     [AutoloadBossHead]
     public class Anahita : ModNPC
     {
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/AnahitaHit", 3);
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/AnahitaDeath");
+
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private bool spawnedLevi = false;
         private bool forceChargeFrames = false;
@@ -73,8 +76,8 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.value = Item.buyPrice(0, 60, 0, 0);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit1;
-            NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;

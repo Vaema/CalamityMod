@@ -6,20 +6,19 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class HellwingPillar : ModProjectile, ILocalizedModType
+    public class HellwingBat : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Projectile.type] = 12;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 26;
-            Projectile.height = 26;
+            Projectile.width = Projectile.height = 36;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
@@ -32,7 +31,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 4)
+            if (Projectile.frameCounter > 5)
             {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;

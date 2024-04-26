@@ -217,7 +217,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player owner = Main.player[Projectile.owner];
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = new Rectangle(0, 36 * Projectile.frame, 38, 34);
             Vector2 origin = !CanComePeekOut ? new Vector2(15, 23) : frame.Size() / 2f;
 

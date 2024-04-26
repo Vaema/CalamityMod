@@ -131,7 +131,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 NPC.rotation = (float)Math.Atan2((double)playerYPos, (double)playerXPos) + MathHelper.PiOver2;
                 playerDistance = (float)Math.Sqrt((double)(playerXPos * playerXPos + playerYPos * playerYPos));
 
-                int segmentOffset = 74;
+                int segmentOffset = 70;
                 playerDistance = (playerDistance - segmentOffset) / playerDistance;
                 playerXPos *= playerDistance;
                 playerYPos *= playerDistance;
@@ -193,7 +193,7 @@ namespace CalamityMod.NPCs.DesertScourge
             if (hitboxBotRight < minDist)
                 minDist = hitboxBotRight;
 
-            return minDist <= 30f;
+            return minDist <= 30f * NPC.scale;
         }
 
         public override void HitEffect(NPC.HitInfo hit)

@@ -1176,6 +1176,24 @@ namespace CalamityMod.CalPlayer
 
         public int monolithAccursedShader = 0;
 
+        public int monolithBossRushShader = 0;
+
+        public int monolithExoShader = 0;
+
+        public int monolithLeviathanShader = 0;
+
+        public int monolithPlagueShader = 0;
+
+        public int monolithCryogenShader = 0;
+
+        public int monolithAstralShader = 0;
+
+        public int monolithDevourerBShader = 0;
+
+        public int monolithDevourerPShader = 0;
+
+        public int monolithYharonShader = 0;
+
         // This may seem like a scuffed setup, but a simple bool will have ordering issues when it comes to drawing.
         // Until ModSceneMetrics gets implemented, this works for now.
         public int BrimstoneLavaFountainCounter = 0;

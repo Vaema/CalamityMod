@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetDefaults()
         {
             Projectile.width = 70;
-            Projectile.height = 42;
+            Projectile.height = 40;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = true;
             Projectile.sentry = true;
@@ -46,8 +46,6 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.velocity.Y = 10f;
             }
-
-            Projectile.StickToTiles(false, false);
 
             if (Projectile.ai[0] > 0f)
             {
@@ -93,6 +91,12 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
 
         public override bool? CanDamage() => false;
     }

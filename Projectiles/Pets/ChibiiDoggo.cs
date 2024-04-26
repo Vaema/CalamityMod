@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Pets
                 spriteEffects = SpriteEffects.FlipHorizontally;
             Color colorArea = Lighting.GetColor((int)(Projectile.Center.X / 16), (int)(Projectile.Center.Y / 16));
             Texture2D texture2D3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/ChibiiDoggoMonochrome").Value;
-            int textureArea = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            int textureArea = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y3 = textureArea * Projectile.frame;
             Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, textureArea);
             Vector2 halfRect = rectangle.Size() / 2f;
@@ -82,7 +82,7 @@ IL_6899:
                 Main.spriteBatch.Draw(texture2D3, oldDrawPos + Projectile.Size / 2f - Main.screenPosition + new Vector2(0, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), colorAlpha, projRotate + Projectile.rotation * 0f * (float)(counter - 1) * Projectile.spriteDirection, halfRect, Projectile.scale, effects, 0f);
                 goto IL_6881;
             }
-            Main.spriteBatch.Draw(ModContent.Request<Texture2D>(Texture).Value, Projectile.position + Projectile.Size / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, halfRect, Projectile.scale, spriteEffects, 0);
+            Main.spriteBatch.Draw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, Projectile.position + Projectile.Size / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, halfRect, Projectile.scale, spriteEffects, 0);
             return false;
         }
 

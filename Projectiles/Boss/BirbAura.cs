@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 return false;
             }
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BirbAuraStart", AssetRequestMode.ImmediateLoad).Value;
             Texture2D texture3 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BirbAuraEnd", AssetRequestMode.ImmediateLoad).Value;
             float auraDrawLength = Projectile.localAI[1]; //length of laser

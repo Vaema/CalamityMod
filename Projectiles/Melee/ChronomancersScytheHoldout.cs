@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Owner.ChangeDir((int)Projectile.ai[2]);
 
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Vector2 handleOrigin = Projectile.ai[2] == -1 ? new Vector2(scytheTexture.Width, scytheTexture.Height) : new Vector2(0, scytheTexture.Height);
             float scytheRotation = Projectile.rotation;

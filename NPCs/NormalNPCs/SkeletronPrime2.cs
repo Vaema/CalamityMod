@@ -151,10 +151,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (NPC.life > Main.npc[(int)NPC.ai[0]].life)
                     NPC.life = Main.npc[(int)NPC.ai[0]].life;
 
-                // Push away from the lead head if Mechdusa isn't real
+                // Push away from the lead head if too close, pull closer if too far, if Mechdusa isn't real
                 if (!NPC.IsMechQueenUp)
                 {
-                    float pushVelocity = 0.5f;
+                    float pushVelocity = 0.25f;
                     if (Vector2.Distance(NPC.Center, Main.npc[(int)NPC.ai[0]].Center) < 80f * NPC.scale)
                     {
                         if (NPC.position.X < Main.npc[(int)NPC.ai[0]].position.X)
@@ -166,6 +166,18 @@ namespace CalamityMod.NPCs.NormalNPCs
                             NPC.velocity.Y -= pushVelocity;
                         else
                             NPC.velocity.Y += pushVelocity;
+                    }
+                    else if (Vector2.Distance(NPC.Center, Main.npc[(int)NPC.ai[0]].Center) > 240f * NPC.scale)
+                    {
+                        if (NPC.position.X < Main.npc[(int)NPC.ai[0]].position.X)
+                            NPC.velocity.X += pushVelocity;
+                        else
+                            NPC.velocity.X -= pushVelocity;
+
+                        if (NPC.position.Y < Main.npc[(int)NPC.ai[0]].position.Y)
+                            NPC.velocity.Y += pushVelocity;
+                        else
+                            NPC.velocity.Y -= pushVelocity;
                     }
                 }
             }
@@ -266,8 +278,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.damage = 0;
 
                 // Start other phases; if arms are dead, start with spin phase
-                bool otherHeadIsPreparingToSpin = Main.npc[(int)NPC.ai[0]].ai[2] >= (90f - (death ? 60f * (1f - lifeRatio) : 0f));
-                bool otherHeadChargingOrSpinning = Main.npc[(int)NPC.ai[0]].ai[1] == 5f || Main.npc[(int)NPC.ai[0]].ai[1] == 1f || otherHeadIsPreparingToSpin;
+                bool otherHeadChargingOrSpinning = Main.npc[(int)NPC.ai[0]].ai[1] == 5f || Main.npc[(int)NPC.ai[0]].ai[1] == 1f;
                 if (phase2 || CalamityWorld.LegendaryMode || allArmsDead)
                 {
                     // Start spin phase after 1.875 seconds

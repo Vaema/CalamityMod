@@ -253,6 +253,15 @@ CalamityConfig: {
 			'''
 	}
 
+	NewVanillaTextures: {
+		Label: "[i:Paintbrush] New Vanilla Textures"
+		Tooltip:
+			'''
+			Enable or disable new vanilla textures.
+			Disable this for compatibility with texture packs.
+			'''
+	}
+
 	ParticleLimit: {
 		Label: "[i:FragmentStardust] Max Particle Limit"
 		Tooltip:

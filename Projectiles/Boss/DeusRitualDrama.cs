@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public void DrawStars(SpriteBatch spriteBatch, Vector2 offset)
         {
-            Texture2D starTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D starTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             for (int i = 0; i < 6; i++)
             {
                 float angle = MathHelper.TwoPi * i / 6f + Time / 15f;

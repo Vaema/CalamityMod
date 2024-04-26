@@ -1520,8 +1520,27 @@ namespace CalamityMod.CalPlayer
                 ChlorophyteHealDelay--;
             if (monolithAccursedShader > 0)
                 monolithAccursedShader--;
+            if (monolithBossRushShader > 0)
+                monolithBossRushShader--;
+            if (monolithExoShader > 0)
+                monolithExoShader--;
+            if (monolithLeviathanShader > 0)
+                monolithLeviathanShader--;
+            if (monolithCryogenShader > 0)
+                monolithCryogenShader--;
+            if (monolithDevourerBShader > 0)
+                monolithDevourerBShader--;
+            if (monolithDevourerPShader > 0)
+                monolithDevourerPShader--;
+            if (monolithYharonShader > 0)
+                monolithYharonShader--;
+            if (monolithPlagueShader > 0)
+                monolithPlagueShader--;
+            if (monolithAstralShader > 0)
+                monolithAstralShader--;
             if (BrimstoneLavaFountainCounter > 0)
                 BrimstoneLavaFountainCounter--;
+
             if (miningSetCooldown > 0)
                 miningSetCooldown--;
             if (RustyMedallionCooldown > 0)
@@ -3977,7 +3996,7 @@ namespace CalamityMod.CalPlayer
             if (fabsolVodka)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.1);
+                    Player.statDefense -= (int)(Player.statDefense * 0.05);
             }
 
             if (vodka)

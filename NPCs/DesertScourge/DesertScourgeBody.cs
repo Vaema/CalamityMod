@@ -205,43 +205,19 @@ namespace CalamityMod.NPCs.DesertScourge
             if (Main.player[NPC.target].dead)
                 NPC.TargetClosest(false);
 
-            Vector2 segmentTilePos = NPC.Center;
-            float playerXPos = Main.player[NPC.target].Center.X;
-            float playerYPos = Main.player[NPC.target].Center.Y;
-            playerXPos = (float)((int)(playerXPos / 16f) * 16);
-            playerYPos = (float)((int)(playerYPos / 16f) * 16);
-            segmentTilePos.X = (float)((int)(segmentTilePos.X / 16f) * 16);
-            segmentTilePos.Y = (float)((int)(segmentTilePos.Y / 16f) * 16);
-            playerXPos -= segmentTilePos.X;
-            playerYPos -= segmentTilePos.Y;
-            float playerDistance = (float)Math.Sqrt((double)(playerXPos * playerXPos + playerYPos * playerYPos));
-            if (NPC.ai[1] > 0f && NPC.ai[1] < (float)Main.npc.Length)
+            NPC aheadSegment = Main.npc[(int)NPC.ai[1]];
+            Vector2 directionToNextSegment = aheadSegment.Center - NPC.Center;
+            if (aheadSegment.rotation != NPC.rotation)
             {
-                try
-                {
-                    segmentTilePos = NPC.Center;
-                    playerXPos = Main.npc[(int)NPC.ai[1]].Center.X - segmentTilePos.X;
-                    playerYPos = Main.npc[(int)NPC.ai[1]].Center.Y - segmentTilePos.Y;
-                }
-                catch
-                {
-                }
-                NPC.rotation = (float)Math.Atan2((double)playerYPos, (double)playerXPos) + MathHelper.PiOver2;
-                playerDistance = (float)Math.Sqrt((double)(playerXPos * playerXPos + playerYPos * playerYPos));
-
-                int segmentOffset = 74;
-                playerDistance = (playerDistance - segmentOffset) / playerDistance;
-                playerXPos *= playerDistance;
-                playerYPos *= playerDistance;
-                NPC.velocity = Vector2.Zero;
-                NPC.position.X = NPC.position.X + playerXPos;
-                NPC.position.Y = NPC.position.Y + playerYPos;
-
-                if (playerXPos < 0f)
-                    NPC.spriteDirection = 1;
-                else if (playerXPos > 0f)
-                    NPC.spriteDirection = -1;
+                directionToNextSegment = directionToNextSegment.RotatedBy(MathHelper.WrapAngle(aheadSegment.rotation - NPC.rotation) * 0.08f);
+                directionToNextSegment = directionToNextSegment.MoveTowards((aheadSegment.rotation - NPC.rotation).ToRotationVector2(), 1f);
             }
+
+            // Decide segment offset stuff.
+            int segmentOffset = 70;
+            NPC.rotation = directionToNextSegment.ToRotation() + MathHelper.PiOver2;
+            NPC.Center = aheadSegment.Center - directionToNextSegment.SafeNormalize(Vector2.Zero) * NPC.scale * segmentOffset;
+            NPC.spriteDirection = (directionToNextSegment.X > 0).ToDirectionInt();
 
             NPC head = Main.npc[(int)NPC.ai[2]];
             float burrowTimeGateValue = (CalamityWorld.death || BossRushEvent.BossRushActive) ? DesertScourgeHead.BurrowTimeGateValue_Death : DesertScourgeHead.BurrowTimeGateValue;
@@ -311,7 +287,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     break;
             }
 
-            return minDist <= hitDistance;
+            return minDist <= hitDistance * NPC.scale;
         }
 
         public override void FindFrame(int frameHeight)

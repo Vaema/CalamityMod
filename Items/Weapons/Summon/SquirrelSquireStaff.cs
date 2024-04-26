@@ -34,10 +34,10 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                position = Main.MouseWorld;
-                velocity.X = 0;
-                velocity.Y = 0;
-                int p = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, 30f);
+                player.FindSentryRestingSpot(type, out int XPosition, out int YPosition, out int YOffset);
+                YOffset += 6;
+                position = new Vector2((float)XPosition, (float)(YPosition - YOffset));
+                int p = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 30f);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
 

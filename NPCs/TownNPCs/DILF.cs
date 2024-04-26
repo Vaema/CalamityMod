@@ -2,6 +2,7 @@
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Placeables.Furniture.Monoliths;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -157,6 +158,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add(ItemID.SuperManaPotion)
                 .Add(ModContent.ItemType<DeliciousMeat>())
                 .AddWithCustomValue(ModContent.ItemType<Popo>(), Item.buyPrice(5))
+                .AddWithCustomValue(ModContent.ItemType<FrigidMonolith>(), Item.buyPrice(5))
                 .Add(ModContent.ItemType<BloodRune>(), Condition.PlayerCarriesItem(ModContent.ItemType<IceBarrage>()))
                 .Add(ItemID.IceCream, Condition.HappyEnough, Condition.InSnow)
                 .Register();

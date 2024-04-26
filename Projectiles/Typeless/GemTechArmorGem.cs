@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 case (int)GemTechArmorGemType.Melee:
                 default:
-                    texture = ModContent.Request<Texture2D>(Texture).Value;
+                    texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
                     break;
                 case (int)GemTechArmorGemType.Ranged:
                     texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/GemTechGreenGem").Value;

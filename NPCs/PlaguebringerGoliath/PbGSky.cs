@@ -16,10 +16,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
         public override void Update(GameTime gameTime)
         {
-            if (PbGIndex == -1 || BossRushEvent.BossRushActive)
+            if ((PbGIndex == -1 && Main.LocalPlayer.Calamity().monolithPlagueShader <= 0) || BossRushEvent.BossRushActive)
             {
                 UpdatePbGIndex();
-                if (PbGIndex == -1 || BossRushEvent.BossRushActive)
+                if ((PbGIndex == -1 && Main.LocalPlayer.Calamity().monolithPlagueShader <= 0) || BossRushEvent.BossRushActive)
                     isActive = false;
             }
         }

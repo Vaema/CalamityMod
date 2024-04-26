@@ -226,8 +226,8 @@ namespace CalamityMod.Projectiles.Ranged
             GameShaders.Misc["CalamityMod:BasicTint"].Apply();
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Rectangle frameRectangle = ModContent.Request<Texture2D>(Texture).Value.Frame(1, 9, 0, Projectile.frame);
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>(Texture).Value, drawPosition, frameRectangle, lightColor, Projectile.rotation, frameRectangle.Size() * 0.5f, 1f, Projectile.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            Rectangle frameRectangle = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Frame(1, 9, 0, Projectile.frame);
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, drawPosition, frameRectangle, lightColor, Projectile.rotation, frameRectangle.Size() * 0.5f, 1f, Projectile.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
 
             Main.spriteBatch.ExitShaderRegion();
 

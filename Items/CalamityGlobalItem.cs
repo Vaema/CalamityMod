@@ -40,7 +40,6 @@ namespace CalamityMod.Items
         public override bool InstancePerEntity => true;
 
         // TODO -- split out a separate GlobalItem for rogue behavior?
-        internal float StealthGenBonus;
         internal float StealthStrikePrefixBonus;
 
         #region Chargeable Item Variables
@@ -88,7 +87,6 @@ namespace CalamityMod.Items
 
         public CalamityGlobalItem()
         {
-            StealthGenBonus = 1f;
             StealthStrikePrefixBonus = 0f;
         }
 
@@ -104,7 +102,6 @@ namespace CalamityMod.Items
             CalamityGlobalItem myClone = (CalamityGlobalItem)base.Clone(item, itemClone);
 
             // Rogue
-            myClone.StealthGenBonus = StealthGenBonus;
             myClone.StealthStrikePrefixBonus = StealthStrikePrefixBonus;
 
             // Charge (Draedon's Arsenal)
@@ -662,6 +659,28 @@ namespace CalamityMod.Items
                 NetMessage.SendData(MessageID.MoonlordHorror, -1, -1, null, NPC.MoonLordCountdown);
             }
 
+            // Staff/Axe of Regrowth growing Calamity grass
+            if (item.type == ItemID.StaffofRegrowth || item.type == ItemID.AcornAxe)
+            {
+                Tile tile = Framing.GetTileSafely(Player.tileTargetX, Player.tileTargetY);
+                Tile tileAbove = Framing.GetTileSafely(Player.tileTargetX, Player.tileTargetY - 1);
+
+                if (tile.HasTile && !tileAbove.HasTile && tileAbove.LiquidAmount == 0 && tile.TileType == ModContent.TileType<Tiles.Crags.ScorchedRemains>() && player.IsInTileInteractionRange(Player.tileTargetX, Player.tileTargetY, TileReachCheckSettings.Simple))
+                {
+                    Main.tile[Player.tileTargetX, Player.tileTargetY].TileType = (ushort)ModContent.TileType<Tiles.Crags.ScorchedRemainsGrass>();
+
+                    SoundEngine.PlaySound(SoundID.Dig, player.Center);
+                    return true;
+                }
+                else if (tile.HasTile && tile.TileType == ModContent.TileType<Tiles.Astral.AstralDirt>() && player.IsInTileInteractionRange(Player.tileTargetX, Player.tileTargetY, TileReachCheckSettings.Simple))
+                {
+                    Main.tile[Player.tileTargetX, Player.tileTargetY].TileType = (ushort)ModContent.TileType<Tiles.Astral.AstralGrass>();
+
+                    SoundEngine.PlaySound(SoundID.Dig, player.Center);
+                    return true;
+                }
+            }
+
             return base.UseItem(item, player);
         }
 
@@ -1160,15 +1179,6 @@ namespace CalamityMod.Items
         public override void UpdateAccessory(Item item, Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-
-            if (item.prefix > 0)
-            {
-                float stealthGenBoost = item.Calamity().StealthGenBonus - 1f;
-                if (stealthGenBoost > 0)
-                {
-                    modPlayer.accStealthGenBoost += stealthGenBoost;
-                }
-            }
 
             // Obsidian Skull and its upgrades make you immune to On Fire!
             if (item.type == ItemID.ObsidianSkull || item.type == ItemID.ObsidianHorseshoe || item.type == ItemID.ObsidianShield || item.type == ItemID.ObsidianWaterWalkingBoots || item.type == ItemID.LavaWaders || item.type == ItemID.ObsidianSkullRose || item.type == ItemID.MoltenCharm || item.type == ItemID.LavaSkull || item.type == ItemID.MoltenSkullRose || item.type == ItemID.AnkhShield)
@@ -1800,7 +1810,6 @@ namespace CalamityMod.Items
         private static int storedPrefix = -1;
         public override void PreReforge(Item item)
         {
-            StealthGenBonus = 1f;
             StealthStrikePrefixBonus = 0f;
             storedPrefix = item.prefix;
         }

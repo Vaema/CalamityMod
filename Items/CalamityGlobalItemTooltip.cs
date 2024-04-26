@@ -37,19 +37,12 @@ namespace CalamityMod.Items
             // Modify all vanilla tooltips before appending mod mechanics (if any).
             ModifyVanillaTooltips(item, tooltips);
 
-            // If the item has a stealth generation prefix, show that on the tooltip.
-            // This is placed between vanilla tooltip edits and mod mechanics because it can apply to vanilla items.
-            StealthGenAccessoryTooltip(item, tooltips);
-
             // Adds "Does extra damage to enemies shot at point-blank range" to weapons capable of it.
             if (canFirePointBlankShots)
             {
                 TooltipLine line = new TooltipLine(Mod, "PointBlankShot", "Does extra damage to enemies shot at point-blank range");
                 tooltips.Add(line);
             }
-
-            // If the item has a stealth strike damage prefix, show that on the tooltip.
-            StealthWeaponTooltip(item, tooltips);
 
             // If an item has an enchantment, show its prefix in the first tooltip line and append its description to the
             // tooltip list.
@@ -1303,67 +1296,6 @@ namespace CalamityMod.Items
                     return;
             }
             #endregion
-        }
-        #endregion
-
-        #region Stealth Generation Prefix Accessory Tooltip
-        private void StealthGenAccessoryTooltip(Item item, IList<TooltipLine> tooltips)
-        {
-            if (!item.accessory || item.social || item.prefix <= 0)
-                return;
-
-            float stealthGenBoost = item.Calamity().StealthGenBonus - 1f;
-            if (stealthGenBoost > 0)
-            {
-                TooltipLine line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Expert");
-                if (line == null)
-                    line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Price");
-
-                TooltipLine StealthGen = new TooltipLine(Mod, "PrefixStealthGenBoost", "+" + Math.Round(stealthGenBoost * 100f) + "% stealth generation")
-                {
-                    IsModifier = true
-                };
-
-                if (line == null)
-                    tooltips.Add(StealthGen);
-                else
-                    tooltips.Insert(tooltips.IndexOf(line), StealthGen);
-            }
-        }
-        #endregion
-
-        #region Stealth Strike Damage Prefix Weapon Tooltip
-        private void StealthWeaponTooltip(Item item, IList<TooltipLine> tooltips)
-        {
-            if (!item.CountsAsClass<RogueDamageClass>() || item.accessory || item.prefix <= 0)
-                return;
-
-            float stealthDmgBonus = item.Calamity().StealthStrikePrefixBonus - 1f;
-            if (stealthDmgBonus > 0)
-            {
-                TooltipLine line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "PrefixShootSpeed");
-                if (line == null)
-                    line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "PrefixCritChance");
-                else if (line == null)
-                    line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "PrefixSpeed");
-                else if (line == null)
-                    line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "PrefixDamage");
-                TooltipLine line2 = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Expert");
-                if (line2 == null)
-                    line2 = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Price");
-
-                TooltipLine StealthDmg = new TooltipLine(Mod, "PrefixStealthDamageBoost", "+" + Math.Round(stealthDmgBonus * 100f) + "% stealth strike damage")
-                {
-                    IsModifier = true
-                };
-
-                // If price/expert line doesn't exist, just add it to the end
-                if (line2 == null)
-                    tooltips.Add(StealthDmg);
-                // Otherwise, insert it right before the sell price (or expert line)
-                else
-                    tooltips.Insert(tooltips.IndexOf(line2), StealthDmg);
-            }
         }
         #endregion
 

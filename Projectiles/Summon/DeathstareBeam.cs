@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D beamTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D beamTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
             Vector2 drawScale = new Vector2(0.55f, Projectile.velocity.Length() / beamTexture.Height * 20f);
             Color color = Color.White * 2.1f * Projectile.Opacity;

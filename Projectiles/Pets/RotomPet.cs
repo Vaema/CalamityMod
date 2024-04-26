@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Pets
         public override bool PreDraw(ref Color lightColor)
         {
             Drawing(lightColor,
-                ModContent.Request<Texture2D>(Texture).Value,
+                Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value,
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/RotomDex").Value,
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/RotomWash").Value,
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/RotomHeat").Value,

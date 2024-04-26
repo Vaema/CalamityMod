@@ -461,7 +461,7 @@ namespace CalamityMod.Projectiles.Pets
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (color == 1)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/SparksBlue").Value;
             if (color == 2)

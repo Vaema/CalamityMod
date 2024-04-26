@@ -260,9 +260,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Vector2 headTextureOrigin = ModContent.Request<Texture2D>(Texture).Value.Size() * 0.5f;
+            Vector2 headTextureOrigin = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Size() * 0.5f;
             drawPosition -= headTexture.Size() * Projectile.scale * 0.5f;
             drawPosition += headTextureOrigin * Projectile.scale + new Vector2(0f, 4f + Projectile.gfxOffY);
 

@@ -303,6 +303,9 @@ namespace CalamityMod
                 { ModContent.NPCType<DesertNuisanceHead>(), new int[] { 30, 44, 60, 76, 90 } },
                 { ModContent.NPCType<DesertNuisanceBody>(), new int[] { 21, 28, 32, 36, 63 } },
                 { ModContent.NPCType<DesertNuisanceTail>(), new int[] { 12, 16, 20, 24, 36 } },
+                { ModContent.NPCType<DesertNuisanceHeadYoung>(), new int[] { 30, 44, 60, 76, 90 } },
+                { ModContent.NPCType<DesertNuisanceBodyYoung>(), new int[] { 21, 28, 32, 36, 63 } },
+                { ModContent.NPCType<DesertNuisanceTailYoung>(), new int[] { 12, 16, 20, 24, 36 } },
 
                 { NPCID.EyeofCthulhu, new int[] {
                     24, // 36 in phase 2
@@ -560,8 +563,7 @@ namespace CalamityMod
             {
                 { new Tuple<int, int>(ModContent.NPCType<KingSlimeJewel>(), ModContent.ProjectileType<JewelProjectile>()), new int[] { 26, 36, 44, 52, 84 } },
 
-                { new Tuple<int, int>(ModContent.NPCType<DesertScourgeHead>(), ModContent.ProjectileType<SandBlast>()), new int[] { 26, 44, 60, 76, 108 } },
-                { new Tuple<int, int>(ModContent.NPCType<DesertScourgeHead>(), ModContent.ProjectileType<GreatSandBlast>()), new int[] { 26, 44, 60, 76, 108 } },
+                { new Tuple<int, int>(ModContent.NPCType<DesertScourgeHead>(), ModContent.ProjectileType<DesertScourgeSpit>()), new int[] { 26, 36, 44, 52, 84 } },
 
                 { new Tuple<int, int>(NPCID.EyeofCthulhu, ProjectileID.BloodNautilusShot), new int[] { 26, 44, 60, 76, 108 } },
                 { new Tuple<int, int>(ModContent.NPCType<BloodlettingServant>(), ProjectileID.BloodShot), new int[] { 26, 36, 44, 52, 84 } },

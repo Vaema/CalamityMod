@@ -1,58 +1,56 @@
-﻿using Terraria;
+﻿using System;
+using System.Collections.Generic;
+using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Prefixes
 {
-    public class CloakedPrefix : RogueAccessoryPrefix
+    [LegacyName("CloakedPrefix", "QuietPrefix")]
+    public class Cloaked : RogueAccessoryPrefix
     {
-        public override string Name => "Cloaked";
-        public CloakedPrefix() : base(1.04f) { }
+        public override float stealthGenBonus => 0.04f;
     }
 
-    public class SilentPrefix : RogueAccessoryPrefix
+    [LegacyName("SilentPrefix", "CamouflagedPrefix")]
+    public class Silent : RogueAccessoryPrefix
     {
-        public override string Name => "Silent";
-        public SilentPrefix() : base(1.08f) { }
+        public override float stealthGenBonus => 0.08f;
     }
 
-    public class RogueAccessoryPrefix : ModPrefix
+    public abstract class RogueAccessoryPrefix : ModPrefix, ILocalizedModType
     {
-        internal float stealthGenBonus = 1f;
+        public new string LocalizationCategory => "Prefixes.Accessory";
+
+        // Stats
+        public virtual float stealthGenBonus => 0f;
+
+        // Prefix roll logic
         public override PrefixCategory Category => PrefixCategory.Accessory;
+        public override bool CanRoll(Item item) => GetType() != typeof(RogueAccessoryPrefix);
 
-        public RogueAccessoryPrefix() { }
-
-        public RogueAccessoryPrefix(float stealthGenBonus = 1f)
+        // Applying stealth generation
+        public override void ApplyAccessoryEffects(Player player)
         {
-            this.stealthGenBonus = stealthGenBonus;
+            player.Calamity().accStealthGenBoost += stealthGenBonus;
         }
 
-        public override void Apply(Item item)
-        {
-            item.Calamity().StealthGenBonus = stealthGenBonus;
-        }
-
+        // Changing value based on prefix tier (rarity is set automatically around value multiplier)
         public override void ModifyValue(ref float valueMult)
         {
-            float extraValue = 1f + (2.5f * (stealthGenBonus - 1f));
+            float extraValue = 1f + (2.5f * stealthGenBonus);
             valueMult *= extraValue;
         }
 
-        public override bool CanRoll(Item item) => GetType() != typeof(RogueAccessoryPrefix);
-
-        public override float RollChance(Item item)
+        // Extra tooltip for new modifier stats
+        public LocalizedText StealthGenTooltip => CalamityUtils.GetText($"{LocalizationCategory}.StealthGenTooltip");
+        public override IEnumerable<TooltipLine> GetTooltipLines(Item item)
         {
-            if (item.vanity)
-                return 0f;
-            if (item.type == ItemID.GuideVoodooDoll || item.type == ItemID.MusicBox || item.type == ItemID.ClothierVoodooDoll)
-                return 0f;
-            if (item.type >= ItemID.MusicBoxOverworldDay && item.type <= ItemID.MusicBoxBoss3)
-                return 0f;
-            if (item.type >= ItemID.MusicBoxSnow && item.type <= ItemID.MusicBoxMushrooms)
-                return 0f;
-
-            return 1f;
+            yield return new TooltipLine(Mod, "PrefixStealthGenBoost", StealthGenTooltip.Format((stealthGenBonus * 100).ToString("N0")))
+            {
+                IsModifier = true
+            };
         }
     }
 }

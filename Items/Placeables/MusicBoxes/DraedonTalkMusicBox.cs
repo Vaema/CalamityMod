@@ -1,10 +1,9 @@
 ﻿using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 
 namespace CalamityMod.Items.Placeables.MusicBoxes
 {
-    public class DraedonsAmbienceMusicBox : ModItem, ILocalizedModType
+    public class DraedonTalkMusicBox : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
 
@@ -14,6 +13,6 @@ namespace CalamityMod.Items.Placeables.MusicBoxes
             ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.MusicBox;
         }
 
-        public override void SetDefaults() => Item.DefaultToMusicBox(ModContent.TileType<Tiles.MusicBoxes.DraedonsAmbienceMusicBox>(), 0);
+        public override void SetDefaults() => Item.DefaultToMusicBox(ModContent.TileType<Tiles.MusicBoxes.DraedonTalkMusicBox>(), 0);
     }
 }

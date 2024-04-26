@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D drawTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Color brightGreen = new Color(54, 209, 54, 0);
             Vector2 projDirection = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Vector2 halfTextureSize = drawTexture.Size() / 2f;

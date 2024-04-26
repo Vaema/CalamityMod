@@ -1376,6 +1376,12 @@ namespace CalamityMod.ILEditing
 
             string difficultyText = expertText;
             Color difficultyColor = gameModeColor;
+
+            // Journey Mode takes ultimate priority
+            if (difficultyColor == Main.creativeModeColor)
+            {
+                return;
+            }
             
             // Go through the World Selection Difficulty System's World Difficulty list backwards and choose the latest difficulty that applies
             for (int i = WorldSelectionDifficultySystem.WorldDifficulties.Count - 1; i >= 0; i--)

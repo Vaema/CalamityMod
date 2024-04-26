@@ -237,7 +237,7 @@ namespace CalamityMod.Projectiles.Typeless
                 segmentPositions = Owner.GetModPlayer<WulfrumPackPlayer>().Segments.Select(x => x.position).ToArray();
             PrimitiveRenderer.RenderTrail(new List<Vector2>(segmentPositions) { Owner.Center }, new(PrimWidthFunction, PrimColorFunction, smoothen: State is HookState.Grappling), 30);
 
-            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, 0, 0);
             return false;

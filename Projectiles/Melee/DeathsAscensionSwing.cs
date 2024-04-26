@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.frameCounter <= 1)
                 return false;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition + (Projectile.spriteDirection == -1 ? new Vector2(60, 0) : new Vector2(-60, 0));
             Vector2 origin = texture.Size() / new Vector2(2f, 6f) * 0.5f;
             Rectangle frame = texture.Frame(2, 6, frameX, frameY);

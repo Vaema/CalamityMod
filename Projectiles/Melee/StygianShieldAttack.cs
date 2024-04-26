@@ -191,7 +191,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             // Textures and general use stuff
-            Texture2D mainTex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D mainTex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D bloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
             Texture2D flatTex = ModContent.Request<Texture2D>("CalamityMod/Particles/FlatShape").Value;
             Texture2D shieldTex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/StygianShieldBloom").Value;

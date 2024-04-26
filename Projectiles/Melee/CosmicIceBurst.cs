@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 colorArea = Lighting.GetColor((int)mountedCenter.X / 16, (int)(mountedCenter.Y / 16f));
             }
-            Texture2D texture2D33 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D33 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle rectangl = texture2D33.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             return true;
         }

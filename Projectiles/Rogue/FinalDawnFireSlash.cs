@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Rogue
             Vector2 drawCenter = Projectile.Center;
             Rectangle frameRectangle = new Rectangle(Projectile.frame / 5 * width, Projectile.frame % 5 * height, width, height);
 
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnFireSlash_Glow").Value;
 
             Main.spriteBatch.Draw(scytheTexture,

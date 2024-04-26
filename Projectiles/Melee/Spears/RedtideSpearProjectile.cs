@@ -325,7 +325,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, AppropriateRotation + MathHelper.PiOver2 * 1.5f - MathHelper.ToRadians(12), texture.Size() / 2f, Projectile.scale, 0, 0);
             return false;

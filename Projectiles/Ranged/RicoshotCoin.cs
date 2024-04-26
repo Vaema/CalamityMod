@@ -252,7 +252,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int numFrames = Main.projFrames[Projectile.type];
             Rectangle frame = new Rectangle(
                 /* X */ (int)CoinType * tex.Width / 3,

@@ -16,7 +16,7 @@ namespace CalamityMod.Skies
 
         public override void Deactivate(params object[] args)
         {
-            skyActive = Main.LocalPlayer.Calamity().ZoneAstral && !Main.LocalPlayer.ZoneDungeon && BiomeTileCounterSystem.AstralTiles > 950;
+            skyActive = (Main.LocalPlayer.Calamity().ZoneAstral && !Main.LocalPlayer.ZoneDungeon && BiomeTileCounterSystem.AstralTiles > 950) || Main.LocalPlayer.Calamity().monolithAstralShader > 0;
         }
 
         public override void Reset()
@@ -110,13 +110,15 @@ namespace CalamityMod.Skies
 
         public override void Update(GameTime gameTime)
         {
-            if (!Main.LocalPlayer.Calamity().ZoneAstral || Main.gameMenu)
+            if ((!Main.LocalPlayer.Calamity().ZoneAstral && Main.LocalPlayer.Calamity().monolithAstralShader <= 0) || Main.gameMenu)
                 skyActive = false;
 
             if (skyActive && opacity < 1f)
                 opacity += 0.02f;
             else if (!skyActive && opacity > 0f)
                 opacity -= 0.02f;
+
+            Opacity = opacity;
         }
 
         public override float GetCloudAlpha()

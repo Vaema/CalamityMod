@@ -207,7 +207,7 @@ namespace CalamityMod.Projectiles.Typeless
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
             GameShaders.Armor.ApplySecondary(Main.player[Projectile.owner].cBody, Main.player[Projectile.owner], new DrawData?());
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment1").Value;
             for (int i = 0; i < 5; i++)
             {

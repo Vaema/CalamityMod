@@ -400,7 +400,7 @@ CryogenRelic: {
 
 DesertScourgeRelic: {
 	DisplayName: Desert Scourge Relic
-	Tooltip: A glimpse into what could have been...
+	Tooltip: ""
 }
 
 DevourerOfGodsRelic: {
@@ -430,7 +430,7 @@ GreatSandSharkRelic: {
 
 HiveMindRelic: {
 	DisplayName: Hive Mind Relic
-	Tooltip: A glimpse into what could have been...
+	Tooltip: ""
 }
 
 LeviathanAnahitaRelic: {
@@ -664,6 +664,51 @@ GloomTorch: {
 LanternCenter: {
 	DisplayName: Lantern Center
 	Tooltip: Lights up the night sky with celebratory lanterns
+}
+
+AstralProjector: {
+	DisplayName: Astral Projector
+	Tooltip: "'Control a small portion of the Astral Infection's influence.'"
+}
+
+BlueDistortedMonolith: {
+	DisplayName: Blue Distorted Monolith
+	Tooltip: "'Create a localized rupture in the fabric of reality.'"
+}
+
+BossRushMonolith: {
+	DisplayName: Boss Rush Monolith
+	Tooltip: "'Bring forth the end.'"
+}
+
+DeepSeaAnchor: {
+	DisplayName: Deep Sea Anchor
+	Tooltip: "'Dampen the air with heavy amounts of brine.'"
+}
+
+DraconicIncense: {
+	DisplayName: Draconic Incense
+	Tooltip: "'Ignite the air with dragonfire.'"
+}
+
+ExoObelisk: {
+	DisplayName: Exo Obelisk
+	Tooltip: "'Energize the atmosphere with exo energy.'"
+}
+
+FrigidMonolith: {
+	DisplayName: Frigid Monolith
+	Tooltip: "'Enchant the sky with frosty auroras.'"
+}
+
+PlagueHumidifier: {
+	DisplayName: Plague Humidifier
+	Tooltip: "'Spread light amounts of the plague through the air.'"
+}
+
+PurpleDistortedMonolith: {
+	DisplayName: Purple Distorted Monolith
+	Tooltip: "'Create a localized rupture in the fabric of reality.'"
 }
 
 NavyPrismTorch: {
@@ -2926,9 +2971,14 @@ LivingHolyFireBlock: {
 	Tooltip: ""
 }
 
-DraedonsAmbienceMusicBox: {
-	DisplayName: Music Box (Draedon's Ambience)
-	Tooltip: Plays high tech ambience by PinpinNeon
+DraedonExoSelectMusicBox: {
+	DisplayName: Music Box (Exo Mech Selection)
+	Tooltip: Plays 'Signal Received' by CDMusic
+}
+
+DraedonTalkMusicBox: {
+	DisplayName: Music Box (Codebreaker)
+	Tooltip: Plays a variant of 'Signal Received' by CDMusic
 }
 
 Navystone: {

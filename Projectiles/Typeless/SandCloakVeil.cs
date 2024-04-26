@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool PreDraw(ref Color lightColor)
         {
             // Sprite Circle
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float scaleStep = 0.03f;
             float rotationOffset = 0.03f;
             Color drawCol = Projectile.GetAlpha(lightColor);

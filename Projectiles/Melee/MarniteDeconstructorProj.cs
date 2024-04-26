@@ -167,7 +167,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 normalizedVelocity = Projectile.velocity.SafeNormalize(Vector2.Zero);
 
             //Draw the holdout.
-            Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 origin = new Vector2(9f, tex.Height / 2f);
             SpriteEffects effect = SpriteEffects.None;
             if (Owner.direction * Owner.gravDir < 0)

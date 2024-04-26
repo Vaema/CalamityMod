@@ -30,7 +30,7 @@ namespace CalamityMod.Skies
 
         public static void UpdateDrawEligibility()
         {
-            bool useEffect = (NPC.AnyNPCs(ModContent.NPCType<Cryogen>()) || ShouldDrawRegularly) && !Main.gameMenu;
+            bool useEffect = (NPC.AnyNPCs(ModContent.NPCType<Cryogen>()) || ShouldDrawRegularly || Main.LocalPlayer.Calamity().monolithCryogenShader > 0) && !Main.gameMenu;
 
             if (SkyManager.Instance["CalamityMod:Cryogen"] != null && useEffect != SkyManager.Instance["CalamityMod:Cryogen"].IsActive())
             {
@@ -46,10 +46,17 @@ namespace CalamityMod.Skies
 
         public override void Update(GameTime gameTime)
         {
-            if (FadeInCountdown > 0)
-                FadeInCountdown--;
+            if (!ShouldDrawRegularly && Main.LocalPlayer.Calamity().monolithCryogenShader <= 0)
+            {
+                if (FadeInCountdown > 0)
+                    FadeInCountdown--;
+            }
+            else
+            {
+                FadeInCountdown = 1;
+            }
 
-            if (CryogenIndex == -1 && !ShouldDrawRegularly)
+            if (CryogenIndex == -1 && !ShouldDrawRegularly && Main.LocalPlayer.Calamity().monolithCryogenShader <= 0)
             {
                 UpdateCryogenIndex();
                 if (FadeoutTimer == 0)
@@ -89,7 +96,7 @@ namespace CalamityMod.Skies
 
         public float CalculateAuroraStrength()
         {
-            if (ShouldDrawRegularly)
+            if (ShouldDrawRegularly || Main.LocalPlayer.Calamity().monolithCryogenShader > 0)
                 return 1f;
 
             return 1f - GetCryogenLifeRatio();

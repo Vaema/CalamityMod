@@ -191,7 +191,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D outerCircleTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D outerCircleTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D outerCircleGlowmask = ModContent.Request<Texture2D>(Texture + "Glowmask").Value;
             Texture2D innerCircleTexture = ModContent.Request<Texture2D>(Texture + "Inner").Value;
             Texture2D innerCircleGlowmask = ModContent.Request<Texture2D>(Texture + "InnerGlowmask").Value;

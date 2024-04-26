@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Behavior();
             ExtraBehavior();
         }
-        public Texture2D FlailTexture => ModContent.Request<Texture2D>(Texture).Value;
+        public Texture2D FlailTexture => Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
         #region Virtual Values
         public virtual Color SpecialDrawColor => new Color(255, 200, 0);

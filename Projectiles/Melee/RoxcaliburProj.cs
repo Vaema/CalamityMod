@@ -268,7 +268,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle rectangle = texture.Bounds;
             Vector2 origin2 = rectangle.Size() / 2f;
             SpriteEffects effects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

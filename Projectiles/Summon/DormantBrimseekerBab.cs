@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             if ((Projectile.ai[0] > 0f && Projectile.ai[0] <= MaxChargeTime && Projectile.velocity.Length() >= 8f) || SeekingTarget)
             {
-                Texture2D projectileTexture = ModContent.Request<Texture2D>(Texture).Value;
+                Texture2D projectileTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
                 Texture2D flameTexture = TextureAssets.Extra[ExtrasID.MeteorHeadFlame].Value;
                 SpriteEffects spriteEffects = SpriteEffects.None;
                 if (Projectile.spriteDirection == -1)

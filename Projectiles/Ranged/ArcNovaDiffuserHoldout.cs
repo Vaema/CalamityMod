@@ -2,9 +2,11 @@
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -201,6 +203,25 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (SoundEngine.TryGetActiveSound(NovaChargeSlot, out var ChargeSound))
                 ChargeSound?.Stop();
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
+            Vector2 rotationPoint = texture.Size() * 0.5f;
+            SpriteEffects flipSprite = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+            if (!Owner.CantUseHoldout())
+            {
+                float rumble = MathHelper.Clamp(CurrentChargingFrames, 0f, ArcNovaDiffuser.Charge2Frames);
+                drawPosition += Main.rand.NextVector2Circular(rumble / 70f, rumble / 70f);
+            }
+
+            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale, flipSprite);
+
+            return false;
         }
     }
 }

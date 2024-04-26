@@ -35,6 +35,10 @@ namespace CalamityMod
         [DefaultValue(true)]
         public bool Afterimages { get; set; }
 
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool NewVanillaTextures { get; set; }
+
         private const int MinParticleLimit = 500;
         private const int MaxParticleLimit = 10000;
 

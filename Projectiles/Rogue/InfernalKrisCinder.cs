@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             // If this is a stealth strike, make the blade glow orange
             Color glowColour = new Color(255, 215, 100, 100);
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, glowColour, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
 
             float minScale = 1.9f;

@@ -181,7 +181,7 @@ namespace CalamityMod.Projectiles.Boss
             bottomY--;
             Vector2 bottomVector = new Vector2(centerAsTileCoords.X, bottomY) * 16f + new Vector2(8f);
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float yMax = 1600f * Projectile.scale;
             for (int y = 0; y < yMax; y += 30)
             {

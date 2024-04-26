@@ -507,7 +507,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public void DrawBlade()
         {
-            var texture = ModContent.Request<Texture2D>(Texture).Value;
+            var texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             SpriteEffects direction = Direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             if (State == SwingState.Swinging)

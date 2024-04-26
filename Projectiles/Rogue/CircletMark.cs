@@ -145,7 +145,7 @@ namespace CalamityMod.Projectiles.Rogue
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
             Vector2 drawPos = Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D27 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D27 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle rectangle = texture2D27.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Color alphaColor = Projectile.GetAlpha(originalColor);
             Vector2 origin7 = rectangle.Size() / 2f;

@@ -254,7 +254,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public void DrawBlade(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() * Vector2.UnitY;
             if (Projectile.spriteDirection == -1)

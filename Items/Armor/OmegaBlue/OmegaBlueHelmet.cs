@@ -90,7 +90,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ReaperTooth>(8).
+                AddIngredient<ReaperTooth>(3).
                 AddIngredient<DepthCells>(12).
                 AddIngredient<RuinousSoul>().
                 AddTile(TileID.LunarCraftingStation).
