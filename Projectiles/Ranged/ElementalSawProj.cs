@@ -141,16 +141,16 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Vector2 sparkVelocity = new Vector2();
                 if (Projectile.velocity.X != oldVelocity.X && oldVelocity.X < 0)
-                    sparkVelocity = new Vector2(6.5f, 0f);
+                    sparkVelocity = Vector2.UnitX * 6.5f;
                 else if (Projectile.velocity.X != oldVelocity.X && oldVelocity.X >= 0)
-                    sparkVelocity = new Vector2(-6.5f, 0f);
+                    sparkVelocity = Vector2.UnitX * -6.5f;
                 else if (Projectile.velocity.Y != oldVelocity.Y && oldVelocity.Y < 0)
-                    sparkVelocity = new Vector2(0f, 6.5f);
+                    sparkVelocity = Vector2.UnitY * 6.5f;
                 else if (Projectile.velocity.Y != oldVelocity.Y && oldVelocity.Y >= 0)
-                    sparkVelocity = new Vector2(0f, -6.5f);
+                    sparkVelocity = Vector2.UnitY * -6.5f;
 
-                Vector2 sparkLocation = sparkVelocity.X > 0f ? new Vector2(Projectile.Center.X - Projectile.width / 2, Projectile.Center.Y) : (sparkVelocity.X < 0f ? new Vector2(Projectile.Center.X + Projectile.width / 2, Projectile.Center.Y) : (sparkVelocity.Y > 0f ? new Vector2(Projectile.Center.X, Projectile.Center.Y - Projectile.height / 2) : new Vector2(Projectile.Center.X, Projectile.Center.Y + Projectile.height / 2)));
-                sparkVelocity = sparkVelocity.RotatedBy(Main.rand.NextFloat(-MathHelper.PiOver2, MathHelper.PiOver2));
+                Vector2 sparkLocation = sparkVelocity.X > 0f ? Projectile.Left : (sparkVelocity.X < 0f ? Projectile.Right : (sparkVelocity.Y > 0f ? Projectile.Top : Projectile.Bottom));
+                sparkVelocity = sparkVelocity.RotatedByRandom(MathHelper.PiOver2);
 
                 Particle collisionSparks = new AltLineParticle(sparkLocation, sparkVelocity, false, 30, 0.6f, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB));
                 GeneralParticleHandler.SpawnParticle(collisionSparks);
