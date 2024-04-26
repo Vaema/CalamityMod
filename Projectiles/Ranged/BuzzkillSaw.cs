@@ -2,8 +2,10 @@
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,9 +17,17 @@ namespace CalamityMod.Projectiles.Ranged
 
         public static readonly SoundStyle TileCollideGFB = new("CalamityMod/Sounds/Custom/MetalPipeFalling") { Volume = 1.5f };
 
+        public ref float SawLevel => ref Projectile.ai[0];
+        public ref float Time => ref Projectile.ai[1];
+
+        public static Asset<Texture2D> SmallSlash;
+        public static Asset<Texture2D> LargeSlash;
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
 
         public override void SetDefaults()
@@ -35,9 +45,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            Projectile.ai[1]++;
-            if (Projectile.ai[1] == 1f)
-                Projectile.rotation = Main.rand.NextFloat(0f, MathHelper.TwoPi);
+            Time++;
+            Projectile.rotation += MathHelper.ToRadians(6f + 18f * SawLevel);
 
             if (Projectile.frame < 1)
                 Projectile.frame = 1;
@@ -137,19 +146,23 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
-            if (Projectile.ai[0] == 2f)
+            if (SawLevel >= 2f)
                 hitbox.Inflate(65, 65);
-            else if (Projectile.ai[0] == 1f)
+            else if (SawLevel >= 1f)
                 hitbox.Inflate(28, 28);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.ai[0] >= 2f)
+            LargeSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BuzzkillSawLargeSlash");
+            Texture2D largeSlashTexture = LargeSlash.Value;
+            SmallSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BuzzkillSawSmallSlash");
+            Texture2D smallSlashTexture = SmallSlash.Value;
+            Color slashColor = new Color(200, 200, 200);
+
+            if (SawLevel >= 2f)
             {
-                Texture2D largeSlashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BuzzkillSawLargeSlash").Value;
-                Color drawColor = new Color(200, 200, 200, 100);
-                Main.EntitySpriteDraw(largeSlashTexture, Projectile.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(-8f, 8f), Main.rand.NextFloat(-8f, 8f)), null, drawColor, -(Projectile.ai[1] * 7f), largeSlashTexture.Size() / 2, 1f, SpriteEffects.None);
+                Main.EntitySpriteDraw(largeSlashTexture, Projectile.Center - Main.screenPosition, null, slashColor, -Projectile.rotation, largeSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
 
                 if (Projectile.ai[1] % 4 == 0)
                 {
@@ -159,11 +172,9 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(bloomCircle);
                 }
             }
-            if (Projectile.ai[0] >= 1f)
+            if (SawLevel >= 1f)
             {
-                Texture2D smallSlashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BuzzkillSawSmallSlash").Value;
-                Color drawColor = new Color(200, 200, 200, 100);
-                Main.EntitySpriteDraw(smallSlashTexture, Projectile.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f)), null, drawColor, Projectile.ai[1] * 7f, smallSlashTexture.Size() / 2, 1f, SpriteEffects.None);
+                Main.EntitySpriteDraw(smallSlashTexture, Projectile.Center - Main.screenPosition, null, slashColor, Projectile.rotation, smallSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
 
                 if (Projectile.ai[1] % 4 == 0)
                 {
@@ -172,6 +183,27 @@ namespace CalamityMod.Projectiles.Ranged
                     Particle bloomCircle = new BloomParticle(Projectile.Center + randomParticleOffset, Projectile.velocity, Main.rand.NextBool() ? Color.White : new Color(112, 16, 16), randomParticleScale, randomParticleScale, 4, false);
                     GeneralParticleHandler.SpawnParticle(bloomCircle);
                 }
+            }
+
+            if (!CalamityConfig.Instance.Afterimages)
+                return true;
+
+            // Special afterimage drawing to include the slashes
+            for (int i = 1; i < Projectile.oldPos.Length; ++i)
+            {
+                float afterimageRot = Projectile.oldRot[i];
+
+                Texture2D buzzsawTexture = TextureAssets.Projectile[Projectile.type].Value;
+                Rectangle frame = buzzsawTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+                Vector2 drawPos = Projectile.oldPos[i] + frame.Size() * 0.5f - Main.screenPosition;
+                float intensity = MathHelper.Lerp(0.1f, 0.6f, 1f - i / (float)Projectile.oldPos.Length);
+                
+                Main.EntitySpriteDraw(buzzsawTexture, drawPos, frame, lightColor * intensity, afterimageRot, frame.Size() * 0.5f, 1f, SpriteEffects.None);
+
+                if (SawLevel >= 2f)
+                    Main.EntitySpriteDraw(largeSlashTexture, drawPos, null, slashColor * intensity, -afterimageRot, largeSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
+                if (SawLevel >= 1f)
+                    Main.EntitySpriteDraw(smallSlashTexture, drawPos, null, slashColor * intensity, afterimageRot, smallSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
             }
             return true;
         }

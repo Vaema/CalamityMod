@@ -75,25 +75,28 @@ namespace CalamityMod.Projectiles.Ranged
                         Idle?.Stop();
 
                     Projectile.ai[1] = 1f;
-                    Projectile.timeLeft = 30;
-                    SoundEngine.PlaySound(SoundID.DD2_BallistaTowerShot, GunTipPosition);
+                    Projectile.timeLeft = Owner.ActiveItem().useAnimation;
+                    float SawPower = MathHelper.Clamp(Time / ChargeupTime, 0f, 1f);
+                    SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + SawPower * 0.5f };
+                    SoundEngine.PlaySound(ShootSound, GunTipPosition);
 
-                    float sawDamageMult = MathHelper.Clamp(MathHelper.Lerp(1f, 5f, Time / ChargeupTime), 1f, 5f) / 1.6f; // The damage must be divided by 1.6 to offset the holdout having 1.6x base damage.
-                    int sawPierce = (int)MathHelper.Clamp(MathHelper.Lerp(2f, 6f, Time / ChargeupTime), 2f, 6f);
+                    float sawDamageMult = MathHelper.Lerp(1f, 5f, SawPower) / 1.6f; // The damage must be divided by 1.6 to offset the holdout having 1.6x base damage.
+                    int sawPierce = (int)MathHelper.Lerp(2f, 6f, SawPower);
 
-                    bool useSmallSlash = (Time / ChargeupTime) >= 0.25f;
-                    bool useLargeSlash = (Time / ChargeupTime) >= 1f;
+                    bool useSmallSlash = SawPower >= 0.25f;
+                    bool useLargeSlash = SawPower >= 1f;
                     float ai0 = 0;
                     if (useSmallSlash)
                         ai0++;
                     if (useLargeSlash)
                         ai0++;
 
-                    int buzzsaw = Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * Buzzkill.ShootSpeed, ModContent.ProjectileType<BuzzkillSaw>(), (int)(Projectile.damage * sawDamageMult), (int)(Projectile.knockBack * (sawDamageMult / 2)), Main.myPlayer, ai0);
-                    Main.projectile[buzzsaw].penetrate = sawPierce;
+                    Projectile buzzsaw = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * Buzzkill.ShootSpeed, ModContent.ProjectileType<BuzzkillSaw>(), (int)(Projectile.damage * sawDamageMult), (int)(Projectile.knockBack * (sawDamageMult / 2)), Main.myPlayer, ai0);
+                    buzzsaw.penetrate = sawPierce;
+                    buzzsaw.rotation = Main.rand.NextFloat(0f, MathHelper.TwoPi);
 
                     NoSawOnHoldout = true;
-                    OffsetLengthFromArm -= 4f + 12f * Math.Clamp(Time / ChargeupTime, 0f, 1f);
+                    OffsetLengthFromArm -= 4f + 12f * SawPower;
 
                     for (int s = 0; s < 3; s++)
                     {

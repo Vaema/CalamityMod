@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public const float ShootSpeed = 15f;
+        public const float ShootSpeed = 20f;
 
         public override void SetStaticDefaults()
         {
