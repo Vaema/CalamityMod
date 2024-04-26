@@ -97,7 +97,18 @@ namespace CalamityMod.Projectiles.Ranged
                 Owner.AddCooldown(ElementalSawBoost.ID, ElementalSaw.DashCooldown);
                 Owner.Calamity().sBlasterDashActivated = true;
 
-                // TODO - Lingering saw on right click
+                // Throws a lingering saw at the cursor
+                Vector2 mouseDist = Main.MouseWorld - Owner.Center;
+                float mouseLength = mouseDist.Length() / 288f;
+                if (mouseLength > 2.25f)
+                    mouseLength = 2.25f;
+                Vector2 magnitude = new Vector2(mouseDist.X < 0 ? -1f : 1f, mouseDist.Y < 0 ? -1f : 1f); // Why do I need to do this why does magnitude get eaten shnsfqnowjqiuoquehmguo
+
+                mouseDist.Normalize();
+                mouseDist *= mouseLength;
+                mouseDist *= magnitude;
+
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Projectile.velocity.SafeNormalize(Vector2.UnitY) * ElementalSaw.ShootSpeed * mouseDist, ModContent.ProjectileType<ElementalSawLingering>(), Projectile.damage, Projectile.knockBack, Main.myPlayer);
 
                 // If moving, make particle effects when the dash activates
                 if (Owner.velocity != Vector2.Zero)

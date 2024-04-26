@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool AltFunctionUse(Player player) => true;
         public override bool CanUseItem(Player player)
         {
-            if (player.altFunctionUse == 2 && player.HasCooldown(Cooldowns.ElementalSawBoost.ID))
+            if (player.altFunctionUse == 2 && player.HasCooldown(ElementalSawBoost.ID))
                 return false;
             else
                 return player.ownedProjectileCounts[Item.shoot] <= 0;
@@ -70,7 +70,18 @@ namespace CalamityMod.Items.Weapons.Ranged
                     player.AddCooldown(ElementalSawBoost.ID, DashCooldown);
                     player.Calamity().sBlasterDashActivated = true;
 
-                    // TODO - Lingering saw on right click, and empowering saws
+                    // Throws a lingering saw at the cursor
+                    Vector2 mouseDist = Main.MouseWorld - player.Center;
+                    float mouseLength = mouseDist.Length() / 272f;
+                    if (mouseLength > 2.25f)
+                        mouseLength = 2.25f;
+                    Vector2 magnitude = new Vector2(mouseDist.X < 0 ? -1f : 1f, mouseDist.Y < 0 ? -1f : 1f); // Why do I need to do this why does magnitude get eaten shnsfqnowjqiuoquehmguo
+
+                    mouseDist.Normalize();
+                    mouseDist *= mouseLength;
+                    mouseDist *= magnitude;
+
+                    Projectile.NewProjectile(source, player.Center, velocity.SafeNormalize(Vector2.UnitY) * ShootSpeed * mouseDist, ModContent.ProjectileType<ElementalSawLingering>(), damage, knockback, Main.myPlayer);
 
                     // If moving, make particle effects when the dash activates
                     if (player.velocity != Vector2.Zero)

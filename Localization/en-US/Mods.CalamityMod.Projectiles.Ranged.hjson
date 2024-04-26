@@ -68,7 +68,9 @@ DrizzlefishFireSplit.DisplayName: Drizzlefish Flames
 DWArrow.DisplayName: Death's Arrow
 ElementalFire.DisplayName: Elemental Fire
 ElementalFlare.DisplayName: Elemental Flare
-ElementalSawBullet.DisplayName: Elemental Saw Bolt
+ElementalSawBullet.DisplayName: Elemental Sawcon Bolt
+ElementalSawLingering.DisplayName: Elemental Sawcon Deluxe
+ElementalSawMini.DisplayName: Elemental Sawcon Lite
 ElementalSawProj.DisplayName: Elemental Sawcon
 ElysianArrowProj.DisplayName: Elysian Arrow
 ElysianArrowRain.DisplayName: Elysian Light

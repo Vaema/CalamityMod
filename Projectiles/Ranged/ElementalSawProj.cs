@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Ranged
                     // Continously spawn homing bolts as it returns while empowered
                     if (ReturnTimer % 8 == 0 && Empowered)
                     {
-                        Vector2 randVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.PiOver2) / 2;
+                        Vector2 randVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.Pi / 3) / 2;
                         if (Main.myPlayer == Projectile.owner)
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
                     }
