@@ -12,8 +12,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public const float ShootSpeed = 20f;
-
         public override void SetStaticDefaults()
         {
             ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
@@ -36,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BuzzkillHoldout>();
-            Item.shootSpeed = ShootSpeed;
+            Item.shootSpeed = 20f;
             Item.Calamity().canFirePointBlankShots = true;
         }
 
@@ -48,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             // The holdout deals 1.6x base damage.
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<BuzzkillHoldout>(), (int)(damage * 1.6), knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<BuzzkillHoldout>(), (int)(damage * 1.6), knockback, player.whoAmI);
             return false;
         }
 
