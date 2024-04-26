@@ -448,10 +448,10 @@ ElementalSaw: {
 		Hold <left> to charge up a powerful elemental buzzsaw that deals close-range damage
 		Fired buzzsaws lacerate foes and inflict Elemental Mix, and can bounce off tiles
 		The longer it is charged, the more damage and pierce the buzzsaw has
-		Buzzsaws return to the player after exhausting their pierce, releasing homing bolts
+		Buzzsaws return to the player after exhausting their pierce
 		Press <right> to propel a short distance and fire a lingering buzzsaw towards the cursor
 		This dash has a {0} second cooldown
-		While on cooldown, buzzsaws slightly home to the cursor and release homing bolts faster while returning
+		While on cooldown, buzzsaws slightly home towards the cursor and release homing bolts while returning
 		Does not consume ammo
 		'''
 }

@@ -20,6 +20,7 @@ namespace CalamityMod.Projectiles.Ranged
         // Controls if the saw is returning to the player.
         public bool Returning = false;
         public int ReturnTimer = 0;
+        public const int ReturnDelay = 90;
 
         // Whether the saw is empowered by right click.
         public bool Empowered = false;
@@ -53,26 +54,58 @@ namespace CalamityMod.Projectiles.Ranged
             else
                 Empowered = false;
 
+            // While empowered, the saws while slightly home in on the cursor
+            if (Empowered && !Returning && Projectile.ai[1] > 30)
+            {
+                float homingTurnSpeed = 0.09f;
+                Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.MouseWorld).ToRotation(), homingTurnSpeed).ToRotationVector2() * ElementalSaw.ShootSpeed;
+            }
 
             // Saws automatically return 2 seconds after hitting an enemy
-            if (ReturnTimer > 0 && ReturnTimer < 90)
+            if (ReturnTimer > 0 && ReturnTimer < ReturnDelay)
             {
                 ReturnTimer++;
-                if (ReturnTimer == 90)
+                if (ReturnTimer == ReturnDelay)
                     Returning = true;
             }
 
             if (Returning)
             {
                 Projectile.tileCollide = false;
-                if (ReturnTimer < 90)
-                    ReturnTimer = 90;
+                if (ReturnTimer < ReturnDelay)
+                    ReturnTimer = ReturnDelay;
 
                 ReturnTimer++;
-                if (ReturnTimer < 120)
+                if (ReturnTimer < ReturnDelay + 30)
                     Projectile.velocity *= 0.95f;
                 else
                 {
+                    // Spawns a burst of homing bolts when it starts returning, based on how many tiles and enemies it hit
+                    if (ReturnTimer == ReturnDelay + 30)
+                    {
+                        int boltPairs = Projectile.numHits;
+                        for (int b = 0; b < boltPairs; b++)
+                        {
+                            for (int p = 0; p < 2; p++)
+                            {
+                                Vector2 randBoltVelocity = Main.rand.NextVector2CircularEdge(1f, 1f);
+                                randBoltVelocity.SafeNormalize(Vector2.Zero);
+                                randBoltVelocity *= 8f;
+
+                                if (Main.myPlayer == Projectile.owner)
+                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randBoltVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
+                            }
+                        }
+                    }
+
+                    // Continously spawn homing bolts as it returns while empowered
+                    if (ReturnTimer % 8 == 0 && Empowered)
+                    {
+                        Vector2 randVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.PiOver2) / 2;
+                        if (Main.myPlayer == Projectile.owner)
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
+                    }
+
                     float returnSpeed = (ElementalSaw.ShootSpeed * 0.66f) + (0.05f * (ReturnTimer - 120));
                     Vector2 ownerDist = Owner.Center - Projectile.Center;
                     if (ownerDist.Length() > 3000f)
@@ -81,7 +114,7 @@ namespace CalamityMod.Projectiles.Ranged
                     ownerDist.Normalize();
                     ownerDist *= returnSpeed;
 
-                    // Home back in on the player.
+                    // Home back in on the player; accelerates over time
                     if (Projectile.velocity.X < ownerDist.X)
                         Projectile.velocity.X = ownerDist.X;
                     else if (Projectile.velocity.X > ownerDist.X)
@@ -92,19 +125,11 @@ namespace CalamityMod.Projectiles.Ranged
                     else if (Projectile.velocity.Y > ownerDist.Y)
                         Projectile.velocity.Y = ownerDist.Y;
 
-                    // Delete the saw if it touches its owner.
+                    // Delete the saw if it touches its owner
                     if (Main.myPlayer == Projectile.owner)
                     {
                         if (Projectile.Hitbox.Intersects(Owner.Hitbox))
                             Projectile.Kill();
-                    }
-
-                    // Spawn homing bolts as it returns. These bolts spawn more often while empowered.
-                    int boltFrequency = Empowered ? 7 : 10;
-                    if (ReturnTimer % boltFrequency == 0)
-                    {
-                        Vector2 randVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.PiOver2) / 2;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
                     }
                 }
             }
@@ -137,16 +162,16 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.velocity.Y != oldVelocity.Y)
                 Projectile.velocity.Y = -oldVelocity.Y;
 
-            Projectile.ai[2]--;
-            if (Projectile.ai[2] <= 0)
+            if (Projectile.ai[2] > 0)
             {
-                Returning = true;
+                Projectile.ai[2]--;
+                Projectile.numHits++;
+                if (Projectile.ai[2] <= 0)
+                    Returning = true;
             }
 
             return false;
         }
-
-        public override bool? CanDamage() => !(Returning && Projectile.ai[2] == 0);
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
@@ -157,9 +182,19 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.numHits < 1)
                 ReturnTimer = 1;
 
-            Projectile.ai[2]--;
+            if (Projectile.ai[2] > 0)
+            {
+                Projectile.ai[2]--;
+                if (Projectile.ai[2] <= 0)
+                    Returning = true;
+            }
+        }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            // The saw deals less damage while returning, to prevent its damage being too crazy
             if (Projectile.ai[2] <= 0)
-                Returning = true;
+                modifiers.SourceDamage *= 0.33f;
         }
 
         public override void OnKill(int timeLeft)

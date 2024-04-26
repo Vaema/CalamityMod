@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     SoundEngine.PlaySound(SoundID.DD2_BallistaTowerShot, GunTipPosition); // Placeholder?
                     float sawDamageMult = MathHelper.Clamp(MathHelper.Lerp(1f, 5f, Time / ChargeupTime), 1f, 5f) / 2f; // The damage must be divided by 2 to offset the holdout having 2x base damage.
-                    int sawPierce = (int)MathHelper.Clamp(MathHelper.Lerp(2f, 6f, Time / ChargeupTime), 2f, 6f);
+                    int sawPierce = (int)MathHelper.Clamp(MathHelper.Lerp(2f, 7f, Time / ChargeupTime), 2f, 7f);
 
                     bool useSmallSlash = (Time / ChargeupTime) >= 0.25f;
                     bool useLargeSlash = (Time / ChargeupTime) >= 1f;
@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Owner.AddCooldown(ElementalSawBoost.ID, ElementalSaw.DashCooldown);
                 Owner.Calamity().sBlasterDashActivated = true;
 
-                // TODO - Lingering saw on right click, and empowering saws
+                // TODO - Lingering saw on right click
 
                 // If moving, make particle effects when the dash activates
                 if (Owner.velocity != Vector2.Zero)
@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Ranged
                         Particle spark = new CritSpark(Owner.Center, Owner.velocity.RotatedByRandom(MathHelper.ToRadians(13f)) * Main.rand.NextFloat(-2.1f, -4.5f), Color.White, sparkColor, 2f, 45, 2.25f, 2f);
                         GeneralParticleHandler.SpawnParticle(spark);
                     }
-                    for (int e = 0; e < particleAmt; e++)
+                    for (int e = 0; e < particleAmt * 2; e++)
                     {
                         Color sparkColor2 = Color.Lerp(new Color(122, 240, 58), new Color(32, 186, 171), e / (particleAmt - 1));
                         Particle spark2 = new NanoParticle(Owner.Center, Owner.velocity.RotatedByRandom(MathHelper.ToRadians(-MathHelper.PiOver4)) * Main.rand.NextFloat(2.5f, 4.5f), sparkColor2, 1f, 45, Main.rand.NextBool(3));

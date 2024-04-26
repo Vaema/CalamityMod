@@ -37,6 +37,8 @@ namespace CalamityMod.Projectiles.Ranged
                 CalamityUtils.HomeInOnNPC(Projectile, true, 480f, 13f, 20f);
         }
 
+        public override bool? CanDamage() => Projectile.ai[0] > 20;
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<ElementalMix>(), 45);
 
         public override bool PreDraw(ref Color lightColor)
