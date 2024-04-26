@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(ModContent.BuffType<Laceration>(), 150);
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice"), Projectile.Center);
 
-            int bloodCount = 6 + 12 * (int)SawLevel;
+            int bloodCount = 6 + 10 * (int)SawLevel;
             for (int p = 0; p < bloodCount; p++)
             {
                 Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * (Main.rand.NextFloat(0.4f, 0.6f) + (Main.rand.NextFloat(0.2f, 0.6f) * SawLevel));
@@ -161,13 +161,13 @@ namespace CalamityMod.Projectiles.Ranged
             Texture2D largeSlashTexture = LargeSlash.Value;
             SmallSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/BuzzkillSawSmallSlash");
             Texture2D smallSlashTexture = SmallSlash.Value;
-            Color slashColor = new Color(200, 200, 200);
+            Color slashColor = new Color(200, 200, 200, 100);
 
             if (SawLevel >= 2f)
             {
                 Main.EntitySpriteDraw(largeSlashTexture, Projectile.Center - Main.screenPosition, null, slashColor, -Projectile.rotation, largeSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
 
-                if (Projectile.ai[1] % 4 == 0)
+                if (Time % 4 == 0)
                 {
                     Vector2 randomParticleOffset = new Vector2(Main.rand.NextFloat(-Projectile.width * 1.75f, Projectile.width * 1.75f), Main.rand.NextFloat(-Projectile.width * 1.75f, Projectile.width * 1.75f));
                     float randomParticleScale = Main.rand.NextFloat(0.65f, 0.95f);
@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Main.EntitySpriteDraw(smallSlashTexture, Projectile.Center - Main.screenPosition, null, slashColor, Projectile.rotation, smallSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
 
-                if (Projectile.ai[1] % 4 == 0)
+                if (Time % 4 == 0)
                 {
                     Vector2 randomParticleOffset = new Vector2(Main.rand.NextFloat(-Projectile.width, Projectile.width), Main.rand.NextFloat(-Projectile.width, Projectile.width));
                     float randomParticleScale = Main.rand.NextFloat(0.35f, 0.65f);
@@ -192,7 +192,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return true;
 
             // Special afterimage drawing to include the slashes
-            for (int i = 1; i < Projectile.oldPos.Length; ++i)
+            for (int i = 1; i < Projectile.oldPos.Length; i++)
             {
                 float afterimageRot = Projectile.oldRot[i];
 
