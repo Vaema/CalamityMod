@@ -74,7 +74,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
                     // Throws a lingering saw at the cursor
                     Vector2 mouseDist = Main.MouseWorld - player.Center;
-                    float mouseLength = mouseDist.Length() / 272f;
+                    float mouseLength = mouseDist.Length() / 320f;
                     if (mouseLength > 2.25f)
                         mouseLength = 2.25f;
                     Vector2 magnitude = new Vector2(mouseDist.X < 0 ? -1f : 1f, mouseDist.Y < 0 ? -1f : 1f); // Why do I need to do this why does magnitude get eaten shnsfqnowjqiuoquehmguo
