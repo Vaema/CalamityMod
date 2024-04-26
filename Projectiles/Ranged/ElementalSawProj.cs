@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Ranged
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
                     }
 
-                    float returnSpeed = (ElementalSaw.ShootSpeed * 0.66f) + (0.05f * (ReturnTimer - 120));
+                    float returnSpeed = (ElementalSaw.ShootSpeed * 0.6f) + (0.05f * (ReturnTimer - 120));
                     Vector2 ownerDist = Owner.Center - Projectile.Center;
                     if (ownerDist.Length() > 3000f)
                         Projectile.Kill();

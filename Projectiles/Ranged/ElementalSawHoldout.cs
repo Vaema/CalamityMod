@@ -77,7 +77,10 @@ namespace CalamityMod.Projectiles.Ranged
                     if (SoundEngine.TryGetActiveSound(ChargeIdle, out Idle))
                         Idle?.Stop();
 
-                    SoundEngine.PlaySound(SoundID.DD2_BallistaTowerShot, GunTipPosition); // Placeholder?
+                    float SawPowerVolume = MathHelper.Clamp(Time / ChargeupTime, 0f, 1f);
+                    SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + SawPowerVolume * 0.5f };
+                    SoundEngine.PlaySound(ShootSound, GunTipPosition);
+
                     float sawDamageMult = MathHelper.Clamp(MathHelper.Lerp(1f, 5f, Time / ChargeupTime), 1f, 5f) / 2f; // The damage must be divided by 2 to offset the holdout having 2x base damage.
                     int sawPierce = (int)MathHelper.Clamp(MathHelper.Lerp(2f, 7f, Time / ChargeupTime), 2f, 7f);
 
@@ -106,9 +109,9 @@ namespace CalamityMod.Projectiles.Ranged
 
                 // Throws a lingering saw at the cursor
                 Vector2 mouseDist = Main.MouseWorld - Owner.Center;
-                float mouseLength = mouseDist.Length() / 320f;
-                if (mouseLength > 2.25f)
-                    mouseLength = 2.25f;
+                float mouseLength = mouseDist.Length() / 368f;
+                if (mouseLength > 1.7f)
+                    mouseLength = 1.7f;
                 Vector2 magnitude = new Vector2(mouseDist.X < 0 ? -1f : 1f, mouseDist.Y < 0 ? -1f : 1f); // Why do I need to do this why does magnitude get eaten shnsfqnowjqiuoquehmguo
 
                 mouseDist.Normalize();

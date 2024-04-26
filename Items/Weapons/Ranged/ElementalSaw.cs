@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public const float ShootSpeed = 18f;
+        public const float ShootSpeed = 24f;
 
         public const int DashCooldown = 360;
 
@@ -43,7 +43,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.knockBack = 1.75f;
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
-            //Item.UseSound = CommonCalamitySounds.PlasmaBoltSound;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ElementalSawHoldout>();
             Item.shootSpeed = ShootSpeed;
@@ -74,9 +73,9 @@ namespace CalamityMod.Items.Weapons.Ranged
 
                     // Throws a lingering saw at the cursor
                     Vector2 mouseDist = Main.MouseWorld - player.Center;
-                    float mouseLength = mouseDist.Length() / 320f;
-                    if (mouseLength > 2.25f)
-                        mouseLength = 2.25f;
+                    float mouseLength = mouseDist.Length() / 368f;
+                    if (mouseLength > 1.7f)
+                        mouseLength = 1.7f;
                     Vector2 magnitude = new Vector2(mouseDist.X < 0 ? -1f : 1f, mouseDist.Y < 0 ? -1f : 1f); // Why do I need to do this why does magnitude get eaten shnsfqnowjqiuoquehmguo
 
                     mouseDist.Normalize();
