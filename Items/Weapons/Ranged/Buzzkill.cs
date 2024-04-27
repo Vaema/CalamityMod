@@ -53,10 +53,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Shotgun).
+                AddIngredient(ItemID.ClockworkAssaultRifle).
                 AddIngredient(ItemID.IllegalGunParts).
-                AddRecipeGroup("AnyCobaltBar", 10).
-                AddTile(TileID.Anvils).
+                AddIngredient(ItemID.Cog, 15).
+                AddIngredient(ItemID.SoulofFright, 10).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }
