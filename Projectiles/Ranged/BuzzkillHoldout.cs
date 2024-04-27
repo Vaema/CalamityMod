@@ -67,8 +67,7 @@ namespace CalamityMod.Projectiles.Ranged
             Time++;
             float SawPower = MathHelper.Clamp(Time / ChargeupTime, 0f, 1f);
 
-            ActiveSound Idle;
-            if (SoundEngine.TryGetActiveSound(ChargeIdle, out Idle) && Idle.IsPlaying)
+            if (SoundEngine.TryGetActiveSound(ChargeIdle, out var Idle) && Idle.IsPlaying)
                 Idle.Position = GunTipPosition;
 
             if (Owner.CantUseHoldout())
@@ -76,9 +75,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Projectile.ai[1] < 1f)
                 {
                     KeepRefreshingLifetime = false;
-
-                    if (SoundEngine.TryGetActiveSound(ChargeIdle, out Idle))
-                        Idle?.Stop();
+                    Idle?.Stop();
 
                     Projectile.ai[1] = 1f;
                     Projectile.timeLeft = Owner.ActiveItem().useAnimation;
@@ -143,11 +140,8 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Time < ChargeupTime)
             {
-                if (Time == 1f)
-                {
-                    // Insert charge-up sound
-                    //Main.NewText("Insert charge-up sound");
-                }
+                if (Time == 30f && !NoSawOnHoldout)
+                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawCharge") { Volume = Main.zenithWorld ? 0.5f : 0.4f }, GunTipPosition);
 
                 if (Time > 30f && Projectile.frame == 0)
                     Projectile.frame = 1;
@@ -155,7 +149,7 @@ namespace CalamityMod.Projectiles.Ranged
             else
             {
                 if ((Time + 240) % 360 == 0)
-                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawIdle") { Volume = Main.zenithWorld ? 1f : 0.5f }, GunTipPosition);
+                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawIdle") { Volume = Main.zenithWorld ? 1f : 0.75f }, GunTipPosition);
 
                 if (Time % 3 == 0)
                 {
@@ -171,6 +165,13 @@ namespace CalamityMod.Projectiles.Ranged
         {
             base.OnSpawn(source);
             ExtraBackArmRotation = MathHelper.ToRadians(15f);
+        }
+
+        // Failsafe because apparently the sound doesn't stop sometimes
+        public override void OnKill(int timeLeft)
+        {
+            if (SoundEngine.TryGetActiveSound(ChargeIdle, out var Idle))
+                Idle?.Stop();
         }
 
         // The holdout can deal damage; you're literally spinning up a buzzsaw at the end, after all.
