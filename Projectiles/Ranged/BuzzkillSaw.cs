@@ -32,8 +32,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetDefaults()
         {
-            Projectile.width = 38;
-            Projectile.height = 40;
+            Projectile.width = Projectile.height = 40;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.timeLeft = 480;
@@ -90,8 +89,8 @@ namespace CalamityMod.Projectiles.Ranged
             }
             else
             {
-                SoundStyle CollideSound = Main.zenithWorld ? TileCollideGFB : SoundID.Item178;
-                SoundEngine.PlaySound(CollideSound with { Pitch = 0.1f * Projectile.numHits }, Projectile.Center); // Placeholder sound
+                SoundStyle CollideSound = Main.zenithWorld ? TileCollideGFB : SoundID.Item178 with { Pitch = 0.15f * Projectile.numHits };
+                SoundEngine.PlaySound(CollideSound, Projectile.Center); // Placeholder sound
 
                 if (Projectile.velocity.X != oldVelocity.X)
                     Projectile.velocity.X = -oldVelocity.X;
@@ -105,7 +104,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Laceration>(), 150);
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") with { Pitch = 0.1f * Projectile.numHits }, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") with { Pitch = 0.15f * Projectile.numHits }, Projectile.Center);
 
             int bloodCount = 6 + 10 * (int)SawLevel;
             for (int p = 0; p < bloodCount; p++)

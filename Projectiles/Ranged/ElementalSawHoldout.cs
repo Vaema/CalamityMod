@@ -5,6 +5,7 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Utilities;
 using System;
 using Terraria;
@@ -31,6 +32,12 @@ namespace CalamityMod.Projectiles.Ranged
 
         // Controls the saw visually disappearing from the holdout when it fires.
         public bool NoSawOnHoldout = false;
+
+        public Particle SmallSlashSmear;
+        public Particle LargeSlashSmear;
+        public static Asset<Texture2D> Holdout;
+        public static Asset<Texture2D> SmallSlash;
+        public static Asset<Texture2D> LargeSlash;
 
         public override void SetStaticDefaults()
         {
@@ -60,43 +67,51 @@ namespace CalamityMod.Projectiles.Ranged
         public override void HoldoutAI()
         {
             Time++;
+            float SawPower = MathHelper.Clamp(Time / ChargeupTime, 0f, 1f);
             if (Main.myPlayer == Projectile.owner)
                 Owner.Calamity().rightClickListener = true;
 
-            ActiveSound Idle;
-            if (SoundEngine.TryGetActiveSound(ChargeIdle, out Idle) && Idle.IsPlaying)
+            if (SoundEngine.TryGetActiveSound(ChargeIdle, out var Idle) && Idle.IsPlaying)
                 Idle.Position = GunTipPosition;
 
             if (Owner.CantUseHoldout())
             {
                 if (Projectile.ai[1] < 1f)
                 {
-                    Projectile.ai[1] = 1f;
                     KeepRefreshingLifetime = false;
-                    Projectile.timeLeft = 30;
-                    if (SoundEngine.TryGetActiveSound(ChargeIdle, out Idle))
-                        Idle?.Stop();
+                    Idle?.Stop();
 
-                    float SawPowerVolume = MathHelper.Clamp(Time / ChargeupTime, 0f, 1f);
-                    SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + SawPowerVolume * 0.5f };
+                    Projectile.ai[1] = 1f;
+                    Projectile.timeLeft = Owner.ActiveItem().useAnimation;
+                    SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + SawPower * 0.5f };
                     SoundEngine.PlaySound(ShootSound, GunTipPosition);
 
-                    float sawDamageMult = MathHelper.Clamp(MathHelper.Lerp(1f, 5f, Time / ChargeupTime), 1f, 5f) / 2f; // The damage must be divided by 2 to offset the holdout having 2x base damage.
-                    int sawPierce = (int)MathHelper.Clamp(MathHelper.Lerp(2f, 7f, Time / ChargeupTime), 2f, 7f);
-
-                    bool useSmallSlash = (Time / ChargeupTime) >= 0.25f;
-                    bool useLargeSlash = (Time / ChargeupTime) >= 1f;
-                    float ai0 = 0;
-                    if (useSmallSlash)
-                        ai0++;
-                    if (useLargeSlash)
-                        ai0++;
+                    float sawDamageMult = MathHelper.Lerp(1f, 5f, SawPower) / 2f; // The damage must be divided by 2 to offset the holdout having 2x base damage.
+                    int sawPierce = (int)MathHelper.Lerp(2f, 7f, SawPower);
+                    int sawLevel = (SawPower >= 1f).ToInt() + (SawPower >= 0.25f).ToInt();
 
                     // ai[0] determines which slashes are drawn. ai[1] is the saw's timer variable. ai[2] stores the saw's pierce.
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * ElementalSaw.ShootSpeed, ModContent.ProjectileType<ElementalSawProj>(), (int)(Projectile.damage * sawDamageMult), Projectile.knockBack, Main.myPlayer, ai0, 0f, sawPierce);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * ElementalSaw.ShootSpeed, ModContent.ProjectileType<ElementalSawProj>(), (int)(Projectile.damage * sawDamageMult), Projectile.knockBack, Main.myPlayer, sawLevel, 0f, sawPierce);
 
                     NoSawOnHoldout = true;
-                    OffsetLengthFromArm -= 4f + 12f * Math.Clamp(Time / ChargeupTime, 0f, 1f);
+                    OffsetLengthFromArm -= 4f + 12f * SawPower;
+
+                    int sparkPairCount = 3 + 2 * sawLevel;
+                    for (int s = 0; s < sparkPairCount; s++)
+                    {
+                        float velocityMult = Main.rand.NextFloat(5f, 8f) + Main.rand.NextFloat(4f, 7f) * sawLevel;
+                        float scale = Main.rand.NextFloat(0.6f, 0.8f) + Main.rand.NextFloat(0.3f, 0.5f) * sawLevel;
+                        Color color = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.8f);
+
+                        Vector2 sparkVelocity = Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * velocityMult;
+                        Particle weaponShootSparks = new AltLineParticle(GunTipPosition, sparkVelocity, false, 40, scale, color);
+                        GeneralParticleHandler.SpawnParticle(weaponShootSparks);
+
+                        // re-randomize rotation for the alternate particle
+                        sparkVelocity = Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * velocityMult;
+                        Particle weaponShootSparks2 = new AltSparkParticle(GunTipPosition, sparkVelocity, false, 40, scale, color);
+                        GeneralParticleHandler.SpawnParticle(weaponShootSparks2);
+                    }
                 }
             }
 
@@ -108,15 +123,11 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), Owner.Center);
 
                 // Throws a lingering saw at the cursor
-                Vector2 mouseDist = Main.MouseWorld - Owner.Center;
+                Vector2 mouseDist = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld);
                 float mouseLength = mouseDist.Length() / 368f;
                 if (mouseLength > 1.7f)
                     mouseLength = 1.7f;
-                Vector2 magnitude = new Vector2(mouseDist.X < 0 ? -1f : 1f, mouseDist.Y < 0 ? -1f : 1f); // Why do I need to do this why does magnitude get eaten shnsfqnowjqiuoquehmguo
-
-                mouseDist.Normalize();
                 mouseDist *= mouseLength;
-                mouseDist *= magnitude;
 
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Projectile.velocity.SafeNormalize(Vector2.UnitY) * ElementalSaw.ShootSpeed * mouseDist, ModContent.ProjectileType<ElementalSawLingering>(), Projectile.damage, Projectile.knockBack, Main.myPlayer);
 
@@ -140,7 +151,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             if (NoSawOnHoldout)
+            {
                 Projectile.frame = 4;
+                return;
+            }
             else
             {
                 Projectile.frameCounter++;
@@ -153,24 +167,56 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
+            // Smear particles which follow the path of the slashes
+            if (SawPower >= 1f)
+            {
+                if (LargeSlashSmear == null)
+                {
+                    LargeSlashSmear = new CircularSmearVFX(GunTipPosition, Color.Black, Time * -MathHelper.ToRadians(42f), 1.35f);
+                    GeneralParticleHandler.SpawnParticle(LargeSlashSmear);
+                }
+                else
+                {
+                    LargeSlashSmear.Rotation = Time * -MathHelper.ToRadians(42f);
+                    LargeSlashSmear.Time = 0;
+                    LargeSlashSmear.Position = GunTipPosition;
+                    LargeSlashSmear.Scale = 1.35f;
+                    LargeSlashSmear.Color = Main.hslToRgb(0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f), 1f, 0.6f) * 0.8f;
+                }
+            }
+            if (SawPower >= 0.25f)
+            {
+                if (SmallSlashSmear == null)
+                {
+                    SmallSlashSmear = new CircularSmearVFX(GunTipPosition, Color.Black, Time * MathHelper.ToRadians(42f), 0.8f);
+                    GeneralParticleHandler.SpawnParticle(SmallSlashSmear);
+                }
+                else
+                {
+                    SmallSlashSmear.Rotation = Time * MathHelper.ToRadians(42f);
+                    SmallSlashSmear.Time = 0;
+                    SmallSlashSmear.Position = GunTipPosition;
+                    SmallSlashSmear.Scale = 0.8f;
+                    SmallSlashSmear.Color = Main.hslToRgb(0.5f + 0.5f * MathF.Cos(Main.GlobalTimeWrappedHourly * 5f), 1f, 0.6f) * 0.6f;
+                }
+            }
+
             if (Time < ChargeupTime)
             {
-                if (Time == 1f)
-                {
-                    // Insert charge-up sound
-                }
+                if (Time == 30f && !NoSawOnHoldout)
+                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawCharge") { Volume = Main.zenithWorld ? 0.5f : 0.4f }, GunTipPosition);
             }
             else
             {
                 if ((Time + 240) % 360 == 0)
-                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawIdle") { Volume = Main.zenithWorld ? 1f : 0.5f }, GunTipPosition);
+                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawIdle"), GunTipPosition);
 
                 if (Time % 3 == 0)
                 {
-                    Vector2 smokeVelocity = new Vector2(0f, Main.rand.NextFloat(-7f, -12f));
-                    smokeVelocity = smokeVelocity.RotatedByRandom(MathHelper.Pi / 8);
+                    Vector2 smokeVelocity = Vector2.UnitY * Main.rand.NextFloat(-7f, -12f);
+                    smokeVelocity = smokeVelocity.RotatedByRandom(MathHelper.Pi / 8f);
                     Color smokeColor = Main.rand.NextBool() ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : Color.Gray;
-                    Particle fullChargeSmoke = new HeavySmokeParticle(GunTipPosition + new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f)), smokeVelocity, smokeColor, 30, 0.65f, 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), true);
+                    Particle fullChargeSmoke = new HeavySmokeParticle(GunTipPosition + Main.rand.NextVector2CircularEdge(3f, 3f), smokeVelocity, smokeColor, 30, 0.65f, 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), true);
                     GeneralParticleHandler.SpawnParticle(fullChargeSmoke);
                 }
             }
@@ -180,6 +226,13 @@ namespace CalamityMod.Projectiles.Ranged
         {
             base.OnSpawn(source);
             ExtraBackArmRotation = MathHelper.ToRadians(15f);
+        }
+
+        // Failsafe because apparently the sound doesn't stop sometimes
+        public override void OnKill(int timeLeft)
+        {
+            if (SoundEngine.TryGetActiveSound(ChargeIdle, out var Idle))
+                Idle?.Stop();
         }
 
         // The holdout can deal damage; you're literally spinning up a buzzsaw at the end, after all.
@@ -204,37 +257,38 @@ namespace CalamityMod.Projectiles.Ranged
             // EPIC AND COOL RAINBOW PARTICLES WOOOO
             int SawLevel = (Time / ChargeupTime >= 1f).ToInt() + (Time / ChargeupTime >= 0.25f).ToInt();
             int onHitSparkAmount = 4 + 4 * SawLevel;
-            for (int s = 1; s <= onHitSparkAmount; s++)
+            for (int s = 0; s < onHitSparkAmount; s++)
             {
-                Vector2 sparkVel = Main.rand.NextVector2CircularEdge(1f, 1f);
-                sparkVel.SafeNormalize(Vector2.Zero);
-                sparkVel *= Main.rand.NextFloat(6f, 10f) + 4f * SawLevel;
-                float sparkSize = 0.4f + Main.rand.NextFloat(0.3f, 0.5f) * SawLevel;
+                Vector2 sparkVel = Main.rand.NextVector2CircularEdge(1f, 1f) * (Main.rand.NextFloat(6f, 10f) + 5f * SawLevel);
+                float sparkSize = 0.4f + Main.rand.NextFloat(0.3f, 0.6f) * SawLevel;
+                Color sparkColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.8f);
 
-                // This has gotta be one of the calculations of all time
-                Color sparkColor = new Color((float)Math.Abs(Math.Sin(Time * s * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Cos(Time * s * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Sin(Time * s * (MathHelper.Pi / 18))) * Main.rand.NextFloat(0.5f, 1.5f));
-
-                Particle sparked = new AltLineParticle(target.Center, sparkVel, false, 30, sparkSize, sparkColor);
+                Particle sparked = new AltLineParticle(target.Center, sparkVel, false, 20, sparkSize, sparkColor);
                 GeneralParticleHandler.SpawnParticle(sparked);
             }
-            for (int sq = 1; sq <= 5; sq++)
+            for (int sq = 0; sq < 5; sq++)
             {
-                Vector2 squareVel = Main.rand.NextVector2CircularEdge(1f, 1f);
-                squareVel.SafeNormalize(Vector2.Zero);
-                squareVel *= Main.rand.NextFloat(10f, 16f);
-                float squareSize = 1.6f + Main.rand.NextFloat(1f, 1.2f) * SawLevel;
-                Color squareColor = new Color((float)Math.Abs(Math.Cos(Time * sq * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Sin(Time * sq * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Cos(Time * sq * (MathHelper.Pi / 18))) * Main.rand.NextFloat(0.5f, 1.5f));
+                Vector2 squareVel = Main.rand.NextVector2CircularEdge(1f, 1f)* (Main.rand.NextFloat(6f, 10f) + 5f * SawLevel);
+                float squareSize = 1.6f + Main.rand.NextFloat(1f, 1.6f) * SawLevel;
+                Color squareColor = Main.hslToRgb(Main.rand.NextFloat(), 0.6f, 0.8f);
 
-                Particle squared = new SquareParticle(target.Center, squareVel, true, 30, squareSize, squareColor);
+                Particle squared = new SquareParticle(target.Center, squareVel, true, 20, squareSize, squareColor);
                 GeneralParticleHandler.SpawnParticle(squared);
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawHoldout").Value;
+            Holdout ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawHoldout");
+            Texture2D holdoutTexture = Holdout.Value;
+            LargeSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawLargeSlash");
+            Texture2D largeSlashTexture = LargeSlash.Value;
+            SmallSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawSmallSlash");
+            Texture2D smallSlashTexture = SmallSlash.Value;
+            Color slashColor = new Color(200, 200, 200, 100);
+
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: Projectile.frame);
+            Rectangle frame = holdoutTexture.Frame(verticalFrames: Main.projFrames[Type], frameY: Projectile.frame);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = frame.Size() * 0.5f;
             SpriteEffects flipSprite = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
@@ -245,24 +299,32 @@ namespace CalamityMod.Projectiles.Ranged
                 drawPosition += Main.rand.NextVector2Circular(shake, shake);
             }
 
-            Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale, flipSprite);
+            Main.EntitySpriteDraw(holdoutTexture, drawPosition, frame, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale, flipSprite);
 
             if (Time > 30f && !NoSawOnHoldout)
             {
                 if (Time / ChargeupTime >= 1f)
-                {
-                    Texture2D largeSlashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawLargeSlash").Value;
-                    Color drawColorLarge = new Color(200, 200, 200, 100);
-                    Main.EntitySpriteDraw(largeSlashTexture, GunTipPosition - Main.screenPosition + new Vector2(Main.rand.NextFloat(-8f, 8f), Main.rand.NextFloat(-8f, 8f)), null, drawColorLarge, -(Time * 7f), largeSlashTexture.Size() / 2, 1f, SpriteEffects.None);
-                }
+                    Main.EntitySpriteDraw(largeSlashTexture, GunTipPosition - Main.screenPosition, null, slashColor, Time * -MathHelper.ToRadians(42f), largeSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
 
                 if (Time / ChargeupTime >= 0.25f)
+                    Main.EntitySpriteDraw(smallSlashTexture, GunTipPosition - Main.screenPosition, null, slashColor, Time * MathHelper.ToRadians(42f), smallSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
+
+                if (!CalamityConfig.Instance.Afterimages)
+                    return false;
+                
+                // Special afterimage drawing for the slashes only
+                for (int i = 1; i < 3; i++)
                 {
-                    Texture2D smallSlashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawSmallSlash").Value;
-                    Color drawColorSmall = new Color(200, 200, 200, 100);
-                    Main.EntitySpriteDraw(smallSlashTexture, GunTipPosition - Main.screenPosition + new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f)), null, drawColorSmall, Time * 7f, smallSlashTexture.Size() / 2, 1f, SpriteEffects.None);
+                    float intensity = MathHelper.Lerp(0.05f, 0.25f, 1f - i / 3f);
+
+                    if (Time / ChargeupTime >= 1f)
+                        Main.EntitySpriteDraw(largeSlashTexture, GunTipPosition - Main.screenPosition, null, slashColor * intensity, (Time - i) * -MathHelper.ToRadians(42f), largeSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
+
+                    if (Time / ChargeupTime >= 0.25f)
+                        Main.EntitySpriteDraw(smallSlashTexture, GunTipPosition - Main.screenPosition, null, slashColor * intensity, (Time - i) * MathHelper.ToRadians(42f), smallSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
                 }
             }
+
             return false;
         }
     }

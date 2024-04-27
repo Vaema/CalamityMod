@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     float sawDamageMult = MathHelper.Lerp(1f, 5f, SawPower) / 1.6f; // The damage must be divided by 1.6 to offset the holdout having 1.6x base damage.
                     int sawPierce = (int)MathHelper.Lerp(2f, 6f, SawPower);
-                    int sawLevel = (Time / ChargeupTime >= 1f).ToInt() + (Time / ChargeupTime >= 0.25f).ToInt();
+                    int sawLevel = (SawPower >= 1f).ToInt() + (SawPower >= 0.25f).ToInt();
 
                     Projectile buzzsaw = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * Owner.ActiveItem().shootSpeed, ModContent.ProjectileType<BuzzkillSaw>(), (int)(Projectile.damage * sawDamageMult), (int)(Projectile.knockBack * (sawDamageMult / 2)), Main.myPlayer, sawLevel);
                     buzzsaw.penetrate = sawPierce;
@@ -112,7 +112,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             if (NoSawOnHoldout)
+            {
                 Projectile.frame = 4;
+                return;
+            }
             else
             {
                 Projectile.frameCounter++;
@@ -125,7 +128,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
-            if (Time > 30f && !NoSawOnHoldout)
+            if (Time > 30f)
             {
                 if (Time % 3 == 0)
                 {
@@ -140,7 +143,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Time < ChargeupTime)
             {
-                if (Time == 30f && !NoSawOnHoldout)
+                if (Time == 30f)
                     ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawCharge") { Volume = Main.zenithWorld ? 0.5f : 0.4f }, GunTipPosition);
 
                 if (Time > 30f && Projectile.frame == 0)
@@ -149,7 +152,7 @@ namespace CalamityMod.Projectiles.Ranged
             else
             {
                 if ((Time + 240) % 360 == 0)
-                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawIdle") { Volume = Main.zenithWorld ? 1f : 0.75f }, GunTipPosition);
+                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawIdle"), GunTipPosition);
 
                 if (Time % 3 == 0)
                 {

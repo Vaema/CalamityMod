@@ -2,9 +2,11 @@
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,6 +17,18 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Ranged/ElementalSawProj";
 
+        public ref float Time => ref Projectile.ai[1];
+
+        public Particle SmallSlashSmear;
+        public Particle LargeSlashSmear;
+        public static Asset<Texture2D> SmallSlash;
+        public static Asset<Texture2D> LargeSlash;
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+        }
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 46;
@@ -35,14 +49,14 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.MaxUpdates = 1;
 
             // Timer and rotation
-            Projectile.ai[1]++;
-            Projectile.rotation = Projectile.ai[1] * Projectile.spriteDirection * (MathHelper.Pi / 6);
+            Time++;
+            Projectile.rotation += MathHelper.ToRadians(42f);
 
             // Make it lose velocity as it travels
             Projectile.velocity *= 0.955f;
 
             // Continously spawn homing bolts and small saws
-            if (Projectile.ai[1] % 7 == 0 && Projectile.ai[1] > 30)
+            if (Time % 7 == 0 && Time > 30)
             {
                 Vector2 randVelocity = Main.rand.NextVector2CircularEdge(1f, 1f);
                 randVelocity.SafeNormalize(Vector2.Zero);
@@ -61,6 +75,34 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Projectile.alpha > 255)
                     Projectile.Kill();
             }
+
+            // Rainbow smear particles which follow the path of the slashes
+            if (LargeSlashSmear == null)
+            {
+                LargeSlashSmear = new CircularSmearVFX(Projectile.Center, Color.Black, Time * -Projectile.rotation, 1.35f);
+                GeneralParticleHandler.SpawnParticle(LargeSlashSmear);
+            }
+            else
+            {
+                LargeSlashSmear.Rotation = -Projectile.rotation;
+                LargeSlashSmear.Time = 0;
+                LargeSlashSmear.Position = Projectile.Center;
+                LargeSlashSmear.Scale = 1.35f;
+                LargeSlashSmear.Color = Main.hslToRgb(0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f), 1f, 0.6f) * 0.8f * Projectile.Opacity;
+            }
+            if (SmallSlashSmear == null)
+            {
+                SmallSlashSmear = new CircularSmearVFX(Projectile.Center, Color.Black, Projectile.rotation, 0.8f);
+                GeneralParticleHandler.SpawnParticle(SmallSlashSmear);
+            }
+            else
+            {
+                SmallSlashSmear.Rotation = Projectile.rotation;
+                SmallSlashSmear.Time = 0;
+                SmallSlashSmear.Position = Projectile.Center;
+                SmallSlashSmear.Scale = 0.8f;
+                SmallSlashSmear.Color = Main.hslToRgb(0.5f + 0.5f * MathF.Cos(Main.GlobalTimeWrappedHourly * 5f), 1f, 0.6f) * 0.6f * Projectile.Opacity;
+            }
         }
 
         public override bool? CanDamage() => Projectile.timeLeft > 30;
@@ -72,27 +114,20 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice"), Projectile.Center);
 
             // SUPER EPIC AND AWESOME PARTICLES
-            int onHitSparkAmount = 12;
-            for (int s = 0; s < onHitSparkAmount; s++)
+            for (int s = 0; s < 12; s++)
             {
-                Vector2 sparkVel = Main.rand.NextVector2CircularEdge(1f, 1f);
-                sparkVel.SafeNormalize(Vector2.Zero);
-                sparkVel *= Main.rand.NextFloat(6f, 10f) + 8f;
-                float sparkSize = 0.4f + Main.rand.NextFloat(0.6f, 1f);
-
-                // This has gotta be one of the calculations of all time
-                Color sparkColor = new Color((float)Math.Abs(Math.Sin(Projectile.ai[1] * s * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Cos(Projectile.ai[1] * s * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Sin(Projectile.ai[1] * s * (MathHelper.Pi / 18))) * Main.rand.NextFloat(0.5f, 1.5f));
+                Vector2 sparkVel = Main.rand.NextVector2CircularEdge(1f, 1f)* Main.rand.NextFloat(14f, 18f);
+                float sparkSize = Main.rand.NextFloat(1f, 1.4f);
+                Color sparkColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.8f);
 
                 Particle sparked = new AltLineParticle(target.Center, sparkVel, false, 30, sparkSize, sparkColor);
                 GeneralParticleHandler.SpawnParticle(sparked);
             }
             for (int sq = 0; sq < 5; sq++)
             {
-                Vector2 squareVel = Main.rand.NextVector2CircularEdge(1f, 1f);
-                squareVel.SafeNormalize(Vector2.Zero);
-                squareVel *= Main.rand.NextFloat(10f, 16f);
-                float squareSize = 1.6f + Main.rand.NextFloat(2f, 2.4f);
-                Color squareColor = new Color((float)Math.Abs(Math.Sin(Projectile.ai[1] * sq * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Cos(Projectile.ai[1] * sq * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Sin(Projectile.ai[1] * sq * (MathHelper.Pi / 18))) * Main.rand.NextFloat(0.5f, 1.5f));
+                Vector2 squareVel = Main.rand.NextVector2CircularEdge(1f, 1f)* Main.rand.NextFloat(10f, 16f);
+                float squareSize = Main.rand.NextFloat(3.2f, 4f);
+                Color squareColor = Main.hslToRgb(Main.rand.NextFloat(), 0.6f, 0.8f);
 
                 Particle squared = new SquareParticle(target.Center, squareVel, true, 30, squareSize, squareColor);
                 GeneralParticleHandler.SpawnParticle(squared);
@@ -108,33 +143,52 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D largeSlashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawLargeSlash").Value;
-            Color drawColor = new Color(200f, 200f, 200f, 100f * ((255 - Projectile.alpha) / 255));
-            Main.EntitySpriteDraw(largeSlashTexture, Projectile.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(-8f, 8f), Main.rand.NextFloat(-8f, 8f)), null, drawColor, -(Projectile.ai[1] * 7f), largeSlashTexture.Size() / 2, 1f, SpriteEffects.None);
+            LargeSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawLargeSlash");
+            Texture2D largeSlashTexture = LargeSlash.Value;
+            SmallSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawSmallSlash");
+            Texture2D smallSlashTexture = SmallSlash.Value;
+            Color slashColor = new Color(200, 200, 200, 100) * Projectile.Opacity;
 
-            if (Projectile.ai[1] % 4 == 0)
+            Main.EntitySpriteDraw(largeSlashTexture, Projectile.Center - Main.screenPosition, null, slashColor, -Projectile.rotation, largeSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
+
+            if (Time % 4 == 0)
             {
                 Vector2 randomParticleOffset = new Vector2(Main.rand.NextFloat(-Projectile.width * 1.75f, Projectile.width * 1.75f), Main.rand.NextFloat(-Projectile.width * 1.75f, Projectile.width * 1.75f));
                 float randomParticleScale = Main.rand.NextFloat(0.65f, 0.95f);
-                Color bloomColor = Color.Lerp(new Color(29, 120, 30), new Color(56, 255, 59), (float)Math.Abs(Math.Sin(Projectile.ai[1])));
+                Color bloomColor = Color.Lerp(new Color(29, 120, 30), new Color(56, 255, 59), MathF.Abs(MathF.Sin(Time)));
                 Particle bloomCircle = new BloomParticle(Projectile.Center + randomParticleOffset, Projectile.velocity, Main.rand.NextBool() ? Color.White : bloomColor, randomParticleScale, randomParticleScale, 4, false);
                 GeneralParticleHandler.SpawnParticle(bloomCircle);
             }
-            Texture2D smallSlashTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawSmallSlash").Value;
-            Color drawColorSmall = new Color(200f, 200f, 200f, 100f * ((255f - Projectile.alpha) / 255f));
-            Main.EntitySpriteDraw(smallSlashTexture, Projectile.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-5f, 5f)), null, drawColorSmall, Projectile.ai[1] * 7f, smallSlashTexture.Size() / 2, 1f, SpriteEffects.None);
+            Main.EntitySpriteDraw(smallSlashTexture, Projectile.Center - Main.screenPosition, null, slashColor, Projectile.rotation, smallSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
 
-            if (Projectile.ai[1] % 4 == 0)
+            if (Time % 4 == 0)
             {
                 Vector2 randomParticleOffset = new Vector2(Main.rand.NextFloat(-Projectile.width, Projectile.width), Main.rand.NextFloat(-Projectile.width, Projectile.width));
                 float randomParticleScale = Main.rand.NextFloat(0.35f, 0.65f);
-                Color bloomColor = Color.Lerp(new Color(29, 120, 30), new Color(56, 255, 59), (float)Math.Abs(Math.Sin(Projectile.ai[1])));
+                Color bloomColor = Color.Lerp(new Color(29, 120, 30), new Color(56, 255, 59), MathF.Abs(MathF.Sin(Time)));
                 Particle bloomCircle = new BloomParticle(Projectile.Center + randomParticleOffset, Projectile.velocity, Main.rand.NextBool() ? Color.White : bloomColor, randomParticleScale, randomParticleScale, 4, false);
                 GeneralParticleHandler.SpawnParticle(bloomCircle);
             }
 
             Texture2D outline = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawProjOutline").Value;
-            Main.EntitySpriteDraw(outline, Projectile.Center - Main.screenPosition, null, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), Projectile.rotation, outline.Size() / 2, 1f, SpriteEffects.None);
+            Main.EntitySpriteDraw(outline, Projectile.Center - Main.screenPosition, null, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), Projectile.rotation, outline.Size() * 0.5f, 1f, SpriteEffects.None);
+
+            if (!CalamityConfig.Instance.Afterimages)
+                return true;
+
+            // Special afterimage drawing to include the slashes
+            for (int i = 1; i < Projectile.oldPos.Length; i++)
+            {
+                float afterimageRot = Projectile.oldRot[i];
+
+                Texture2D buzzsawTexture = TextureAssets.Projectile[Projectile.type].Value;
+                Vector2 drawPos = Projectile.oldPos[i] + buzzsawTexture.Size() * 0.5f - Main.screenPosition;
+                float intensity = MathHelper.Lerp(0.1f, 0.6f, 1f - i / (float)Projectile.oldPos.Length);
+                
+                Main.EntitySpriteDraw(buzzsawTexture, drawPos, null, lightColor * intensity, afterimageRot, buzzsawTexture.Size() * 0.5f, 1f, SpriteEffects.None);
+                Main.EntitySpriteDraw(largeSlashTexture, drawPos, null, slashColor * intensity, -afterimageRot, largeSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
+                Main.EntitySpriteDraw(smallSlashTexture, drawPos, null, slashColor * intensity, afterimageRot, smallSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
+            }
             return true;
         }
     }
