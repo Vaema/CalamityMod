@@ -27,6 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
         public bool Returning = false;
         public int ReturnTimer = 0;
         public const int ReturnDelay = 90;
+        public const int MaxBoltPairs = 7; // No more than 7 pairs per saw
 
         // Whether the saw is empowered by right click.
         public bool Empowered = false;
@@ -99,15 +100,12 @@ namespace CalamityMod.Projectiles.Ranged
                     // Spawns a burst of homing bolts when it starts returning, based on how many tiles and enemies it hit
                     if (ReturnTimer == ReturnDelay + 30)
                     {
-                        int boltPairs = Projectile.numHits;
+                        int boltPairs = Math.Min(Projectile.numHits, MaxBoltPairs);
                         for (int b = 0; b < boltPairs; b++)
                         {
                             for (int p = 0; p < 2; p++)
                             {
-                                Vector2 randBoltVelocity = Main.rand.NextVector2CircularEdge(1f, 1f);
-                                randBoltVelocity.SafeNormalize(Vector2.Zero);
-                                randBoltVelocity *= 8f;
-
+                                Vector2 randBoltVelocity = Main.rand.NextVector2Unit() * 9f;
                                 if (Main.myPlayer == Projectile.owner)
                                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randBoltVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
                             }
@@ -115,9 +113,9 @@ namespace CalamityMod.Projectiles.Ranged
                     }
 
                     // Continously spawn homing bolts as it returns while empowered
-                    if (ReturnTimer % 7 == 0 && Empowered)
+                    if (ReturnTimer % 12 == 0 && Empowered)
                     {
-                        Vector2 randVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.Pi / 3) / 2;
+                        Vector2 randVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.Pi / 3f) * 0.5f;
                         if (Main.myPlayer == Projectile.owner)
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
                     }
@@ -335,7 +333,7 @@ namespace CalamityMod.Projectiles.Ranged
             Main.spriteBatch.SetBlendState(BlendState.Additive);
             SawBloom ??= ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
             Texture2D bloom = SawBloom.Value;
-            Main.EntitySpriteDraw(bloom, Projectile.Center - Main.screenPosition, null, Empowered ? Main.DiscoColor * 0.5f : new Color(150, 255, 60) * 0.2f, 0f, bloom.Size() * 0.5f, 1f, SpriteEffects.None);
+            Main.EntitySpriteDraw(bloom, Projectile.Center - Main.screenPosition, null, Empowered ? Main.DiscoColor * 0.5f : new Color(150, 255, 60) * 0.25f, 0f, bloom.Size() * 0.5f, 0.75f, SpriteEffects.None);
             Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
 
             if (!CalamityConfig.Instance.Afterimages)

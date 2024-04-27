@@ -70,8 +70,6 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Time++;
             float SawPower = MathHelper.Clamp(Time / ChargeupTime, 0f, 1f);
-            if (Main.myPlayer == Projectile.owner)
-                Owner.Calamity().rightClickListener = true;
 
             if (SoundEngine.TryGetActiveSound(ChargeIdle, out var Idle) && Idle.IsPlaying)
                 Idle.Position = GunTipPosition;
@@ -113,41 +111,6 @@ namespace CalamityMod.Projectiles.Ranged
                         sparkVelocity = Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * velocityMult;
                         Particle weaponShootSparks2 = new AltSparkParticle(GunTipPosition, sparkVelocity, false, 40, scale, color);
                         GeneralParticleHandler.SpawnParticle(weaponShootSparks2);
-                    }
-                }
-            }
-
-            // Handle the right-click dash
-            if (Owner.Calamity().mouseRight && !Owner.HasCooldown(ElementalSawBoost.ID))
-            {
-                Owner.AddCooldown(ElementalSawBoost.ID, ElementalSaw.DashCooldown);
-                Owner.Calamity().sBlasterDashActivated = true;
-                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), Owner.Center);
-
-                // Throws a lingering saw at the cursor
-                Vector2 mouseDist = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld);
-                float mouseLength = mouseDist.Length() / 368f;
-                if (mouseLength > 1.7f)
-                    mouseLength = 1.7f;
-                mouseDist *= mouseLength;
-
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Projectile.velocity.SafeNormalize(Vector2.UnitY) * ElementalSaw.ShootSpeed * mouseDist, ModContent.ProjectileType<ElementalSawLingering>(), Projectile.damage, Projectile.knockBack, Main.myPlayer);
-
-                // If moving, make particle effects when the dash activates
-                if (Owner.velocity != Vector2.Zero)
-                {
-                    int particleAmt = 7;
-                    for (int c = 0; c < particleAmt; c++)
-                    {
-                        Color sparkColor = Color.Lerp(new Color(122, 240, 58), new Color(32, 186, 171), c / (particleAmt - 1));
-                        Particle spark = new CritSpark(Owner.Center, Owner.velocity.RotatedByRandom(MathHelper.ToRadians(13f)) * Main.rand.NextFloat(-2.1f, -4.5f), Color.White, sparkColor, 2f, 45, 2.25f, 2f);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                    }
-                    for (int e = 0; e < particleAmt * 2; e++)
-                    {
-                        Color sparkColor2 = Color.Lerp(new Color(122, 240, 58), new Color(32, 186, 171), e / (particleAmt - 1));
-                        Particle spark2 = new NanoParticle(Owner.Center, Owner.velocity.RotatedByRandom(MathHelper.ToRadians(-MathHelper.PiOver4)) * Main.rand.NextFloat(2.5f, 4.5f), sparkColor2, 1f, 45, Main.rand.NextBool(3));
-                        GeneralParticleHandler.SpawnParticle(spark2);
                     }
                 }
             }
@@ -315,7 +278,7 @@ namespace CalamityMod.Projectiles.Ranged
             Main.spriteBatch.SetBlendState(BlendState.Additive);
             SawBloom ??= ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
             Texture2D bloom = SawBloom.Value;
-            Main.EntitySpriteDraw(bloom, GunTipPosition - Main.screenPosition, null, new Color(150, 255, 60) * 0.2f, 0f, bloom.Size() * 0.5f, 1f, SpriteEffects.None);
+            Main.EntitySpriteDraw(bloom, GunTipPosition - Main.screenPosition, null, new Color(150, 255, 60) * 0.25f, 0f, bloom.Size() * 0.5f, 0.75f, SpriteEffects.None);
             Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
 
             if (Time > 30f)

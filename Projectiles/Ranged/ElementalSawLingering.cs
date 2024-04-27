@@ -58,11 +58,9 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.velocity *= 0.955f;
 
             // Continously spawn homing bolts and small saws
-            if (Time % 7 == 0 && Time > 30)
+            if (Time % 12 == 0 && Time > 30)
             {
-                Vector2 randVelocity = Main.rand.NextVector2CircularEdge(1f, 1f);
-                randVelocity.SafeNormalize(Vector2.Zero);
-                randVelocity *= Main.rand.NextFloat(6f, 7.5f);
+                Vector2 randVelocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(7.5f, 9f);
                 if (Main.myPlayer == Projectile.owner)
                 {
                     int projType = Main.rand.NextBool() ? ModContent.ProjectileType<ElementalSawMini>() : ModContent.ProjectileType<ElementalSawBullet>();
@@ -183,7 +181,7 @@ namespace CalamityMod.Projectiles.Ranged
             Main.spriteBatch.SetBlendState(BlendState.Additive);
             SawBloom ??= ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
             Texture2D bloom = SawBloom.Value;
-            Main.EntitySpriteDraw(bloom, Projectile.Center - Main.screenPosition, null, Main.DiscoColor * 0.5f, 0f, bloom.Size() * 0.5f, 1f, SpriteEffects.None);
+            Main.EntitySpriteDraw(bloom, Projectile.Center - Main.screenPosition, null, Main.DiscoColor * 0.5f, 0f, bloom.Size() * 0.5f, 0.75f, SpriteEffects.None);
             Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
 
             if (!CalamityConfig.Instance.Afterimages)
