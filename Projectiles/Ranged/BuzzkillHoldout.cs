@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -149,7 +149,7 @@ namespace CalamityMod.Projectiles.Ranged
             else
             {
                 if ((Time + 240) % 360 == 0)
-                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawIdle") { Volume = Main.zenithWorld ? 1f : 0.75f }, GunTipPosition);
+                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawIdle"), GunTipPosition);
 
                 if (Time % 3 == 0)
                 {
