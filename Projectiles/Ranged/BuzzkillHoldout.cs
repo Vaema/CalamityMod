@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
