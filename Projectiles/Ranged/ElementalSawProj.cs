@@ -34,7 +34,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public Particle SmallSlashSmear;
         public Particle LargeSlashSmear;
-        public static Asset<Texture2D> SawBloom;
         public static Asset<Texture2D> SawOutline;
         public static Asset<Texture2D> SmallSlash;
         public static Asset<Texture2D> LargeSlash;
@@ -328,13 +327,6 @@ namespace CalamityMod.Projectiles.Ranged
                 Texture2D outline = SawOutline.Value;
                 Main.EntitySpriteDraw(outline, Projectile.Center - Main.screenPosition, null, Main.DiscoColor, Projectile.rotation, outline.Size() * 0.5f, 1f, SpriteEffects.None);
             }
-
-            // Rainbow glow if empowered, otherwise lime green
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
-            SawBloom ??= ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
-            Texture2D bloom = SawBloom.Value;
-            Main.EntitySpriteDraw(bloom, Projectile.Center - Main.screenPosition, null, Empowered ? Main.DiscoColor * 0.5f : new Color(150, 255, 60) * 0.25f, 0f, bloom.Size() * 0.5f, 0.75f, SpriteEffects.None);
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
 
             if (!CalamityConfig.Instance.Afterimages)
                 return false;

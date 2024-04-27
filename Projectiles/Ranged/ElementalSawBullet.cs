@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
             Utils.PlotTileLine(Projectile.Center - Projectile.velocity * 0.5f, Projectile.Center + Projectile.velocity * 0.5f, 16f, DelegateMethods.CastLightOpen);
         }
 
-        public override bool? CanDamage() => Projectile.ai[0] > 20;
+        public override bool? CanDamage() => Time >= 15f;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<ElementalMix>(), 45);
 
@@ -70,13 +70,12 @@ namespace CalamityMod.Projectiles.Ranged
             return trailColor * Projectile.Opacity;
         }
 
-        public override bool PreDraw(ref Color lightColor) => false;
-
-        public override void PostDraw(Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f), 16);
             Texture2D glow = TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(glow, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, glow.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
+            return false;
         }
     }
 }

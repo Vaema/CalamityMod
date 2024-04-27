@@ -37,7 +37,6 @@ namespace CalamityMod.Projectiles.Ranged
         public Particle LargeSlashSmear;
         public static Asset<Texture2D> Holdout;
         public static Asset<Texture2D> HoldoutGlow;
-        public static Asset<Texture2D> SawBloom;
         public static Asset<Texture2D> SmallSlash;
         public static Asset<Texture2D> LargeSlash;
 
@@ -273,13 +272,6 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (NoSawOnHoldout)
                 return false;
-
-            // Bloom effect on the saw
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
-            SawBloom ??= ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
-            Texture2D bloom = SawBloom.Value;
-            Main.EntitySpriteDraw(bloom, GunTipPosition - Main.screenPosition, null, new Color(150, 255, 60) * 0.25f, 0f, bloom.Size() * 0.5f, 0.75f, SpriteEffects.None);
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
 
             if (Time > 30f)
             {
