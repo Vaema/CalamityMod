@@ -89,8 +89,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             else
             {
-                SoundStyle CollideSound = Main.zenithWorld ? TileCollideGFB : SoundID.Item178 with { Pitch = 0.15f * Projectile.numHits };
-                SoundEngine.PlaySound(CollideSound, Projectile.Center); // Placeholder sound
+                SoundEngine.PlaySound(Main.zenithWorld ? TileCollideGFB : SoundID.Item178 with { Pitch = 0.15f * Projectile.numHits }, Projectile.Center); // Placeholder sound
 
                 if (Projectile.velocity.X != oldVelocity.X)
                     Projectile.velocity.X = -oldVelocity.X;
