@@ -33,6 +33,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public Particle SmallSlashSmear;
         public Particle LargeSlashSmear;
+        public static Asset<Texture2D> SawBloom;
+        public static Asset<Texture2D> SawOutline;
         public static Asset<Texture2D> SmallSlash;
         public static Asset<Texture2D> LargeSlash;
 
@@ -318,21 +320,32 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
+            // Draw the saw itself at full brightness
+            Texture2D buzzsawTexture = TextureAssets.Projectile[Projectile.type].Value;
+            Main.EntitySpriteDraw(buzzsawTexture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, buzzsawTexture.Size() * 0.5f, 1f, SpriteEffects.None);
+
             if (Empowered) // Rainbow outline while empowered
             {
-                Texture2D outline = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawProjOutline").Value;
-                Main.EntitySpriteDraw(outline, Projectile.Center - Main.screenPosition, null, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), Projectile.rotation, outline.Size() * 0.5f, 1f, SpriteEffects.None);
+                SawOutline ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawProjOutline");
+                Texture2D outline = SawOutline.Value;
+                Main.EntitySpriteDraw(outline, Projectile.Center - Main.screenPosition, null, Main.DiscoColor, Projectile.rotation, outline.Size() * 0.5f, 1f, SpriteEffects.None);
             }
 
+            // Rainbow glow if empowered, otherwise lime green
+            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            SawBloom ??= ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+            Texture2D bloom = SawBloom.Value;
+            Main.EntitySpriteDraw(bloom, Projectile.Center - Main.screenPosition, null, Empowered ? Main.DiscoColor * 0.5f : new Color(150, 255, 60) * 0.2f, 0f, bloom.Size() * 0.5f, 1f, SpriteEffects.None);
+            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+
             if (!CalamityConfig.Instance.Afterimages)
-                return true;
+                return false;
 
             // Special afterimage drawing to include the slashes
             for (int i = 1; i < Projectile.oldPos.Length; i++)
             {
                 float afterimageRot = Projectile.oldRot[i];
 
-                Texture2D buzzsawTexture = TextureAssets.Projectile[Projectile.type].Value;
                 Vector2 drawPos = Projectile.oldPos[i] + buzzsawTexture.Size() * 0.5f - Main.screenPosition;
                 float intensity = MathHelper.Lerp(0.1f, 0.6f, 1f - i / (float)Projectile.oldPos.Length);
                 
@@ -343,7 +356,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (SawLevel >= 1f)
                     Main.EntitySpriteDraw(smallSlashTexture, drawPos, null, slashColor * intensity, afterimageRot, smallSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
             }
-            return true;
+            return false;
         }
     }
 }

@@ -10,16 +10,17 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
 
+        public ref float Time => ref Projectile.ai[0];
+
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 52;
-            Projectile.height = 22;
+            Projectile.width = Projectile.height = 22;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = 1;
@@ -30,11 +31,27 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+            Time++;
+
+            // Rapidly race towards the nearest target.
+            NPC potentialTarget = Projectile.Center.ClosestNPCAt(480f);
+            if (potentialTarget != null && Time >= 20f)
+            {
+                Vector2 idealVelocity = Projectile.SafeDirectionTo(potentialTarget.Center) * 20f;
+                Projectile.velocity = (Projectile.velocity * 29f + idealVelocity) / 30f;
+                Projectile.velocity = Projectile.velocity.MoveTowards(idealVelocity, 3f);
+            }
+            else if (Time >= 20f)
+            {
+                // Projectile decays faster if there's no enemy in sight
+                Projectile.timeLeft--;
+            }
+
             Projectile.rotation = Projectile.velocity.ToRotation();
 
-            Projectile.ai[0]++;
-            if (Projectile.ai[0] > 20)
-                CalamityUtils.HomeInOnNPC(Projectile, true, 480f, 13f, 20f);
+            // Emit light.
+            DelegateMethods.v3_1 = Color.Lerp(Color.Lime, Color.White, 0.55f).ToVector3() * 0.35f;
+            Utils.PlotTileLine(Projectile.Center - Projectile.velocity * 0.5f, Projectile.Center + Projectile.velocity * 0.5f, 16f, DelegateMethods.CastLightOpen);
         }
 
         public override bool? CanDamage() => Projectile.ai[0] > 20;

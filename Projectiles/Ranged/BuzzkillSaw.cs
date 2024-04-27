@@ -193,12 +193,11 @@ namespace CalamityMod.Projectiles.Ranged
                 return true;
 
             // Special afterimage drawing to include the slashes
+            Texture2D buzzsawTexture = TextureAssets.Projectile[Projectile.type].Value;
+            Rectangle frame = buzzsawTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             for (int i = 1; i < Projectile.oldPos.Length; i++)
             {
                 float afterimageRot = Projectile.oldRot[i];
-
-                Texture2D buzzsawTexture = TextureAssets.Projectile[Projectile.type].Value;
-                Rectangle frame = buzzsawTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
                 Vector2 drawPos = Projectile.oldPos[i] + frame.Size() * 0.5f - Main.screenPosition;
                 float intensity = MathHelper.Lerp(0.1f, 0.6f, 1f - i / (float)Projectile.oldPos.Length);
                 

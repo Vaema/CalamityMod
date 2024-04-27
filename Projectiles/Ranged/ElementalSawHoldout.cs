@@ -36,6 +36,8 @@ namespace CalamityMod.Projectiles.Ranged
         public Particle SmallSlashSmear;
         public Particle LargeSlashSmear;
         public static Asset<Texture2D> Holdout;
+        public static Asset<Texture2D> HoldoutGlow;
+        public static Asset<Texture2D> SawBloom;
         public static Asset<Texture2D> SmallSlash;
         public static Asset<Texture2D> LargeSlash;
 
@@ -301,7 +303,22 @@ namespace CalamityMod.Projectiles.Ranged
 
             Main.EntitySpriteDraw(holdoutTexture, drawPosition, frame, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale, flipSprite);
 
-            if (Time > 30f && !NoSawOnHoldout)
+            // Glowmask
+            HoldoutGlow ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawHoldoutGlow");
+            Texture2D glow = HoldoutGlow.Value;
+            Main.EntitySpriteDraw(glow, drawPosition, frame, Color.White, drawRotation, rotationPoint, Projectile.scale, flipSprite);
+
+            if (NoSawOnHoldout)
+                return false;
+
+            // Bloom effect on the saw
+            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            SawBloom ??= ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+            Texture2D bloom = SawBloom.Value;
+            Main.EntitySpriteDraw(bloom, GunTipPosition - Main.screenPosition, null, new Color(150, 255, 60) * 0.2f, 0f, bloom.Size() * 0.5f, 1f, SpriteEffects.None);
+            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+
+            if (Time > 30f)
             {
                 if (Time / ChargeupTime >= 1f)
                     Main.EntitySpriteDraw(largeSlashTexture, GunTipPosition - Main.screenPosition, null, slashColor, Time * -MathHelper.ToRadians(42f), largeSlashTexture.Size() * 0.5f, 1f, SpriteEffects.None);
