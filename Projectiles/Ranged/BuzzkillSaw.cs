@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
 
-        public static readonly SoundStyle TileCollideGFB = new("CalamityMod/Sounds/Custom/MetalPipeFalling") { Volume = 1.5f };
+        public static readonly SoundStyle TileCollideGFB = new("CalamityMod/Sounds/Custom/MetalPipeFalling");
 
         public ref float SawLevel => ref Projectile.ai[0];
         public ref float Time => ref Projectile.ai[1];
@@ -62,7 +62,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            for (int s = 0; s < 7; s++)
+            int sparkCount = 6 + 5 * (int)SawLevel;
+            for (int s = 0; s < sparkCount; s++)
             {
                 Vector2 sparkVelocity = new Vector2();
                 if (Projectile.velocity.X != oldVelocity.X && oldVelocity.X < 0)
@@ -75,20 +76,22 @@ namespace CalamityMod.Projectiles.Ranged
                     sparkVelocity = Vector2.UnitY * -6.5f;
 
                 Vector2 sparkLocation = sparkVelocity.X > 0f ? Projectile.Left : (sparkVelocity.X < 0f ? Projectile.Right : (sparkVelocity.Y > 0f ? Projectile.Top : Projectile.Bottom));
-                sparkVelocity = sparkVelocity.RotatedByRandom(MathHelper.PiOver2);
-
-                Particle collisionSparks = new AltLineParticle(sparkLocation, sparkVelocity, false, 30, 0.6f, new Color(250, 250, 107));
+                sparkVelocity = sparkVelocity.RotatedByRandom(MathHelper.PiOver2) * (Main.rand.NextFloat(0.8f, 1.2f) + (Main.rand.NextFloat(0.2f, 0.6f) * SawLevel));
+                float scale = Main.rand.NextFloat(0.5f, 0.8f) + Main.rand.NextFloat(0.2f, 0.6f) * SawLevel;
+                Particle collisionSparks = new AltLineParticle(sparkLocation, sparkVelocity, false, 30, scale, new Color(250, 250, 107));
                 GeneralParticleHandler.SpawnParticle(collisionSparks);
             }
 
             Projectile.penetrate--;
+            Projectile.numHits++;
             if (Projectile.penetrate <= 0)
             {
                 Projectile.Kill();
             }
             else
             {
-                SoundEngine.PlaySound(Main.zenithWorld ? TileCollideGFB : SoundID.Item178, Projectile.Center); // Placeholder sound
+                SoundStyle CollideSound = Main.zenithWorld ? TileCollideGFB : SoundID.Item178;
+                SoundEngine.PlaySound(CollideSound with { Pitch = 0.1f * Projectile.numHits }, Projectile.Center); // Placeholder sound
 
                 if (Projectile.velocity.X != oldVelocity.X)
                     Projectile.velocity.X = -oldVelocity.X;
@@ -102,7 +105,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Laceration>(), 150);
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice"), Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") with { Pitch = 0.1f * Projectile.numHits }, Projectile.Center);
 
             int bloodCount = 6 + 10 * (int)SawLevel;
             for (int p = 0; p < bloodCount; p++)
