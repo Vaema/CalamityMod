@@ -200,6 +200,34 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(ModContent.BuffType<Laceration>(), 300);
             target.AddBuff(ModContent.BuffType<ElementalMix>(), 150);
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") { Volume = 0.7f }, GunTipPosition);
+
+            // EPIC AND COOL RAINBOW PARTICLES WOOOO
+            int SawLevel = (Time / ChargeupTime >= 1f).ToInt() + (Time / ChargeupTime >= 0.25f).ToInt();
+            int onHitSparkAmount = 4 + 4 * SawLevel;
+            for (int s = 1; s <= onHitSparkAmount; s++)
+            {
+                Vector2 sparkVel = Main.rand.NextVector2CircularEdge(1f, 1f);
+                sparkVel.SafeNormalize(Vector2.Zero);
+                sparkVel *= Main.rand.NextFloat(6f, 10f) + 4f * SawLevel;
+                float sparkSize = 0.4f + Main.rand.NextFloat(0.3f, 0.5f) * SawLevel;
+
+                // This has gotta be one of the calculations of all time
+                Color sparkColor = new Color((float)Math.Abs(Math.Sin(Time * s * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Cos(Time * s * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Sin(Time * s * (MathHelper.Pi / 18))) * Main.rand.NextFloat(0.5f, 1.5f));
+
+                Particle sparked = new AltLineParticle(target.Center, sparkVel, false, 30, sparkSize, sparkColor);
+                GeneralParticleHandler.SpawnParticle(sparked);
+            }
+            for (int sq = 1; sq <= 5; sq++)
+            {
+                Vector2 squareVel = Main.rand.NextVector2CircularEdge(1f, 1f);
+                squareVel.SafeNormalize(Vector2.Zero);
+                squareVel *= Main.rand.NextFloat(10f, 16f);
+                float squareSize = 1.6f + Main.rand.NextFloat(1f, 1.2f) * SawLevel;
+                Color squareColor = new Color((float)Math.Abs(Math.Cos(Time * sq * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Sin(Time * sq * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Cos(Time * sq * (MathHelper.Pi / 18))) * Main.rand.NextFloat(0.5f, 1.5f));
+
+                Particle squared = new SquareParticle(target.Center, squareVel, true, 30, squareSize, squareColor);
+                GeneralParticleHandler.SpawnParticle(squared);
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)

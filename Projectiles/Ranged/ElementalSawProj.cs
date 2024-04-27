@@ -188,6 +188,31 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Projectile.ai[2] <= 0)
                     Returning = true;
             }
+
+            // SUPER COLORFUL PARTICLE EFFECTS YEAH
+            int onHitSparkAmount = 7 + 10 * (int)Projectile.ai[0];
+            for (int s = 0; s < onHitSparkAmount; s++)
+            {
+                Vector2 sparkVelocity = (Projectile.velocity * (Main.rand.NextFloat(0.4f, 0.8f) + Main.rand.NextFloat(0.4f, 0.6f) * Projectile.ai[0])).RotatedByRandom(MathHelper.Pi / 6);
+                float sparkSize = 0.4f + Main.rand.NextFloat(0.3f, 0.5f) * Projectile.ai[0];
+
+                // This has gotta be one of the calculations of all time
+                Color sparkColor = new Color((float)Math.Abs(Math.Sin(Projectile.ai[1] * s * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Cos(Projectile.ai[1] * s * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Sin(Projectile.ai[1] * s * (MathHelper.Pi / 18))) * Main.rand.NextFloat(0.5f, 1.5f));
+
+                Particle sparked = new AltLineParticle(target.Center, sparkVelocity, false, 30, sparkSize, sparkColor);
+                GeneralParticleHandler.SpawnParticle(sparked);
+            }
+            for (int sq = 0; sq < 7; sq++)
+            {
+                Vector2 squareVel = Main.rand.NextVector2CircularEdge(1f, 1f);
+                squareVel.SafeNormalize(Vector2.Zero);
+                squareVel *= Main.rand.NextFloat(10f, 16f);
+                float squareSize = 1.6f + Main.rand.NextFloat(1f, 1.2f) * Projectile.ai[0];
+                Color squareColor = new Color((float)Math.Abs(Math.Sin(Projectile.ai[1] * sq * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Cos(Projectile.ai[1] * sq * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Sin(Projectile.ai[1] * sq * (MathHelper.Pi / 18))) * Main.rand.NextFloat(0.5f, 1.5f));
+
+                Particle squared = new SquareParticle(target.Center, squareVel, true, 30, squareSize, squareColor);
+                GeneralParticleHandler.SpawnParticle(squared);
+            }
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

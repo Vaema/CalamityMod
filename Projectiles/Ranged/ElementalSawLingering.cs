@@ -70,6 +70,33 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(ModContent.BuffType<Laceration>(), 180);
             target.AddBuff(ModContent.BuffType<ElementalMix>(), 90);
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice"), Projectile.Center);
+
+            // SUPER EPIC AND AWESOME PARTICLES
+            int onHitSparkAmount = 12;
+            for (int s = 0; s < onHitSparkAmount; s++)
+            {
+                Vector2 sparkVel = Main.rand.NextVector2CircularEdge(1f, 1f);
+                sparkVel.SafeNormalize(Vector2.Zero);
+                sparkVel *= Main.rand.NextFloat(6f, 10f) + 8f;
+                float sparkSize = 0.4f + Main.rand.NextFloat(0.6f, 1f);
+
+                // This has gotta be one of the calculations of all time
+                Color sparkColor = new Color((float)Math.Abs(Math.Sin(Projectile.ai[1] * s * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Cos(Projectile.ai[1] * s * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Sin(Projectile.ai[1] * s * (MathHelper.Pi / 18))) * Main.rand.NextFloat(0.5f, 1.5f));
+
+                Particle sparked = new AltLineParticle(target.Center, sparkVel, false, 30, sparkSize, sparkColor);
+                GeneralParticleHandler.SpawnParticle(sparked);
+            }
+            for (int sq = 0; sq < 5; sq++)
+            {
+                Vector2 squareVel = Main.rand.NextVector2CircularEdge(1f, 1f);
+                squareVel.SafeNormalize(Vector2.Zero);
+                squareVel *= Main.rand.NextFloat(10f, 16f);
+                float squareSize = 1.6f + Main.rand.NextFloat(2f, 2.4f);
+                Color squareColor = new Color((float)Math.Abs(Math.Sin(Projectile.ai[1] * sq * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Cos(Projectile.ai[1] * sq * (MathHelper.Pi / 36))) * Main.rand.NextFloat(0.5f, 1.5f), (float)Math.Abs(Math.Sin(Projectile.ai[1] * sq * (MathHelper.Pi / 18))) * Main.rand.NextFloat(0.5f, 1.5f));
+
+                Particle squared = new SquareParticle(target.Center, squareVel, true, 30, squareSize, squareColor);
+                GeneralParticleHandler.SpawnParticle(squared);
+            }
         }
 
         public override void OnKill(int timeLeft)
