@@ -206,9 +206,9 @@ Buzzkill: {
 	DisplayName: Buzzkill
 	Tooltip:
 		'''
-		Hold <left> to charge up a powerful buzzsaw that deals close-range damage
-		Fired buzzsaws slice through foes, lacerating them, and can bounce off tiles
-		The longer it is charged, the more damage and pierce the buzzsaw has
+		Hold <left> to rev up a buzzsaw that deals close-range damage
+		Release to fire the buzzsaw, which bounces off tiles and lacerate foes
+		Fired buzzsaws have greater pierce and damage as they are charged
 		Does not consume ammo
 		'Not to be confused with the Sawed-On Shotgun'
 		'''
@@ -445,14 +445,22 @@ ElementalSaw: {
 	DisplayName: Elemental Saw
 	Tooltip:
 		'''
-		Hold <left> to charge up a powerful elemental buzzsaw that deals close-range damage
-		Fired buzzsaws lacerate foes and inflict Elemental Mix, and can bounce off tiles
-		The longer it is charged, the more damage and pierce the buzzsaw has
-		Buzzsaws return to the player after exhausting their pierce
-		Press <right> to propel a short distance and fire a lingering buzzsaw towards the cursor
-		This dash has a {0} second cooldown
-		While on cooldown, buzzsaws slightly home towards the cursor and release homing bolts while returning
+		[MAIN]
+		[ALT]
 		Does not consume ammo
+		'''
+	MainInfo:
+		'''
+		Hold <left> to rev up an elemental buzzsaw that deals close-range damage
+		Release to fire the buzzsaw, which bounces off tiles and lacerate foes
+		Fired buzzsaws return to the player shortly after hitting or after pierce has exhausted
+		Charging increases damage of fired buzzsaws and allow them to pierce more before returning
+		'''
+	AltInfo:
+		'''
+		Press <right> to eject lingering buzzsaw towards the cursor which propels you while moving
+		This ability has a cooldown of {0} seconds
+		While under cooldown, buzzsaws loosely follow the cursor and release homing bolts while returning
 		'''
 }
 

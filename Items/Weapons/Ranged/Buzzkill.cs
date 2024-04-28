@@ -53,7 +53,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.ClockworkAssaultRifle).
                 AddIngredient(ItemID.IllegalGunParts).
                 AddIngredient(ItemID.Cog, 15).
                 AddIngredient(ItemID.SoulofFright, 10).

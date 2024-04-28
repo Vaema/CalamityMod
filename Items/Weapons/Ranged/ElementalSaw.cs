@@ -4,6 +4,8 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -22,7 +24,28 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public const int DashCooldown = 360;
 
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DashCooldown / 60);
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            if (tooltips == null)
+                return;
+
+            Player player = Main.player[Main.myPlayer];
+            if (player is null)
+                return;
+
+            var mainTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[MAIN]") && x.Mod == "Terraria");
+            if (mainTooltip != null)
+            {
+                mainTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("MainInfo"));
+                mainTooltip.OverrideColor = Color.Chartreuse;
+            }
+            var altTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[ALT]") && x.Mod == "Terraria");
+            if (altTooltip != null)
+            {
+                altTooltip.Text = Lang.SupportGlyphs(this.GetLocalization("AltInfo").Format(DashCooldown / 60));
+                altTooltip.OverrideColor = Color.SpringGreen;
+            }
+        }
 
         public override void SetStaticDefaults()
         {
