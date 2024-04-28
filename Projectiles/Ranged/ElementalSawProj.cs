@@ -111,8 +111,8 @@ namespace CalamityMod.Projectiles.Ranged
                         }
                     }
 
-                    // Continously spawn homing bolts as it returns while empowered
-                    if (ReturnTimer % 12 == 0 && Empowered)
+                    // Continuously spawn homing bolts as it returns while empowered
+                    if (ReturnTimer % 9 == 0 && Empowered)
                     {
                         Vector2 randVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.Pi / 3f) * 0.5f;
                         if (Main.myPlayer == Projectile.owner)
