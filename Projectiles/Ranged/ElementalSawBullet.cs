@@ -1,10 +1,12 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -18,7 +20,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 16;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
 
@@ -62,7 +64,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<ElementalMix>(), 45);
 
-        internal float WidthFunction(float completionRatio) => (1f - completionRatio) * Projectile.scale * 8f;
+        internal float WidthFunction(float completionRatio) => (1f - completionRatio) * Projectile.scale * 20f;
         internal Color ColorFunction(float completionRatio)
         {
             float hue = 0.4f + 0.2f * completionRatio * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f);
@@ -72,10 +74,22 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f), 16);
+            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 20);
             Texture2D glow = TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(glow, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, glow.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             return false;
+        }
+
+        public override void OnKill(int timeLeft)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Vector2 sparkVel = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(MathHelper.ToRadians(24f)) * Main.rand.NextFloat(6f, 10f);
+                Color color = Main.hslToRgb(Main.rand.NextFloat(0.3f, 0.5f), 1f, 0.8f);
+                SparkParticle spark = new(Projectile.Center, sparkVel, false, 30, 1.3f, color);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
         }
     }
 }

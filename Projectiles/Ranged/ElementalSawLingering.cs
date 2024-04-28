@@ -133,6 +133,13 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/CeramicImpact", 2), Projectile.Center);
+
+            for (int i = 0; i < 32; i++)
+            {
+                Vector2 velocity = ((MathHelper.TwoPi * i / 32f) - (MathHelper.Pi / 32f)).ToRotationVector2() * 32f;
+                Particle sparkle = new CritSpark(Projectile.Center, velocity, Color.White, Color.Lime, 1.5f, 30, 0.1f, 3f, Main.rand.NextFloat(0f, 0.01f));
+                GeneralParticleHandler.SpawnParticle(sparkle);
+            }
         }
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox) => hitbox.Inflate(70, 70);

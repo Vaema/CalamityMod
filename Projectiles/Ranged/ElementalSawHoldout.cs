@@ -37,6 +37,7 @@ namespace CalamityMod.Projectiles.Ranged
         public Particle LargeSlashSmear;
         public static Asset<Texture2D> Holdout;
         public static Asset<Texture2D> HoldoutGlow;
+        public static Asset<Texture2D> MiniSaw;
         public static Asset<Texture2D> SmallSlash;
         public static Asset<Texture2D> LargeSlash;
 
@@ -262,6 +263,15 @@ namespace CalamityMod.Projectiles.Ranged
                 float shake = Utils.Remap(Time, 0f, ChargeupTime, 0f, 3f);
                 drawPosition += Main.rand.NextVector2Circular(shake, shake);
             }
+
+            // Mini saw drawn under the gun
+            MiniSaw ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawHoldoutMiniSaw");
+            Texture2D mini = MiniSaw.Value;
+            Vector2 verticalOffset = Vector2.UnitY.RotatedBy(Projectile.rotation);
+            if (Math.Cos(Projectile.rotation) < 0f)
+                verticalOffset *= -1f;
+            Vector2 miniSawPosition = drawPosition - Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.125f + verticalOffset * 6f;
+            Main.EntitySpriteDraw(mini, miniSawPosition, null, Color.White, Time * MathHelper.ToRadians(24f), mini.Size() * 0.5f, Projectile.scale, flipSprite);
 
             Main.EntitySpriteDraw(holdoutTexture, drawPosition, frame, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale, flipSprite);
 
