@@ -23,7 +23,6 @@ namespace CalamityMod.World
         public static ushort[] OreTypes = new ushort[4];
 
         // Modes
-        public static bool onionMode = false; // Extra accessory from Moon Lord
         public static bool revenge = false; // Revengeance Mode
         public static bool death = false; // Death Mode
         public static bool armageddon = false; // Armageddon Mode

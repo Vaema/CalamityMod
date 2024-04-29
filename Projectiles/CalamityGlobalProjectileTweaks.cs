@@ -155,6 +155,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.FruitcakeChakram, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.GiantBee, Do(PiercingExact(2)) },
                 { ProjectileID.GoldenBullet, standardBulletTweaks },
+                { ProjectileID.GoldenShowerFriendly, Do(PiercingExact(2)) },
                 { ProjectileID.GreenCounterweight, counterweightTweaks },
                 { ProjectileID.Hamdrax, standardDrillTweaks }, // Drax (never internally renamed since 1.1)
                 { ProjectileID.IceBoomerang, Do(ExtraUpdatesExact(1)) },

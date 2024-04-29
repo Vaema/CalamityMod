@@ -971,10 +971,17 @@ ScourgeoftheSeas: {
 
 SeafoamBomb: {
 	DisplayName: Seafoam Bomb
-	Tooltip:
+	Tooltip: "[GFB]"
+	TooltipNormal:
 		'''
 		Throws a bomb that explodes into a bubble which deals extra damage to enemies
 		Stealth strikes are faster and explode into 5 bubbles
+		'''
+	TooltipGFB:
+		'''
+		Throws a bomb that explodes into a bubble which deals extra damage to enemies
+		Stealth strikes are faster and explode into 5 bubbles
+		[c/256b93:'Right back in S tier!']
 		'''
 }
 

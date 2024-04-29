@@ -13,6 +13,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class BloodlettingServant : ModNPC
     {
+        public override string Texture => $"Terraria/Images/NPC_{NPCID.WanderingEye}";
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 4;

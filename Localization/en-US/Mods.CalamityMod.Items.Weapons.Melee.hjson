@@ -105,7 +105,7 @@ ArkoftheElements: {
 	ComboInfo:
 		'''
 		<left> to perform a 5-swing combo that ends by throwing the blade
-		Releasing while the blade is out will deal extra damage and give 2 charges
+		Releasing while the blade is out will deal extra damage
 		'''
 	ParryInfo:
 		'''

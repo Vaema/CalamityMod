@@ -83,7 +83,6 @@ namespace CalamityMod.Projectiles.Boss
             float maxAcceleration = death ? 0.44f : 0.4f;
             float timeBeforeHoming = death ? 30f : 45f;
             float distanceAboveTargetBeforeHomingDownward = death ? 400f : 480f;
-            float explodeDistance = 16f;
             if (Projectile.ai[0] == 0f)
             {
                 Projectile.localAI[0] += 1f;
@@ -127,7 +126,7 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.tileCollide = true;
 
                 Vector2 playerDistance = Main.player[(int)Projectile.ai[1]].Center - Projectile.Center;
-                if (playerDistance.Length() < explodeDistance)
+                if (Projectile.Hitbox.Intersects(Main.player[(int)Projectile.ai[1]].Hitbox))
                 {
                     Projectile.Kill();
                     return;

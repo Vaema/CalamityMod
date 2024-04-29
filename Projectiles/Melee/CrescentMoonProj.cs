@@ -24,12 +24,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.tileCollide = false;
-            Projectile.penetrate = 5;
-            Projectile.timeLeft = 180;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 140;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.extraUpdates = 1;
+            Projectile.localNPCHitCooldown = 20;
+            Projectile.extraUpdates = 2;
             Projectile.aiStyle = ProjAIStyleID.Sickle;
             AIType = ProjectileID.DeathSickle;
         }

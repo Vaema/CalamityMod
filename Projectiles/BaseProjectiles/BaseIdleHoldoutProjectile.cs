@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Core;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {
@@ -25,7 +26,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
             // Look through every type in the mod, and check if it's derived from BaseIdleHoldoutProjectile.
             // If it is, cache it into the item/projectile relationship cache.
-            foreach (Type type in typeof(CalamityMod).Assembly.GetTypes())
+            Type[] types = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
+            foreach (Type type in types)
             {
                 // Don't load abstract classes; they cannot have instances.
                 if (type.IsAbstract)

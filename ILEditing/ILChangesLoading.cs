@@ -118,6 +118,9 @@ namespace CalamityMod.ILEditing
             IL_Player.UpdateManaRegen += ManaRegenAdjustment;
             IL_Player.UpdateManaRegen += NerfNebulaArmorManaRegen;
 
+            // Item prefix changes
+            On_Player.GrantPrefixBenefits += PrefixChanges;
+
             // Debuff balancing
             IL_Projectile.StatusPlayer += RemoveFrozenInflictionFromDeerclopsIceSpikes;
 
@@ -150,6 +153,7 @@ namespace CalamityMod.ILEditing
 
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;
+            On_NPC.PlayerInteraction += FixSplittingWormInteraction;
 
             // Fix vanilla not accounting for spritebatch modification in held projectile drawing
             On_PlayerDrawLayers.DrawHeldProj += FixHeldProjectileBlendState;

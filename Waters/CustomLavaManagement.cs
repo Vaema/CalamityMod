@@ -7,6 +7,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Core;
 
 namespace CalamityMod.Waters
 {
@@ -23,7 +24,8 @@ namespace CalamityMod.Waters
         {
             CustomLavaStyles = new List<CustomLavaStyle>();
 
-            foreach (Type type in typeof(CalamityMod).Assembly.GetTypes())
+            Type[] types = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
+            foreach (Type type in types)
             {
                 // Ignore abstract types; they cannot have instances.
                 // Also ignore types which do not derive from CustomLavaStyle.

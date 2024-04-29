@@ -1747,6 +1747,10 @@ DukeEditFailed:
             if (CalamityWorld.death && !SplittingWormLootBlockWrapper(npc, Mod))
                 DropHelper.BlockEverything();
 
+            // Correctly increment bestiary entries for splitting worms
+            if (npc.AnyInteractions())
+                SplittingWormBestiaryUpdate(npc);
+
             // Check whether bosses should be spawned naturally as a result of this NPC's death.
             CheckBossSpawn(npc);
 
@@ -1815,16 +1819,6 @@ DukeEditFailed:
                         string key2 = "Mods.CalamityMod.Status.Progression.UglyBossText";
                         Color messageColor2 = Color.Aquamarine;
                         CalamityUtils.DisplayLocalizedText(key2, messageColor2);
-
-                        // TODO -- this should probably be moved to a thread like Aureus meteor
-                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework)
-                        {
-                            string key3 = "Mods.CalamityMod.Status.Progression.HardmodeOreTier1Text";
-                            Color messageColor3 = new Color(50, 255, 130);
-                            CalamityUtils.SpawnOre(TileID.Cobalt, 12E-05, 0.45f, 0.7f, 3, 8);
-                            CalamityUtils.SpawnOre(TileID.Palladium, 12E-05, 0.45f, 0.7f, 3, 8);
-                            CalamityUtils.DisplayLocalizedText(key3, messageColor3);
-                        }
                     }
                     break;
 
@@ -2010,6 +2004,70 @@ DukeEditFailed:
         #endregion
 
         #region Splitting Worm Loot
+        internal static void SplittingWormBroadcastInteractionWrapper(NPC npc, int player)
+        {
+            if (!CalamityWorld.death)
+                return;
+
+            switch (npc.type)
+            {
+                case NPCID.DiggerHead:
+                case NPCID.DiggerBody:
+                case NPCID.DiggerTail:
+                    SplittingWormBroadcastInteraction(npc, player, NPCID.DiggerHead, NPCID.DiggerBody, NPCID.DiggerTail);
+                    return;
+                case NPCID.SeekerHead:
+                case NPCID.SeekerBody:
+                case NPCID.SeekerTail:
+                    SplittingWormBroadcastInteraction(npc, player, NPCID.SeekerHead, NPCID.SeekerBody, NPCID.SeekerTail);
+                    return;
+                case NPCID.DuneSplicerHead:
+                case NPCID.DuneSplicerBody:
+                case NPCID.DuneSplicerTail:
+                    SplittingWormBroadcastInteraction(npc, player, NPCID.DuneSplicerHead, NPCID.DuneSplicerBody, NPCID.DuneSplicerTail);
+                    return;
+            }
+        }
+
+        internal static void SplittingWormBroadcastInteraction(NPC npc, int player, int head, int body, int tail)
+        {
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if (i != npc.whoAmI && Main.npc[i].active && (Main.npc[i].type == head || Main.npc[i].type == body || Main.npc[i].type == tail))
+                {
+                    Main.npc[i].ApplyInteraction(player);
+                }
+            }
+        }
+
+        internal static void SplittingWormBestiaryUpdate(NPC npc)
+        {
+            if (!CalamityWorld.death)
+                return;
+
+            switch (npc.type)
+            {
+                case NPCID.DiggerBody:
+                case NPCID.DiggerTail:
+                    NPC diggerHead = new();
+                    diggerHead.SetDefaults(NPCID.DiggerHead);
+                    Main.BestiaryTracker.Kills.RegisterKill(diggerHead);
+                    return;
+                case NPCID.SeekerBody:
+                case NPCID.SeekerTail:
+                    NPC seekerHead = new();
+                    seekerHead.SetDefaults(NPCID.SeekerHead);
+                    Main.BestiaryTracker.Kills.RegisterKill(seekerHead);
+                    return;
+                case NPCID.DuneSplicerBody:
+                case NPCID.DuneSplicerTail:
+                    NPC duneSplicerHead = new();
+                    duneSplicerHead.SetDefaults(NPCID.DuneSplicerHead);
+                    Main.BestiaryTracker.Kills.RegisterKill(duneSplicerHead);
+                    return;
+            }
+        }
+
         internal static bool SplittingWormLootBlockWrapper(NPC npc, Mod mod)
         {
             if (!CalamityWorld.death)

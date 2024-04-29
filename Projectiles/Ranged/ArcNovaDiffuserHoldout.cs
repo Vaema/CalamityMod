@@ -14,8 +14,8 @@ namespace CalamityMod.Projectiles.Ranged
     public class ArcNovaDiffuserHoldout : BaseGunHoldoutProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<ArcNovaDiffuser>();
-        public override Vector2 GunTipPosition => base.GunTipPosition - Vector2.UnitY.RotatedBy(Projectile.rotation) * 6f * Projectile.spriteDirection;
-        public override float MaxOffsetLengthFromArm => 10f;
+        public override Vector2 GunTipPosition => base.GunTipPosition - Vector2.UnitY.RotatedBy(Projectile.rotation) * 5f * Projectile.spriteDirection;
+        public override float MaxOffsetLengthFromArm => 24f;
         public override float OffsetXUpwards => -5f;
         public override float BaseOffsetY => -5f;
         public override float OffsetYDownwards => 5f;

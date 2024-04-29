@@ -64,7 +64,6 @@ namespace CalamityMod
             dogName = false;
             bunnyName = false;
 
-            onionMode = false;
             revenge = false;
             TalkedToDraedon = false;
             death = false;
@@ -80,8 +79,6 @@ namespace CalamityMod
         public override void SaveWorldData(TagCompound tag)
         {
             var downed = new List<string>();
-            if (onionMode)
-                downed.Add("onionMode");
             if (TalkedToDraedon)
                 downed.Add("TalkedToDraedon");
             if (revenge)
@@ -148,7 +145,6 @@ namespace CalamityMod
         public override void LoadWorldData(TagCompound tag)
         {
             var downed = tag.GetList<string>("downed");
-            onionMode = downed.Contains("onionMode");
             TalkedToDraedon = downed.Contains("TalkedToDraedon");
             revenge = downed.Contains("revenge");
             death = downed.Contains("death");
@@ -236,7 +232,7 @@ namespace CalamityMod
             flags4[3] = false;
             flags4[4] = false;
             flags4[5] = false;
-            flags4[6] = onionMode;
+            flags4[6] = false;
             flags4[7] = revenge;
 
             BitsByte flags5 = new BitsByte();
@@ -390,7 +386,7 @@ namespace CalamityMod
             _ = flags4[3];
             _ = flags4[4];
             _ = flags4[5];
-            onionMode = flags4[6];
+            _ = flags4[6];
             revenge = flags4[7];
 
             BitsByte flags5 = reader.ReadByte();

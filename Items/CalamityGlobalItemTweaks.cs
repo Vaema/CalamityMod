@@ -66,7 +66,7 @@ namespace CalamityMod.Items
                 { ItemID.ChlorophytePartisan, Do(AutoReuse, UseMeleeSpeed, UseRatio(0.8f), DamageExact(70)) },
                 { ItemID.ChlorophyteSaber, Do(UseMeleeSpeed, DamageExact(80), UseExact(10)) },
                 { ItemID.ChristmasTreeSword, Do(AutoReuse, UseTurn, UseMeleeSpeed, DamageExact(80), UseExact(30)) },
-                { ItemID.ClingerStaff, Do(DamageExact(96)) },
+                { ItemID.ClingerStaff, Do(DamageExact(63)) },
                 { ItemID.ClockworkAssaultRifle, Do(PointBlank, DamageExact(21)) },
                 { ItemID.CobaltNaginata, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(90)) },
                 { ItemID.CobaltRepeater, Do(PointBlank, UseExact(18)) },
@@ -101,7 +101,6 @@ namespace CalamityMod.Items
                 { ItemID.EnchantedSword, Do(UseMeleeSpeed, DamageExact(30), ShootSpeedExact(15f)) },
                 { ItemID.Excalibur, Do(TrueMelee, UseRatio(0.8f), DamageExact(125), UseAnimationExact(45)) },
                 { ItemID.FairyQueenMagicItem, Do(DamageExact(54)) }, // Nightglow
-                { ItemID.FairyQueenRangedItem, Do(PointBlank, DamageExact(42))}, //Eventide
                 { ItemID.FalconBlade, Do(UseTurn, UseExact(15)) },
                 // For now, I think I will balance Celebration like a serious weapon. -CIT
                 { ItemID.FireworksLauncher, Do(DamageExact(50), UseExact(25)) }, // Celebration
@@ -115,7 +114,7 @@ namespace CalamityMod.Items
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) },
                 { ItemID.FrostStaff, Do(DamageExact(160), UseExact(37), ShootSpeedExact(20f)) }, // has 1 extra update
                 { ItemID.Gatligator, Do(PointBlank, UseExact(6)) },
-                { ItemID.GoldenShower, Do(DamageExact(44)) },
+                { ItemID.GoldenShower, Do(DamageExact(39)) },
                 { ItemID.GoldShortsword, Do(AutoReuse, TrueMelee, DamageExact(17)) },
                 { ItemID.GolemFist, Do(DamageExact(150)) },
                 { ItemID.Gradient, Do(AutoReuse, DamageExact(39)) },
@@ -441,6 +440,7 @@ namespace CalamityMod.Items
                 { ItemID.DartPistol, pointBlank },
                 { ItemID.DD2PhoenixBow, pointBlank }, // Phantom Phoenix
                 { ItemID.EbonwoodBow, pointBlank },
+                { ItemID.FairyQueenRangedItem, pointBlank }, //Eventide
                 { ItemID.FlintlockPistol, pointBlank },
                 { ItemID.FlareGun,  Do(PointBlank, Value(Item.sellPrice(silver: 10))) },
                 { ItemID.GoldBow, pointBlank },

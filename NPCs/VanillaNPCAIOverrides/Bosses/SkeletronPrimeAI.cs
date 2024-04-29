@@ -178,9 +178,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Phases
             bool phase2 = lifeRatio < 0.66f;
-            bool spawnDestroyer = phase2 && masterMode && !bossRush && npc.localAI[2] == 0f;
+            bool spawnDestroyer = lifeRatio < 0.75f && masterMode && !bossRush && npc.localAI[2] == 0f;
             bool phase3 = lifeRatio < 0.33f;
-            bool spawnRetinazer = phase3 && masterMode && !bossRush && npc.localAI[2] == 1f;
+            bool spawnRetinazer = lifeRatio < 0.5f && masterMode && !bossRush && npc.localAI[2] == 1f;
 
             // Spawn The Destroyer in Master Mode (just like Oblivion from Avalon)
             if (spawnDestroyer)
@@ -248,6 +248,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             bool normalLaserRotation = npc.localAI[1] % 2f == 0f;
 
+            // Prevents cheap hits
+            bool canUseAttackInMaster = npc.position.Y < Main.player[npc.target].position.Y - 350f;
+
             // Float near player
             if (npc.ai[1] == 0f || npc.ai[1] == 4f)
             {
@@ -260,7 +263,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     // Start spin phase after 1.5 seconds
                     npc.ai[2] += phase3 ? 1.5f : 1f;
-                    if (npc.ai[2] >= (90f - (death ? 60f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || !masterMode || phase3))
+                    if (npc.ai[2] >= (90f - (death ? 60f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || !masterMode || phase3) && (canUseAttackInMaster || !masterMode))
                     {
                         bool shouldSpinAround = npc.ai[1] == 4f && npc.position.Y < Main.player[npc.target].position.Y - 400f &&
                             Vector2.Distance(Main.player[npc.target].Center, npc.Center) < 600f && Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 400f;
@@ -287,17 +290,26 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.rotation = npc.velocity.X / 15f;
 
                 float acceleration = (bossRush ? 0.2f : masterMode ? 0.125f : 0.1f) + (death ? 0.05f * (1f - lifeRatio) : 0f);
+                float accelerationMult = 1f;
                 if (!cannonAlive)
+                {
                     acceleration += 0.025f;
+                    accelerationMult += 0.5f;
+                }
                 if (!laserAlive)
+                {
                     acceleration += 0.025f;
+                    accelerationMult += 0.5f;
+                }
                 if (!viceAlive)
                     acceleration += 0.025f;
                 if (!sawAlive)
                     acceleration += 0.025f;
+                if (masterMode)
+                    acceleration *= accelerationMult;
 
                 float topVelocity = acceleration * 100f;
-                float deceleration = masterMode ? 0.8f : 0.85f;
+                float deceleration = masterMode ? 0.7f : 0.85f;
 
                 float headDecelerationUpDist = 0f;
                 float headDecelerationDownDist = 0f;
@@ -825,15 +837,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Movement
             float acceleration = (bossRush ? 0.6f : death ? (masterMode ? 0.375f : 0.3f) : (masterMode ? 0.3125f : 0.25f));
+            float accelerationMult = 1f;
             if (!cannonAlive)
+            {
                 acceleration += 0.025f;
+                accelerationMult += 0.5f;
+            }
             if (!viceAlive)
                 acceleration += 0.025f;
             if (!sawAlive)
                 acceleration += 0.025f;
+            if (masterMode)
+                acceleration *= accelerationMult;
 
             float topVelocity = acceleration * 100f;
-            float deceleration = masterMode ? 0.75f : 0.8f;
+            float deceleration = masterMode ? 0.6f : 0.8f;
 
             if (npc.position.Y > Main.npc[(int)npc.ai[1]].position.Y - 80f)
             {
@@ -1148,15 +1166,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Movement
             float acceleration = (bossRush ? 0.6f : death ? (masterMode ? 0.375f : 0.3f) : (masterMode ? 0.3125f : 0.25f));
+            float accelerationMult = 1f;
             if (!laserAlive)
+            {
                 acceleration += 0.025f;
+                accelerationMult += 0.5f;
+            }
             if (!viceAlive)
                 acceleration += 0.025f;
             if (!sawAlive)
                 acceleration += 0.025f;
+            if (masterMode)
+                acceleration *= accelerationMult;
 
             float topVelocity = acceleration * 100f;
-            float deceleration = masterMode ? 0.75f : 0.8f;
+            float deceleration = masterMode ? 0.6f : 0.8f;
 
             if (npc.position.Y > Main.npc[(int)npc.ai[1]].position.Y - 130f)
             {
@@ -1379,15 +1403,24 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.ai[2] == 99f)
             {
                 float acceleration = (bossRush ? 0.6f : death ? (masterMode ? 0.375f : 0.3f) : (masterMode ? 0.3125f : 0.25f));
+                float accelerationMult = 1f;
                 if (!cannonAlive)
+                {
                     acceleration += 0.025f;
+                    accelerationMult += 0.5f;
+                }
                 if (!laserAlive)
+                {
                     acceleration += 0.025f;
+                    accelerationMult += 0.5f;
+                }
                 if (!sawAlive)
                     acceleration += 0.025f;
+                if (masterMode)
+                    acceleration *= accelerationMult;
 
                 float topVelocity = acceleration * 100f;
-                float deceleration = masterMode ? 0.75f : 0.8f;
+                float deceleration = masterMode ? 0.6f : 0.8f;
 
                 if (npc.position.Y > Main.npc[(int)npc.ai[1]].position.Y + 20f)
                 {
@@ -1460,15 +1493,24 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     float acceleration = (bossRush ? 0.6f : death ? (masterMode ? 0.375f : 0.3f) : (masterMode ? 0.3125f : 0.25f));
+                    float accelerationMult = 1f;
                     if (!cannonAlive)
+                    {
                         acceleration += 0.025f;
+                        accelerationMult += 0.5f;
+                    }
                     if (!laserAlive)
+                    {
                         acceleration += 0.025f;
+                        accelerationMult += 0.5f;
+                    }
                     if (!sawAlive)
                         acceleration += 0.025f;
+                    if (masterMode)
+                        acceleration *= accelerationMult;
 
                     float topVelocity = acceleration * 100f;
-                    float deceleration = masterMode ? 0.75f : 0.8f;
+                    float deceleration = masterMode ? 0.6f : 0.8f;
 
                     if (npc.position.Y > Main.npc[(int)npc.ai[1]].position.Y + 290f)
                     {
@@ -1736,15 +1778,24 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.ai[2] == 99f)
             {
                 float acceleration = (bossRush ? 0.6f : death ? (masterMode ? 0.375f : 0.3f) : (masterMode ? 0.3125f : 0.25f));
+                float accelerationMult = 1f;
                 if (!cannonAlive)
+                {
                     acceleration += 0.025f;
+                    accelerationMult += 0.5f;
+                }
+                if (!laserAlive)
+                {
+                    acceleration += 0.025f;
+                    accelerationMult += 0.5f;
+                }
                 if (!viceAlive)
                     acceleration += 0.025f;
-                if (!laserAlive)
-                    acceleration += 0.025f;
+                if (masterMode)
+                    acceleration *= accelerationMult;
 
                 float topVelocity = acceleration * 100f;
-                float deceleration = masterMode ? 0.75f : 0.8f;
+                float deceleration = masterMode ? 0.6f : 0.8f;
 
                 if (npc.position.Y > Main.npc[(int)npc.ai[1]].position.Y + 20f)
                 {
@@ -1813,15 +1864,24 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     float acceleration = (bossRush ? 0.6f : death ? (masterMode ? 0.375f : 0.3f) : (masterMode ? 0.3125f : 0.25f));
+                    float accelerationMult = 1f;
                     if (!cannonAlive)
+                    {
                         acceleration += 0.025f;
+                        accelerationMult += 0.5f;
+                    }
+                    if (!laserAlive)
+                    {
+                        acceleration += 0.025f;
+                        accelerationMult += 0.5f;
+                    }
                     if (!viceAlive)
                         acceleration += 0.025f;
-                    if (!laserAlive)
-                        acceleration += 0.025f;
+                    if (masterMode)
+                        acceleration *= accelerationMult;
 
                     float topVelocity = acceleration * 100f;
-                    float deceleration = masterMode ? 0.75f : 0.8f;
+                    float deceleration = masterMode ? 0.6f : 0.8f;
 
                     if (npc.position.Y > Main.npc[(int)npc.ai[1]].position.Y + 310f)
                     {
@@ -1949,7 +2009,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (masterMode)
                             acceleration *= 1.25f;
 
-                        float deceleration = masterMode ? 0.75f : 0.8f;
+                        float deceleration = masterMode ? 0.6f : 0.8f;
 
                         if (npc.velocity.X > sawArmOtherChargeTargetX)
                         {

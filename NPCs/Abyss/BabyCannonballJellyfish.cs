@@ -19,11 +19,12 @@ namespace CalamityMod.NPCs.Abyss
     public class BabyCannonballJellyfish : ModNPC
     {
         public bool hasBeenHit = false;
+        public int explosionDamage;
 
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 7;
-            //Main.npcCatchable[NPC.type] = true;
+            Main.npcCatchable[NPC.type] = true;
             NPCID.Sets.CountsAsCritter[NPC.type] = true;
         }
 
@@ -34,7 +35,8 @@ namespace CalamityMod.NPCs.Abyss
             NPC.chaseable = false;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 30;
+            NPC.damage = 0;
+            explosionDamage = 30;
             NPC.width = 28;
             NPC.height = 36;
             NPC.defense = 0;
@@ -161,7 +163,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.position -= NPC.Size * 0.5f; //hitbox expansion + adjustments
             SoundEngine.PlaySound(SoundID.Item14, NPC.Center); //bomb sound
             foreach (Player player in Main.player.Where(player => player.active && !player.dead && NPC.Hitbox.Intersects(player.Hitbox)))
-                player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage, NPC.direction);
+                player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), explosionDamage, NPC.direction);
             for (int k = 0; k < 8; k++)
             {
                 int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.MoonBoulder, 0f, -1f, 0, default, 1f);
@@ -172,8 +174,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.NPCLoot();
             NPC.netUpdate = true;
         }
-
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => NPC.life <= 0;
 
         public override void HitEffect(NPC.HitInfo hit)
         {

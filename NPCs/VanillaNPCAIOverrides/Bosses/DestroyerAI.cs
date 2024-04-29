@@ -187,7 +187,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else
             {
-                if (masterMode && !bossRush)
+                if (masterMode && !bossRush && npc.localAI[3] != -1f)
                 {
                     for (int i = 0; i < Main.maxNPCs; i++)
                     {
@@ -197,6 +197,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             break;
                         }
                     }
+                }
+
+                // Set variable to force despawn when Prime dies in Master Rev+
+                // Set to -1f if Prime isn't alive when summoned
+                if (npc.localAI[3] == 0f)
+                {
+                    if (oblivionAlive)
+                        npc.localAI[3] = 1f;
+                    else
+                        npc.localAI[3] = -1f;
+
+                    npc.SyncExtraAI();
                 }
             }
 
@@ -784,7 +796,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Despawn
-            if (player.dead)
+            bool oblivionWasAlive = npc.localAI[3] == 1f && !oblivionAlive;
+            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.5f) || oblivionWasAlive;
+            if (player.dead || oblivionFightDespawn)
             {
                 shouldFly = false;
                 npc.velocity.Y += 2f;
@@ -1754,6 +1768,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             bool bossRush = BossRushEvent.BossRushActive;
             bool masterMode = Main.masterMode || bossRush;
+            bool oblivionAlive = npc.ai[1] == 1f;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -1797,6 +1812,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             for (int i = 0; i < Main.maxNPCs; i++)
             {
+                if (masterMode && !bossRush && npc.ai[1] == 0f)
+                {
+                    if (Main.npc[i].active && (Main.npc[i].type == ModContent.NPCType<SkeletronPrime2>() || Main.npc[i].type == NPCID.SkeletronPrime))
+                        npc.ai[1] = 1f;
+                }
+
                 if (i != npc.whoAmI && Main.npc[i].active && Main.npc[i].type == npc.type)
                 {
                     Vector2 otherProbeDist = Main.npc[i].Center - npc.Center;
@@ -1924,7 +1945,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             damage = (int)(damage * secondMechMultiplier);
                     }
 
-                    int totalProjectiles = (CalamityWorld.death || bossRush) ? 3 : 1;
+                    int totalProjectiles = oblivionAlive ? 2 : (CalamityWorld.death || bossRush) ? 3 : 1;
                     Vector2 npcCenter = new Vector2(probeTargetX, probeTargetY);
                     if (NPC.IsMechQueenUp)
                     {

@@ -104,7 +104,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Check for Oblivion in Master Mode
             bool oblivionAlive = false;
-            if (masterMode && !bossRush)
+            if (masterMode && !bossRush && npc.localAI[3] != -1f)
             {
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
@@ -114,6 +114,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         break;
                     }
                 }
+            }
+
+            // Set variable to force despawn when Prime dies in Master Rev+
+            // Set to -1f if Prime isn't alive when summoned
+            if (npc.localAI[3] == 0f)
+            {
+                if (oblivionAlive)
+                    npc.localAI[3] = 1f;
+                else
+                    npc.localAI[3] = -1f;
+
+                npc.SyncExtraAI();
             }
 
             // Phase HP ratios
@@ -128,12 +140,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Phase duration variables
             float phase1MaxLaserPhaseDurationDecrease = masterMode ? 120f : 300f;
 
-            // If Oblivion is alive, go to phase 2 at 40% HP, reduce aggression of all attacks
+            // If Oblivion is alive reduce aggression of all attacks
             if (oblivionAlive)
             {
-                phase2LifeRatio = 0.4f;
-                finalPhaseLifeRatio = 0.1f;
-
                 phase1MaxSpeedIncrease = masterMode ? 1f : 2f;
                 phase1MaxAccelerationIncrease = masterMode ? 0.0125f : 0.025f;
                 phase1MaxChargeSpeedIncrease = masterMode ? 1.5f : 3f;
@@ -159,7 +168,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             npc.reflectsProjectiles = false;
 
-            if (Main.player[npc.target].dead)
+            // Despawn
+            bool oblivionWasAlive = npc.localAI[3] == 1f && !oblivionAlive;
+            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.5f) || oblivionWasAlive || (oblivionAlive && !spazAlive && lifeRatio < 0.9f);
+            if (Main.player[npc.target].dead || oblivionFightDespawn)
             {
                 npc.velocity.Y -= 0.04f;
                 if (npc.timeLeft > 10)
@@ -198,8 +210,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         retinazerFaceDirection = -1;
 
                     Vector2 retinazerPosition = npc.Center;
-                    float retinazerTargetX = Main.player[npc.target].Center.X + (retinazerFaceDirection * 300) - retinazerPosition.X;
-                    float retinazerTargetY = Main.player[npc.target].Center.Y - 300f - retinazerPosition.Y;
+                    float distanceFromTarget = oblivionAlive ? 450f : 300f;
+                    float retinazerTargetX = Main.player[npc.target].Center.X + (retinazerFaceDirection * distanceFromTarget) - retinazerPosition.X;
+                    float retinazerTargetY = Main.player[npc.target].Center.Y - distanceFromTarget - retinazerPosition.Y;
 
                     if (NPC.IsMechQueenUp)
                     {
@@ -259,7 +272,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.ai[2] += 1f;
                     float phaseGateValue = (masterMode ? 300f : 450f) - (death ? phase1MaxLaserPhaseDurationDecrease * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
-                    float laserGateValue = 30f;
+                    float laserGateValue = oblivionAlive ? 60f : 30f;
                     if (NPC.IsMechQueenUp)
                     {
                         phaseGateValue = 900f;
@@ -274,7 +287,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.netUpdate = true;
                     }
 
-                    else if (npc.position.Y + npc.height < Main.player[npc.target].position.Y && retinazerTargetDistCopy < (death ? 800f : 640f))
+                    else if (retinazerTargetDistCopy < (death ? 960f : 800f))
                     {
                         if (!Main.player[npc.target].dead)
                         {
@@ -365,7 +378,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X) - MathHelper.PiOver2;
 
                     float delayBeforeChargingAgain = (masterMode ? 48f : 56f) - (death ? (masterMode ? 3f : 6f) * ((1f - lifeRatio) / (1f - phase2LifeRatio)) : 0f);
-                    if (npc.ai[2] >= delayBeforeChargingAgain)
+                    if (npc.ai[2] >= delayBeforeChargingAgain + (oblivionAlive ? 15f : 0f))
                     {
                         npc.ai[3] += 1f;
                         npc.ai[2] = 0f;
@@ -440,7 +453,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     damage = (int)(damage * secondMechMultiplier);
                             }
 
-                            Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * 7f;
+                            Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * (oblivionAlive ? 6f : 7f);
                             int numProj = shootLaser ? 6 : 2;
                             int spread = shootLaser ? 20 : 80;
                             float rotation = MathHelper.ToRadians(spread);
@@ -529,6 +542,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     Vector2 eyePosition = npc.Center;
                     float retinazerPhase2TargetX = Main.player[npc.target].Center.X - eyePosition.X;
+                    float distanceFromTarget = oblivionAlive ? 480f : 420f;
                     float retinazerPhase2TargetY = Main.player[npc.target].Center.Y - 420f - eyePosition.Y;
 
                     if (NPC.IsMechQueenUp)
@@ -605,7 +619,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         npc.localAI[1] += 1f + (death ? (phase2LifeRatio - lifeRatio) / phase2LifeRatio : 0f);
-                        if (npc.localAI[1] >= (spazAlive ? 52f : 26f))
+                        if (npc.localAI[1] >= (spazAlive ? (oblivionAlive ? 76f : 52f) : 26f))
                         {
                             bool canHit = Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
                             if (canHit || !spazAlive || finalPhase)
@@ -670,7 +684,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
 
                         Vector2 retinazerPhase2RapidFirePos = npc.Center;
-                        float retinazerPhase2RapidFireTargetX = Main.player[npc.target].Center.X + (retinazerPhase2FaceDirection * 420f) - retinazerPhase2RapidFirePos.X;
+                        float distanceFromTarget = oblivionAlive ? 480f : 420f;
+                        float retinazerPhase2RapidFireTargetX = Main.player[npc.target].Center.X + (retinazerPhase2FaceDirection * distanceFromTarget) - retinazerPhase2RapidFirePos.X;
                         float retinazerPhase2RapidFireTargetY = Main.player[npc.target].Center.Y - retinazerPhase2RapidFirePos.Y;
                         float retinazerPhase2RapidFireTargetDist = (float)Math.Sqrt(retinazerPhase2RapidFireTargetX * retinazerPhase2RapidFireTargetX + retinazerPhase2RapidFireTargetY * retinazerPhase2RapidFireTargetY);
                         retinazerPhase2RapidFireTargetDist = retinazerPhase2RapidFireMaxSpeed / retinazerPhase2RapidFireTargetDist;
@@ -710,7 +725,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             npc.localAI[1] += 1f + (death ? (phase2LifeRatio - lifeRatio) / phase2LifeRatio : 0f);
-                            if (npc.localAI[1] > (spazAlive ? 20f : 10f))
+                            if (npc.localAI[1] > (spazAlive ? (oblivionAlive ? 30f : 20f) : 10f))
                             {
                                 bool canHit = Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
                                 if (canHit || !spazAlive || finalPhase)
@@ -1068,7 +1083,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Check for Oblivion in Master Mode
             bool oblivionAlive = false;
-            if (masterMode && !bossRush)
+            if (masterMode && !bossRush && npc.localAI[3] != -1f)
             {
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
@@ -1078,6 +1093,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         break;
                     }
                 }
+            }
+
+            // Set variable to force despawn when Prime dies in Master Rev+
+            // Set to -1f if Prime isn't alive when summoned
+            if (npc.localAI[3] == 0f)
+            {
+                if (oblivionAlive)
+                    npc.localAI[3] = 1f;
+                else
+                    npc.localAI[3] = -1f;
+
+                npc.SyncExtraAI();
             }
 
             // Phase HP ratios
@@ -1093,12 +1120,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float phase1MaxCursedFlamePhaseDurationDecrease = masterMode ? 80f : 200f;
             float phase1MaxChargesDecrease = masterMode ? 2f : 4f;
 
-            // If Oblivion is alive, go to phase 2 at 40% HP, reduce aggression of all attacks
+            // If Oblivion is alive reduce aggression of all attacks
             if (oblivionAlive)
             {
-                phase2LifeRatio = 0.4f;
-                finalPhaseLifeRatio = 0.1f;
-
                 phase1MaxSpeedIncrease = masterMode ? 1.125f : 2.25f;
                 phase1MaxAccelerationIncrease = masterMode ? 0.0375f : 0.075f;
                 phase1MaxChargeSpeedIncrease = masterMode ? 1.5f : 3f;
@@ -1126,7 +1150,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.reflectsProjectiles = false;
 
             // Despawn
-            if (Main.player[npc.target].dead)
+            bool oblivionWasAlive = npc.localAI[3] == 1f && !oblivionAlive;
+            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.5f) || oblivionWasAlive || (oblivionAlive && !retAlive && lifeRatio < 0.9f);
+            if (Main.player[npc.target].dead || oblivionFightDespawn)
             {
                 npc.velocity.Y -= 0.04f;
                 if (npc.timeLeft > 10)
@@ -1168,7 +1194,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         spazmatismFireballFaceDirection = -1;
 
                     Vector2 spazmatismFireballPos = npc.Center;
-                    float spazmatismFireballTargetX = Main.player[npc.target].Center.X + (spazmatismFireballFaceDirection * 400) - spazmatismFireballPos.X;
+                    float distanceFromTarget = oblivionAlive ? 480f : 400f;
+                    float spazmatismFireballTargetX = Main.player[npc.target].Center.X + (spazmatismFireballFaceDirection * distanceFromTarget) - spazmatismFireballPos.X;
                     float spazmatismFireballTargetY = Main.player[npc.target].Center.Y - spazmatismFireballPos.Y;
                     if (NPC.IsMechQueenUp)
                     {
@@ -1247,7 +1274,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npc.ai[3] += 0.4f;
                         }
 
-                        if (npc.ai[3] >= 30f)
+                        if (npc.ai[3] >= (oblivionAlive ? 60f : 30f))
                         {
                             npc.ai[3] = 0f;
                             spazmatismFireballPos = npc.Center;
@@ -1335,7 +1362,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     // Charge 8 times
                     float chargeTime = masterMode ? 45f : 25f;
-                    if (npc.ai[2] >= chargeTime)
+                    if (npc.ai[2] >= chargeTime + (oblivionAlive ? 15f : 0f))
                     {
                         // Reset AI array and go to cursed fireball phase
                         npc.ai[3] += 1f;
@@ -1416,7 +1443,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     damage = (int)(damage * secondMechMultiplier);
                             }
 
-                            Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * 16f + Main.rand.NextVector2CircularEdge(3f, 3f);
+                            Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * (oblivionAlive ? 12f : 16f) + Main.rand.NextVector2CircularEdge(3f, 3f);
                             int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 50f, projectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 1f);
                             Main.projectile[proj].tileCollide = false;
                         }
@@ -1511,7 +1538,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         // Boost speed if too far from target
                         if (spazmatismFlamethrowerTargetDist > flamethrowerDistance)
-                            spazmatismFlamethrowerMaxSpeed += MathHelper.Lerp(0f, masterMode ? 8f : 6f, MathHelper.Clamp((spazmatismFlamethrowerTargetDist - flamethrowerDistance) / 1000f, 0f, 1f));
+                            spazmatismFlamethrowerMaxSpeed += MathHelper.Lerp(0f, oblivionAlive ? 3f : masterMode ? 8f : 6f, MathHelper.Clamp((spazmatismFlamethrowerTargetDist - flamethrowerDistance) / 1000f, 0f, 1f));
 
                         if (Main.getGoodWorld)
                         {
@@ -1713,7 +1740,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X) - MathHelper.PiOver2;
 
                         // Charges 5 times
-                        if (npc.ai[2] >= chargeTime * 1.6f)
+                        if (npc.ai[2] >= (chargeTime * 1.6f) + (oblivionAlive ? 15f : 0f))
                         {
                             npc.ai[3] += 1f;
                             npc.ai[2] = 0f;

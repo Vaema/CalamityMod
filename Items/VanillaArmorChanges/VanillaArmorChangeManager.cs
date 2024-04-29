@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader.Core;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {
@@ -15,7 +16,8 @@ namespace CalamityMod.Items.VanillaArmorChanges
         internal static void Load()
         {
             ArmorChanges = new List<VanillaArmorChange>();
-            foreach (Type type in CalamityMod.Instance.Code.GetTypes())
+            Type[] types = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
+            foreach (Type type in types)
             {
                 if (!type.IsSubclassOf(typeof(VanillaArmorChange)) || type.IsAbstract)
                     continue;

@@ -18,12 +18,16 @@ namespace CalamityMod.Systems
             // Load all of the World Difficulties to the World Difficulty list
             // The difficulty the world uses will be the latest applicable one, so these are added in order from easiest to hardest
             // These colors are all picked from the wiki's colors for each Difficulty combo
-            WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.Revengeance"), GetRevengeance, new(211, 42, 42)));
-            WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.Death"), GetDeath, new(192, 64, 219)));
-            WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.RevMaster"), GetMasterRevengeance, new(124, 153, 242)));
-            WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.DeathMaster"), GetMasterDeath, new(255, 25, 255)));
-            WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.RevLegend"), GetLegendRevengeance, new(240, 128, 128))); // Malice color
-            WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.DeathLegend"), GetLegendDeath, new(220, 255, 132))); // Defiled color
+            // Calamity's own difficulties aren't added if the Luminance mod is on, as it adds its own world system
+            if (CalamityMod.Instance.luminance == null)
+            {
+                WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.Revengeance"), GetRevengeance, new(211, 42, 42)));
+                WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.Death"), GetDeath, new(192, 64, 219)));
+                WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.RevMaster"), GetMasterRevengeance, new(124, 153, 242)));
+                WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.DeathMaster"), GetMasterDeath, new(255, 25, 255)));
+                WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.RevLegend"), GetLegendRevengeance, new(240, 128, 128))); // Malice color
+                WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.DeathLegend"), GetLegendDeath, new(220, 255, 132))); // Defiled color
+            }
         }
 
         public override void SaveWorldHeader(TagCompound tag)

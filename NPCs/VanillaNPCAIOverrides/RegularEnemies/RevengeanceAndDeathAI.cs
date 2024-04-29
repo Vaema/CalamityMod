@@ -3177,19 +3177,29 @@ PrepareToShoot:
                     npc.ai[2] = 0f;
 
                 npc.ai[2] += 1f;
-                if (npc.ai[2] > (CalamityWorld.death ? 60f : 180f))
+                float bombDelay = CalamityWorld.death ? 60f : 180f;
+                if (npc.ai[2] > bombDelay)
                 {
                     Vector2 spawnPosition = new Vector2(npc.position.X + (float)npc.width * 0.5f - (float)(npc.direction * 24), npc.position.Y + 4f);
-                    int velocityX = 3 * npc.direction;
-                    int velocityY = -5;
-                    int clownBomb = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition.X, spawnPosition.Y, velocityX, velocityY, ProjectileID.HappyBomb, 0, 0f, Main.myPlayer, 0f, 0f);
-                    Main.projectile[clownBomb].timeLeft = 300;
-                    if (CalamityWorld.death)
+                    if (!Main.rand.NextBool(5) || NPC.AnyNPCs(NPCID.ChatteringTeethBomb))
                     {
-                        Main.projectile[clownBomb].extraUpdates += 1;
-                        Main.projectile[clownBomb].timeLeft = 600;
+                        int velocityX = 3 * npc.direction;
+                        int velocityY = -5;
+                        int clownBomb = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnPosition.X, spawnPosition.Y, velocityX, velocityY, ProjectileID.HappyBomb, 0, 0f, Main.myPlayer, 0f, 0f);
+                        Main.projectile[clownBomb].timeLeft = 300;
+                        if (CalamityWorld.death)
+                        {
+                            Main.projectile[clownBomb].extraUpdates += 1;
+                            Main.projectile[clownBomb].timeLeft = 600;
+                        }
+                        npc.ai[2] = 0f;
                     }
-                    npc.ai[2] = 0f;
+                    else
+                    {
+                        npc.ai[2] = -bombDelay * 2;
+                        int chatteringTeethBomb = NPC.NewNPC(npc.GetSource_FromAI(), (int)spawnPosition.X, (int)spawnPosition.Y, NPCID.ChatteringTeethBomb);
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, chatteringTeethBomb, 0f, 0f, 0f, 0, 0, 0);
+                    }
                 }
             }
 
@@ -8886,11 +8896,88 @@ PrepareToShoot:
                 npc.spriteDirection = npc.direction;
             }
 
-            if (npc.wet && npc.type != NPCID.Derpling)
+            if (npc.type == NPCID.ChatteringTeethBomb)
+            {
+                Vector2 dustOffset = new Vector2(-6f, -10f);
+                dustOffset.X *= npc.spriteDirection;
+                if (npc.ai[1] != 5f && Main.rand.NextBool(3))
+                {
+                    npc.position += npc.netOffset;
+                    int dustID = Dust.NewDust(npc.Center + dustOffset - Vector2.One * 5f, 4, 4, DustID.Torch);
+                    Dust dust = Main.dust[dustID];
+                    dust.scale = 1.5f;
+                    dust.noGravity = true;
+                    dust.velocity = dust.velocity * 0.25f + Vector2.Normalize(dustOffset) * 1f;
+                    dust.velocity = dust.velocity.RotatedBy(-(float)Math.PI / 2f * (float)npc.direction);
+                    npc.position -= npc.netOffset;
+                }
+                if (npc.ai[1] == 5f)
+                {
+                    npc.velocity = Vector2.Zero;
+                    npc.position.X += npc.width / 2;
+                    npc.position.Y += npc.height / 2;
+                    npc.width = 160;
+                    npc.height = 160;
+                    npc.position.X -= npc.width / 2;
+                    npc.position.Y -= npc.height / 2;
+                    npc.dontTakeDamage = true;
+                    npc.position += npc.netOffset;
+                    if (npc.ai[2] > 7f)
+                    {
+                        for (int i = 0; i < 8; i++)
+                        {
+                            Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Smoke, 0f, 0f, 100, default(Color), 1.5f);
+                        }
+                        for (int i = 0; i < 32; i++)
+                        {
+                            int dustID = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Torch, 0f, 0f, 100, default(Color), 2.5f);
+                            Dust dust = Main.dust[dustID];
+                            dust.velocity *= 3f;
+                            dust.noGravity = true;
+                            dustID = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Torch, 0f, 0f, 100, default(Color), 1.5f);
+                            dust = Main.dust[dustID];
+                            dust.velocity *= 2f;
+                            dust.noGravity = true;
+                        }
+                        for (int i = 0; i < 2; i++)
+                        {
+                            int goreID = Gore.NewGore(npc.GetSource_FromThis(), npc.position + new Vector2((float)(npc.width * Main.rand.Next(100)) / 100f, (float)(npc.height * Main.rand.Next(100)) / 100f) - Vector2.One * 10f, default(Vector2), Main.rand.Next(GoreID.Smoke1, GoreID.Smoke3 + 1));
+                            Gore gore = Main.gore[goreID];
+                            gore.velocity *= 0.3f;
+                            gore.velocity.X += (float)Main.rand.Next(-10, 11) * 0.05f;
+                            gore.velocity.Y += (float)Main.rand.Next(-10, 11) * 0.05f;
+                        }
+                        if (npc.ai[2] == 9f)
+                        {
+                            SoundEngine.PlaySound(SoundID.Item14, npc.position);
+                        }
+                    }
+                    if (npc.ai[2] == 1f)
+                    {
+                        npc.life = -1;
+                        npc.HitEffect();
+                        npc.active = false;
+                    }
+                    npc.position -= npc.netOffset;
+                    return false;
+                }
+            }
+
+            if (npc.type == NPCID.ChatteringTeethBomb && npc.ai[1] != 5f)
+            {
+                if (npc.wet || Vector2.Distance(npc.Center, Main.player[npc.target].Center) < 64f)
+                {
+                    npc.ai[1] = 5f;
+                    npc.ai[2] = 10f;
+                    npc.netUpdate = true;
+                    return false;
+                }
+            }
+            else if (npc.wet && npc.type != NPCID.Derpling)
             {
                 if (npc.collideX)
                 {
-                    npc.direction *= -npc.direction;
+                    npc.direction *= -1; // Fixed bug where herplings didn't change direction from left to right
                     npc.spriteDirection = npc.direction;
                 }
 
@@ -9008,28 +9095,35 @@ PrepareToShoot:
                             npc.ai[1] += 1f;
                         }
                     }
-                    else if (npc.ai[1] == 3f)
-                    {
-                        npc.velocity.Y = -9f;
-                        npc.velocity.X = npc.velocity.X + (float)(2 * npc.direction);
-                        if (herplingTargetDist < 350f && herplingTargetDist > 200f)
-                        {
-                            npc.velocity.X = npc.velocity.X + (float)npc.direction;
-                        }
-                        npc.ai[0] = CalamityWorld.death ? -100f : -200f;
-                        npc.ai[1] = 0f;
-                        npc.ai[3] = npc.position.X;
-                    }
                     else
                     {
-                        npc.velocity.Y = -5f;
-                        npc.velocity.X = npc.velocity.X + (float)(4 * npc.direction);
-                        if (herplingTargetDist < 350f && herplingTargetDist > 200f)
+                        if (npc.type == NPCID.ChatteringTeethBomb)
                         {
-                            npc.velocity.X = npc.velocity.X + (float)npc.direction;
+                            SoundEngine.PlaySound(SoundID.Zombie124, npc.position);
                         }
-                        npc.ai[0] = CalamityWorld.death ? -60f : -120f;
-                        npc.ai[1] += 1f;
+                        if (npc.ai[1] == 3f)
+                        {
+                            npc.velocity.Y = -9f;
+                            npc.velocity.X = npc.velocity.X + (float)(2 * npc.direction);
+                            if (herplingTargetDist < 350f && herplingTargetDist > 200f)
+                            {
+                                npc.velocity.X = npc.velocity.X + (float)npc.direction;
+                            }
+                            npc.ai[0] = CalamityWorld.death ? -100f : -200f;
+                            npc.ai[1] = 0f;
+                            npc.ai[3] = npc.position.X;
+                        }
+                        else
+                        {
+                            npc.velocity.Y = -5f;
+                            npc.velocity.X = npc.velocity.X + (float)(4 * npc.direction);
+                            if (herplingTargetDist < 350f && herplingTargetDist > 200f)
+                            {
+                                npc.velocity.X = npc.velocity.X + (float)npc.direction;
+                            }
+                            npc.ai[0] = CalamityWorld.death ? -60f : -120f;
+                            npc.ai[1] += 1f;
+                        }
                     }
                 }
                 else if (npc.ai[0] >= -30f)
