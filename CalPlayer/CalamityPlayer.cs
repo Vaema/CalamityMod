@@ -4256,20 +4256,8 @@ namespace CalamityMod.CalPlayer
             if (weakPetrification)
                 WeakPetrification();
 
-            // Disable vanilla dashes during god slayer dash
-            if (godSlayerDashHotKeyPressed)
-            {
-                // Set the player to have no registered vanilla dashes.
-                Player.dashType = 0;
-
-                // Prevent the possibility of Shield of Cthulhu invulnerability exploits.
-                Player.eocHit = -1;
-                if (Player.eocDash != 0)
-                    Player.eocDash = 0;
-            }
-
-            // Disable vanilla dashes during god slayer dash
-            if (SpeedBlasterDashStarted)
+            // Disable vanilla dashes during God Slayer or Speed Blaster dashes
+            if (godSlayerDashHotKeyPressed || SpeedBlasterDashStarted)
             {
                 // Set the player to have no registered vanilla dashes.
                 Player.dashType = 0;

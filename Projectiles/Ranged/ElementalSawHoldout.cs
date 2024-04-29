@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     Vector2 smokeVelocity = Vector2.UnitY * Main.rand.NextFloat(-7f, -12f);
                     smokeVelocity = smokeVelocity.RotatedByRandom(MathHelper.Pi / 8f);
-                    Color smokeColor = Main.rand.NextBool() ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : Color.Gray;
+                    Color smokeColor = Main.rand.NextBool() ? Main.DiscoColor : Color.Gray;
                     Particle fullChargeSmoke = new HeavySmokeParticle(GunTipPosition + Main.rand.NextVector2CircularEdge(3f, 3f), smokeVelocity, smokeColor, 30, 0.65f, 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), true);
                     GeneralParticleHandler.SpawnParticle(fullChargeSmoke);
                 }

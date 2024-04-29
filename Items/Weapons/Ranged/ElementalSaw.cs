@@ -90,28 +90,29 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 if (!player.HasCooldown(ElementalSawBoost.ID))
                 {
-                    player.AddCooldown(ElementalSawBoost.ID, DashCooldown);
-                    player.Calamity().sBlasterDashActivated = true;
-                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), player.Center);
-
                     // Throws a lingering saw at the cursor
                     float mouseDist = Vector2.Distance(player.Center, Main.MouseWorld) / 20f;
                     Projectile.NewProjectile(source, player.Center, velocity.SafeNormalize(Vector2.UnitY) * mouseDist, ModContent.ProjectileType<ElementalSawLingering>(), damage, knockback, Main.myPlayer);
 
+                    player.AddCooldown(ElementalSawBoost.ID, DashCooldown);
+                    player.Calamity().sBlasterDashActivated = true;
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), player.Center);
+
                     // If moving, make particle effects when the dash activates
                     if (player.velocity != Vector2.Zero)
                     {
-                        int particleAmt = 7;
-                        for (int c = 0; c < particleAmt; c++)
+                        for (int c = 0; c < 9; c++)
                         {
-                            Color sparkColor = Color.Lerp(new Color(122, 240, 58), new Color(32, 186, 171), c / (particleAmt - 1));
-                            Particle spark = new CritSpark(player.Center, player.velocity.RotatedByRandom(MathHelper.ToRadians(13f)) * Main.rand.NextFloat(-2.1f, -4.5f), Color.White, sparkColor, 2f, 45, 2.25f, 2f);
+                            Vector2 sparkVel = player.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(MathHelper.ToRadians(45f)) * Main.rand.NextFloat(-28f, -36f);
+                            Color sparkColor = Color.Lerp(new Color(150, 255, 60), new Color(60, 255, 220), c / 8f);
+                            Particle spark = new CritSpark(player.Center, sparkVel, Color.White, sparkColor, 2f, 45, 2.25f, 2f);
                             GeneralParticleHandler.SpawnParticle(spark);
                         }
-                        for (int e = 0; e < particleAmt; e++)
+                        for (int e = 0; e < 7; e++)
                         {
-                            Color sparkColor2 = Color.Lerp(new Color(122, 240, 58), new Color(32, 186, 171), e / (particleAmt - 1));
-                            Particle spark2 = new NanoParticle(player.Center, player.velocity.RotatedByRandom(MathHelper.ToRadians(-MathHelper.PiOver4)) * Main.rand.NextFloat(0.25f, 0.5f), sparkColor2, 1.5f, 45, Main.rand.NextBool(3));
+                            Vector2 sparkVel2 = player.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(MathHelper.ToRadians(36f)) * Main.rand.NextFloat(-4f, -6f);
+                            Color sparkColor2 = Color.Lerp(new Color(150, 255, 60), new Color(60, 255, 220), e / 6f);
+                            Particle spark2 = new NanoParticle(player.Center, sparkVel2, sparkColor2, 1.5f, 45, Main.rand.NextBool(3));
                             GeneralParticleHandler.SpawnParticle(spark2);
                         }
                     }

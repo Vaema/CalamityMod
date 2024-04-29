@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
             // While empowered, the saws while slightly home in on the cursor
             if (Empowered && !Returning && Time > 30)
             {
-                float homingTurnSpeed = 0.11f;
+                float homingTurnSpeed = 0.18f;
                 Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.MouseWorld).ToRotation(), homingTurnSpeed).ToRotationVector2() * ElementalSaw.ShootSpeed;
             }
 
@@ -99,15 +99,22 @@ namespace CalamityMod.Projectiles.Ranged
                     // Spawns a burst of homing bolts when it starts returning, based on how many tiles and enemies it hit
                     if (ReturnTimer == ReturnDelay + 30)
                     {
-                        int boltPairs = Math.Min(Projectile.numHits, MaxBoltPairs);
-                        for (int b = 0; b < boltPairs; b++)
+                        int boltCount = Math.Min(Projectile.numHits, MaxBoltPairs) * 2;
+                        for (int b = 0; b < boltCount; b++)
                         {
-                            for (int p = 0; p < 2; p++)
-                            {
-                                Vector2 randBoltVelocity = Main.rand.NextVector2Unit() * 9f;
-                                if (Main.myPlayer == Projectile.owner)
-                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randBoltVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
-                            }
+                            Vector2 randBoltVelocity = Main.rand.NextVector2Unit() * 9f;
+                            if (Main.myPlayer == Projectile.owner)
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randBoltVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
+                        }
+
+                        // Extra burst of sparks for cool points
+                        float sparkCount = 6f + 5f * SawLevel;
+                        for (float i = 0f; i < sparkCount; i++)
+                        {
+                            Vector2 velocity = Main.rand.NextVector2Unit() * (12f + 10f * SawLevel);
+                            float sparkScale = 1f + 0.25f * SawLevel; // Bloom effect is double the spark's size
+                            Particle sparkle = new CritSpark(Projectile.Center, velocity, Color.White, Color.Lime, sparkScale, 30, 0.1f, sparkScale, Main.rand.NextFloat(0f, 0.01f));
+                            GeneralParticleHandler.SpawnParticle(sparkle);
                         }
                     }
 
@@ -144,6 +151,16 @@ namespace CalamityMod.Projectiles.Ranged
                         if (Projectile.Hitbox.Intersects(Owner.Hitbox))
                             Projectile.Kill();
                     }
+                }
+            }
+            else
+            {
+                // A bit of dust while travelling
+                if (Main.rand.NextBool())
+                {
+                    Color dustColor = Empowered ? Main.DiscoColor : new Color(Main.DiscoR, 255, 60);
+                    Dust trail = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, Projectile.velocity.X * 0.05f, Projectile.velocity.Y * 0.05f, 150, dustColor, 1.2f);
+                    trail.noGravity = true;
                 }
             }
 
@@ -207,7 +224,7 @@ namespace CalamityMod.Projectiles.Ranged
                 GeneralParticleHandler.SpawnParticle(collisionSparks);
             }
 
-            SoundEngine.PlaySound(Main.zenithWorld ? TileCollideGFB : SoundID.Item178 with { Pitch = 0.15f * Projectile.numHits }, Projectile.Center); // Placeholder sound
+            SoundEngine.PlaySound(Main.zenithWorld ? TileCollideGFB : SoundID.Item178 with { Pitch = 0.1f * Projectile.numHits }, Projectile.Center); // Placeholder sound
             if (Projectile.velocity.X != oldVelocity.X)
                 Projectile.velocity.X = -oldVelocity.X;
             if (Projectile.velocity.Y != oldVelocity.Y)
@@ -228,7 +245,11 @@ namespace CalamityMod.Projectiles.Ranged
         {
             target.AddBuff(ModContent.BuffType<Laceration>(), 180);
             target.AddBuff(ModContent.BuffType<ElementalMix>(), 90);
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") with { Pitch = 0.15f * Projectile.numHits }, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") with { Pitch = 0.1f * Projectile.numHits }, Projectile.Center);
+
+            // Hits slow down the forward-firing saw
+            if (!Returning && !Empowered)
+                Projectile.velocity *= 0.5f;
 
             if (Projectile.numHits < 1)
                 ReturnTimer = 1;
