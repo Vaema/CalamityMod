@@ -105,7 +105,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                         {
                             Vector2 sparkVel = player.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(MathHelper.ToRadians(45f)) * Main.rand.NextFloat(-28f, -36f);
                             Color sparkColor = Color.Lerp(new Color(150, 255, 60), new Color(60, 255, 220), c / 8f);
-                            Particle spark = new CritSpark(player.Center, sparkVel, Color.White, sparkColor, 2f, 45, 2.25f, 2f);
+                            Particle spark = new CritSpark(player.Center, sparkVel, Color.White, sparkColor, 1.5f, 45, 0.5f, 2f);
                             GeneralParticleHandler.SpawnParticle(spark);
                         }
                         for (int e = 0; e < 7; e++)
