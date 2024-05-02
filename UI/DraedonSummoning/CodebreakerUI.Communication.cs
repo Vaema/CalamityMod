@@ -170,7 +170,7 @@ namespace CalamityMod.UI.DraedonSummoning
             get
             {
                 if (PreviousTextCharacter is '\n')
-                    return 48;
+                    return 80;
 
                 if (PreviousTextCharacter is '.' or '?')
                     return 9;
@@ -297,7 +297,7 @@ namespace CalamityMod.UI.DraedonSummoning
             DisplayTextSelectionOptions(panelArea, panelScale);
             DisplayDialogHistory(panelArea, panelScale);
             if (OptionsTextOpacity > 0f && DraedonScreenStaticInterpolant <= 0f)
-                DrawExitButton(panelCenter + new Vector2(0f, 150f) * GeneralScale, OptionsTextOpacity);
+                DrawExitButton(panelCenter + new Vector2(10f, 150f) * GeneralScale, OptionsTextOpacity);
         }
 
         public static void DisplayDraedonFacePanel(Vector2 panelCenter, Vector2 panelScale)

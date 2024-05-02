@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
-    public class TerraDisk : RogueWeapon
+    public class SamsaraSlicer : RogueWeapon
     {
         public static float Speed = 12f;
 
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ItemRarityID.Yellow;
 
             Item.DamageType = RogueDamageClass.Instance;
-            Item.shoot = ModContent.ProjectileType<TerraDiskProjectile>();
+            Item.shoot = ModContent.ProjectileType<SamsaraSlicerProjectile>();
             Item.shootSpeed = Speed;
         }
 
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/TerraDiskGlow").Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/SamsaraSlicerGlow").Value);
         }
 
         public override void AddRecipes()

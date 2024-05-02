@@ -7,10 +7,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class TerraDiskProjectile : ModProjectile, ILocalizedModType
+    public class SamsaraSlicerProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/TerraDisk";
+        public override string Texture => "CalamityMod/Items/Weapons/Rogue/SamsaraSlicer";
 
         private bool initialized = false;
         private int Lifetime = 180;
@@ -129,7 +129,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.timeLeft % 8f == 0f && Main.myPlayer == Projectile.owner)
             {
-                int disk = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TerraDiskProjectile2>(), Projectile.damage / 4, Projectile.knockBack / 4f, Projectile.owner, Projectile.identity, Main.rand.NextFloat(0.02f, 0.1f));
+                int disk = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SamsaraSlicerSmallDisk>(), Projectile.damage / 4, Projectile.knockBack / 4f, Projectile.owner, Projectile.identity, Main.rand.NextFloat(0.02f, 0.1f));
                 Main.projectile[disk].timeLeft *= 2;
                 Main.projectile[disk].aiStyle = -1;
             }
@@ -166,7 +166,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Main.player[Projectile.owner].miscCounter % 50 == 0)
                 {
-                    int splitProj = ModContent.ProjectileType<TerraDiskProjectile2>();
+                    int splitProj = ModContent.ProjectileType<SamsaraSlicerSmallDisk>();
                     if (Projectile.owner == Main.myPlayer)
                     {
                         float spread = 60f * 0.0174f;
@@ -175,7 +175,7 @@ namespace CalamityMod.Projectiles.Rogue
                         for (int i = 0; i < 6; i++)
                         {
                             Vector2 velocity = ((MathHelper.TwoPi * i / 6f) - MathHelper.PiOver2).ToRotationVector2() * 6f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<TerraDiskProjectile2>(), Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<SamsaraSlicerSmallDisk>(), Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
                         }
                     }
                 }

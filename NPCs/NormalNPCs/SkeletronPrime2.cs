@@ -287,7 +287,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     // Start spin phase after 1.875 seconds
                     NPC.ai[2] += phase3 ? 1.2f : 0.8f;
-                    if (NPC.ai[2] >= (90f - (death ? 60f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || phase3) && canUseAttackInMaster)
+                    if (NPC.ai[2] >= (90f - (death ? 15f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || phase3) && canUseAttackInMaster)
                     {
                         bool shouldSpinAround = NPC.ai[1] == 4f && NPC.position.Y < Main.player[NPC.target].position.Y - 400f &&
                             Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) < 600f && Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 400f;
@@ -405,7 +405,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         {
                             NPC.localAI[0] = 0f;
 
-                            int totalProjectiles = bossRush ? 20 : death ? 15 : 10;
+                            int totalProjectiles = bossRush ? 20 : death ? 12 : 10;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             int type = ProjectileID.FrostBeam;
                             int damage = NPC.GetProjectileDamage(type);
@@ -615,9 +615,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     NPC.rotation = NPC.velocity.X / 50f;
 
-                    float bombSpawnDivisor = bossRush ? 14f : death ? 22f - (float)Math.Round(8f * (1f - lifeRatio)) : 22f;
+                    float bombSpawnDivisor = bossRush ? 14f : death ? 22f - (float)Math.Round(5f * (1f - lifeRatio)) : 22f;
                     float totalBombs = 6f;
-                    int bombSpread = bossRush ? 250 : death ? 150 : 100;
+                    int bombSpread = bossRush ? 250 : death ? 125 : 100;
 
                     // Spin for about 3 seconds
                     float spinVelocity = 24f;
@@ -660,7 +660,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     Vector2 headCenter = NPC.Center;
-                                    float enragedHeadSpeed = 6f + (death ? 3f * (1f - lifeRatio) : 0f);
+                                    float enragedHeadSpeed = 6f + (death ? 2f * (1f - lifeRatio) : 0f);
                                     float enragedHeadBombTargetX = Main.player[NPC.target].Center.X - headCenter.X + Main.rand.Next(-20, 21);
                                     float enragedHeadBombTargetY = Main.player[NPC.target].Center.Y - headCenter.Y + Main.rand.Next(-20, 21);
                                     float enragedHeadBombTargetDist = (float)Math.Sqrt(enragedHeadBombTargetX * enragedHeadBombTargetX + enragedHeadBombTargetY * enragedHeadBombTargetY);
@@ -731,7 +731,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.localAI[3] += 1f;
                     if (Vector2.Distance(NPC.Center, destination) < 160f || NPC.ai[2] > 0f || NPC.localAI[3] > 120f)
                     {
-                        float bombSpawnDivisor = death ? 40f : 60f;
+                        float bombSpawnDivisor = death ? 50f : 60f;
                         float totalBombSpreads = 2f;
                         NPC.ai[2] += 1f;
                         if (NPC.ai[2] % bombSpawnDivisor == 0f)

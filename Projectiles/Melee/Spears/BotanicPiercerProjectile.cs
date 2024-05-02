@@ -8,9 +8,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {
-    public class TerraLanceProjectile : BaseSpearProjectile
+    public class BotanicPiercerProjectile : BaseSpearProjectile
     {
-        public override LocalizedText DisplayName => CalamityUtils.GetItemName<TerraLance>();
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<BotanicPiercer>();
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 40;
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
         public override Action<Projectile> EffectBeforeReelback => (proj) =>
         {
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - Projectile.velocity * 4f, Projectile.velocity * 1.4f,
-                ModContent.ProjectileType<TerraSpear>(), (int)(Projectile.damage * 0.7), Projectile.knockBack * 0.7f, Projectile.owner);
+                ModContent.ProjectileType<BotanicSpear>(), (int)(Projectile.damage * 0.7), Projectile.knockBack * 0.7f, Projectile.owner);
         };
 
         public override void ExtraBehavior()

@@ -2,18 +2,20 @@
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class TerraFlamebursterHoldout : BaseGunHoldoutProjectile
+    public class WildfireBloomHoldout : BaseGunHoldoutProjectile
     {
-        public override int AssociatedItemID => ModContent.ItemType<TerraFlameburster>();
-        public override string Texture => "CalamityMod/Projectiles/Ranged/TerraFlamebursterHoldout";
+        public override int AssociatedItemID => ModContent.ItemType<WildfireBloom>();
+        public override string Texture => "CalamityMod/Projectiles/Ranged/WildfireBloomHoldout";
         public override Vector2 GunTipPosition => base.GunTipPosition - Vector2.UnitX.RotatedBy(Projectile.rotation) * 17f - (Vector2.UnitY.RotatedBy(Projectile.rotation) * 7f * Projectile.spriteDirection);
         public override float MaxOffsetLengthFromArm => 20f;
         public override float OffsetXUpwards => -5f;
@@ -44,16 +46,16 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     SoundEngine.PlaySound(SoundID.Item34, Projectile.Center);
                     Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.NextBool(2));
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (Projectile.velocity * 9).RotatedByRandom(0.08f), ModContent.ProjectileType<TerraFire>(), damage, knockback, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (Projectile.velocity * 9).RotatedByRandom(0.08f), ModContent.ProjectileType<WildfireBloomFire>(), damage, knockback, Projectile.owner);
                     ShotsFired++;
                     ShotCooldown = HeldItem.useTime;
                     if (FireBlobs == 0)
                     {
                         float randAngle = Main.rand.NextFloat(8f, 15f);
                         Vector2 newVel = (Projectile.velocity * 9).RotatedBy(MathHelper.ToRadians(randAngle)) * 2f;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, newVel, ModContent.ProjectileType<TerraFlare>(), damage, knockback, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, newVel, ModContent.ProjectileType<WildfireBloomFlare>(), damage, knockback, Projectile.owner);
                         newVel = (Projectile.velocity * 9).RotatedBy(MathHelper.ToRadians(-randAngle)) * 2f;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, newVel, ModContent.ProjectileType<TerraFlare>(), damage, knockback, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, newVel, ModContent.ProjectileType<WildfireBloomFlare>(), damage, knockback, Projectile.owner);
                         FireBlobs = 3;
                     }
                     else

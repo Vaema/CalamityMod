@@ -324,15 +324,6 @@ CorrodedCaustibow: {
 	Tooltip: Converts wooden arrows into slow, powerful shells that trail an irradiated aura
 }
 
-CosmicBolter: {
-	DisplayName: Cosmic Bolter
-	Tooltip:
-		'''
-		Fires a tight column of three arrows
-		Converts wooden arrows into sliding energy bolts
-		'''
-}
-
 CrackshotColt: {
 	DisplayName: Crackshot Colt
 	Tooltip:
@@ -706,6 +697,16 @@ ArcNovaDiffuser: {
 		Charges and fires a rapid burst of nova bolts
 		The first charging stage increases the fire rate of the burst
 		The second charging stage replaces the rapid burst with a devastating nova blast
+		'''
+}
+
+MagnaCannon: {
+	DisplayName: Magna Cannon
+	Tooltip:
+		'''
+		Charges up a rapid fire burst of crystal bolts
+		Charging for longer increases the number of bolts fired
+		Fully charged shots fire an even longer and more rapid burst
 		'''
 }
 
@@ -1256,16 +1257,6 @@ TelluricGlare: {
 	Tooltip: Fires volleys of four colossal radiant arrows which can pass through walls
 }
 
-TerraFlameburster: {
-	DisplayName: Terra Flameburster
-	Tooltip:
-		'''
-		Charges up to emit a stream of energized flames and pairs of homing terra flares
-		Uses gel for ammo
-		50% chance to save ammo
-		'''
-}
-
 TheBallista: {
 	DisplayName: The Ballista
 	Tooltip: Converts wooden arrows into greatarrows that crush enemy armor and break into shards
@@ -1366,6 +1357,15 @@ UniversalGenesis: {
 		'''
 }
 
+VernalBolter: {
+	DisplayName: Vernal Bolter
+	Tooltip:
+		'''
+		Fires a tight column of three arrows
+		Converts wooden arrows into sliding energy bolts
+		'''
+}
+
 Voidragon: {
 	DisplayName: Voidragon
 	Tooltip:
@@ -1381,6 +1381,16 @@ Vortexpopper: {
 	Tooltip: Fires bubbles everywhere that pop into bullets
 }
 
+WildfireBloom: {
+	DisplayName: Wildfire Bloom
+	Tooltip:
+		'''
+		Charges up to emit a stream of energized flames and pairs of homing wildfire flares
+		Uses gel for ammo
+		50% chance to save ammo
+		'''
+}
+
 WulfrumBlunderbuss: {
 	DisplayName: Wulfrum Blunderbuss
 	Tooltip:
@@ -1390,15 +1400,5 @@ WulfrumBlunderbuss: {
 		Ignores 3 points of enemy Defense
 		[c/83B87E:'The good thing about Wulfrum is that while it breaks fast, it can be reused even faster.]
 		[c/83B87E:In fact, it is quite common for a robot to be turned into ammo right after it stops functioning.']
-		'''
-}
-
-MagnaCannon: {
-	DisplayName: Magna Cannon
-	Tooltip:
-		'''
-		Charges up a rapid fire burst of crystal bolts
-		Charging for longer increases the number of bolts fired
-		Fully charged shots fire an even longer and more rapid burst
 		'''
 }

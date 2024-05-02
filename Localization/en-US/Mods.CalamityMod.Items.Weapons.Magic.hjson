@@ -567,6 +567,15 @@ PhoenixFlameBarrage: {
 		'''
 }
 
+Photosynthesis: {
+	DisplayName: Photosynthesis
+	Tooltip:
+		'''
+		Casts a brilliant ray that dissolves into energy on enemy hits
+		More energy is created the farther along the ray the hit enemy is
+		'''
+}
+
 PlagueStaff: {
 	DisplayName: Plague Staff
 	Tooltip: Fires a tight spread of 4 plague fangs
@@ -764,15 +773,6 @@ TacticiansTrumpCard: {
 TearsofHeaven: {
 	DisplayName: Tears of Heaven
 	Tooltip: Casts slow-moving homing balls of heavenly light
-}
-
-TerraRay: {
-	DisplayName: Terra Ray
-	Tooltip:
-		'''
-		Casts a brilliant ray that dissolves into energy on enemy hits
-		More energy is created the farther along the ray the hit enemy is
-		'''
 }
 
 Teslastaff: {

@@ -59,6 +59,8 @@ CorrodedShell.DisplayName: Corroded Shell
 CosmicFire.DisplayName: Dead Sun's Fire
 DaemonsFlameArrow.DisplayName: Daemon's Arrow
 DeadSunExplosion.DisplayName: Dead Sun's Explosion
+DragonsBreathFlames.DisplayName: Draconic Flames
+DragonsBreathMag.DisplayName: Dragons Breath Cartridge
 DragonsBreathRound.DisplayName: Dragon's Breath Round
 DrataliornusExoArrow.DisplayName: Drataliornus Arrow
 DrataliornusFlame.DisplayName: Drataliornus Arrow
@@ -87,6 +89,8 @@ FallenStarProj.DisplayName: Fallen Star
 FeatherLarge.DisplayName: Feather
 FishronRPG.DisplayName: RPG
 FlakKrakenProj.DisplayName: Kraken Reticle
+FlakKrakenProjectile.DisplayName: Flak Kraken
+FlakToxicannonProjectile.DisplayName: Flak Toxicannon
 FlareBat.DisplayName: Flare Bat
 Flash.DisplayName: Flash
 FlashRoundProj.DisplayName: Flash Round
@@ -119,7 +123,6 @@ ImpactRound.DisplayName: Impact Round
 KarasawaShot.DisplayName: Karasawa Shot
 LeafArrow.DisplayName: Leaf Arrow
 LunarBolt.DisplayName: Bolt
-LunarBolt2.DisplayName: Bolt
 LuxorsGiftRanged.DisplayName: Luxor's Ranged
 MagnaShot.DisplayName: Magna Bolt
 MagnomalyAura.DisplayName: Magnomaly Aura
@@ -222,8 +225,6 @@ TerraArrowMain.DisplayName: Terra Arrow
 TerraArrowSplit.DisplayName: Terra Arrow
 TerraBulletMain.DisplayName: Terra Bullet
 TerraBulletSplit.DisplayName: Terra Bullet
-TerraFire.DisplayName: Terra Fire
-TerraFlare.DisplayName: Terra Flare
 TheMaelstromExplosion.DisplayName: Reaper Explosion
 TheMaelstromShark.DisplayName: Reaper Shark
 ThePackMinissile.DisplayName: Pack Minissile
@@ -242,13 +243,12 @@ UltimaSpark.DisplayName: Ultima Spark
 UniversalGenesisStar.DisplayName: Genesis Star
 UniversalGenesisStarcaller.DisplayName: Starcaller Shot
 VanquisherArrowMain.DisplayName: Vanquisher Arrow
+VanquisherArrowProj.DisplayName: Vanquisher Arrow Proj
 VeriumBoltProj.DisplayName: Verium Bolt
+VernalBolt.DisplayName: Vernal Bolt
 Voidragon.DisplayName: Voidragon Blast
 VoidragonTentacle.DisplayName: Voidragon Tentacle
 WaterSpout.DisplayName: Spout
+WildfireBloomFire.DisplayName: Wildfire Fire
+WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
-DragonsBreathFlames.DisplayName: Draconic Flames
-DragonsBreathMag.DisplayName: Dragons Breath Cartridge
-FlakKrakenProjectile.DisplayName: Flak Kraken
-FlakToxicannonProjectile.DisplayName: Flak Toxicannon
-VanquisherArrowProj.DisplayName: Vanquisher Arrow Proj

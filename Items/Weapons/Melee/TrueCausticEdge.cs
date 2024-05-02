@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
-            Item.shoot = ModContent.ProjectileType<TrueCausticEdgeProjectile>();
+            Item.shoot = ModContent.ProjectileType<CausticEdgeProjectile>();
             Item.shootSpeed = 12f;
         }
 

@@ -43,7 +43,8 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.velocity *= MaxVelocity;
                 }
             }
-            else
+            
+            if (Projectile.timeLeft < TimeLeft - 30)
                 Projectile.tileCollide = true;
 
             int dustType = DustID.Venom;

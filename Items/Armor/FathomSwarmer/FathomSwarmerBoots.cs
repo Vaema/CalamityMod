@@ -16,12 +16,12 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 15;
+            Item.defense = 13;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.04f;
+            player.GetDamage<SummonDamageClass>() += 0.08f;
             if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
             {
                 player.moveSpeed += 0.4f;

@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class CosmicBolter : ModItem, ILocalizedModType
+    public class VernalBolter : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item75;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<LunarBolt2>();
+            Item.shoot = ModContent.ProjectileType<VernalBolt>();
             Item.shootSpeed = 10f;
             Item.useAmmo = AmmoID.Arrow;
             Item.Calamity().canFirePointBlankShots = true;
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/CosmicBolterGlow").Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/VernalBolterGlow").Value);
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo spawnSource, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     offset -= velocity;
 
                 if (CalamityUtils.CheckWoodenAmmo(type, player))
-                    Projectile.NewProjectile(spawnSource, source + offset, velocity, ModContent.ProjectileType<LunarBolt2>(), (int)(damage * 1.2), knockback * 1.2f, player.whoAmI);
+                    Projectile.NewProjectile(spawnSource, source + offset, velocity, ModContent.ProjectileType<VernalBolt>(), (int)(damage * 1.2), knockback * 1.2f, player.whoAmI);
                 else
                 {
                     int proj = Projectile.NewProjectile(spawnSource, source + offset, velocity, type, damage, knockback, player.whoAmI);

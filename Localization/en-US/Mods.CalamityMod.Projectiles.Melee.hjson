@@ -1,3 +1,5 @@
+AbyssBladeProjectile.DisplayName: Abyss Blade
+AbyssBladeSplitProjectile.DisplayName: Abyss Blade Jet
 AegisBeam.DisplayName: Aegis Beam
 AegisBlast.DisplayName: Aegis Blast
 AegisBlast2.DisplayName: Aegis Blast
@@ -22,7 +24,7 @@ ArkoftheElementsParryHoldout.DisplayName: Ark of the Elements
 ArkoftheElementsSnapBlast.DisplayName: Rending Scissors
 ArkoftheElementsSwungBlade.DisplayName: Ark of the Elements
 AstralScytheProjectile.DisplayName: Astral Ring
-AtaraxiaHoming.DisplayName: Definitely Not Exoblade
+AtaraxiaBoom.DisplayName: Definitely Not Exoblade
 AtaraxiaMain.DisplayName: Not Exoblade
 AtaraxiaSide.DisplayName: Also Not Exoblade
 AtaraxiaSplit.DisplayName: Still Not Exoblade
@@ -41,6 +43,7 @@ BloodExplosion.DisplayName: Blood
 BloodScythe.DisplayName: Blood Scythe
 BonebreakerFragment1.DisplayName: Bone Crunching Shrapnel
 BonebreakerProjectile.DisplayName: Bonebreaker
+BotanicSpear.DisplayName: Botanic Spear
 Brimblast.DisplayName: Brimblast
 BrimlanceHellfireExplosion.DisplayName: Brimlance Explosion
 BrimlanceStandingFire.DisplayName: Brimlance Flame
@@ -55,6 +58,7 @@ BrinyTyphoonBubble.DisplayName: Bubble
 BrokenBiomeBladeHoldout.DisplayName: Broken Biome Blade
 BurningMeteor.DisplayName: Meteor
 CatastropheClaymoreSparkle.DisplayName: Catastrophe Sparkle
+CausticEdgeProjectile.DisplayName: Caustic Edge
 ChainedMeatHook.DisplayName: Enchanted Meat Hook
 ChronoIcicleLarge.DisplayName: Chrono Icicle
 ChronoIcicleSmall.DisplayName: Chrono Icicle
@@ -87,6 +91,8 @@ DeathsAscensionProjectile.DisplayName: Ascended Scythe
 DecaysRetort.DisplayName: Decay's Retort
 DecaysRetortDash.DisplayName: Evisceration Lunge
 DemonBlast.DisplayName: Devil Fork
+DepthCrusherProjectile.DisplayName: Depth Crusher
+DepthCrusherSplitProjectile.DisplayName: Depth Crusher Jet
 DepthOrb.DisplayName: Depth Trident
 DepthOrb2.DisplayName: Neptune's Trident
 DevilsSunriseCyclone.DisplayName: Devil's Sunrise
@@ -187,6 +193,8 @@ Nebudust.DisplayName: Nebulash Dust
 NebulashFlail.DisplayName: Nebulash
 NebulaShot.DisplayName: Nebula Shot
 NeptuneOrb.DisplayName: Neptune's Trident
+NeptunesBountyProjectile.DisplayName: Neptune's Bounty
+NeptunesBountySplitProjectile.DisplayName: Neptune's Bounty Jet
 Oathblade.DisplayName: Oathblade
 OathswordFlame.DisplayName: Oathsword Flame
 Orbacle.DisplayName: Auric Orb
@@ -263,7 +271,6 @@ TaintedBladeSlasher.DisplayName: Tainted Blade
 TenebreusTidesWaterProjectile.DisplayName: Water Spear
 TenebreusTidesWaterSpear.DisplayName: Tenebreus Tides Water Spear
 TenebreusTidesWaterSword.DisplayName: Tenebreus Tides Water Sword
-TerraSpear.DisplayName: Terra Spear
 TerratomereBeam.DisplayName: Terra Slash Beam
 TerratomereBigSlash.DisplayName: Terratomere Slash
 TerratomereExplosion.DisplayName: Terratomere Explosion
@@ -286,7 +293,6 @@ TrueArkoftheAncientsParryHoldout.DisplayName: Ark of the Ancients
 TrueArkoftheAncientsSwungBlade.DisplayName: Ark of the Ancients
 TrueBiomeBladeHoldout.DisplayName: True Biome Blade
 TrueBitingEmbrace.DisplayName: Biting Embrace
-TrueCausticEdgeProjectile.DisplayName: Caustic Edge
 TrueDecaysRetort.DisplayName: Decay's Retort
 TrueGrovetendersTouch.DisplayName: Grovetender's Touch
 TruePurityProjection.DisplayName: Purity Projection
@@ -313,10 +319,3 @@ WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YateveoBloomProj.DisplayName: Yateveo Bloom
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
-DepthCrusherProjectile.DisplayName: Depth Crusher
-DepthCrusherSplitProjectile.DisplayName: Depth Crusher Jet
-AbyssBladeProjectile.DisplayName: Abyss Blade
-AbyssBladeSplitProjectile.DisplayName: Abyss Blade Jet
-NeptunesBountyProjectile.DisplayName: Neptune's Bounty
-NeptunesBountySplitProjectile.DisplayName: Neptune's Bounty Jet
-AtaraxiaBoom.DisplayName: Ataraxia Boom

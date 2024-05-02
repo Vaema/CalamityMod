@@ -101,7 +101,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CosmicBolter>().
+                AddIngredient<VernalBolter>().
                 AddIngredient(ItemID.DaedalusStormbow).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).

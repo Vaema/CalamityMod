@@ -2525,7 +2525,6 @@ namespace CalamityMod.NPCs.Providence
             {
                 List<int> exceptionList = new List<int>()
                 {
-                    ModContent.ProjectileType<GoldenGunProj>(),
                     ModContent.ProjectileType<MiniGuardianDefense>(),
                     ModContent.ProjectileType<MiniGuardianAttack>(),
                     ModContent.ProjectileType<MiniGuardianRock>(),

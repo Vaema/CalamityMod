@@ -313,7 +313,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Prepare to charge
                 // More charges are used in a row at lower HP
-                if (doneWithTentaclePhase && !charging)
+                if (doneWithTentaclePhase && !charging && !despawn)
                 {
                     float timeToChargeIncrement = phase4 ? 2f : phase3 ? 1.5f : 1f;
                     if (masterMode)
@@ -778,15 +778,34 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (death)
                         {
-                            type = ProjectileID.ThornBall;
-                            damage = npc.GetProjectileDamage(type);
-                            Vector2 spawnOffset = npc.Center + projectileVelocity * 50f;
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            bool shootThornBall = true;
+                            int numThornBalls = 0;
+                            int thornBallLimit = 3;
+                            for (int i = 0; i < Main.maxProjectiles; i++)
                             {
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity * projectileSpeed, type, damage, 0f, Main.myPlayer);
-                                if (Main.rand.NextBool() || !Main.zenithWorld)
-                                    Main.projectile[proj].tileCollide = false;
+                                if (Main.projectile[i].active && Main.projectile[i].type == ProjectileID.ThornBall)
+                                {
+                                    numThornBalls++;
+                                    if (numThornBalls >= thornBallLimit)
+                                    {
+                                        shootThornBall = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (shootThornBall)
+                            {
+                                type = ProjectileID.ThornBall;
+                                damage = npc.GetProjectileDamage(type);
+                                Vector2 spawnOffset = npc.Center + projectileVelocity * 50f;
+
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity * projectileSpeed, type, damage, 0f, Main.myPlayer);
+                                    if (Main.rand.NextBool() || !Main.zenithWorld)
+                                        Main.projectile[proj].tileCollide = false;
+                                }
                             }
                         }
 

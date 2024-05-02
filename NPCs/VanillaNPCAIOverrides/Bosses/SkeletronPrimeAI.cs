@@ -263,7 +263,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     // Start spin phase after 1.5 seconds
                     npc.ai[2] += phase3 ? 1.5f : 1f;
-                    if (npc.ai[2] >= (90f - (death ? 60f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || !masterMode || phase3) && (canUseAttackInMaster || !masterMode))
+                    if (npc.ai[2] >= (90f - (death ? (masterMode ? 15f : 60f) * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || !masterMode || phase3) && (canUseAttackInMaster || !masterMode))
                     {
                         bool shouldSpinAround = npc.ai[1] == 4f && npc.position.Y < Main.player[npc.target].position.Y - 400f &&
                             Vector2.Distance(Main.player[npc.target].Center, npc.Center) < 600f && Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 400f;
@@ -382,7 +382,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             npc.localAI[0] = 0f;
 
-                            int totalProjectiles = bossRush ? 24 : death ? 18 : 12;
+                            int totalProjectiles = bossRush ? 24 : death ? (masterMode ? 15 : 18) : 12;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             int type = ProjectileID.DeathLaser;
                             int damage = npc.GetProjectileDamage(type);
@@ -592,9 +592,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.rotation = npc.velocity.X / 50f;
 
-                    float skullSpawnDivisor = bossRush ? 9f : death ? 15f - (float)Math.Round(5f * (1f - lifeRatio)) : 15f;
+                    float skullSpawnDivisor = bossRush ? 9f : death ? 15f - (float)Math.Round((masterMode ? 3f : 5f) * (1f - lifeRatio)) : 15f;
                     float totalSkulls = 12f;
-                    int skullSpread = bossRush ? 250 : death ? 150 : 100;
+                    int skullSpread = bossRush ? 250 : death ? (masterMode ? 125 : 150) : 100;
 
                     // Spin for about 3 seconds
                     float spinVelocity = 30f;
@@ -634,7 +634,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     Vector2 headCenter = npc.Center;
-                                    float enragedHeadSpeed = (masterMode ? 5f : 4f) + (death ? (masterMode ? 2.5f : 2f) * (1f - lifeRatio) : 0f);
+                                    float enragedHeadSpeed = (masterMode ? 5f : 4f) + (death ? (masterMode ? 1f : 2f) * (1f - lifeRatio) : 0f);
                                     float enragedHeadSkullTargetX = Main.player[npc.target].Center.X - headCenter.X + Main.rand.Next(-20, 21);
                                     float enragedHeadSkullTargetY = Main.player[npc.target].Center.Y - headCenter.Y + Main.rand.Next(-20, 21);
                                     float enragedHeadSkullTargetDist = (float)Math.Sqrt(enragedHeadSkullTargetX * enragedHeadSkullTargetX + enragedHeadSkullTargetY * enragedHeadSkullTargetY);
@@ -663,7 +663,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                                     if (npc.localAI[0] % 3f == 0f)
                                     {
-                                        int probeLimit = death ? 4 : 2;
+                                        int probeLimit = death ? (masterMode ? 3 : 4) : 2;
                                         if (NPC.CountNPCS(NPCID.Probe) < probeLimit)
                                             NPC.NewNPC(npc.GetSource_FromAI(), (int)headCenter.X, (int)headCenter.Y + 30, NPCID.Probe);
                                     }
@@ -718,7 +718,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[3] += 1f;
                     if (Vector2.Distance(npc.Center, destination) < 80f || npc.ai[2] > 0f || npc.localAI[3] > 120f)
                     {
-                        float missileSpawnDivisor = death ? (masterMode ? 6f : 8f) : (masterMode ? 9f : 12f);
+                        float missileSpawnDivisor = death ? 8f : (masterMode ? 10f : 12f);
                         float totalMissiles = masterMode ? 12f : 10f;
                         npc.ai[2] += 1f;
                         if (npc.ai[2] % missileSpawnDivisor == 0f)

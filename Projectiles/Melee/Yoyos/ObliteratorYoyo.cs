@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.penetrate = -1;
-            Projectile.MaxUpdates = 8;
+            Projectile.MaxUpdates = UpdatesPerFrame;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 6 * UpdatesPerFrame;
         }

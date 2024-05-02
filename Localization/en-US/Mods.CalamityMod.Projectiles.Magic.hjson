@@ -155,6 +155,8 @@ PartySparkle.DisplayName: Pretty Sparkle
 PhantasmalFuryProj.DisplayName: Phantasmal Fury
 Phantom.DisplayName: Phantom
 PhasedGodRay.DisplayName: Phased God Ray
+PhotosyntheticShard.DisplayName: Photosynthetic Shard
+PhotosyntheticSolarBeam.DisplayName: Solar Beam
 PlagueFang.DisplayName: Plague Fang
 PlasmaBolt.DisplayName: Plasma Bolt
 PlasmaRay.DisplayName: Plasma Ray
@@ -216,8 +218,6 @@ SupremeDustProjectile.DisplayName: Earthy Dust
 TacticiansElectricBoom.DisplayName: Electric Explosion
 TacticiansTrumpCardProj.DisplayName: Trump Beam
 TearsofHeavenProjectile.DisplayName: Tears of Heaven
-TerraBeam.DisplayName: Terra Beam
-TerraShard.DisplayName: Terra Shard
 Teslabeam.DisplayName: Teslabeam
 ThunderstormShot.DisplayName: Thunderous Shot
 ThunderstormShotSplit.DisplayName: Thunderous Shot

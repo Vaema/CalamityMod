@@ -7,4 +7,3 @@ hideCode = false
 hideResources = true
 includeSource = false
 includePDB = true
-weakReferences = Luminance

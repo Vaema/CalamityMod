@@ -921,6 +921,15 @@ Sacrifice: {
 		'''
 }
 
+SamsaraSlicer: {
+	DisplayName: Samsara Slicer
+	Tooltip:
+		'''
+		Throws a disk that has a chance to generate several disks if enemies are near it
+		Stealth strikes travel slower and are rapidly orbited by the smaller disks
+		'''
+}
+
 SandDollar: {
 	DisplayName: Sand Dollar
 	Tooltip:
@@ -1189,15 +1198,6 @@ TarragonThrowingDart: {
 		'''
 		Fires a piercing dart with reduced immunity frames
 		Stealth strikes erupt into thorns on enemy hits
-		'''
-}
-
-TerraDisk: {
-	DisplayName: Terra Disk
-	Tooltip:
-		'''
-		Throws a disk that has a chance to generate several disks if enemies are near it
-		Stealth strikes travel slower and are rapidly orbited by the smaller disks
 		'''
 }
 

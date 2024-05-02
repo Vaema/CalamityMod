@@ -9,12 +9,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class TerraFlameburster : ModItem, ILocalizedModType
+    public class WildfireBloom : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
         public int FlareCounter = 0;
-        public int TerraUseTime = 8;
+        public int WildfireUseTime = 8;
 
         public override void SetDefaults()
         {
@@ -22,8 +22,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 58;
             Item.damage = 78;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = TerraUseTime;
-            Item.useAnimation = TerraUseTime;
+            Item.useTime = WildfireUseTime;
+            Item.useAnimation = WildfireUseTime;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noUseGraphic = true;
             Item.noMelee = true;
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<TerraFlamebursterHoldout>();
+            Item.shoot = ModContent.ProjectileType<WildfireBloomHoldout>();
             Item.shootSpeed = 10f;
             Item.useAmmo = AmmoID.Gel;
             Item.channel = true;
@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/TerraFlamebursterGlow").Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/WildfireBloomGlow").Value);
         }
 
         public override void AddRecipes()

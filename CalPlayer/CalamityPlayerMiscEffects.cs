@@ -3395,19 +3395,40 @@ namespace CalamityMod.CalPlayer
                 if (Player.whoAmI == Main.myPlayer)
                 {
                     // Reduce the buffTime of Electrified.
+                    bool reduceElectrifiedDuration = false;
                     for (int l = 0; l < Player.MaxBuffs; l++)
                     {
-                        bool electrified = Player.buffType[l] == BuffID.Electrified;
-                        if (Player.buffTime[l] > 2 && electrified)
-                            Player.buffTime[l]--;
+                        if (Player.buffType[l] == ModContent.BuffType<TeslaBuff>())
+                        {
+                            if (Player.buffTime[l] >= 5)
+                                reduceElectrifiedDuration = true;
+                        }
                     }
 
-                    // Summon the aura.
-                    // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
-                    var source = Player.GetSource_Buff(Player.FindBuffIndex(ModContent.BuffType<TeslaBuff>()));
-                    int damage = (int)Player.GetBestClassDamage().ApplyTo(10);
-                    if (Player.ownedProjectileCounts[ModContent.ProjectileType<TeslaAura>()] < 1)
-                        Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<TeslaAura>(), damage, 0f, Player.whoAmI);
+                    if (reduceElectrifiedDuration)
+                    {
+                        for (int l = 0; l < Player.MaxBuffs; l++)
+                        {
+                            if (Player.buffType[l] == BuffID.Electrified)
+                            {
+                                if (Player.buffTime[l] > 2)
+                                {
+                                    Player.buffTime[l]--;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // Summon the aura (this check is here to prevent out of bounds errors).
+                    if (reduceElectrifiedDuration)
+                    {
+                        // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
+                        var source = Player.GetSource_Buff(Player.FindBuffIndex(ModContent.BuffType<TeslaBuff>()));
+                        int damage = (int)Player.GetBestClassDamage().ApplyTo(10);
+                        if (Player.ownedProjectileCounts[ModContent.ProjectileType<TeslaAura>()] < 1)
+                            Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<TeslaAura>(), damage, 0f, Player.whoAmI);
+                    }
                 }
             }
             else if (Player.ownedProjectileCounts[ModContent.ProjectileType<TeslaAura>()] > 0)

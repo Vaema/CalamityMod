@@ -177,9 +177,24 @@ BladecrestOathsword: {
 	Tooltip: Fires bursts of demonic blades that exponentially decelerate and explode
 }
 
+BlightedCleaver: {
+	DisplayName: Blighted Cleaver
+	Tooltip:
+		'''
+		Fires homing blazing blades
+		Gives the player the Brutal Carnage buff on enemy hits
+		This buff increases melee damage by 20%
+		'''
+}
+
 Bonebreaker: {
 	DisplayName: Bonebreaker
 	Tooltip: Fires javelins that stick to enemies before bursting into shrapnel
+}
+
+BotanicPiercer: {
+	DisplayName: Botanic Piercer
+	Tooltip: Fires a botanic energy beam
 }
 
 Brimlance: {
@@ -237,11 +252,6 @@ Carnage: {
 CatastropheClaymore: {
 	DisplayName: Catastrophe Claymore
 	Tooltip: Fires sparkles which inflict Frostbite, Hellfire, or Ichor
-}
-
-TaintedBlade: {
-	DisplayName: Tainted Blade
-	Tooltip: Inflicts poison on enemy hits
 }
 
 CelestialClaymore: {
@@ -314,6 +324,16 @@ DeathsAscension: {
 		'''
 		Press <right> to launch a barrage of homing scythes
 		You can feel the hands of Death himself onto yours
+		'''
+}
+
+DefiledGreatsword: {
+	DisplayName: Defiled Greatsword
+	Tooltip:
+		'''
+		Fires blazing, hyper, and sunlight blades
+		Gives the player the Brutal Carnage buff on enemy hits
+		This buff increases melee damage by 20%
 		'''
 }
 
@@ -1141,6 +1161,11 @@ Swordsplosion: {
 		'''
 }
 
+TaintedBlade: {
+	DisplayName: Tainted Blade
+	Tooltip: Inflicts poison on enemy hits
+}
+
 TeardropCleaver: {
 	DisplayName: Teardrop Cleaver
 	Tooltip: Makes your enemies cry
@@ -1154,11 +1179,6 @@ TenebreusTides: {
 		Striking enemies summon liquid blades and spears to assault the struck foe
 		'Inundatio ex Laminis'
 		'''
-}
-
-TerraLance: {
-	DisplayName: Terra Lance
-	Tooltip: Fires a terra energy beam
 }
 
 Terratomere: {
@@ -1322,16 +1342,6 @@ TrueCausticEdge: {
 		'''
 }
 
-DefiledGreatsword: {
-	DisplayName: Defiled Greatsword
-	Tooltip:
-		'''
-		Fires blazing, hyper, and sunlight blades
-		Gives the player the Brutal Carnage buff on enemy hits
-		This buff increases melee damage by 20%
-		'''
-}
-
 Tumbleweed: {
 	DisplayName: Tumbleweed
 	Tooltip: Releases a rolling tumbleweed on hit
@@ -1343,16 +1353,6 @@ TyphonsGreed: {
 		'''
 		Summons water spirits while in use
 		These water spirits will home in on enemies after traveling towards the player
-		'''
-}
-
-BlightedCleaver: {
-	DisplayName: Blighted Cleaver
-	Tooltip:
-		'''
-		Fires homing blazing blades
-		Gives the player the Brutal Carnage buff on enemy hits
-		This buff increases melee damage by 20%
 		'''
 }
 

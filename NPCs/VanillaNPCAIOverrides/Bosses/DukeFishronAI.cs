@@ -188,9 +188,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (masterMode)
             {
-                idlePhaseTimer /= 2;
-                idlePhaseAcceleration *= 1.3f;
-                idlePhaseVelocity *= 1.3f;
+                idlePhaseTimer -= 6;
+                idlePhaseAcceleration *= 1.2f;
+                idlePhaseVelocity *= 1.2f;
                 chargeTime -= 4;
                 chargeVelocity += 3f;
             }
@@ -1046,7 +1046,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Main.dust[phase3ChargeDust].velocity -= npc.velocity;
                 }
 
-                // Spawn bubbles during charge in Master Mode
+                // Spawn bubbles during charge in Master Mode (these bubbles have special behavior that makes them float upward, doing no damage, before returning to their normal behavior)
                 if (masterMode && phase4)
                 {
                     if (npc.ai[2] % (bubbleBelchPhaseDivisor * 2) == 0f)
@@ -1056,7 +1056,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Vector2 bubbleSpawnDirection = Vector2.Normalize(player.Center - npc.Center) * (npc.width + 20) / 2f + npc.Center;
-                            NPC.NewNPC(npc.GetSource_FromAI(), (int)bubbleSpawnDirection.X, (int)bubbleSpawnDirection.Y + 45, NPCID.DetonatingBubble);
+                            NPC.NewNPC(npc.GetSource_FromAI(), (int)bubbleSpawnDirection.X, (int)bubbleSpawnDirection.Y + 45, NPCID.DetonatingBubble, 0, 0f, -60f);
                         }
                     }
                 }
@@ -1146,6 +1146,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static bool BuffedDetonatingBubbleAI(NPC npc, Mod mod)
         {
+            bool driftUpward = npc.ai[1] < 0f;
+            npc.damage = driftUpward ? 0 : npc.defDamage;
+
+            if (driftUpward)
+            {
+                npc.ai[1] += 1f;
+
+                if (npc.velocity.Y > -2f)
+                    npc.velocity.Y -= 0.04f;
+                
+                return false;
+            }
+
             if (npc.target == Main.maxPlayers)
             {
                 npc.TargetClosest();
@@ -1175,6 +1188,23 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.velocity.Y > 0f)
                 npc.velocity.Y -= 0.04f;
 
+            // Push Bubbles away from each other.
+            float spreadOutStrength = (CalamityWorld.death || BossRushEvent.BossRushActive) ? -0.1f : -0.08f;
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if (i != npc.whoAmI && Main.npc[i].active && Main.npc[i].type == npc.type)
+                {
+                    Vector2 otherBubbleDist = Main.npc[i].Center - npc.Center;
+                    if (otherBubbleDist.Length() < (npc.width + npc.height))
+                    {
+                        otherBubbleDist = otherBubbleDist.SafeNormalize(Vector2.UnitY);
+                        otherBubbleDist *= spreadOutStrength;
+                        npc.velocity += otherBubbleDist;
+                        Main.npc[i].velocity -= otherBubbleDist;
+                    }
+                }
+            }
+
             if (npc.ai[0] == 0f)
             {
                 int size = 40;
@@ -1199,7 +1229,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.ai[0] == 0f)
             {
                 npc.ai[1] += 1f;
-                float timeBeforePopping = 450f;
+                float timeBeforePopping = 300f;
                 if (npc.ai[1] >= timeBeforePopping)
                 {
                     npc.ai[0] = 1f;

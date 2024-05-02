@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class TerraBeam : BaseLaserbeamProjectile, ILocalizedModType
+    public class PhotosyntheticSolarBeam : BaseLaserbeamProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public override float MaxScale => 1f;
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Magic
             float lengthFromStart = Projectile.Distance(target.Center);
 
             int totalShards = (int)MathHelper.Lerp(1, 3, MathHelper.Clamp(lengthFromStart / MaxLaserLength * 1.5f, 0f, 1f));
-            int shardType = ModContent.ProjectileType<TerraShard>();
+            int shardType = ModContent.ProjectileType<PhotosyntheticShard>();
             int shardDamage = (int)(Projectile.damage * 0.5);
             for (int i = 0; i < totalShards; i++)
             {

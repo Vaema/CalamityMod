@@ -702,6 +702,8 @@ namespace CalamityMod
                 { new Tuple<int, int>(NPCID.Golem, ProjectileID.EyeBeam), new int[] { 80, 140, 172, 204, 246 } },
                 { new Tuple<int, int>(NPCID.GolemHead, ProjectileID.Fireball), new int[] { 60, 120, 160, 200, 240 } },
                 { new Tuple<int, int>(NPCID.GolemHead, ProjectileID.EyeBeam), new int[] { 80, 140, 172, 204, 246 } },
+                { new Tuple<int, int>(NPCID.GolemFistLeft, ProjectileID.InfernoHostileBolt), new int[] { 88, 156, 184, 212, 264 } },
+                { new Tuple<int, int>(NPCID.GolemFistRight, ProjectileID.InfernoHostileBolt), new int[] { 88, 156, 184, 212, 264 } },
                 { new Tuple<int, int>(NPCID.GolemHeadFree, ProjectileID.Fireball), new int[] { 60, 120, 160, 200, 240 } },
                 { new Tuple<int, int>(NPCID.GolemHeadFree, ProjectileID.EyeBeam), new int[] { 80, 140, 172, 204, 246 } },
                 { new Tuple<int, int>(NPCID.GolemHeadFree, ProjectileID.InfernoHostileBolt), new int[] { 88, 156, 184, 212, 264 } },

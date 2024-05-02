@@ -163,7 +163,7 @@ FathomSwarmerBoots: {
 	DisplayName: Fathom Swarmer Greaves
 	Tooltip:
 		'''
-		4% increased summon damage
+		8% increased summon damage
 		Grants the ability to swim
 		Movement speed increased by 40% while submerged in liquid
 		'''
@@ -174,8 +174,8 @@ FathomSwarmerBreastplate: {
 	Tooltip:
 		'''
 		6% increased damage reduction
-		6% increased summon damage
-		Increases defense by 10 and grants +2.5 HP/s life regen while submerged in liquid
+		      Increases your max number of minions by 1
+		10% increased summon damage
 		Reduces defense loss within the Abyss
 		'''
 }
@@ -184,14 +184,15 @@ FathomSwarmerVisage: {
 	DisplayName: Fathom Swarmer Visage
 	Tooltip:
 		'''
-		5% increased summon damage
+		      Increases your max number of minions by 1
+		8% increased summon damage
 		Provides breathing and light underwater
 		'''
 	SetBonus:
 		'''
 		10% increased summon damage and +2 max minions
 		Grants the ability to climb walls
-		30% increased summon damage while submerged in liquid
+		20% increased summon damage, +10 defense and +2.5 HP/s life regen while underwater
 		Provides a moderate amount of light and moderately reduces breath loss in the abyss
 		'''
 }

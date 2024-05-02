@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class TerraDiskProjectile2 : ModProjectile, ILocalizedModType
+    public class SamsaraSlicerSmallDisk : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         private double rotation = 0;
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Rogue
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
                 Projectile p = Main.projectile[i];
-                if (p.identity == Projectile.ai[0] && p.active && p.type == ModContent.ProjectileType<TerraDiskProjectile>())
+                if (p.identity == Projectile.ai[0] && p.active && p.type == ModContent.ProjectileType<SamsaraSlicerProjectile>())
                 {
                     parent = p;
                     active = true;

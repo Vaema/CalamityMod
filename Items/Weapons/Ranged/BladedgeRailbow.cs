@@ -65,7 +65,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             ModContent.ProjectileType<CondemnationArrow>(),
             ModContent.ProjectileType<ContagionArrow>(),
             ModContent.ProjectileType<CorrodedShell>(),
-            ModContent.ProjectileType<LunarBolt2>(),
             ModContent.ProjectileType<DaemonsFlameArrow>(),
             ModContent.ProjectileType<DWArrow>(),
             ModContent.ProjectileType<DrataliornusFlame>(),
@@ -85,7 +84,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             ModContent.ProjectileType<ToxicArrow>(),
             ModContent.ProjectileType<UltimaBolt>(),
             ModContent.ProjectileType<UltimaRay>(),
-            ModContent.ProjectileType<UltimaSpark>()
+            ModContent.ProjectileType<UltimaSpark>(),
+            ModContent.ProjectileType<VernalBolt>()
         };
         #endregion
 
