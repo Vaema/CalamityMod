@@ -41,11 +41,10 @@ namespace CalamityMod.Projectiles.Ranged
             if (Returning == 1f) // Returning
             {
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi;
-                Projectile.extraUpdates = 1;
                 Projectile.usesIDStaticNPCImmunity = true; // Abuse of iframe shenanigans to make sure it consistently hits when ripping out
                 Projectile.idStaticNPCHitCooldown = 1;
 
-                float returnSpeed = 16f;
+                float returnSpeed = 22f;
                 if (ownerDist.Length() > 3000f)
                     Projectile.Kill();
 
