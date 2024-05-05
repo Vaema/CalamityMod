@@ -131,7 +131,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<Buzzkill>().
                 AddIngredient<SpeedBlaster>().
-                AddIngredient<Triploon>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient<GalacticaSingularity>(5).
