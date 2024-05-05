@@ -924,12 +924,12 @@ VividClarity: {
 
 VoidVortex: {
 	DisplayName: Void Vortex
-	Tooltip: Conjures a swirling vortex of supercharged magnet spheres around the cursor
+	Tooltip: Conjures a swirling vortex of supercharged magnet spheres around the cursor that explodes into a storm of homing mini spheres
 }
 
 VoltaicClimax: {
 	DisplayName: Voltaic Climax
-	Tooltip: Conjures an octagon of supercharged magnet spheres around the cursor
+	Tooltip: Conjures a ring of supercharged magnet spheres around the cursor
 }
 
 Waywasher: {

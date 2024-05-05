@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = 50;
             Projectile.DamageType = DamageClass.Magic;
         }
 
@@ -34,7 +34,8 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             // Drift to a stop after being launched
-            Projectile.velocity *= 0.972f;
+            if (Projectile.timeLeft < 40)
+            Projectile.velocity *= 0.882f;
 
             // On frame 1, pick a random offset to use for the firing pattern.
             if (Projectile.timeLeft == Lifetime)
@@ -52,7 +53,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Update animation
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
+            if (Projectile.frameCounter > 4)
             {
                 Projectile.frameCounter = 0;
                 Projectile.frame++;
@@ -62,7 +63,10 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
 
-            CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 8f, FramesPerBeam, 1, ModContent.ProjectileType<MagneticBeam>(), 1D, true);
+            NPC target = Projectile.Center.ClosestNPCAt(550);
+
+            if ((Projectile.timeLeft == 30 || Projectile.timeLeft == 10) && target != null)
+                CalamityUtils.MagnetSphereHitscan(Projectile, Vector2.Distance(Projectile.Center, target.Center), 8f, 0, 1, ModContent.ProjectileType<MagneticBeam>(), 1D, true);
         }
 
         public override Color? GetAlpha(Color lightColor)

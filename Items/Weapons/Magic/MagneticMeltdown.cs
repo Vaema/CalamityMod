@@ -21,18 +21,18 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 78;
             Item.height = 78;
-            Item.damage = 100;
+            Item.damage = 245;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 40;
-            Item.useTime = 49;
-            Item.useAnimation = 49;
+            Item.mana = 32;
+            Item.useTime = 37;
+            Item.useAnimation = 37;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<MagneticOrb>();
-            Item.shootSpeed = 12f;
+            Item.shootSpeed = 18f;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.SpectreStaff).
                 AddIngredient(ItemID.MagnetSphere).
-                AddIngredient<DarkPlasma>(3).
+                AddIngredient<TwistingNether>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

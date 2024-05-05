@@ -61,12 +61,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<P90>().
                 AddIngredient(ItemID.Uzi).
-                AddIngredient<PearlGod>(). //This should be removed
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.FragmentVortex, 10).
-                AddIngredient<GalacticaSingularity>(6). //This should be removed
-                AddIngredient<CoreofCalamity>(). // This should be removed
-                AddIngredient<Stardust>(25). // This should be removed
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

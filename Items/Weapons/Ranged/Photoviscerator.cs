@@ -24,14 +24,14 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         // Right-click stats
         public static float RightClickVelocityMult = 2.5f;
-        public static int RightClickCooldown = 20;
+        public static int RightClickCooldown = 30;
 
         public override void SetDefaults()
         {
             Item.width = 208;
             Item.height = 66;
 
-            Item.damage = 450;
+            Item.damage = 495;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = LightBombCooldown;
             Item.shootSpeed = 6f;

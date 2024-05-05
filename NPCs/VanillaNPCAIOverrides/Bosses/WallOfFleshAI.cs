@@ -532,6 +532,164 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             return false;
         }
 
+        public static bool BuffedHungryAI(NPC npc, Mod mod)
+        {
+            if (npc.justHit)
+                npc.ai[1] = 10f;
+
+            if (Main.wofNPCIndex < 0)
+            {
+                npc.active = false;
+                return false;
+            }
+
+            npc.TargetClosest();
+            float acceleration = Main.masterMode ? 0.15f : 0.12f;
+            float distanceFromWall = 300f;
+            npc.damage = npc.defDamage;
+            npc.defense = npc.defDefense;
+            if ((double)Main.npc[Main.wofNPCIndex].life < (double)Main.npc[Main.wofNPCIndex].lifeMax * 0.5)
+            {
+                npc.damage = Main.masterMode ? 180 : 120;
+                npc.defense = 30;
+                acceleration += Main.masterMode ? 0.1f : 0.08f;
+            }
+            else if ((double)Main.npc[Main.wofNPCIndex].life < (double)Main.npc[Main.wofNPCIndex].lifeMax * 0.75)
+            {
+                npc.damage = Main.masterMode ? 135 : 90;
+                npc.defense = 20;
+                acceleration += Main.masterMode ? 0.05f : 0.04f;
+            }
+
+            if (npc.whoAmI % 4 == 0)
+                distanceFromWall *= 1.75f;
+
+            if (npc.whoAmI % 4 == 1)
+                distanceFromWall *= 1.5f;
+
+            if (npc.whoAmI % 4 == 2)
+                distanceFromWall *= 1.25f;
+
+            if (npc.whoAmI % 3 == 0)
+                distanceFromWall *= 1.5f;
+
+            if (npc.whoAmI % 3 == 1)
+                distanceFromWall *= 1.25f;
+
+            distanceFromWall *= 0.75f;
+
+            float num404 = Main.npc[Main.wofNPCIndex].Center.X;
+            float y3 = Main.npc[Main.wofNPCIndex].position.Y;
+            float num405 = Main.wofDrawAreaBottom - Main.wofDrawAreaTop;
+            y3 = (float)Main.wofDrawAreaTop + num405 * npc.ai[0];
+            npc.ai[2] += 1f;
+            if (npc.ai[2] > 100f)
+            {
+                distanceFromWall = (int)(distanceFromWall * 1.3f);
+                if (npc.ai[2] > 200f)
+                    npc.ai[2] = 0f;
+            }
+
+            Vector2 vector40 = new Vector2(num404, y3);
+            float num406 = Main.player[npc.target].Center.X - (float)(npc.width / 2) - vector40.X;
+            float num407 = Main.player[npc.target].Center.Y - (float)(npc.height / 2) - vector40.Y;
+            float num408 = (float)Math.Sqrt(num406 * num406 + num407 * num407);
+            if (npc.ai[1] == 0f)
+            {
+                if (num408 > distanceFromWall)
+                {
+                    num408 = distanceFromWall / num408;
+                    num406 *= num408;
+                    num407 *= num408;
+                }
+
+                if (npc.position.X < num404 + num406)
+                {
+                    npc.velocity.X += acceleration;
+                    if (npc.velocity.X < 0f && num406 > 0f)
+                        npc.velocity.X += acceleration * 2.5f;
+                }
+                else if (npc.position.X > num404 + num406)
+                {
+                    npc.velocity.X -= acceleration;
+                    if (npc.velocity.X > 0f && num406 < 0f)
+                        npc.velocity.X -= acceleration * 2.5f;
+                }
+
+                if (npc.position.Y < y3 + num407)
+                {
+                    npc.velocity.Y += acceleration;
+                    if (npc.velocity.Y < 0f && num407 > 0f)
+                        npc.velocity.Y += acceleration * 2.5f;
+                }
+                else if (npc.position.Y > y3 + num407)
+                {
+                    npc.velocity.Y -= acceleration;
+                    if (npc.velocity.Y > 0f && num407 < 0f)
+                        npc.velocity.Y -= acceleration * 2.5f;
+                }
+
+                float maxVelocity = 4f;
+                if (Main.wofNPCIndex >= 0)
+                {
+                    float velocityBoost = 1.5f;
+                    float wallLifeRatio = Main.npc[Main.wofNPCIndex].life / (float)Main.npc[Main.wofNPCIndex].lifeMax;
+                    if (wallLifeRatio < 0.75f)
+                        velocityBoost += 0.7f;
+
+                    if (wallLifeRatio < 0.5f)
+                        velocityBoost += 0.7f;
+
+                    if (wallLifeRatio < 0.25f)
+                        velocityBoost += 0.9f;
+
+                    if (wallLifeRatio < 0.1f)
+                        velocityBoost += 0.9f;
+
+                    velocityBoost *= Main.masterMode ? 1.5f : 1.25f;
+                    velocityBoost += 0.3f;
+                    maxVelocity += velocityBoost * 0.35f;
+                    if (npc.Center.X < Main.npc[Main.wofNPCIndex].Center.X && Main.npc[Main.wofNPCIndex].velocity.X > 0f)
+                        maxVelocity += 6f;
+
+                    if (npc.Center.X > Main.npc[Main.wofNPCIndex].Center.X && Main.npc[Main.wofNPCIndex].velocity.X < 0f)
+                        maxVelocity += 6f;
+                }
+
+                if (npc.velocity.X > maxVelocity)
+                    npc.velocity.X = maxVelocity;
+
+                if (npc.velocity.X < -maxVelocity)
+                    npc.velocity.X = -maxVelocity;
+
+                if (npc.velocity.Y > maxVelocity)
+                    npc.velocity.Y = maxVelocity;
+
+                if (npc.velocity.Y < -maxVelocity)
+                    npc.velocity.Y = -maxVelocity;
+            }
+            else if (npc.ai[1] > 0f)
+                npc.ai[1] -= 1f;
+            else
+                npc.ai[1] = 0f;
+
+            if (num406 > 0f)
+            {
+                npc.spriteDirection = 1;
+                npc.rotation = (float)Math.Atan2(num407, num406);
+            }
+
+            if (num406 < 0f)
+            {
+                npc.spriteDirection = -1;
+                npc.rotation = (float)Math.Atan2(num407, num406) + MathHelper.Pi;
+            }
+
+            Lighting.AddLight(npc.Center, 0.3f, 0.2f, 0.1f);
+
+            return false;
+        }
+
         public static bool BuffedWallofFleshEyeAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();

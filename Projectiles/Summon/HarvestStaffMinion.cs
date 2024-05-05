@@ -163,7 +163,7 @@ namespace CalamityMod.Projectiles.Summon
 
         private SoundStyle _idleRareSound = new("CalamityMod/Sounds/Custom/PumpkinRareIdle") { Volume = 0.2f };
 
-        private SoundStyle _screamSound = new("CalamityMod/Sounds/Custom/PumpkinScream", 2);
+        private SoundStyle _screamSound = new("CalamityMod/Sounds/Custom/PumpkinScream", 2) { Volume = 0.5f };
 
         private SoundStyle _jumpSound = new("CalamityMod/Sounds/Custom/PumpkinJump");
 
@@ -222,6 +222,12 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
+            if (Animation == AnimationState.Grow && (MySentry is null || Projectile.Distance(MySentry.Center) > 600f))
+            {
+                Projectile.Kill();
+                NetUpdate();
+            }
+
             Target = Projectile.Center.MinionHoming(State == AIState.Still ? PlantedEnemyDistanceDetection : NormalEnemyDistanceDetection, Owner, false);
 
             switch (State)
@@ -292,6 +298,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnKill(int timeLeft)
         {
+            if (State != AIState.Attack)
+                return;
+            
             Projectile.ExpandHitboxBy(4f);
             Projectile.Damage();
 
@@ -323,6 +332,7 @@ namespace CalamityMod.Projectiles.Summon
                     dust.color = Color.Chocolate;
                 }
             }
+
             if (Main.zenithWorld)
                 SoundEngine.PlaySound(_boomSoundGFB, Projectile.Center);
             else

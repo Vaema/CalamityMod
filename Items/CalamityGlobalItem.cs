@@ -469,25 +469,6 @@ namespace CalamityMod.Items
                     }
                 }
             }
-            if (modPlayer.dynamoStemCells)
-            {
-                if (item.CountsAsClass<RangedDamageClass>() && Main.rand.NextBool(20) && !item.channel)
-                {
-                    double damageMult = item.useTime / 30D;
-                    if (damageMult < 0.35)
-                        damageMult = 0.35;
-
-                    int newDamage = (int)(damage * 2 * damageMult);
-                    newDamage = player.ApplyArmorAccDamageBonusesTo(newDamage);
-
-                    if (player.whoAmI == Main.myPlayer)
-                    {
-                        int projectile = Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<MiniatureFolly>(), newDamage, 2f, player.whoAmI);
-                        if (projectile.WithinBounds(Main.maxProjectiles))
-                            Main.projectile[projectile].DamageType = DamageClass.Generic;
-                    }
-                }
-            }
             if (modPlayer.prismaticRegalia)
             {
                 if (item.CountsAsClass<MagicDamageClass>() && Main.rand.NextBool(20) && !item.channel)

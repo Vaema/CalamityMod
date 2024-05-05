@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.width = 24;
             Projectile.height = 8;
             Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.DamageType = DamageClass.Generic;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.light = 0.25f;

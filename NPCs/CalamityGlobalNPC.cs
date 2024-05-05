@@ -4238,6 +4238,14 @@ namespace CalamityMod.NPCs
                         }
                         break;
 
+                    case NPCAIStyleID.TheHungry:
+                        switch (npc.type)
+                        {
+                            case NPCID.TheHungry:
+                                return WallOfFleshAI.BuffedHungryAI(npc, Mod);
+                        }
+                        break;
+
                     case NPCAIStyleID.GiantTortoise:
                         if (npc.type == NPCType<Plagueshell>())
                         {
@@ -6965,6 +6973,8 @@ namespace CalamityMod.NPCs
                     // This life ratio is fine now because all Destroyer segments update to have the same amount of life every frame
                     float destroyerLifeRatio = npc.life / (float)npc.lifeMax;
 
+                    // Phases
+                    bool phase4 = destroyerLifeRatio < (death ? 0.4f : 0.25f);
                     bool phase5 = destroyerLifeRatio < (death ? 0.2f : 0.1f);
 
                     // Spawn DR check
@@ -7019,8 +7029,8 @@ namespace CalamityMod.NPCs
                         }
                         else if (npc.type == NPCID.TheDestroyerBody && revenge)
                         {
-                            float shootProjectileTime = death ? 270f : 450f;
-                            float bodySegmentTime = npc.ai[0] * 30f;
+                            float shootProjectileTime = death ? (masterMode ? (phase5 ? 30f : phase4 ? 60f : 90f) : 270f) : (masterMode ? (phase5 ? 90f : phase4 ? 120f : 150f) : 450f);
+                            float bodySegmentTime = npc.ai[0] * (masterMode ? 15f : 30f);
                             float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
                             float telegraphGateValue = shootProjectileGateValue - DestroyerAI.LaserTelegraphTime;
                             if (newAI[0] > telegraphGateValue)

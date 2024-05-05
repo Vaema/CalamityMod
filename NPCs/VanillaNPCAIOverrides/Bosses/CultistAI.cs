@@ -36,12 +36,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Phases
             bool bossRush = BossRushEvent.BossRushActive;
+            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
-            bool phase2 = lifeRatio < 0.85f;
-            bool phase3 = lifeRatio < 0.7f;
-            bool phase4 = lifeRatio < 0.55f;
-            bool phase5 = lifeRatio < 0.4f;
-            bool phase6 = lifeRatio < 0.25f;
+            bool phase2 = lifeRatio < 0.85f || masterMode;
+            bool phase3 = lifeRatio < 0.7f || masterMode;
+            bool phase4 = lifeRatio < (masterMode ? 0.8f : 0.55f);
+            bool phase5 = lifeRatio < (masterMode ? 0.6f : 0.4f);
+            bool phase6 = lifeRatio < (masterMode ? 0.4f : 0.25f);
+            bool phase7 = masterMode && lifeRatio < 0.2f;
+            bool phase8 = masterMode && lifeRatio < 0.1f;
 
             // Variables
             bool isCultist = npc.type == NPCID.CultistBoss;
@@ -55,13 +58,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float iceMistSpeed = (phase6 ? 12f : 10f) + (death ? 2f * (1f - lifeRatio) : 0f);
             int iceMistAmt = phase3 ? 2 : 1;
             int fireballFireRate = phase5 ? 10 : 12;
-            float fireballSpeed = (phase6 ? 7.5f : 6f) + (death ? 2f * (1f - lifeRatio) : 0f) - (isCultist ? 0f : 3f);
+            float fireballSpeed = (phase7 ? 10f : phase6 ? 7.5f : 6f) + (death ? 2f * (1f - lifeRatio) : 0f) - (isCultist ? 0f : 3f);
             int lightningOrbPhaseTime = phase2 ? 90 : 120;
-            int ancientLightSpawnRate = phase4 ? 25 : 30;
-            int ancientLightAmt = phase4 ? 3 : 2;
+            int ancientLightSpawnRate = phase7 ? 20 : phase4 ? 25 : 30;
+            int ancientLightAmt = phase7 ? 4 : phase4 ? 3 : 2;
             int ancientDoomLimit = 10;
-            int idleTime = phase3 ? 35 : 40;
-            float timeToFinishRitual = phase5 ? 300f : 360f;
+            int idleTime = phase8 ? 20 : phase7 ? 30 : phase3 ? 35 : 40;
+            float timeToFinishRitual = phase8 ? 180f : phase7 ? 240f : phase5 ? 300f : 360f;
 
             if (bossRush)
             {
@@ -73,7 +76,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 lightningOrbPhaseTime = 90;
                 ancientLightSpawnRate = 20;
                 ancientLightAmt = 4;
-                idleTime = 30;
+                idleTime = 20;
             }
 
             if (Main.getGoodWorld)
@@ -600,7 +603,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Projectile.NewProjectile(npc.GetSource_FromAI(), shadowFireballDirection, shadowFireballVelocity, ProjectileID.CultistBossFireBallClone, fireballDamage, 0f, Main.myPlayer);
                     }
 
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y - 100f, 0f, 0f, ProjectileID.CultistBossLightningOrb, lightningDamage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y + (masterMode ? 210f : -100f), 0f, 0f, ProjectileID.CultistBossLightningOrb, lightningDamage, 0f, Main.myPlayer);
+                    if (masterMode)
+                    {
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + 210f, npc.Center.Y - 210f, 0f, 0f, ProjectileID.CultistBossLightningOrb, lightningDamage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X - 210f, npc.Center.Y - 210f, 0f, 0f, ProjectileID.CultistBossLightningOrb, lightningDamage, 0f, Main.myPlayer);
+                    }
                 }
 
                 npc.ai[1] += 1f;
@@ -1086,11 +1094,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static bool BuffedAncientDoomAI(NPC npc, Mod mod)
         {
             bool bossRush = BossRushEvent.BossRushActive;
+            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
             npc.damage = npc.defDamage = 0;
             float duration = 420f;
             float spawnAnimTime = 120f;
-            int rateOfChange = 1;
+            int rateOfChange = masterMode ? 2 : 1;
             float splitProjVelocity = death ? 4.8f : 3.2f;
 
             // Percent life remaining for Cultist or Eidolon Wyrm
@@ -1194,7 +1203,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 kill = true;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int totalProjectiles = CalamityWorld.LegendaryMode ? 9 : (Main.npc[(int)npc.ai[0]].type == NPCID.CultistBoss && !phase3) ? 8 : 4;
+                    int totalProjectiles = CalamityWorld.LegendaryMode ? 9 : (Main.npc[(int)npc.ai[0]].type == NPCID.CultistBoss && !phase3) ? 8 : masterMode ? 5 : 4;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     Vector2 spinningPoint = new Vector2(0f, -splitProjVelocity);
                     for (int k = 0; k < totalProjectiles; k++)

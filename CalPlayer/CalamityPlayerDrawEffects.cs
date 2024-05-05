@@ -180,25 +180,14 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player != null && !Player.dead)
                 {
-                    Lighting.AddLight((int)Player.Center.X / 16, (int)Player.Center.Y / 16, 31 / 235f, 170 / 235f, 222 / 235f);
-                    if (!Player.mount.Active)
-                    {
-                        if (Main.rand.NextBool(14))
-                        {
-                            int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 8, Player.height + 8, DustID.UnusedWhiteBluePurple, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.5f);
-                            Main.dust[dust].noGravity = true;
-                            Main.dust[dust].velocity *= 1f;
-                            drawInfo.DustCache.Add(dust);
-                        }
-                    }
+                    Lighting.AddLight(Player.Center, Color.Lerp(Color.Cyan, Color.White, 0.7f).ToVector3());
                     if (!Player.StandingStill() && !Player.mount.Active)
                     {
-                        if (Main.rand.NextBool(8))
+                        if (Main.rand.NextBool())
                         {
-                            int de_dust2 = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, Main.rand.NextBool() ? 204 : 213, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.5f);
-                            Main.dust[de_dust2].noGravity = true;
-                            Main.dust[de_dust2].velocity *= 0.5f;
-                            drawInfo.DustCache.Add(de_dust2);
+                            Vector2 velocity = -Player.velocity.SafeNormalize(Vector2.UnitY) * Main.rand.NextFloat(1, 3);
+                            Particle nanoDust = new NanoParticle(drawInfo.Position + new Vector2(Main.rand.Next(Player.width + 1), Main.rand.Next(Player.height + 1)), velocity, (Main.rand.NextBool(3) ? Color.RoyalBlue : Color.Cyan) * 0.9f, Main.rand.NextFloat(0.2f, 0.7f), 9, false, true);
+                            GeneralParticleHandler.SpawnParticle(nanoDust);
                         }
                     }
                 }

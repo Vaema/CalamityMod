@@ -6,10 +6,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class TerraArrowSplit : ModProjectile, ILocalizedModType
+    public class SproutingArrowSplit : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Items/Ammo/TerraArrow";
+        public override string Texture => "CalamityMod/Items/Ammo/SproutingArrow";
 
         public override void SetDefaults()
         {

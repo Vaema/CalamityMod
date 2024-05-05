@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
+    [LegacyName("TerraDisk")]
     public class SamsaraSlicer : RogueWeapon
     {
         public static float Speed = 12f;

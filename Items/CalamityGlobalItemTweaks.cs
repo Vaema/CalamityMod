@@ -135,7 +135,7 @@ namespace CalamityMod.Items
                 { ItemID.IchorArrow, Do(DamageExact(13)) },
                 { ItemID.IchorBullet, Do(DamageExact(11)) },
                 { ItemID.ImpStaff, Do(AutoReuse, UseExact(30), DamageExact(25)) },
-                { ItemID.InfernoFork, Do(DamageExact(84)) },
+                { ItemID.InfernoFork, Do(DamageExact(99), ShootSpeedExact(11)) },
                 { ItemID.InfluxWaver, Do(UseMeleeSpeed, DamageExact(80), UseExact(25)) },
                 { ItemID.IronShortsword, Do(AutoReuse, TrueMelee, DamageExact(10)) },
                 { ItemID.Keybrand, Do(UseTurn) },

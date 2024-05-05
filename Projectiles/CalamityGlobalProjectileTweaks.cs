@@ -162,6 +162,8 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.IceSickle, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.IchorBullet, standardBulletTweaks },
                 { ProjectileID.InfluxWaver, Do(ExtraUpdatesExact(1)) },
+                { ProjectileID.InfernoFriendlyBolt, Do(ExtraUpdatesExact(1)) },
+                { ProjectileID.InfernoFriendlyBlast, Do(ExtraUpdatesExact(2)) },
                 { ProjectileID.LaserDrill, Do(ArmorPenetrationDelta(+25), LocalIFrames(5)) },
                 { ProjectileID.LightDisc, Do(MaxUpdatesExact(3)) },
                 { ProjectileID.LostSoulHostile, Do(TileCollide) }, // Ragged Caster

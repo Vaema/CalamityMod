@@ -6,7 +6,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Ammo
 {
-    public class TerraBullet : ModItem, ILocalizedModType
+    [LegacyName("TerraArrow")]
+    public class SproutingArrow : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
@@ -16,24 +17,24 @@ namespace CalamityMod.Items.Ammo
 
         public override void SetDefaults()
         {
-            Item.width = 8;
-            Item.height = 8;
-            Item.damage = 8;
+            Item.width = 22;
+            Item.height = 36;
+            Item.damage = 15;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = 9999;
             Item.consumable = true;
-            Item.knockBack = 1.25f;
-            Item.value = Item.sellPrice(copper: 16);
+            Item.knockBack = 1.5f;
+            Item.value = Item.sellPrice(copper: 20);
             Item.rare = ItemRarityID.Lime;
-            Item.shoot = ModContent.ProjectileType<TerraBulletMain>();
-            Item.shootSpeed = 2f;
-            Item.ammo = AmmoID.Bullet;
+            Item.shoot = ModContent.ProjectileType<SproutingArrowMain>();
+            Item.shootSpeed = 15f;
+            Item.ammo = AmmoID.Arrow;
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient(ItemID.CrystalBullet, 100).
+            CreateRecipe(250).
+                AddIngredient(ItemID.WoodenArrow, 250).
                 AddIngredient<LivingShard>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
