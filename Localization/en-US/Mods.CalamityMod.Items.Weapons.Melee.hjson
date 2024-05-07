@@ -970,6 +970,16 @@ RemsRevenge: {
 		'''
 }
 
+Respiteblock: {
+	DisplayName: Respiteblock
+	Tooltip:
+		'''
+		A glistening white chainsaw that spews green and purple blood all over
+		Hitting enemies with the blade will heal you and deal immense damage
+		[c/0e8401:'It's Ok To Be Dangerous']
+		'''
+}
+
 Riptide: {
 	DisplayName: Riptide
 	Tooltip: Sprays a spiral of aqua streams
