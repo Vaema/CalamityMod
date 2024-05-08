@@ -174,7 +174,7 @@ FathomSwarmerBreastplate: {
 	Tooltip:
 		'''
 		6% increased damage reduction
-		      Increases your max number of minions by 1
+		Increases your max number of minions by 1
 		10% increased summon damage
 		Reduces defense loss within the Abyss
 		'''
@@ -184,7 +184,7 @@ FathomSwarmerVisage: {
 	DisplayName: Fathom Swarmer Visage
 	Tooltip:
 		'''
-		      Increases your max number of minions by 1
+		Increases your max number of minions by 1
 		8% increased summon damage
 		Provides breathing and light underwater
 		'''

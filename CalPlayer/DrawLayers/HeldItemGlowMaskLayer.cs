@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Items.SummonItems;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -47,6 +48,8 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/AuroraBlazerGlow").Value;
             else if (itemType == ModContent.ItemType<CleansingBlaze>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/CleansingBlazeGlow").Value;
+            else if (itemType == ModContent.ItemType<CosmicImmaterializer>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/CosmicImmaterializerGlow").Value;
             else if (itemType == ModContent.ItemType<DeathhailStaff>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/DeathhailStaffGlow").Value;
             else if (itemType == ModContent.ItemType<Deathwind>())
@@ -77,6 +80,8 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/PlantationStaffGlow").Value;
             else if (itemType == ModContent.ItemType<PrismaticBreaker>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/PrismaticBreakerGlow").Value;
+            else if (itemType == ModContent.ItemType<PulseRifle>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/PulseRifleGlow").Value;
             else if (itemType == ModContent.ItemType<SoulPiercer>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SoulPiercerGlow").Value;
             else if (itemType == ModContent.ItemType<SubsumingVortex>())
@@ -246,7 +251,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 if (drawPlayer.direction == -1)
                     drawOrigin = new Vector2(itemDrawFrame.Width + xOffset, itemDrawFrame.Height / 2);
 
-                item = new DrawData(glowMask, new Vector2((int)(drawInfo.ItemLocation.X - Main.screenPosition.X + offset.X), (int)(drawInfo.ItemLocation.Y - Main.screenPosition.Y + offset.Y)), itemDrawFrame, new Color(250, 250, 250, heldItem.alpha), drawPlayer.itemRotation, drawOrigin, adjustedItemScale, drawInfo.itemEffect);
+                item = new DrawData(glowMask, new Vector2((int)(drawInfo.ItemLocation.X - Main.screenPosition.X + offset.X), (int)(drawInfo.ItemLocation.Y - Main.screenPosition.Y + offset.Y)) - new Vector2(glowMask.Width * 0.5f, 0), itemDrawFrame, new Color(250, 250, 250, heldItem.alpha), drawPlayer.itemRotation, drawOrigin, adjustedItemScale, drawInfo.itemEffect);
                 existingDrawData.Add(item);
 
                 return;

@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Summon
             Vector2 glowPos = Projectile.position - Main.screenPosition + (glowTex.Size() * 0.5f);
             Main.EntitySpriteDraw(glowTex, glowPos, null, dd.color, 0f, glowTex.Size() * 0.5f, 1f, SpriteEffects.None);
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
             if (Main.rand.NextBool(240))
             {

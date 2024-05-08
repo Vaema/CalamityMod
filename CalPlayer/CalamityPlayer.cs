@@ -226,6 +226,7 @@ namespace CalamityMod.CalPlayer
         public int spiritOriginBullseyeShootCountdown = 0;
         public int spiritOriginConvertedCrit = 0;
         public int RustyMedallionCooldown = 0;
+        public int MiniSwamerCooldown = 0;
         public float SulphWaterPoisoningLevel;
         public float holyInfernoFadeIntensity;
         public NPC unstableSelectedTarget;
@@ -581,6 +582,7 @@ namespace CalamityMod.CalPlayer
         public bool crownJewel = false;
         public bool infectedJewel = false;
         public bool purity = false;
+        public bool eleResist = false;
         public int PurityHealSlowdownFrames = 0;
         public bool harpyRing = false;
         public bool angelTreads = false;
@@ -682,6 +684,7 @@ namespace CalamityMod.CalPlayer
         public bool silvaWings = false;
         public int icicleCooldown = 0;
         public bool RustyMedallionDroplets = false;
+        public bool MiniSwarmers = false;
         public bool noStupidNaturalARSpawns = false;
         public int voidFrameCounter = 0;
         public int voidFrame = 0;
@@ -1774,6 +1777,7 @@ namespace CalamityMod.CalPlayer
             silvaWings = false;
             corrosiveSpine = false;
             RustyMedallionDroplets = false;
+            MiniSwarmers = false;
             noStupidNaturalARSpawns = false;
             rottenDogTooth = false;
             angelicAlliance = false;
@@ -4091,6 +4095,17 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (MiniSwarmers && MiniSwamerCooldown <= 0)
+            {
+                if (item.CountsAsClass<RangedDamageClass>() && !item.channel)
+                {
+                    int newDamage = (int)(damage * (6 - 5 * (item.useTime >= 25 ? 1 : item.useTime / 25)));
+                    newDamage = Player.ApplyArmorAccDamageBonusesTo(newDamage);
+                    Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<MiniatureFolly>(), newDamage, 2f, Player.whoAmI);
+
+                    MiniSwamerCooldown = DynamoStemCells.MiniSwamerCooldown;
+                }
+            }
             return true;
         }
         #endregion

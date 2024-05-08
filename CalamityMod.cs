@@ -111,8 +111,9 @@ namespace CalamityMod
         // Destroyer glowmasks
         public static Asset<Texture2D>[] DestroyerGlowmasks = new Asset<Texture2D>[3];
 
-        // Wall of Flesh eye laser telegraph glowmask
+        // Wall of Flesh glowmasks
         public static Asset<Texture2D> WallOfFleshEyeGlowmask;
+        public static Asset<Texture2D> WallOfFleshDemonSickleTexture;
 
         // Master Rev+ Skeletron Prime
         public static Asset<Texture2D> ChadPrime;
@@ -304,8 +305,9 @@ namespace CalamityMod
             DestroyerGlowmasks[1] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerBodyGlow", AssetRequestMode.AsyncLoad);
             DestroyerGlowmasks[2] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerTailGlow", AssetRequestMode.AsyncLoad);
 
-            // Wall of Flesh glowmask
+            // Wall of Flesh glowmasks
             WallOfFleshEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/WallOfFleshEyeTelegraphGlow", AssetRequestMode.AsyncLoad);
+            WallOfFleshDemonSickleTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ForbiddenOathbladeProjectile", AssetRequestMode.AsyncLoad);
 
             // Master Rev+ Skeletron Prime textures
             ChadPrime = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ChadPrime", AssetRequestMode.AsyncLoad);

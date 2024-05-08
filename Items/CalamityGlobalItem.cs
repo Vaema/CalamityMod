@@ -469,25 +469,6 @@ namespace CalamityMod.Items
                     }
                 }
             }
-            if (modPlayer.dynamoStemCells)
-            {
-                if (item.CountsAsClass<RangedDamageClass>() && Main.rand.NextBool(20) && !item.channel)
-                {
-                    double damageMult = item.useTime / 30D;
-                    if (damageMult < 0.35)
-                        damageMult = 0.35;
-
-                    int newDamage = (int)(damage * 2 * damageMult);
-                    newDamage = player.ApplyArmorAccDamageBonusesTo(newDamage);
-
-                    if (player.whoAmI == Main.myPlayer)
-                    {
-                        int projectile = Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<MiniatureFolly>(), newDamage, 2f, player.whoAmI);
-                        if (projectile.WithinBounds(Main.maxProjectiles))
-                            Main.projectile[projectile].DamageType = DamageClass.Generic;
-                    }
-                }
-            }
             if (modPlayer.prismaticRegalia)
             {
                 if (item.CountsAsClass<MagicDamageClass>() && Main.rand.NextBool(20) && !item.channel)
@@ -937,12 +918,22 @@ namespace CalamityMod.Items
             return MathHelper.Lerp(DischargeEnchantMinDamageFactor, DischargeEnchantMaxDamageFactor, interpolant);
         }
 
-        // This formula gives a slightly higher value than 1.0 above 85% charge, and a slightly lower value than 0.0 at 0% charge.
-        // Specifically, it gives 0.0 or less at 0.36% charge or lower. This is fine because the result is immediately clamped.
+        // 07MAY2024: Ozzatron: adjusted charge formula again to more closely match previous behavior
+        // old formula: 1.087 - 0.08 / (x + 0.07)
+        // new formula: 1.08 - 0.04 / (x + 0.06)
+        //
+        // Intended behavior: Any charge above 50% guarantees 100% damage, so charge weapons are easy to use
+        // Actual behavior:
+        // 44%+ charge = 100% damage
+        // 20%  charge = 92.6% damage
+        // 10%  charge = 83% damage
+        // 0%   charge = 41.33% damage
+        //
+        // Fabsol - I changed this formula because it was bad and confusing, and I had promised to do so a while ago.
         internal float ChargeDamageFormula()
         {
             float x = MathHelper.Clamp(ChargeRatio, 0f, 1f);
-            float y = 1.087f - 0.08f / (x + 0.07f);
+            float y = 1.08f - 0.04f / (x + 0.06f);
             return MathHelper.Clamp(y, 0f, 1f);
         }
         #endregion

@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PearlGod>().
+                AddIngredient<Arietes41>().
                 AddIngredient<RuinousSoul>(5).
                 AddIngredient(ItemID.LunarBar, 15).
                 AddTile(TileID.LunarCraftingStation).

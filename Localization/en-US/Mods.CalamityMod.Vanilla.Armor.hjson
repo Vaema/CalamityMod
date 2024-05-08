@@ -55,8 +55,8 @@ SetBonus: {
 		'''
 	Gold:
 		'''
-		All enemies have a 4% chance to drop 1 gold. All bosses killed drop 3 gold
-		You gain 1% critical strike chance for every 5 gold in your inventory, capped at 10%
+		All enemies have a 2% chance to drop 1 gold. All bosses killed drop 3 gold
+		You gain 1% critical strike chance for every 10 gold in your inventory, capped at 9%
 		'''
 	Iron:
 		'''
@@ -66,7 +66,7 @@ SetBonus: {
 	Jungle: 10% reduced mana costs
 	Lead:
 		'''
-		Increases damage reduction by 3%
+		Increases damage reduction by 4%
 		+0.5 HP/s life regen
 		Grants immunity to knockback
 		'''
@@ -101,8 +101,9 @@ SetBonus: {
 		'''
 	Platinum:
 		'''
-		Every 10 defense gives you +0.5 HP/s life regen, 1% increased damage and 1% increased critical strike chance
-		These effects cap at 40 defense
+		Every 10 extra defense gives you 1% increased damage and 1% increased critical strike chance
+		The 20 defense from the Platinum Armor itself does not contribute to this effect
+		Bonus damage and critical strike chance cap at 40 extra defense
 		'''
 	Silver:
 		'''

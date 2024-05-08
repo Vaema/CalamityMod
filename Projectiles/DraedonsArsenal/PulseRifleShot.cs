@@ -123,8 +123,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     {
                         distance = 3000;
 
-                        SoundStyle fire = new("CalamityMod/Sounds/Item/OpalFire");
-                        SoundEngine.PlaySound(fire with { Volume = 0.35f, Pitch = 1f }, Projectile.Center);
+                        SoundStyle fire = new("CalamityMod/Sounds/Item/PulseSound");
+                        SoundEngine.PlaySound(fire with { Volume = 0.35f, Pitch = 0.3f, MaxInstances = -1 }, Projectile.Center);
                             
 
                         Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, mainColor, new Vector2(1f, 1f), Main.rand.NextFloat(12f, 25f), 0f, 0.5f, 15);

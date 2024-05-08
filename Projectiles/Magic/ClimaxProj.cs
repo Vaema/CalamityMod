@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -9,6 +10,7 @@ namespace CalamityMod.Projectiles.Magic
     public class ClimaxProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+        public bool firedBeam = false;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 5;
@@ -28,6 +30,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
+            if (Projectile.timeLeft == 48)
+                Projectile.frame = Main.rand.Next(0, 4 + 1);
+
             // Rapidly screech to a halt once spawned.
             Projectile.velocity *= 0.86f;
 
@@ -35,11 +40,10 @@ namespace CalamityMod.Projectiles.Magic
             float spinTheta = 0.11f;
             if (Projectile.localAI[0] == 0f)
                 Projectile.localAI[0] = Main.rand.NextBool() ? -spinTheta : spinTheta;
-            Projectile.rotation += Projectile.localAI[0];
 
             // Animate the lightning orb.
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
+            if (Projectile.frameCounter > 3)
             {
                 Projectile.frameCounter = 0;
                 Projectile.frame++;
@@ -51,9 +55,15 @@ namespace CalamityMod.Projectiles.Magic
 
             // Initial stagger in frames needs to be skipped over before it starts shooting,
             // but once it's past that then it can fire constantly
+
+            NPC target = Projectile.Center.ClosestNPCAt(800);
+
             --Projectile.ai[0];
-            if (Projectile.ai[0] < 0f)
-                CalamityUtils.MagnetSphereHitscan(Projectile, 640f, 8f, VoltaicClimax.OrbFireRate, 2, ModContent.ProjectileType<ClimaxBeam>(), 1D, true);
+            if (Projectile.ai[0] < 0f && firedBeam == false && target != null)
+            {
+                firedBeam = true;
+                CalamityUtils.MagnetSphereHitscan(Projectile, Vector2.Distance(Projectile.Center, target.Center), 8f, 0, 5, ModContent.ProjectileType<ClimaxBeam>(), 1D, false);
+            }
         }
 
         public override Color? GetAlpha(Color lightColor)

@@ -1613,14 +1613,14 @@ namespace CalamityMod
                 ItemType<AcidGun>(),
                 ItemType<AethersWhisper>(),
                 ItemType<AetherfluxCannon>(),
-                ItemType<AlphaRay>(),
+                ItemType<Omicron>(),
                 ItemType<ApoctosisArray>(),
                 ItemType<Cryophobia>(),
                 ItemType<Effervescence>(),
                 ItemType<EidolicWail>(),
                 ItemType<GatlingLaser>(),
                 ItemType<GaussPistol>(),
-                ItemType<Genisis>(),
+                ItemType<Genesis>(),
                 ItemType<IonBlaster>(),
                 ItemType<Lazhar>(),
                 ItemType<NanoPurge>(),
@@ -2428,6 +2428,9 @@ namespace CalamityMod
                 { NPCID.UmbrellaSlime, 5400 },
                 { NPCID.RainbowSlime, 30000 },
                 { NPCID.Pinky, 15000 },
+                { NPCType<KingSlimeJewel>(), 21000 },
+                { NPCType<KingSlimeJewel2>(), 18000 },
+                { NPCType<KingSlimeJewel3>(), 24000 },
 
                 { NPCID.EyeofCthulhu, 450000 }, // 30 seconds
                 { NPCID.ServantofCthulhu, 6000 },
@@ -2441,6 +2444,11 @@ namespace CalamityMod
                 { NPCID.Creeper, 10000 },
 
                 { NPCID.QueenBee, 315000 }, // 30 seconds
+                { NPCID.Bee, 3000 },
+                { NPCID.BeeSmall, 2000 },
+                { NPCID.BigHornetHoney, 10000 },
+                { NPCID.HornetHoney, 7500 },
+                { NPCID.LittleHornetHoney, 5000 },
 
                 { NPCID.Deerclops, 315000 }, // 30 seconds
 
@@ -2449,6 +2457,11 @@ namespace CalamityMod
 
                 { NPCID.WallofFlesh, 450000 }, // 30 seconds
                 { NPCID.WallofFleshEye, 450000 },
+                { NPCID.TheHungry, 10000 },
+                { NPCID.TheHungryII, 5000 },
+                { NPCID.LeechHead, 5000 },
+                { NPCID.LeechBody, 5000 },
+                { NPCID.LeechTail, 5000 },
 
                 // Tier 2
                 { NPCID.QueenSlimeBoss, 150000 }, // 30 seconds
@@ -2462,7 +2475,7 @@ namespace CalamityMod
                 { NPCID.TheDestroyer, 250000 }, // 30 seconds + immunity timer at start
                 { NPCID.TheDestroyerBody, 250000 },
                 { NPCID.TheDestroyerTail, 250000 },
-                { NPCID.Probe, 10000 },
+                { NPCID.Probe, 5000 },
 
                 { NPCID.SkeletronPrime, 160000 }, // 30 seconds
                 { NPCType<SkeletronPrime2>(), 160000 },
@@ -2472,7 +2485,8 @@ namespace CalamityMod
                 { NPCID.PrimeLaser, 38000 },
 
                 { NPCID.Plantera, 160000 }, // 30 seconds
-                { NPCID.PlanterasTentacle, 40000 },
+                { NPCID.PlanterasTentacle, 5000 },
+                { NPCType<PlanterasFreeTentacle>(), 5000 },
 
                 // Tier 3
                 { NPCID.Golem, 50000 }, // 30 seconds

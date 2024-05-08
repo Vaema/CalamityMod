@@ -6,6 +6,7 @@ using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -17,7 +18,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
     public class PulseRifle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
-        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/PulseRifleFire");
+        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/PulseRifleFire") { Volume = 0.8f };
 
         private int BaseDamage = 1150;
         public int FiringTimer = 30;
@@ -26,8 +27,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.width = 62;
-            Item.height = 22;
+            Item.width = 98;
+            Item.height = 32;
             Item.DamageType = DamageClass.Ranged;
             Item.damage = BaseDamage;
             Item.knockBack = 0f;
@@ -52,13 +53,17 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            SoundEngine.PlaySound(FireSound with { Volume = 0.7f, Pitch = 0.3f });
+            SoundEngine.PlaySound(FireSound);
             Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<PulseRifleShot>(), damage, knockback, player.whoAmI, 0f, 0f);
 
             return false;
         }
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/PulseRifleGlow").Value);
+        }
 
-        public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
+        public override Vector2? HoldoutOffset() => new Vector2(-15, 0);
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 5);
 

@@ -1545,6 +1545,8 @@ namespace CalamityMod.CalPlayer
                 miningSetCooldown--;
             if (RustyMedallionCooldown > 0)
                 RustyMedallionCooldown--;
+            if (MiniSwamerCooldown > 0)
+                MiniSwamerCooldown--;
 
             // God Slayer Armor dash debuff immunity
             if (DashID == GodSlayerDash.ID && Player.dashDelay < 0)
@@ -4235,9 +4237,20 @@ namespace CalamityMod.CalPlayer
             {
                 NPC npc = Main.npc[i];
                 if (npc is null || !npc.active || npc.type != ModContent.NPCType<AndroombaFriendly>())
-                    return;
+                    continue;
 
                 bool holdingsol = ((Player.HeldItem.type >= ItemID.GreenSolution && Player.HeldItem.type <= ItemID.RedSolution) || (Player.HeldItem.type >= ItemID.SandSolution && Player.HeldItem.type <= ItemID.DirtSolution) || Player.HeldItem.type == ModContent.ItemType<AstralSolution>());
+                int heldType = -1;
+                for (int e = 0; e < AndroombaFriendly.customConversionTypes.Count; e++)
+                {
+                    var entry = AndroombaFriendly.customConversionTypes[e];
+                    if (Player.HeldItem.type == entry.Item1)
+                    {
+                        holdingsol = true;
+                        heldType = e;
+                        break;
+                    }
+                }
                 if (npc.Hitbox.Contains(Main.MouseWorld.ToPoint()) && holdingsol && Player.Distance(npc.Center) < 450)
                 {
                     Player.cursorItemIconEnabled = true;
@@ -4281,6 +4294,9 @@ namespace CalamityMod.CalPlayer
                                     break;
                                 case ItemID.DirtSolution:
                                     soltype = 7;
+                                    break;
+                                default:
+                                    soltype = heldType + 9;
                                     break;
                             }
                         }

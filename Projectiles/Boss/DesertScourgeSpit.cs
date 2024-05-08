@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.frame >= Main.projFrames[Projectile.type])
                 Projectile.frame = 0;
 
-            Projectile.tileCollide = Projectile.timeLeft < 540;
+            Projectile.tileCollide = Projectile.timeLeft < (Projectile.aiStyle == ProjAIStyleID.Arrow ? 540 : 300);
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)

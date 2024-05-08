@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 10;
+            Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 12;
             Projectile.tileCollide = false;
@@ -78,6 +78,13 @@ namespace CalamityMod.Projectiles.Magic
             DrawBeamWithColor(Color.Lime * 1.1f, Projectile.scale);
             DrawBeamWithColor(Color.Yellow * 1.1f, Projectile.scale * 0.5f);
             return false;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.95f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

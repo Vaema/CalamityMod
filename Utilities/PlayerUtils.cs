@@ -851,7 +851,7 @@ namespace CalamityMod
                 }
             }
 
-            player.itemLocation = finalPosition;
+            player.itemLocation = finalPosition + new Vector2(spriteSize.X * 0.5f, 0);
         }
         #endregion
 

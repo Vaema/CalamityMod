@@ -74,12 +74,12 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 position = Projectile.Center - Main.screenPosition;
             float rotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 origin = texture.Size() * 0.5f;
-            SpriteEffects effects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            SpriteEffects effects = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             float shake = Utils.Remap(Time, Owner.itemTimeMax * 0.33f, Owner.itemTimeMax, 0f, 3f);
             position += Main.rand.NextVector2Circular(shake, shake);
 
-            Main.EntitySpriteDraw(texture, position, null, Projectile.GetAlpha(lightColor), rotation, origin, Projectile.scale, effects);
+            Main.EntitySpriteDraw(texture, position, null, Projectile.GetAlpha(lightColor), rotation, origin, Projectile.scale * Owner.gravDir, effects);
 
             return false;
         }

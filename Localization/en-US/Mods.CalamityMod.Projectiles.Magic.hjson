@@ -78,6 +78,7 @@ ForbiddenSunProjectile.DisplayName: Forbidden Sun
 FrigidflashBoltProjectile.DisplayName: Frigidflash Bolt
 FrostBoltProjectile.DisplayName: Frost Ball
 GammaLaser.DisplayName: Gamma Laser
+GenesisBeam.DisplayName: Genesis Beam
 GhastlyBlast.DisplayName: Ghast Blast
 GhastlyExplosion.DisplayName: Ghastly Explosion
 GhastlyExplosionShard.DisplayName: Ghastly Fragment
@@ -150,7 +151,7 @@ NightBolt.DisplayName: Night's Bolt
 NightOrb.DisplayName: Night's Orb
 NightsRayBeam.DisplayName: Night's Ray
 NuclearFuryProjectile.DisplayName: Nuclear Fury
-ParticleBeamofDoom.DisplayName: Doom
+OmicronBeam.DisplayName: Omicron Beam
 PartySparkle.DisplayName: Pretty Sparkle
 PhantasmalFuryProj.DisplayName: Phantasmal Fury
 Phantom.DisplayName: Phantom
@@ -249,6 +250,8 @@ VolatileStarcore.DisplayName: Volatile Starcore
 VortexElementalBeam.DisplayName: Vortex Lightning
 WaterLeechProj.DisplayName: Water Leech
 WaywasherProj.DisplayName: Waywasher Blast
+WingmanShot.DisplayName: Mana Shot
+WingmanGrenade.DisplayName: Mana Grenade
 WulfrumBolt.DisplayName: Wulfrum Bolt
 WulfrumManaDrain.DisplayName: Mana Drain
 WyvernFeatherGreen.DisplayName: Feather

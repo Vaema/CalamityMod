@@ -2,6 +2,7 @@
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
@@ -225,7 +226,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             SoundEngine.PlaySound(HalleysInferno.ShootSound with { Volume = 0.4f }, Owner.MountedCenter);
 
-            int rightClickDamage = (int)(0.65f * damage);
+            int rightClickDamage = (int)(0.70f * damage);
             Projectile.NewProjectile(source, position, velocity, ProjectileType<ExoFlareCluster>(), rightClickDamage, knockback, Projectile.owner);
         }
 
@@ -268,6 +269,17 @@ namespace CalamityMod.Projectiles.Ranged
             if (SoundEngine.TryGetActiveSound(PhotoUseSound, out var Sound))
                 Sound?.Stop();
             PhotoTimer = 90;
+        }
+
+        public override void PostDraw(Color lightColor)
+        {
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Vector2 origin = new Vector2(85f, 33f);
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (Projectile.spriteDirection == -1)
+                spriteEffects = SpriteEffects.FlipHorizontally;
+
+            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/PhotovisceratorHoldoutGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Color.White, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
         }
     }
 }

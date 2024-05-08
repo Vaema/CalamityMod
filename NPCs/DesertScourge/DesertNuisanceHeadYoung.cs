@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Events;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -23,6 +24,8 @@ namespace CalamityMod.NPCs.DesertScourge
         public const float SegmentVelocity_Master = 12.5f;
         public const float SegmentVelocity_GoodWorld = 15f;
         public const float SegmentVelocity_ZenithSeed = 17.5f;
+
+        public const float SpitGateValue = 180f;
 
         public const float OpenMouthForBiteDistance = 220f;
 
@@ -47,7 +50,11 @@ namespace CalamityMod.NPCs.DesertScourge
 
             NPC.width = 78;
             NPC.height = 78;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 35000 : (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 4000 : 1300;
+
+            NPC.LifeMaxNERB(1300, 1560, 35000);
+            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                NPC.lifeMax = 4000;
+
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
@@ -71,11 +78,15 @@ namespace CalamityMod.NPCs.DesertScourge
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(biomeEnrageTimer);
+            for (int i = 0; i < 4; i++)
+                writer.Write(NPC.Calamity().newAI[i]);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             biomeEnrageTimer = reader.ReadInt32();
+            for (int i = 0; i < 4; i++)
+                NPC.Calamity().newAI[i] = reader.ReadSingle();
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -98,6 +109,9 @@ namespace CalamityMod.NPCs.DesertScourge
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
+            // Become angry when the other Nuisance dies.
+            bool getMad = !NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) && expertMode;
+
             // Enrage
             if (!Main.player[NPC.target].ZoneDesert && !bossRush)
             {
@@ -109,7 +123,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
 
-            float enrageScale = bossRush ? 1f : 0f;
+            float enrageScale = bossRush ? 1f : getMad ? 0.25f : 0f;
             if (biomeEnraged)
             {
                 NPC.Calamity().CurrentlyEnraged = !bossRush;
@@ -139,6 +153,42 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.alpha -= 42;
             if (NPC.alpha < 0)
                 NPC.alpha = 0;
+
+            if (getMad && NPC.Distance(Main.player[NPC.target].Center) > 240f)
+            {
+                if ((Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
+                    NPC.Calamity().newAI[0] += 1f;
+
+                if (NPC.Calamity().newAI[0] >= SpitGateValue)
+                {
+                    NPC.Calamity().newAI[0] = 0f;
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * (revenge ? 10f : 8f);
+                        int numProj = death ? 6 : 4;
+                        int spread = masterMode ? 28 : 20;
+                        if (masterMode)
+                        {
+                            numProj += 2;
+                            spread += 8;
+                        }
+
+                        float rotation = MathHelper.ToRadians(spread);
+                        int type = ModContent.ProjectileType<DesertScourgeSpit>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        for (int i = 0; i < numProj; i++)
+                        {
+                            Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                Main.projectile[proj].aiStyle = -1;
+                                Main.projectile[proj].netUpdate = true;
+                            }
+                        }
+                    }
+                }
+            }
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
@@ -504,6 +554,8 @@ namespace CalamityMod.NPCs.DesertScourge
         public override void FindFrame(int frameHeight)
         {
             // Open mouth to prepare for a nibble ;3
+            // Also open mouth for projectile spreads
+            bool aboutToSpitSpread = NPC.Calamity().newAI[0] > SpitGateValue - 30f;
             bool openMouth = NPC.Distance(Main.player[NPC.target].Center) < OpenMouthForBiteDistance &&
                 (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation() &&
                 NPC.ai[3] == 0f;
@@ -532,7 +584,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     NPC.frame.Y = 0;
                 }
             }
-            else if (openMouth)
+            else if (openMouth || aboutToSpitSpread)
             {
                 NPC.frameCounter += 1D;
                 if (NPC.frameCounter > 4D)

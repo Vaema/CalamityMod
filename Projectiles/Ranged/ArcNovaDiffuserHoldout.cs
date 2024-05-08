@@ -14,7 +14,6 @@ namespace CalamityMod.Projectiles.Ranged
     public class ArcNovaDiffuserHoldout : BaseGunHoldoutProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<ArcNovaDiffuser>();
-        public override Vector2 GunTipPosition => base.GunTipPosition - Vector2.UnitY.RotatedBy(Projectile.rotation) * 5f * Projectile.spriteDirection;
         public override float MaxOffsetLengthFromArm => 24f;
         public override float OffsetXUpwards => -5f;
         public override float BaseOffsetY => -5f;
@@ -211,7 +210,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
-            SpriteEffects flipSprite = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             if (!Owner.CantUseHoldout())
             {
@@ -219,7 +218,7 @@ namespace CalamityMod.Projectiles.Ranged
                 drawPosition += Main.rand.NextVector2Circular(rumble / 70f, rumble / 70f);
             }
 
-            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale, flipSprite);
+            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
 
             return false;
         }

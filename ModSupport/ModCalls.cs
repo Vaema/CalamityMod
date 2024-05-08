@@ -2,23 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.CalPlayer;
-using CalamityMod.Cooldowns;
 using CalamityMod.Events;
-using CalamityMod.ExtraJumps;
 using CalamityMod.Items;
 using CalamityMod.NPCs;
-using CalamityMod.Particles;
+using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Systems;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.UI.DraedonSummoning;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.Localization;
-using Terraria.ModLoader;
 
 namespace CalamityMod
 {
@@ -2200,6 +2196,23 @@ namespace CalamityMod
                         return null;
                     }
 
+                case "RegisterAndroombaSolution":
+                case "RegisterAndroombaState":
+                case "RegisterAndroomba":
+                case "AddAndrombaSolution":
+                case "AddAndroombaState":
+                case "AddAndroomba":
+                    {
+                        if (args[1] is not int itemID)
+                            return new ArgumentException("ERROR: The first argument to \"RegisterAndroombaSolution\" must be the ID of a solution as an int.");
+                        if (args[2] is not string texturePath)
+                            return new ArgumentException("ERROR: The second argument to \"RegisterAndroombaSolution\" must be a string path.");
+                        if (args[3] is not Action<NPC> NPCaction)
+                            return new ArgumentException("ERROR: The third argument to \"RegisterAndroombaSolution\" must be an Action<NPC>.");
+
+                        AndroombaFriendly.customConversionTypes.Add((itemID, texturePath, NPCaction));
+                        return null;
+                    }
                 default:
                     return new ArgumentException("ERROR: Invalid method name.");
             }

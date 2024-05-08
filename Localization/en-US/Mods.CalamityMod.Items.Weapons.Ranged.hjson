@@ -80,6 +80,15 @@ Archerfish: {
 	Tooltip: Converts musket balls into streams of water
 }
 
+Arietes41: {
+	DisplayName: Arietes 41
+	Tooltip:
+		'''
+		Alternates between firing bullets imbued with lifesteal and electricity
+		Electric imbued bullets create a small shockblast on impact, dealing additional damage to the enemy they hit
+		'''
+}
+
 ArterialAssault: {
 	DisplayName: Arterial Assault
 	Tooltip:
@@ -333,11 +342,6 @@ CrackshotColt: {
 		Up to 4 coins can be tossed simultaneously, and shots will ricochet off multiple coins if possible
 		Coins guarantee a critical strike after a short delay
 		'''
-}
-
-CursedCapper: {
-	DisplayName: Cursed Capper
-	Tooltip: Fires cursed bullets
 }
 
 DaemonsFlame: {
@@ -823,6 +827,11 @@ NettlevineGreatbow: {
 		'''
 }
 
+NitroExpressRifle: {
+	DisplayName: Nitro Express Rifle
+	Tooltip: "[c/88354B:'The recoil feels strong enough to break your shoulder...']"
+}
+
 Norfleet: {
 	DisplayName: Norfleet
 	Tooltip:
@@ -896,9 +905,8 @@ PearlGod: {
 	DisplayName: Pearl God
 	Tooltip:
 		'''
-		Fires shockblast rounds that emit massive explosions and steal enemy life as well as additional bullets
-		Every seventh shot fires a massive shockblast
-		'Your life is mine...'
+		Alternates between firing a bullet imbued with lifesteal and 3 bullets imbued with pearlescence
+		Pearlescent imbued bullets create a radiant flash on impact, dealing additional damage to the enemy they hit
 		'''
 }
 
@@ -1285,6 +1293,15 @@ TheMaelstrom: {
 ThePack: {
 	DisplayName: The Pack
 	Tooltip: Fires large homing rockets that explode into more homing mini rockets when in proximity to an enemy
+}
+
+ThermoclineBlaster: {
+	DisplayName: Thermocline Blaster
+	Tooltip:
+		'''
+		Alternates between firing bullets imbued with fire and ice
+		Any bullet type can be imbued when fired from this gun
+		'''
 }
 
 TheSevensStriker: {

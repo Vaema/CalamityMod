@@ -32,6 +32,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.MaxUpdates = 5;
+            Projectile.localNPCHitCooldown = 10;
+            Projectile.usesLocalNPCImmunity = true;
             Projectile.timeLeft = Lifetime;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }

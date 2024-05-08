@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
+using ReLogic.Utilities;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -23,10 +24,9 @@ namespace CalamityMod.Projectiles.Melee
         private List<int> PreviousNPCs = new List<int>() { -1 };
         public Player Owner => Main.player[Projectile.owner];
         public ref float AirTime => ref Projectile.ai[0];
+        SlotId LoopSoundSlot;
 
         public const float TotalTrailLength = 35f;
-        public static readonly SoundStyle ThrowSound = CommonCalamitySounds.LouderSwingWoosh;
-        public static readonly SoundStyle CollisionSound = CommonCalamitySounds.ExoHitSound;
 
         public override void SetStaticDefaults()
         {
@@ -49,7 +49,12 @@ namespace CalamityMod.Projectiles.Melee
         public override void AI()
         {
             if (AirTime == 0f)
-                SoundEngine.PlaySound(ThrowSound, Projectile.Center);
+                SoundEngine.PlaySound(StygianShield.ShieldThrowSound, Projectile.Center);
+            if ((AirTime + 40) % 60 == 0)
+                LoopSoundSlot = SoundEngine.PlaySound(StygianShield.ThrowLoopSound, Projectile.Center);
+            if (SoundEngine.TryGetActiveSound(LoopSoundSlot, out var LoopSound) && LoopSound.IsPlaying)
+                LoopSound.Position = Projectile.Center;
+
 
             // Boomerang rotation
             Projectile.rotation += Projectile.direction * 0.4f;
@@ -82,7 +87,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundEngine.PlaySound(CollisionSound, Projectile.Center);
+            SoundEngine.PlaySound(StygianShield.ShieldThrowHitSound, Projectile.Center);
 
             // Disallow the NPC to be targeted again
             PreviousNPCs.Add(target.whoAmI);
@@ -96,7 +101,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            SoundEngine.PlaySound(CollisionSound, Projectile.Center);
+            SoundEngine.PlaySound(StygianShield.ShieldThrowHitSound, Projectile.Center);
 
             if (SeekNPC() == -1)
                 ReturnToOwner();
@@ -150,7 +155,12 @@ namespace CalamityMod.Projectiles.Melee
 
             // Delete the projectile if it touches its owner or too far away.
             if (Projectile.Hitbox.Intersects(Owner.Hitbox) || Vector2.Distance(Projectile.Center, Owner.Center) >= 3000f)
+            {
+                SoundEngine.PlaySound(StygianShield.ShieldCatchSound, Owner.Center);
+                if (SoundEngine.TryGetActiveSound(LoopSoundSlot, out var LoopSound))
+                    LoopSound?.Stop();
                 Projectile.Kill();
+            }
         }
 
         // Preventing unintended collisions with the floor

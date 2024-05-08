@@ -159,6 +159,11 @@ namespace CalamityMod.NPCs.CalClone
             return false;
         }
 
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
+        {
+            NPC.lifeMax = (int)(NPC.lifeMax * balance);
+        }
+
         public override bool CheckActive() => false;
 
         public override void OnKill()

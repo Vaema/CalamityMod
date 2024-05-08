@@ -64,9 +64,9 @@ namespace CalamityMod.CalPlayer
 
                 if (Player.electrified && !purity)
                 {
-                    totalVanillaDoT += 8;
+                    totalVanillaDoT += eleResist ? 4 : 8;
                     if (Player.controlLeft || Player.controlRight)
-                        totalVanillaDoT += 32;
+                        totalVanillaDoT += eleResist ? 16 : 32;
                 }
 
                 // Tally up total current vanilla DoT so it can be added as extra DoT from Death Mode
@@ -112,7 +112,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(shadowflame, 30, purity);
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
             ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 60 : 50);
-            ApplyDoTDebuff(dragonFire, 60);
+            ApplyDoTDebuff(dragonFire, dynamoStemCells ? 30 : 60);
             ApplyDoTDebuff(miracleBlight, 80);
             ApplyDoTDebuff(banishingFire, 60);
 

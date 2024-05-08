@@ -2,6 +2,7 @@
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using System;
+using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -53,6 +54,18 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToWater = true;
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(NPC.alpha);
+            writer.Write(NPC.dontTakeDamage);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            NPC.alpha = reader.ReadInt32();
+            NPC.dontTakeDamage = reader.ReadBoolean();
+        }
+
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
 
         public override void AI()
@@ -66,6 +79,8 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (NPC.life > Main.npc[(int)NPC.ai[1]].life)
                 NPC.life = Main.npc[(int)NPC.ai[1]].life;
+
+            NPC.dontTakeDamage = Main.npc[(int)NPC.ai[1]].dontTakeDamage;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -103,6 +118,8 @@ namespace CalamityMod.NPCs.DesertScourge
                 if (NPC.alpha < 0)
                     NPC.alpha = 0;
             }
+            else
+                NPC.alpha = Main.npc[(int)NPC.ai[1]].alpha;
 
             if (Main.player[NPC.target].dead)
                 NPC.TargetClosest(false);
@@ -165,7 +182,7 @@ namespace CalamityMod.NPCs.DesertScourge
             float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
             float minimalDamageVelocity = maxChaseSpeed * 0.5f;
             float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity || NPC.dontTakeDamage)
             {
                 NPC.damage = 0;
             }
@@ -193,7 +210,7 @@ namespace CalamityMod.NPCs.DesertScourge
             if (hitboxBotRight < minDist)
                 minDist = hitboxBotRight;
 
-            return minDist <= 30f * NPC.scale;
+            return minDist <= 30f * NPC.scale && NPC.alpha <= 0;
         }
 
         public override void HitEffect(NPC.HitInfo hit)

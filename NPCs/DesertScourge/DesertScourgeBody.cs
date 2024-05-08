@@ -78,6 +78,9 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void SendExtraAI(BinaryWriter writer)
         {
+            writer.Write(NPC.alpha);
+            writer.Write(NPC.dontTakeDamage);
+
             // Frame syncs
             writer.Write(NPC.frame.X);
             writer.Write(NPC.frame.Y);
@@ -87,6 +90,9 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
+            NPC.alpha = reader.ReadInt32();
+            NPC.dontTakeDamage = reader.ReadBoolean();
+
             // Frame syncs
             Rectangle frame = new Rectangle(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
             if (frame.Width > 0 && frame.Height > 0)
@@ -165,6 +171,8 @@ namespace CalamityMod.NPCs.DesertScourge
             if (NPC.life > Main.npc[(int)NPC.ai[1]].life)
                 NPC.life = Main.npc[(int)NPC.ai[1]].life;
 
+            NPC.dontTakeDamage = Main.npc[(int)NPC.ai[1]].dontTakeDamage;
+
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
@@ -201,6 +209,8 @@ namespace CalamityMod.NPCs.DesertScourge
                 if (NPC.alpha < 0)
                     NPC.alpha = 0;
             }
+            else
+                NPC.alpha = Main.npc[(int)NPC.ai[1]].alpha;
 
             if (Main.player[NPC.target].dead)
                 NPC.TargetClosest(false);
@@ -239,7 +249,7 @@ namespace CalamityMod.NPCs.DesertScourge
             float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
             float minimalDamageVelocity = maxChaseSpeed * 0.5f;
             float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity || NPC.dontTakeDamage)
             {
                 NPC.damage = 0;
             }
@@ -287,7 +297,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     break;
             }
 
-            return minDist <= hitDistance * NPC.scale;
+            return minDist <= hitDistance * NPC.scale && NPC.alpha <= 0;
         }
 
         public override void FindFrame(int frameHeight)

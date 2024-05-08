@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Critters;
 using CalamityMod.World;
@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -18,6 +17,9 @@ namespace CalamityMod.NPCs.TownNPCs
     public class AndroombaFriendly : ModNPC
     {
         public static Asset<Texture2D>[] FaceTextures = new Asset<Texture2D>[9];
+
+        // Allow for solutions from other mods. The first integer is the solution's item ID, the texture is what face shoul dappear, the Action is what modders should use for spread code
+        public static List<(int, string, Action<NPC>)> customConversionTypes = new List<(int, string, Action<NPC>)>{};
 
         public override void SetStaticDefaults()
         {
@@ -129,6 +131,7 @@ namespace CalamityMod.NPCs.TownNPCs
         {
             int x = (int)(NPC.Center.X / 16f);
             int y = (int)(NPC.Center.Y / 16f);
+            // Stuff for vanilla solutions
             if (conversionType <= 7)
             {
                 ConvertType type = ConvertType.Pure;
@@ -147,9 +150,15 @@ namespace CalamityMod.NPCs.TownNPCs
                 AstralBiome.ConvertFromAstral(x - 2, x + 2, y - 2, y + 2, type);
                 WorldGen.Convert(x, y, conversionType, 2);
             }
-            else
+            // Calamity solution(s)
+            else if (conversionType == 8)
             {
                 AstralBiome.ConvertToAstral(x - 2, x + 2, y - 2, y + 2);
+            }
+            // Solutions registered by other mods
+            else
+            {
+                customConversionTypes[conversionType - 9].Item3(NPC);
             }
         }
 
@@ -251,11 +260,21 @@ namespace CalamityMod.NPCs.TownNPCs
                 Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Electric);
         }
 
-        // TODO: Add compatability for crossmod solutions
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D critterTexture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowmask = FaceTextures[(int)NPC.ai[3]].Value;
+            Texture2D glowmask = FaceTextures[0].Value;
+            // If the solution is from Calamity or vanilla, set the glowmask to grab the appropriate texture from the texture array
+            if (NPC.ai[3] <= 8)
+            {
+                glowmask = FaceTextures[(int)NPC.ai[3]].Value;
+            }
+            // If the solution isn't from Calamity or vanilla, grab the appropriate solution from the custom solution list
+            else
+            {
+                glowmask = ModContent.Request<Texture2D>(customConversionTypes[(int)NPC.ai[3] - 9].Item2).Value;
+            }
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             drawPosition.Y += DrawOffsetY;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

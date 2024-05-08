@@ -18,7 +18,6 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public const float HeadDamage = 0.06f;
         public const float ChestCrit = 5f;
         public const float LegsMoveSpeed = 0.1f;
-        public const float SetBonusLifeRegenPerDefense = 0.1f; // 10 defense = +1 life regen
         public const float SetBonusDamagePerDefense = 0.001f; // 10 defense = +1% damage
         public const float SetBonusCritPerDefense = 0.1f; // 10 defense = +1% crit chance
         public const int SetBonusDefenseCap = 40;
@@ -36,12 +35,15 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override void ApplyArmorSetBonus(Player player)
         {
-            int defense = player.statDefense;
-            if (defense > SetBonusDefenseCap)
-                defense = SetBonusDefenseCap;
-            player.lifeRegen += (int)(defense * SetBonusLifeRegenPerDefense);
-            player.GetDamage<GenericDamageClass>() += defense * SetBonusDamagePerDefense;
-            player.GetCritChance<GenericDamageClass>() += defense * SetBonusCritPerDefense;
+            // 07MAY2024: Ozzatron: Platinum armor doesn't count its own defense for its set bonus
+            int defenseBesidesThisArmor = player.statDefense - (4 + 6 + 4 + 4);
+            if (defenseBesidesThisArmor <= 0)
+                return;
+
+            if (defenseBesidesThisArmor > SetBonusDefenseCap)
+                defenseBesidesThisArmor = SetBonusDefenseCap;
+            player.GetDamage<GenericDamageClass>() += defenseBesidesThisArmor * SetBonusDamagePerDefense;
+            player.GetCritChance<GenericDamageClass>() += defenseBesidesThisArmor * SetBonusCritPerDefense;
         }
     }
 }

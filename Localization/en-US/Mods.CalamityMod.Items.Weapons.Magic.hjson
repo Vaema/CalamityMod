@@ -27,15 +27,6 @@ AethersWhisper: {
 		'''
 }
 
-AlphaRay: {
-	DisplayName: Alpha Ray
-	Tooltip:
-		'''
-		Disintegrates everything with a tri-beam of energy and lasers
-		Press <right> to fire a Y-shaped beam of destructive energy and a spread of lasers
-		'''
-}
-
 AlulaAustralis: {
 	DisplayName: Alula Australis
 	Tooltip: Fires a beautiful aurora trailed by a star shower
@@ -345,9 +336,14 @@ FrostBolt: {
 	Tooltip: Casts a slow-moving ball of frost
 }
 
-Genisis: {
-	DisplayName: Genisis
-	Tooltip: Fires a Y-shaped beam of destructive energy and a spread of lasers
+Genesis: {
+	DisplayName: Genesis
+	Tooltip:
+		'''
+		Fire an array of lasers that decreases in spread for each shot
+		Every sixth shot fires a splitting Genesis Beam and resets the spread of the weapon
+		Hitting an enemy where the Genesis Beam splits deals increased damage
+		'''
 }
 
 GhastlyVisage: {
@@ -546,6 +542,17 @@ NightsRay: {
 NuclearFury: {
 	DisplayName: Nuclear Fury
 	Tooltip: Casts a torrent of cosmic typhoons
+}
+
+Omicron: {
+	DisplayName: Omicron
+	Tooltip:
+		'''
+		Fires a continuous array of lasers and spawns two Wingmen which orbit you and fire lasers at your cursor
+		Press <right> when firing to shoot an Omicron Beam that splits upon hitting an enemy
+		After firing an Omicron Beam your Wingmen will launch a pair of grenades
+		Hitting an enemy with an Omicron Beam right as it is fired will increase the damage done substantially and stop it from splitting
+		'''
 }
 
 ParasiticSceptor: {
@@ -924,12 +931,12 @@ VividClarity: {
 
 VoidVortex: {
 	DisplayName: Void Vortex
-	Tooltip: Conjures a swirling vortex of supercharged magnet spheres around the cursor
+	Tooltip: Conjures a swirling vortex of supercharged magnet spheres around the cursor that explodes into a storm of homing mini spheres
 }
 
 VoltaicClimax: {
 	DisplayName: Voltaic Climax
-	Tooltip: Conjures an octagon of supercharged magnet spheres around the cursor
+	Tooltip: Conjures a ring of supercharged magnet spheres around the cursor
 }
 
 Waywasher: {
@@ -939,7 +946,12 @@ Waywasher: {
 
 Wingman: {
 	DisplayName: Wingman
-	Tooltip: Fires a concentrated laser beam
+	Tooltip:
+		'''
+		Spawns two Wingmen which orbit you and fire lasers at your cursor
+		Press <right> while firing to order the Wingmen to launch grenades
+		Grenades have a cooldown which is shortened if the Wingmen are fully revved up
+		'''
 }
 
 WintersFury: {

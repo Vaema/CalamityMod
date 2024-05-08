@@ -62,15 +62,20 @@ namespace CalamityMod.Projectiles.Ranged
             }
             else
             {
+                Lighting.AddLight(Projectile.Center, Color.Red.ToVector3() * 0.3f);
                 if (Projectile.ai[1] > 4 && Main.rand.NextBool(3))
                 {
                     float velMulti = Main.rand.NextFloat(0.1f, 0.75f);
                     Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 2, 90, -Projectile.velocity.RotatedBy(0.45) * velMulti);
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.45f, 0.75f);
+                    dust.noLight = true;
+                    dust.noLightEmittence = true;
                     Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 2, 90, -Projectile.velocity.RotatedBy(-0.45) * velMulti);
                     dust2.noGravity = true;
                     dust2.scale = Main.rand.NextFloat(0.45f, 0.75f);
+                    dust2.noLight = true;
+                    dust2.noLightEmittence = true;
                 }
             }
         }

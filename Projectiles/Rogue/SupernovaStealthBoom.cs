@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static Humanizer.In;
 
@@ -304,7 +305,8 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
                     NPC target = Main.npc[i];
-                    if (!target.boss && target.IsAnEnemy(true, true))
+                    bool isAPillar = target.type == NPCID.LunarTowerSolar || target.type == NPCID.LunarTowerVortex || target.type == NPCID.LunarTowerNebula || target.type == NPCID.LunarTowerStardust;
+                    if (!isAPillar && !target.boss && target.IsAnEnemy(true, true) && target.CanBeChasedBy(Projectile, false))
                     {
                         if (target != null && !CalamityPlayer.areThereAnyDamnBosses)
                         {
@@ -363,7 +365,7 @@ namespace CalamityMod.Projectiles.Rogue
                     dust2.color = Color.Lerp(Color.White, randomColor, 0.9f);
                 }
 
-                if (!target.boss && target.IsAnEnemy(true, true) && !CalamityPlayer.areThereAnyDamnBosses && target != null)
+                if (!target.boss && target.IsAnEnemy(true, true) && !CalamityPlayer.areThereAnyDamnBosses && target.CanBeChasedBy(Projectile, false) && target != null)
                 {
                     Vector2 velToApply = target.Center.DirectionFrom(Projectile.Center).SafeNormalize(Vector2.UnitX) * 40;
                     target.velocity = velToApply + (velToApply.Y <= 0 ? new Vector2(0, -5) : Vector2.Zero);

@@ -150,8 +150,8 @@ RubberMortarRound: {
 		'''
 }
 
-TerraArrow: {
-	DisplayName: Terra Arrow
+SproutingArrow: {
+	DisplayName: Sprouting Arrow
 	Tooltip:
 		'''
 		Fires an energy arrow that quickly splits into two arrows
@@ -159,9 +159,9 @@ TerraArrow: {
 		'''
 }
 
-TerraBullet: {
-	DisplayName: Terra Bullet
-	Tooltip: Explodes and splits into homing terra shards on impact
+DryadsTear: {
+	DisplayName: Dryad's Tear
+	Tooltip: Explodes and splits into homing nature shards on impact
 }
 
 VanquisherArrow: {

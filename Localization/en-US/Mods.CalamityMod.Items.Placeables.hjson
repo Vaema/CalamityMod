@@ -344,7 +344,7 @@ BabyGhostBellJar: {
 }
 
 CirrusCouch: {
-	DisplayName: Cirrus Courch
+	DisplayName: Cirrus Couch
 	Tooltip: This shouldn't exist...
 }
 
@@ -455,7 +455,7 @@ OldDukeRelic: {
 
 PerforatorsRelic: {
 	DisplayName: Perforators Relic
-	Tooltip: A glimpse into what could have been...
+	Tooltip: ""
 }
 
 PlaguebringerGoliathRelic: {

@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class TerraArrowMain : ModProjectile, ILocalizedModType
+    public class SproutingArrowMain : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -51,8 +51,8 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 vel1 = (Projectile.velocity * 0.4f).RotatedBy(Main.rand.NextFloat(0.015f, 0.04f));
                 Vector2 vel2 = (Projectile.velocity * 0.4f).RotatedBy(Main.rand.NextFloat(-0.015f, -0.04f));
 
-                int split1 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vel1 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<TerraArrowSplit>(), (int)(Projectile.damage * 3), 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
-                int split2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vel2 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<TerraArrowSplit>(), (int)(Projectile.damage * 3), 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
+                int split1 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vel1 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<SproutingArrowSplit>(), (int)(Projectile.damage * 3), 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
+                int split2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vel2 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<SproutingArrowSplit>(), (int)(Projectile.damage * 3), 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
                 if (Projectile.Calamity().allProjectilesHome) // Allows the split arrows to home when using Arterial Assault as well
                 {
                     Main.projectile[split1].Calamity().allProjectilesHome = true;

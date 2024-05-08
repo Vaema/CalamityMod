@@ -181,6 +181,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             return newColor;
         }
 
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
+        {
+            NPC.lifeMax = (int)(NPC.lifeMax * balance);
+        }
+
         public override bool CheckActive() => false;
 
         public override void HitEffect(NPC.HitInfo hit)

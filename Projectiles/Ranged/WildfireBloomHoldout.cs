@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public override int AssociatedItemID => ModContent.ItemType<WildfireBloom>();
         public override string Texture => "CalamityMod/Projectiles/Ranged/WildfireBloomHoldout";
-        public override Vector2 GunTipPosition => base.GunTipPosition - Vector2.UnitX.RotatedBy(Projectile.rotation) * 17f - (Vector2.UnitY.RotatedBy(Projectile.rotation) * 7f * Projectile.spriteDirection);
+        public override Vector2 GunTipPosition => base.GunTipPosition - Vector2.UnitX.RotatedBy(Projectile.rotation) * 17f - (Vector2.UnitY.RotatedBy(Projectile.rotation) * 7f * Projectile.spriteDirection * Owner.gravDir);
         public override float MaxOffsetLengthFromArm => 20f;
         public override float OffsetXUpwards => -5f;
         public override float BaseOffsetY => -5f;

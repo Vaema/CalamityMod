@@ -53,13 +53,17 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.GetNPCDamage();
 
-            NPC.defense = 2;
+            NPC.defense = 3;
             if (Main.getGoodWorld)
-                NPC.defense += 18;
+                NPC.defense += 19;
 
             NPC.width = 88;
             NPC.height = 88;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 35000 : (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 4000 : 1300;
+
+            NPC.LifeMaxNERB(1500, 1800, 40000);
+            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                NPC.lifeMax = 4800;
+
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
@@ -110,6 +114,9 @@ namespace CalamityMod.NPCs.DesertScourge
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
+            // Become angry when the other Nuisance dies.
+            bool getMad = !NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>()) && expertMode;
+
             // Enrage
             if (!Main.player[NPC.target].ZoneDesert && !bossRush)
             {
@@ -121,7 +128,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
 
-            float enrageScale = bossRush ? 1f : 0f;
+            float enrageScale = bossRush ? 1f : getMad ? 0.5f : 0f;
             if (biomeEnraged)
             {
                 NPC.Calamity().CurrentlyEnraged = !bossRush;

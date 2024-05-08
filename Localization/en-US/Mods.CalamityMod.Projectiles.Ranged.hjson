@@ -67,6 +67,8 @@ DrataliornusFlame.DisplayName: Drataliornus Arrow
 DrizzlefishFire.DisplayName: Drizzlefish Flames
 DrizzlefishFireball.DisplayName: Drizzlefish Fireball
 DrizzlefishFireSplit.DisplayName: Drizzlefish Flames
+DryadsTearMain.DisplayName: Dryad's Tear
+DryadsTearSplit.DisplayName: Dryad's Tear
 DWArrow.DisplayName: Death's Arrow
 ElementalFire.DisplayName: Elemental Fire
 ElementalFlare.DisplayName: Elemental Flare
@@ -211,6 +213,8 @@ SmallCoral.DisplayName: Small Coral
 SparkSpreaderFire.DisplayName: Sparked Flames
 SpeedBlasterShot.DisplayName: Splatter Shot
 SporeBomb.DisplayName: Spore Bomb
+SproutingArrowMain.DisplayName: Sprouting Arrow
+SproutingArrowSplit.DisplayName: Sprouting Arrow
 SputterComet.DisplayName: Sputter Comet
 SputterCometBig.DisplayName: Sputter Comet
 SpykerProj.DisplayName: Spyker
@@ -221,10 +225,6 @@ StormSurgeTornado.DisplayName: Surge
 SulphuricBlast.DisplayName: Sulphuric Blast
 SuperballBulletProj.DisplayName: Superball Bullet
 TelluricGlareArrow.DisplayName: Radiant Arrow
-TerraArrowMain.DisplayName: Terra Arrow
-TerraArrowSplit.DisplayName: Terra Arrow
-TerraBulletMain.DisplayName: Terra Bullet
-TerraBulletSplit.DisplayName: Terra Bullet
 TheMaelstromExplosion.DisplayName: Reaper Explosion
 TheMaelstromShark.DisplayName: Reaper Shark
 ThePackMinissile.DisplayName: Pack Minissile
@@ -252,3 +252,4 @@ WaterSpout.DisplayName: Spout
 WildfireBloomFire.DisplayName: Wildfire Fire
 WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
+NitroShot.DisplayName: Nitro Shot
