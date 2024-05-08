@@ -11,12 +11,13 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class DeathValleyDusterProjectile : ModProjectile, ILocalizedModType
+    public class PrimordialEarthProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-
+        public override string Texture => "CalamityMod/Projectiles/Magic/DeathValleyDusterProjectile";
         public ref float time => ref Projectile.ai[0];
         public int rotDirection = 1;
+        public float curve = 0f;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 6;
@@ -32,8 +33,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 4;
-            Projectile.timeLeft = 400;
+            Projectile.extraUpdates = 6;
+            Projectile.timeLeft = 132; // spesific timing is needed for the funtion
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
@@ -42,10 +43,20 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (time == 0)
             {
-                rotDirection = Main.rand.NextBool() ? 1 : -1;
+                rotDirection = (Projectile.ai[1] == 1 ? 1 : -1);
                 Projectile.rotation = Main.rand.NextFloat(-20, 20);
             }
             Lighting.AddLight(Projectile.Center, Color.Gold.ToVector3());
+
+            if (time < 200)
+            {
+                curve = MathHelper.Lerp(curve, 0.04f, 0.004f);
+            }
+            else
+            {
+                curve = MathHelper.Lerp(curve, -0.05f, 0.004f);
+            }
+            Projectile.velocity = Projectile.velocity.RotatedBy(Projectile.ai[1] == 1 ? curve : -curve);
 
             if (Projectile.ai[2] == 1)
             {
@@ -55,7 +66,7 @@ namespace CalamityMod.Projectiles.Magic
                     float targetDist = Vector2.Distance(player.Center, Projectile.Center);
                     if (targetDist < Projectile.width * 0.5f * Projectile.scale)
                     {
-                        player.AddBuff(ModContent.BuffType<ForbiddenBuff>(), 240);
+                        player.AddBuff(ModContent.BuffType<ForbiddenBuff>(), 360);
 
                         int Dusts = 12;
                         float radians = MathHelper.TwoPi / Dusts;
@@ -87,21 +98,19 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame = 0;
             }
 
-            if (time > 80)
-                Projectile.velocity *= 0.984f;
-            else
+            if (time < 80)
                 Projectile.scale *= 1.004f;
 
             if (time > 5)
             {
-                int chance = (time > 136 ? 3 : Projectile.Opacity < 1 ? 5 : 1);
+                int chance = Main.rand.NextBool(3) ? 2 : 1;
 
                 if (Main.rand.NextBool(chance))
                 {
                     for (int i = 0; i < 2; i++)
                     {
                         Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 20f * Projectile.scale;
-                        Dust dust = Dust.NewDustPerfect(dustPos, Main.rand.NextBool(10) ? 262 : 287, (i * MathHelper.Pi + Projectile.rotation * Math.Sign(Projectile.velocity.Length())).ToRotationVector2() * (chance > 1 ? 7 : 3));
+                        Dust dust = Dust.NewDustPerfect(dustPos, Main.rand.NextBool(6) ? 262 : 287, (i * MathHelper.Pi + Projectile.rotation * Math.Sign(Projectile.velocity.Length())).ToRotationVector2() * (chance > 1 ? 7 : 3));
                         dust.noGravity = false;
                         dust.scale = Main.rand.NextFloat(0.75f, 1.2f);
                         dust.alpha = Main.rand.Next(100, 170 + 1);
@@ -120,26 +129,14 @@ namespace CalamityMod.Projectiles.Magic
                     GeneralParticleHandler.SpawnParticle(SandCloud);
                 }
 
-                if (time < 136)
-                {
-                    for (int i = 0; i < 2; i++)
-                    {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center + new Vector2(25, 25).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.3f) * Projectile.scale, Main.rand.NextBool(8) ? 262 : 287, -Projectile.velocity * Main.rand.NextFloat(0.1f, 1.3f));
-                        dust.noGravity = true;
-                        dust.scale = Main.rand.NextFloat(0.4f, 0.7f);
-                        dust.alpha = 100;
-                    }
-                }
+
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center + new Vector2(25, 25).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.3f) * Projectile.scale, Main.rand.NextBool(8) ? 262 : 287, -Projectile.velocity * Main.rand.NextFloat(0.1f, 1.3f));
+                dust2.noGravity = true;
+                dust2.scale = Main.rand.NextFloat(0.4f, 0.7f);
+                dust2.alpha = 100;
             }
 
-            Projectile.rotation += Main.rand.NextFloat(0.01f, 0.18f) * (float)Projectile.direction * Projectile.Opacity * rotDirection;
-
-
-            if (Projectile.timeLeft <= 45)
-            {
-                Projectile.extraUpdates = 1;
-                Projectile.Opacity = MathHelper.Lerp(0f, 1f, (float)Projectile.timeLeft / 45f);
-            }
+            Projectile.rotation += Main.rand.NextFloat(0.01f, 0.18f) * (float)Projectile.direction * rotDirection;
 
             time++;
         }
@@ -150,32 +147,40 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Projectile.numHits >= 3 && Projectile.timeLeft > 45)
-            {
-                Projectile.timeLeft = 45;
-                Projectile.velocity *= 0.4f;
-            }
-        }
         public override void OnKill(int timeLeft)
         {
-            for (int i = 0; i < 20; i++)
+            if (Projectile.ai[1] == 1)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + new Vector2(30, 30).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.3f) * Projectile.scale, Main.rand.NextBool(8) ? 262 : 287, (Projectile.velocity * 4).RotatedByRandom(0.5) * Main.rand.NextFloat(0.1f, 1.3f));
-                dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(0.4f, 0.7f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PrimordialEarthExplosion>(), Projectile.damage * 2, Projectile.knockBack * 1.5f, Projectile.owner);
+                SoundStyle explo = new("CalamityMod/Sounds/Item/MagicRockImpact");
+                SoundEngine.PlaySound(explo with { Volume = 0.75f }, Projectile.Center);
+
+                Particle bolt = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Gold * 0.4f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.16f, 16);
+                GeneralParticleHandler.SpawnParticle(bolt);
+            }
+            for (int i = 0; i < 65; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(8) ? 262 : 287, new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.3f));
+                dust.noGravity = false;
+                if (dust.type == 262)
+                    dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.8f, 1.3f);
                 dust.alpha = 100;
+            }
+            for (int i = 0; i < 9; i++)
+            {
+                Vector2 randVel = new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.6f);
+                Particle smoke = new HeavySmokeParticle(Projectile.Center + randVel, randVel, Color.Peru, Main.rand.Next(25, 35 + 1), Main.rand.NextFloat(0.9f, 2.3f), 0.4f);
+                GeneralParticleHandler.SpawnParticle(smoke);
+                MediumMistParticle SandCloud = new MediumMistParticle(Projectile.Center, randVel * 0.8f, Color.Peru, Color.PeachPuff, Main.rand.NextFloat(0.4f, 1.3f), 120f, Main.rand.NextFloat(0.03f, -0.03f));
+                GeneralParticleHandler.SpawnParticle(SandCloud);
             }
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width * 0.5f * Projectile.scale, targetHitbox);
-        public override bool? CanDamage() => Projectile.Opacity == 1;
-
         public override bool PreDraw(ref Color lightColor)
         {
             if (Projectile.timeLeft > 50)
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor * 0.4f * Projectile.Opacity, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor * 0.4f, 1);
             return true;
         }
     }

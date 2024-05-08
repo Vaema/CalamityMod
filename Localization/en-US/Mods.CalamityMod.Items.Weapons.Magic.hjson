@@ -222,7 +222,7 @@ DeathValleyDuster: {
 		'''
 		Casts an enchanted blast of sand that passes through enemies and tiles
 		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the Forbidden Buff
-		The Forbidden Buff increases your defense by 10 and damage by 10%
+		The Forbidden Buff increases your defense by 10 and damage by 12%
 		'''
 }
 
@@ -624,7 +624,12 @@ PrimordialAncient: {
 
 PrimordialEarth: {
 	DisplayName: Primordial Earth
-	Tooltip: Casts a large blast of dust
+	Tooltip:
+		'''
+		Casts two enchanted blasts of sand that coverge with each other and explode
+		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the Forbidden Buff
+		The Forbidden Buff increases your defense by 10 and damage by 12%
+		'''
 }
 
 PurgeGuzzler: {

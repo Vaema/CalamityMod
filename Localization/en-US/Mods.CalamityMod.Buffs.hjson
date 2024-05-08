@@ -1531,6 +1531,6 @@ ForbiddenBuff: {
 	Description:
 		'''
 		You are strengthened by ancient powers
-		Defense increased by 10, damage increased by 10%
+		Defense increased by 10, damage increased by 12%
 		'''
 }
