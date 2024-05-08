@@ -1525,3 +1525,12 @@ LiliesOfFinalityBuff: {
 	DisplayName: Finality
 	Description: Remember our promise
 }
+
+ForbiddenBuff: {
+	DisplayName: Forbidden Buff
+	Description:
+		'''
+		You are strengthened by ancient powers
+		Defense increased by 10, damage increased by 10%
+		'''
+}

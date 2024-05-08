@@ -898,6 +898,7 @@ namespace CalamityMod.CalPlayer
 
         #region Buff
         public bool trinketOfChiBuff = false;
+        public bool forbiddenBuff = false;
         public int chiBuffTimer = 0;
         public bool corrEffigy = false;
         public bool crimEffigy = false;
@@ -1953,6 +1954,7 @@ namespace CalamityMod.CalPlayer
             ManaBurn = false;
 
             trinketOfChiBuff = false;
+            forbiddenBuff = false;
             corrEffigy = false;
             crimEffigy = false;
             decayEffigy = false;
@@ -2407,6 +2409,7 @@ namespace CalamityMod.CalPlayer
             aquaticHeartWaterBuff = false;
             aquaticHeartIce = false;
             trinketOfChiBuff = false;
+            forbiddenBuff = false;
             chiBuffTimer = 0;
             corrEffigy = false;
             crimEffigy = false;

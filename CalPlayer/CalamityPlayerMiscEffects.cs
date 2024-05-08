@@ -3010,6 +3010,12 @@ namespace CalamityMod.CalPlayer
                 bonusStealthDamage += nanotech ? 0.05f : 0.08f;
             }
 
+            if (forbiddenBuff)
+            {
+                Player.GetDamage<GenericDamageClass>() += 0.10f;
+                Player.statDefense += 10;
+            }
+
             if (frostFlare)
             {
                 Player.resistCold = true;
