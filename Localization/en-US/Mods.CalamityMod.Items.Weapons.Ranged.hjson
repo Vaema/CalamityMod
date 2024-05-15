@@ -435,30 +435,6 @@ Drataliornus: {
 		'''
 }
 
-ElementalSaw: {
-	DisplayName: Elemental Saw
-	Tooltip:
-		'''
-		[MAIN]
-		[ALT]
-		'''
-	MainInfo:
-		'''
-		Hold <left> to rev up an elemental buzzsaw that deals close-range damage
-		Release <left> to fire the buzzsaw to pierce through and lacerate foes
-		Fired buzzsaws bounce off tiles and return to the player after winding down
-		When returning, the saws release extra homing bolts depending on the number of enemy and tile hits
-		Revving up the saws increase their damage and allow them to pierce more enemies
-		'''
-	AltInfo:
-		'''
-		Press <right> to eject a lingering buzzsaw towards the cursor that fires homing bolts
-		Using this ability rapidly propels you in the direction you are moving
-		This ability has a {0} second cooldown
-		During this cooldown, buzzsaws home to the cursor and constantly release homing bolts while returning
-		'''
-}
-
 ElementalEruption: {
 	DisplayName: Elemental Eruption
 	Tooltip:
@@ -1245,6 +1221,30 @@ StormSurge: {
 SulphuricAcidCannon: {
 	DisplayName: Sulphuric Acid Cannon
 	Tooltip: Fires an acidic shot that sticks to enemies and dissolves them
+}
+
+SuperradiantSlaughterer: {
+	DisplayName: Superradiant Slaughterer
+	Tooltip:
+		'''
+		[MAIN]
+		[ALT]
+		'''
+	MainInfo:
+		'''
+		Hold <left> to rev up an elemental buzzsaw that deals close-range damage
+		Release <left> to fire the buzzsaw to pierce through and lacerate foes
+		Fired buzzsaws bounce off tiles and return to the player after winding down
+		When returning, the saws release extra homing bolts depending on the number of enemy and tile hits
+		Revving up the saws increase their damage and allow them to pierce more enemies
+		'''
+	AltInfo:
+		'''
+		Press <right> to eject a lingering buzzsaw towards the cursor that fires homing bolts
+		Using this ability rapidly propels you in the direction you are moving
+		This ability has a {0} second cooldown
+		During this cooldown, buzzsaws home to the cursor and constantly release homing bolts while returning
+		'''
 }
 
 SurgeDriver: {

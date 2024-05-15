@@ -16,7 +16,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Ranged
 {
     [LegacyName("ElementalBlaster")]
-    public class ElementalSaw : ModItem, ILocalizedModType
+    public class SuperradiantSlaughterer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
@@ -67,7 +67,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<ElementalSawHoldout>();
+            Item.shoot = ModContent.ProjectileType<SuperradiantSlaughtererHoldout>();
             Item.shootSpeed = ShootSpeed;
             Item.Calamity().canFirePointBlankShots = true;
         }
@@ -77,7 +77,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool AltFunctionUse(Player player) => true;
         public override bool CanUseItem(Player player)
         {
-            if (player.altFunctionUse == 2 && player.HasCooldown(ElementalSawBoost.ID))
+            if (player.altFunctionUse == 2 && player.HasCooldown(SuperradiantSawBoost.ID))
                 return false;
             else
                 return player.ownedProjectileCounts[Item.shoot] <= 0;
@@ -88,13 +88,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             // Right click dash
             if (player.altFunctionUse == 2)
             {
-                if (!player.HasCooldown(ElementalSawBoost.ID))
+                if (!player.HasCooldown(SuperradiantSawBoost.ID))
                 {
                     // Throws a lingering saw at the cursor
                     float mouseDist = Vector2.Distance(player.Center, Main.MouseWorld) / 20f;
-                    Projectile.NewProjectile(source, player.Center, velocity.SafeNormalize(Vector2.UnitY) * mouseDist, ModContent.ProjectileType<ElementalSawLingering>(), damage, knockback, Main.myPlayer);
+                    Projectile.NewProjectile(source, player.Center, velocity.SafeNormalize(Vector2.UnitY) * mouseDist, ModContent.ProjectileType<SuperradiantSawLingering>(), damage, knockback, Main.myPlayer);
 
-                    player.AddCooldown(ElementalSawBoost.ID, DashCooldown);
+                    player.AddCooldown(SuperradiantSawBoost.ID, DashCooldown);
                     player.Calamity().sBlasterDashActivated = true;
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), player.Center);
 
@@ -121,7 +121,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             else
             {
                 // The holdout deals 2x base damage.
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ElementalSawHoldout>(), (int)(damage * 2), knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, velocity, Item.shoot, damage * 2, knockback, player.whoAmI);
             }
             return false;
         }

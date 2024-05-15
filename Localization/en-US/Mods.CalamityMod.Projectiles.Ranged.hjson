@@ -72,10 +72,6 @@ DryadsTearSplit.DisplayName: Dryad's Tear
 DWArrow.DisplayName: Death's Arrow
 ElementalFire.DisplayName: Elemental Fire
 ElementalFlare.DisplayName: Elemental Flare
-ElementalSawBullet.DisplayName: Elemental Sawcon Bolt
-ElementalSawLingering.DisplayName: Elemental Sawcon Deluxe
-ElementalSawMini.DisplayName: Elemental Sawcon Lite
-ElementalSawProj.DisplayName: Elemental Sawcon
 ElysianArrowProj.DisplayName: Elysian Arrow
 ElysianArrowRain.DisplayName: Elysian Light
 EmesisGore.DisplayName: Rotten Gore
@@ -224,6 +220,9 @@ StarmageddonStar2.DisplayName: Starmageddon Star
 StormSurgeTornado.DisplayName: Surge
 SulphuricBlast.DisplayName: Sulphuric Blast
 SuperballBulletProj.DisplayName: Superball Bullet
+SuperradiantBolt.DisplayName: Superradiant Bolt
+SuperradiantSawLingering.DisplayName: Ultraradiant Saw
+SuperradiantSaw.DisplayName: Superradiant Saw
 TelluricGlareArrow.DisplayName: Radiant Arrow
 TheMaelstromExplosion.DisplayName: Reaper Explosion
 TheMaelstromShark.DisplayName: Reaper Shark

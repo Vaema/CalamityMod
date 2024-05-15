@@ -90,7 +90,6 @@ Cooldowns: {
 	DivingPlatesBreaking: Abyssal Diving Suit Plates Durability
 	DivingPlatesBroken: Abyssal Diving Suit Broken Plates
 	ParryCooldown: Parry Ability Cooldown
-	ElementalSawBoost: Elemental Saw Boost
 	EvasionScarf: Scarf Cooldown
 	FleshTotem: Contact Damage Halving Cooldown
 	GaelsRage: Gael's Greatsword Rage Cooldown
@@ -120,6 +119,7 @@ Cooldowns: {
 	SpeedBlasterBoost: Speed Blaster Boost
 	SpongeDurability: Sponge Barrier Durability
 	SpongeRecharge: Sponge Barrier Recharge
+	SuperradiantSawBoost: Superradiant Saw Boost
 	TarragonCloak: Tarragon Cloak Cooldown
 	TarragonImmunity: Tarragon Immunity Cooldown
 	UniverseSplitter: Universe Splitter Cooldown

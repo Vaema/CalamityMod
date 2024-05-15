@@ -12,7 +12,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ElementalSawBullet : ModProjectile, ILocalizedModType
+    public class SuperradiantBolt : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
 

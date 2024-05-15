@@ -16,9 +16,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ElementalSawHoldout : BaseGunHoldoutProjectile
+    public class SuperradiantSlaughtererHoldout : BaseGunHoldoutProjectile
     {
-        public override int AssociatedItemID => ModContent.ItemType<ElementalSaw>();
+        public override int AssociatedItemID => ModContent.ItemType<SuperradiantSlaughterer>();
         public override float RecoilResolveSpeed => 0.05f;
         public override float MaxOffsetLengthFromArm => 36f;
         public override float BaseOffsetY => -5f;
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
                     int sawLevel = (SawPower >= 1f).ToInt() + (SawPower >= 0.25f).ToInt();
 
                     // ai[0] determines which slashes are drawn. ai[1] is the saw's timer variable. ai[2] stores the saw's pierce.
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * ElementalSaw.ShootSpeed, ModContent.ProjectileType<ElementalSawProj>(), (int)(Projectile.damage * sawDamageMult), Projectile.knockBack, Main.myPlayer, sawLevel, 0f, sawPierce);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * SuperradiantSlaughterer.ShootSpeed, ModContent.ProjectileType<SuperradiantSaw>(), (int)(Projectile.damage * sawDamageMult), Projectile.knockBack, Main.myPlayer, sawLevel, 0f, sawPierce);
 
                     NoSawOnHoldout = true;
                     OffsetLengthFromArm -= 4f + 12f * SawPower;
@@ -244,11 +244,11 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Holdout ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawHoldout");
+            Holdout ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SuperradiantSlaughtererHoldout");
             Texture2D holdoutTexture = Holdout.Value;
-            LargeSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawLargeSlash");
+            LargeSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SuperradiantSawLargeSlash");
             Texture2D largeSlashTexture = LargeSlash.Value;
-            SmallSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawSmallSlash");
+            SmallSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SuperradiantSawSmallSlash");
             Texture2D smallSlashTexture = SmallSlash.Value;
             Color slashColor = new Color(200, 200, 200, 100);
 
@@ -265,7 +265,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // Mini saw drawn under the gun
-            MiniSaw ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawHoldoutMiniSaw");
+            MiniSaw ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SuperradiantSlaughtererHoldoutMiniSaw");
             Texture2D mini = MiniSaw.Value;
             Vector2 verticalOffset = Vector2.UnitY.RotatedBy(Projectile.rotation);
             if (Math.Cos(Projectile.rotation) < 0f)
@@ -276,7 +276,7 @@ namespace CalamityMod.Projectiles.Ranged
             Main.EntitySpriteDraw(holdoutTexture, drawPosition, frame, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale, flipSprite);
 
             // Glowmask
-            HoldoutGlow ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawHoldoutGlow");
+            HoldoutGlow ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SuperradiantSlaughtererHoldoutGlow");
             Texture2D glow = HoldoutGlow.Value;
             Main.EntitySpriteDraw(glow, drawPosition, frame, Color.White, drawRotation, rotationPoint, Projectile.scale, flipSprite);
 

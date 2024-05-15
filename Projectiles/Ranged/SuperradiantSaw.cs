@@ -14,7 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ElementalSawProj : ModProjectile, ILocalizedModType
+    public class SuperradiantSaw : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public static readonly SoundStyle TileCollideGFB = new("CalamityMod/Sounds/Custom/MetalPipeFalling");
@@ -68,13 +68,13 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Control the saw being empowered or not
             Player Owner = Main.player[Projectile.owner];
-            Empowered = Owner.HasCooldown(ElementalSawBoost.ID);
+            Empowered = Owner.HasCooldown(SuperradiantSawBoost.ID);
 
             // While empowered, the saws while slightly home in on the cursor
             if (Empowered && !Returning && Time > 30)
             {
                 float homingTurnSpeed = 0.18f;
-                Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.MouseWorld).ToRotation(), homingTurnSpeed).ToRotationVector2() * ElementalSaw.ShootSpeed;
+                Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.MouseWorld).ToRotation(), homingTurnSpeed).ToRotationVector2() * SuperradiantSlaughterer.ShootSpeed;
             }
 
             // Saws automatically return 2 seconds after hitting an enemy
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Ranged
                         {
                             Vector2 randBoltVelocity = Main.rand.NextVector2Unit() * 9f;
                             if (Main.myPlayer == Projectile.owner)
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randBoltVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randBoltVelocity, ModContent.ProjectileType<SuperradiantBolt>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
                         }
 
                         // Extra burst of sparks for cool points
@@ -123,10 +123,10 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         Vector2 randVelocity = -Projectile.velocity.RotatedByRandom(MathHelper.Pi / 3f) * 0.5f;
                         if (Main.myPlayer == Projectile.owner)
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randVelocity, ModContent.ProjectileType<SuperradiantBolt>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
                     }
 
-                    float returnSpeed = (ElementalSaw.ShootSpeed * 0.6f) + (0.05f * (ReturnTimer - 120));
+                    float returnSpeed = (SuperradiantSlaughterer.ShootSpeed * 0.6f) + (0.05f * (ReturnTimer - 120));
                     Vector2 ownerDist = Owner.Center - Projectile.Center;
                     if (ownerDist.Length() > 3000f)
                         Projectile.Kill();
@@ -305,9 +305,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            LargeSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawLargeSlash");
+            LargeSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SuperradiantSawLargeSlash");
             Texture2D largeSlashTexture = LargeSlash.Value;
-            SmallSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawSmallSlash");
+            SmallSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SuperradiantSawSmallSlash");
             Texture2D smallSlashTexture = SmallSlash.Value;
             Color slashColor = new Color(200, 200, 200, 100);
 
@@ -344,7 +344,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Empowered) // Rainbow outline while empowered
             {
-                SawOutline ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawProjOutline");
+                SawOutline ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SuperradiantSawOutline");
                 Texture2D outline = SawOutline.Value;
                 Main.EntitySpriteDraw(outline, Projectile.Center - Main.screenPosition, null, Main.DiscoColor, Projectile.rotation, outline.Size() * 0.5f, 1f, SpriteEffects.None);
             }

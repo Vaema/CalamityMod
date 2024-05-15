@@ -8,9 +8,9 @@ using Terraria.ID;
 
 namespace CalamityMod.CalPlayer.Dashes
 {
-    public class ElementalSawDash : PlayerDashEffect
+    public class SuperradiantSawDash : PlayerDashEffect
     {
-        public static new string ID => "Elemental Saw";
+        public static new string ID => "Superradiant Slaughterer";
         public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
 
         public override bool IsOmnidirectional => true;

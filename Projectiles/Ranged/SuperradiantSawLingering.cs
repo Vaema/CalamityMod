@@ -12,10 +12,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class ElementalSawLingering : ModProjectile, ILocalizedModType
+    public class SuperradiantSawLingering : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Ranged/ElementalSawProj";
+        public override string Texture => "CalamityMod/Projectiles/Ranged/SuperradiantSaw";
 
         public ref float Time => ref Projectile.ai[1];
 
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Vector2 randVelocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(7.5f, 9f);
                 if (Main.myPlayer == Projectile.owner)
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randVelocity, ModContent.ProjectileType<ElementalSawBullet>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randVelocity, ModContent.ProjectileType<SuperradiantBolt>(), (int)(Projectile.damage * 0.5f), 0f, Main.myPlayer);
             }
 
             // Fade out at the end of its lifetime
@@ -146,9 +146,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            LargeSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawLargeSlash");
+            LargeSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SuperradiantSawLargeSlash");
             Texture2D largeSlashTexture = LargeSlash.Value;
-            SmallSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawSmallSlash");
+            SmallSlash ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SuperradiantSawSmallSlash");
             Texture2D smallSlashTexture = SmallSlash.Value;
             Color slashColor = new Color(200, 200, 200, 100) * Projectile.Opacity;
 
@@ -177,7 +177,7 @@ namespace CalamityMod.Projectiles.Ranged
             Texture2D buzzsawTexture = TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(buzzsawTexture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, buzzsawTexture.Size() * 0.5f, 1f, SpriteEffects.None);
 
-            SawOutline ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ElementalSawProjOutline");
+            SawOutline ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SuperradiantSawOutline");
             Texture2D outline = SawOutline.Value;
             Main.EntitySpriteDraw(outline, Projectile.Center - Main.screenPosition, null, Main.DiscoColor, Projectile.rotation, outline.Size() * 0.5f, 1f, SpriteEffects.None);
 
