@@ -368,7 +368,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     // New location
                     npc.Center = new Vector2(calamityGlobalNPC.newAI[2], calamityGlobalNPC.newAI[3]);
-                    npc.velocity = Vector2.Zero;
+
+                    // Do not set velocity to zero during charge attacks
+                    if (npc.ai[1] != 1f)
+                        npc.velocity = Vector2.Zero;
+
                     npc.ai[3] = -60f;
                     calamityGlobalNPC.newAI[2] = calamityGlobalNPC.newAI[3] = 0f;
                     npc.SyncExtraAI();
@@ -403,7 +407,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         int skullProjectile = Projectile.NewProjectile(npc.GetSource_FromAI(), skullFiringPos, skullProjDirection, type, damage, 0f, Main.myPlayer, -1f);
                         Main.projectile[skullProjectile].timeLeft = 600;
-                        if (masterMode)
+                        if (masterMode && handsDead)
                         {
                             skullProjDirection = new Vector2(skullProjTargetX, skullProjTargetY).SafeNormalize(Vector2.UnitY);
                             skullProjDirection *= skullProjSpeed * 2f;
@@ -424,6 +428,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 calamityGlobalNPC.newAI[1] += 1f;
                 float chargePhaseChangeRateBoost = phase5 ? (death ? 24f : 14f) : phase4 ? (death ? 8f : 6f) : (((masterMode && death) ? 6f : 4f) * ((1f - lifeRatio) / (1f - phase4LifeRatio)));
+                if (!handsDead)
+                    chargePhaseChangeRateBoost *= 0.5f;
+
                 float chargePhaseChangeRate = chargePhaseChangeRateBoost + 1f;
                 npc.ai[2] += chargePhaseChangeRate;
                 npc.localAI[1] += chargePhaseChangeRate;
@@ -953,6 +960,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (Main.npc[(int)npc.ai[1]].ai[1] != 0f || cancelSlap)
                 {
+                    deceleration *= 0.75f;
+                    velocityIncrement *= 1.5f;
+
                     float maxX = velocityIncrement * 100f * velocityMultiplier;
                     float maxY = velocityIncrement * 100f * velocityMultiplier;
 

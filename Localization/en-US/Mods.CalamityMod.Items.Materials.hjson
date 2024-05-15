@@ -302,8 +302,8 @@ SolarVeil: {
 	Tooltip: Sunlight cannot penetrate the fabric of this cloth
 }
 
-Stardust: {
-	DisplayName: Stardust
+StarblightSoot: {
+	DisplayName: Starblight Soot
 	Tooltip: ""
 }
 

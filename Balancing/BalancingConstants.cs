@@ -218,7 +218,7 @@
         internal static readonly float AdrenalineDRPerBooster = 0.05f; // +5% per booster
 
         internal static readonly int AdrenalinePauseAfterDamage = CalamityUtils.SecondsToFrames(1);
-        internal static readonly float MinimumAdrenalineLoss = 0.1f; // No matter how small a hit, you will always lose at least 10% current Adrenaline
+        internal static readonly float MinimumAdrenalineLoss = 0.25f; // No matter how small a hit, you will always lose at least 25% current Adrenaline
         internal static readonly float AdrenalineFalloffTinyHitHealthRatio = 0.05f; // Hits for 5% max HP or less result in less Adrenaline loss
 
         internal static readonly float TrueMeleeRipperReductionFactor = 0.5f; // True melee benefits less from rippers to prevent excessive melting.

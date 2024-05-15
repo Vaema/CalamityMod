@@ -429,7 +429,7 @@ namespace CalamityMod.Items
 
             // Cobalt
             if (item.type == ItemID.CobaltSword || item.type == ItemID.CobaltNaginata)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nPermanently decreases enemy defense by 25% on hit");
+                EditTooltipByName("Knockback", (line) => line.Text += "\nDecreases enemy defense by 25% on hit\nThis effect lasts for 10 seconds");
 
             // Palladium
             if (item.type == ItemID.PalladiumSword || item.type == ItemID.PalladiumPike)
@@ -437,7 +437,7 @@ namespace CalamityMod.Items
 
             // Mythril
             if (item.type == ItemID.MythrilSword || item.type == ItemID.MythrilHalberd)
-                EditTooltipByName("Knockback", (line) => line.Text += "\nPermanently decreases enemy contact damage by 10% on hit");
+                EditTooltipByName("Knockback", (line) => line.Text += "\nDecreases enemy contact damage by 10% on hit\nThis effect lasts for 10 seconds");
 
             // Orichalcum
             if (item.type == ItemID.OrichalcumSword || item.type == ItemID.OrichalcumHalberd)
@@ -583,11 +583,19 @@ namespace CalamityMod.Items
                 "Drinking more than 3 different alcohols might not end well with your liver");
             }
 
+            //Flame Waker Boots buff.
+            if (item.type == ItemID.FlameWakerBoots)
+            {
+                EditTooltipByNum(0, (line) => line.Text = "Multiplies all fire-based debuff damage by 1.25\n" +
+                "All attacks light enemies on fire\n" +
+                "'Never get cold feet again'\n");
+            }
+
             // Hellfire Treads buff.
             if (item.type == ItemID.HellfireTreads)
             {
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("fire blocks", "the Burning and On Fire! debuffs"));
-                EditTooltipByNum(2, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5\n" +
+                EditTooltipByNum(2, (line) => line.Text += "\nMultiplies all fire-based debuff damage by 1.5, does not stack with downgrades\n" +
                 "All attacks inflict Hellfire");
             }
 
@@ -820,7 +828,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.PlatinumHelmet)
                 AddTooltip("6% increased damage");
             if (item.type == ItemID.PlatinumChainmail)
-                AddTooltip("5% increased critical strike chance");
+                AddTooltip("3% increased critical strike chance");
             if (item.type == ItemID.PlatinumGreaves)
                 AddTooltip("10% increased movement speed");
 

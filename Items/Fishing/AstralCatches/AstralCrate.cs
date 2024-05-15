@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Fishing.AstralCatches
             var postAstrumDeus = itemLoot.DefineConditionalDropSet(() => DownedBossSystem.downedAstrumDeus);
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<Stardust>(), 1, 5, 10);
+            itemLoot.Add(ModContent.ItemType<StarblightSoot>(), 1, 5, 10);
             itemLoot.Add(ItemID.FallenStar, 1, 5, 10);
             itemLoot.Add(ItemID.Meteorite, 5, 10, 20);
             itemLoot.Add(ItemID.MeteoriteBar, 10, 1, 3);

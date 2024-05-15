@@ -388,7 +388,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.SoulofMight).
                 AddIngredient(ItemID.SoulofSight).
                 AddIngredient(ItemID.PixieDust, 2).
-                AddIngredient<Stardust>(10).
+                AddIngredient<StarblightSoot>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

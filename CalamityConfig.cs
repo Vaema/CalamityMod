@@ -68,10 +68,6 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool MusicModReminderMessage { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
         public bool WikiStatusMessage { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]

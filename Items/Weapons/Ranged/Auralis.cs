@@ -69,7 +69,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.SniperRifle).
                 AddIngredient<UelibloomBar>(5).
                 AddIngredient<AureusCell>(5).
-                AddIngredient<Stardust>(50).
+                AddIngredient<StarblightSoot>(50).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

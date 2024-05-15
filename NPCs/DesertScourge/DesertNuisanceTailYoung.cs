@@ -146,8 +146,9 @@ namespace CalamityMod.NPCs.DesertScourge
                 Main.getGoodWorld ? DesertNuisanceHeadYoung.SegmentVelocity_GoodWorld :
                 masterMode ? DesertNuisanceHeadYoung.SegmentVelocity_Master :
                 DesertNuisanceHeadYoung.SegmentVelocity_Expert;
+            maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
             if (masterMode)
-                maxChaseSpeed += maxChaseSpeed * 0.5f * (1f - lifeRatio);
+                maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
 
             float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
             float minimalDamageVelocity = maxChaseSpeed * 0.5f;

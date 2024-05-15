@@ -212,7 +212,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 SoundStyle fire = new("CalamityMod/Sounds/Item/DeadSunExplosion");
                 SoundEngine.PlaySound(fire with { Volume = 0.35f, Pitch = -0.4f, PitchVariance = 0.2f }, Projectile.Center);
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), tipPosition, firingVelocity * Utils.GetLerpValue(60, 10, FiringTime, true), ModContent.ProjectileType<WingmanGrenade>(), (int)(Projectile.damage * 4.5), Projectile.knockBack * 5, Projectile.owner, 0);
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), tipPosition, (firingVelocity * 2) * Utils.GetLerpValue(60, 10, FiringTime, true), ModContent.ProjectileType<WingmanGrenade>(), (int)(Projectile.damage * 6), Projectile.knockBack * 5, Projectile.owner, 0);
             }
             else
             {
@@ -248,6 +248,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         private void PostFiringCooldown()
         {
+            Owner.channel = true;
             Vector2 tipPosition = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedBy(-0.05f * Projectile.direction) * 12f;
 
             if (PostFireCooldown > 0 && Main.rand.NextBool())

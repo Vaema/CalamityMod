@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Materials
         {
             CreateRecipe(3).
                 AddIngredient<MeldBlob>(6).
-                AddIngredient<Stardust>(3).
+                AddIngredient<StarblightSoot>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

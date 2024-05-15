@@ -10,8 +10,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    [LegacyName("AstralArcanum")]
-    public class Purity : ModItem, ILocalizedModType
+    [LegacyName("AstralArcanum", "Purity")]
+    public class Radiance : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()

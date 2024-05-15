@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
+using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -242,9 +243,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 // These should do a large fraction of the beam's damage so they will easily kill even some decently bulky enemies regular enemies in one hit
                 // This is so it can better proc its on kill effect
                 int numProj = 4;
+                int projectileDamage = (int)(Projectile.damage * 0.5f);
                 for (int i = 0; i < numProj; i++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.Zero) * (14f - i * 0.7f)) * ((i + 1) * 0.25f), ModContent.ProjectileType<PulseRifleShot>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner, 0f, 1f + i);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.Zero) * (14f - i * 0.7f)) * ((i + 1) * 0.25f), ModContent.ProjectileType<PulseRifleShot>(), projectileDamage, Projectile.knockBack, Projectile.owner, 0f, 1f + i);
                 }
             }
             // Split projectile on hit effects

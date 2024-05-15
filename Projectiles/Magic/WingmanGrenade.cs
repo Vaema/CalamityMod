@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.timeLeft = 480;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.extraUpdates = 4;
+            Projectile.extraUpdates = 6;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
@@ -122,7 +122,7 @@ namespace CalamityMod.Projectiles.Magic
                 exploding = true;
             }
             if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.95f);
+                Projectile.damage = (int)(Projectile.damage * 0.80f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }

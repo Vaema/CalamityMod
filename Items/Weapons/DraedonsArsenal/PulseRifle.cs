@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/PulseRifleFire") { Volume = 0.8f };
 
-        private int BaseDamage = 1150;
+        private int BaseDamage = 990;
         public int FiringTimer = 30;
 
         public override void SetDefaults()
@@ -32,8 +32,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.DamageType = DamageClass.Ranged;
             Item.damage = BaseDamage;
             Item.knockBack = 0f;
-            Item.useTime = 45;
-            Item.useAnimation = 45;
+            Item.useTime = 55;
+            Item.useAnimation = 55;
             Item.autoReuse = true;
 
             Item.useStyle = ItemUseStyleID.Shoot;

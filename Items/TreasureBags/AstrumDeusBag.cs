@@ -63,7 +63,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<AstrumDeusHead>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<Stardust>(), 1, 60, 90);
+            itemLoot.Add(ModContent.ItemType<StarblightSoot>(), 1, 60, 90);
             itemLoot.Add(ItemID.FallenStar, 1, 30, 50);
 
             // Weapons

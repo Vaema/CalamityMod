@@ -12,6 +12,8 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public ref float time => ref Projectile.ai[0];
+        public ref float isSplit => ref Projectile.ai[1];
+        public bool splitShot = false;
 
         public Color mainColor = Color.MediumSlateBlue;
         public override void SetDefaults()
@@ -29,15 +31,17 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void AI()
         {
+            if (isSplit == 0)
+                splitShot = true;
             if (time == 0)
             {
-                if (Projectile.ai[1] == 0)
+                if (splitShot)
                     Projectile.penetrate = 1;
                 else
                     Projectile.timeLeft = 50;
             }
 
-            if (Projectile.timeLeft % 2 == 0 && (Projectile.ai[1] == 1 && time > 2 || (Projectile.ai[1] == 0 && time > 3 && Projectile.timeLeft > 2)))
+            if (Projectile.timeLeft % 2 == 0 && (!splitShot && time > 2 || (splitShot && time > 3 && Projectile.timeLeft > 2)))
             {
                 Particle spark = new GlowSparkParticle(Projectile.Center, -Projectile.velocity * 0.05f, false, 17, 0.06f, mainColor, new Vector2(0.5f, 1.3f));
                 GeneralParticleHandler.SpawnParticle(spark);
@@ -54,7 +58,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             int numProj = 2;
             float rotation = MathHelper.ToRadians(20);
-            if (Projectile.ai[1] == 0)
+            if (splitShot)
             {
                 for (int i = 0; i < numProj; i++)
                 {
@@ -90,7 +94,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.ai[1] == 0) // This is the sweet spot
+            if (splitShot) // This is the sweet spot
             {
                 modifiers.SourceDamage *= 1.5f;
 

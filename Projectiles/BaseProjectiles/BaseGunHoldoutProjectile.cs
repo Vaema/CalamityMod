@@ -171,7 +171,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         public virtual void KillHoldoutLogic()
         {
-            if (Owner.CantUseHoldout() || HeldItem.type != AssociatedItemID)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.netUpdate = true;
                 Projectile.Kill();

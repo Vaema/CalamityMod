@@ -538,8 +538,8 @@ HeavenfallenStardisk: {
 	Tooltip:
 		'''
 		Throws a stardisk upwards which then launches itself towards your mouse cursor
-		Explodes into 5 astral energy bolts if the thrower is moving vertically when throwing it
-		Stealth strikes rain astral energy bolts from the sky
+		Explodes into a star of astral bolts on hit
+		Stealth strikes throw three disks that rain astral energy bolts from the sky
 		'''
 }
 
@@ -1084,7 +1084,8 @@ SlickCane: {
 	Tooltip:
 		'''
 		Swipes a cane that steals money from enemies
-		Stealth strikes gives a 1 in 15 chance for enemies to drop 1-3 gold coins when hit
+		Stealth strikes gives a 1 in 20 chance for enemies to drop 1-3 gold coins when hit
+		Stealth strikes' damage increases in proportion to money in the inventory (up to 2 platinum)
 		'Economy at its finest'
 		'''
 }

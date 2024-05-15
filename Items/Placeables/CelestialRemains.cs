@@ -82,7 +82,7 @@ namespace CalamityMod.Items.Placeables
             }
             else if (val < 68.03f)
             {
-                resultType = ModContent.ItemType<Stardust>();
+                resultType = ModContent.ItemType<StarblightSoot>();
                 resultStack = Main.rand.Next(1, 11);
             }
             else if (val < 69.03f)

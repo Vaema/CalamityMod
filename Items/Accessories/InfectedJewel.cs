@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<CrownJewel>().
                 AddIngredient<AureusCell>(10).
-                AddIngredient<Stardust>(25).
+                AddIngredient<StarblightSoot>(25).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

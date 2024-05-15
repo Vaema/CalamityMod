@@ -16,7 +16,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public override string ArmorSetName => "Platinum";
 
         public const float HeadDamage = 0.06f;
-        public const float ChestCrit = 5f;
+        public const float ChestCrit = 3f;
         public const float LegsMoveSpeed = 0.1f;
         public const float SetBonusDamagePerDefense = 0.001f; // 10 defense = +1% damage
         public const float SetBonusCritPerDefense = 0.1f; // 10 defense = +1% crit chance

@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<SolarFlare>().
+                AddIngredient<BurningRevelation>().
                 AddIngredient<TheObliterator>().
                 AddIngredient<AuricBar>(5).
                 AddTile<CosmicAnvil>().

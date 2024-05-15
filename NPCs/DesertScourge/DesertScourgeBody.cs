@@ -176,18 +176,13 @@ namespace CalamityMod.NPCs.DesertScourge
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
+            // Phases
+            bool phase2 = lifeRatio < 0.5f;
+
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            bool shouldDespawn = true;
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<DesertScourgeHead>())
-                {
-                    shouldDespawn = false;
-                    break;
-                }
-            }
+            bool shouldDespawn = !NPC.AnyNPCs(ModContent.NPCType<DesertScourgeHead>());
             if (!shouldDespawn)
             {
                 if (NPC.ai[1] <= 0f)
@@ -210,7 +205,18 @@ namespace CalamityMod.NPCs.DesertScourge
                     NPC.alpha = 0;
             }
             else
+            {
                 NPC.alpha = Main.npc[(int)NPC.ai[1]].alpha;
+                if (NPC.alpha != 255 && NPC.dontTakeDamage)
+                {
+                    for (int dustIndex = 0; dustIndex < 2; dustIndex++)
+                    {
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.UnusedBrown, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].noLight = true;
+                    }
+                }
+            }
 
             if (Main.player[NPC.target].dead)
                 NPC.TargetClosest(false);
@@ -230,7 +236,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.spriteDirection = (directionToNextSegment.X > 0).ToDirectionInt();
 
             NPC head = Main.npc[(int)NPC.ai[2]];
-            float burrowTimeGateValue = (CalamityWorld.death || BossRushEvent.BossRushActive) ? DesertScourgeHead.BurrowTimeGateValue_Death : DesertScourgeHead.BurrowTimeGateValue;
+            float burrowTimeGateValue = DesertScourgeHead.BurrowTimeGateValue;
             bool burrow = head.Calamity().newAI[0] >= burrowTimeGateValue;
             bool lungeUpward = burrow && head.Calamity().newAI[1] == 1f;
             bool quickFall = head.Calamity().newAI[1] == 2f;
@@ -244,7 +250,7 @@ namespace CalamityMod.NPCs.DesertScourge
             if (burrow || lungeUpward)
                 maxChaseSpeed *= 1.5f;
             if (expertMode)
-                maxChaseSpeed += maxChaseSpeed * 0.5f * (1f - lifeRatio);
+                maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
 
             float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
             float minimalDamageVelocity = maxChaseSpeed * 0.5f;

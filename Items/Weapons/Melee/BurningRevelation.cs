@@ -5,7 +5,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class SolarFlare : ModItem, ILocalizedModType
+    [LegacyName("SolarFlare")]
+    public class BurningRevelation : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
@@ -32,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noUseGraphic = true;
             Item.noMelee = true;
 
-            Item.shoot = ModContent.ProjectileType<SolarFlareYoyo>();
+            Item.shoot = ModContent.ProjectileType<BurningRevelationYoyo>();
             Item.shootSpeed = 16f;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;

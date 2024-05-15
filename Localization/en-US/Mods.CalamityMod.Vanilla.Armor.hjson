@@ -99,6 +99,7 @@ SetBonus: {
 		Increases minion damage by 15%
 		Grants immunity to fire blocks and temporary immunity to lava
 		'''
+	PlatinumChainmail: 3% increased critical strike chance
 	Platinum:
 		'''
 		Every 10 extra defense gives you 1% increased damage and 1% increased critical strike chance
@@ -130,7 +131,6 @@ SetBonus: {
 		'''
 		Increases your life regeneration
 		15% increased minion damage and 10% increased melee critical strike chance
-		Negates the summon damage penalty while wielding non-summon weapons
 		'''
 	HuntressTier2: 10% increased minion and ranged damage
 	ApprenticeTier2: 5% increased minion damage and 15% increased magic critical strike chance

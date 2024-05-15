@@ -164,15 +164,7 @@ namespace CalamityMod.NPCs.DesertScourge
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            bool shouldDespawn = true;
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<DesertNuisanceHead>())
-                {
-                    shouldDespawn = false;
-                    break;
-                }
-            }
+            bool shouldDespawn = !NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>());
             if (!shouldDespawn)
             {
                 if (NPC.ai[1] <= 0f)
@@ -217,8 +209,9 @@ namespace CalamityMod.NPCs.DesertScourge
                 Main.getGoodWorld ? DesertNuisanceHead.SegmentVelocity_GoodWorld :
                 masterMode ? DesertNuisanceHead.SegmentVelocity_Master :
                 DesertNuisanceHead.SegmentVelocity_Expert;
+            maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
             if (masterMode)
-                maxChaseSpeed += maxChaseSpeed * 0.5f * (1f - lifeRatio);
+                maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
 
             float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
             float minimalDamageVelocity = maxChaseSpeed * 0.5f;

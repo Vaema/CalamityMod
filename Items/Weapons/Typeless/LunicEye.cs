@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         {
             CreateRecipe().
                 AddRecipeGroup("AnyCobaltBar", 10).
-                AddIngredient<Stardust>(20).
+                AddIngredient<StarblightSoot>(20).
                 AddTile(TileID.Anvils).
                 Register();
         }

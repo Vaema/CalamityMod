@@ -77,7 +77,7 @@ namespace CalamityMod.World
             // Astral Chest has completely different loot in it
             if (type == ModContent.TileType<AstralChestLocked>())
             {
-                PutItemInChest(ref chest, ModContent.ItemType<Stardust>(), 30, 80);
+                PutItemInChest(ref chest, ModContent.ItemType<StarblightSoot>(), 30, 80);
                 PutItemInChest(ref chest, ModContent.ItemType<AureusCell>(), 10, 14);
                 PutItemInChest(ref chest, ModContent.ItemType<ZergPotion>(), 8);
                 PutItemInChest(ref chest, ModContent.ItemType<ZenPotion>(), 3, 5);

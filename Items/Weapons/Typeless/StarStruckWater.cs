@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         {
             CreateRecipe(10).
                 AddIngredient(ItemID.BottledWater, 10).
-                AddIngredient<Stardust>(2).
+                AddIngredient<StarblightSoot>(2).
                 AddIngredient<AstralGrassSeeds>().
                 Register();
         }

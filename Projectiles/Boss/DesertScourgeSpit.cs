@@ -89,7 +89,6 @@ namespace CalamityMod.Projectiles.Boss
                 Main.dust[killSand].noLight = true;
                 Main.dust[killSand].velocity = dustDirection * 0.5f;
             }
-            Projectile.Damage();
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)

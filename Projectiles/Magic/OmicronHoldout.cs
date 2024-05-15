@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void KillHoldoutLogic()
         {
-            if (HeldItem.type != Owner.ActiveItem().type || Owner is null || !Owner.active || Owner.CCed || Owner.dead || Owner.noItems)
+            if (Owner is null || !Owner.active || Owner.CCed || Owner.dead || Owner.noItems)
             {
                 if (PostFireCooldown <= 0)
                     Projectile.Kill();
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Magic
             Item heldItem = Owner.ActiveItem();
 
             // Fire if the owner stops channeling or otherwise cannot use the weapon.
-            if (Owner.CantUseHoldout() || heldItem.type != ModContent.ItemType<Omicron>())
+            if (Owner.CantUseHoldout())
             {
                 if (PostFireCooldown <= 0)
                     Projectile.Kill();
@@ -182,6 +182,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         private void PostFiringCooldown()
         {
+            Owner.channel = true;
             if (PostFireCooldown > 0 && Main.rand.NextBool())
             {
                 Vector2 smokeVel = new Vector2(0, -8) * Main.rand.NextFloat(0.1f, 1.1f);
