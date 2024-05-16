@@ -36,18 +36,13 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void KillHoldoutLogic()
         {
-            if (HeldItem.type != ItemType<TheHive>())
-            {
-                Projectile.Kill();
-                Projectile.netUpdate = true;
-            }
-
             if (HasLetGo)
                 PostFiringCooldown();
         }
 
         public override void HoldoutAI()
         {
+
             FireNuke = ShootingTimer > MaxCharge;
 
             // If there's no player, or the player is the server, or the owner's stunned, there'll be no holdout.
@@ -57,7 +52,8 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     hum?.Stop();
                 }
-                ShootRocket();
+                if (HeldItem.type == ItemType<TheHive>())
+                    ShootRocket();
                 NetUpdate();
                 HasLetGo = true;
             }
@@ -216,6 +212,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         private void PostFiringCooldown()
         {
+            Owner.channel = true;
             if (PostFireCooldown > 0)
             {
                 PostFireCooldown--;
@@ -267,7 +264,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            if (!Owner.CantUseHoldout())
+            if (!Owner.CantUseHoldout() && PostFireCooldown <= 0)
             {
                 float rumble = Utils.GetLerpValue(0f, MaxCharge, ShootingTimer, true) * ShootingTimer >= MaxCharge ? 2 : 0.8f;
                 drawPosition += Main.rand.NextVector2Circular(rumble, rumble);

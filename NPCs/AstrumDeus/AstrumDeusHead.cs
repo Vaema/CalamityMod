@@ -108,7 +108,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.netAlways = true;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
 
             if (Main.zenithWorld)
             {
@@ -229,7 +229,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType) => potionType = ModContent.ItemType<Stardust>();
+        public override void BossLoot(ref string name, ref int potionType) => potionType = ModContent.ItemType<StarblightSoot>();
 
         public static bool ShouldNotDropThings(NPC npc) => npc.Calamity().newAI[0] == 0f || ((CalamityWorld.death || BossRushEvent.BossRushActive) && npc.Calamity().newAI[0] != 3f);
 
@@ -253,10 +253,9 @@ namespace CalamityMod.NPCs.AstrumDeus
                 return;
 
             // Killing ANY split Deus makes all other Deus heads die immediately.
-            for (int i = 0; i < Main.maxNPCs; ++i)
+            foreach (NPC otherWormHead in Main.ActiveNPCs)
             {
-                NPC otherWormHead = Main.npc[i];
-                if (otherWormHead.active && otherWormHead.type == NPC.type)
+                if (otherWormHead.type == NPC.type)
                 {
                     // Kill the other worm head after setting it to not drop loot.
                     otherWormHead.Calamity().newAI[0] = 0f;
@@ -311,7 +310,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
                 // Materials
                 normalOnly.Add(ItemID.FallenStar, 1, 25, 40);
-                normalOnly.Add(ModContent.ItemType<Stardust>(), 1, 50, 80);
+                normalOnly.Add(ModContent.ItemType<StarblightSoot>(), 1, 50, 80);
             }
 
             npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ItemID.SuperHealingPotion, 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary

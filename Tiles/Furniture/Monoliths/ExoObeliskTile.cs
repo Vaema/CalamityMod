@@ -20,14 +20,14 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
 {
     public class ExoObeliskTile : ModTile
     {
-        public static Texture2D Glow;
-        public static Texture2D Numbers;
+        public static Asset<Texture2D> Glow;
+        public static Asset<Texture2D> Numbers;
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
             {
-                Glow = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/Monoliths/ExoObeliskTile_Glow", AssetRequestMode.AsyncLoad).Value;
-                Numbers = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/Monoliths/ExoObeliskText", AssetRequestMode.AsyncLoad).Value;
+                Glow = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/Monoliths/ExoObeliskTile_Glow", AssetRequestMode.AsyncLoad);
+                Numbers = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/Monoliths/ExoObeliskText", AssetRequestMode.AsyncLoad);
             }
             RegisterItemDrop(ModContent.ItemType<ExoObelisk>());
             Main.tileFrameImportant[Type] = true;
@@ -144,7 +144,7 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
             }
             Main.spriteBatch.Draw(texture, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY + animate, 16, height), Lighting.GetColor(i, j), 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
             if (Glow != null)
-                Main.spriteBatch.Draw(Glow, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY + animate, 16, height), Color.White, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(Glow.Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY + animate, 16, height), Color.White, 0f, default(Vector2), 1f, SpriteEffects.None, 0f); ;
             if (Numbers != null)
             {
                 int colorIndex = (int)(Main.GlobalTimeWrappedHourly / 0.5 % CalamityUtils.ExoPalette.Length);
@@ -152,7 +152,7 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
                 Color nextColor = CalamityUtils.ExoPalette[(colorIndex + 1) % CalamityUtils.ExoPalette.Length];
                 Color exoColors = Color.Lerp(currentColor, nextColor, Main.GlobalTimeWrappedHourly % 0.5f > 1f ? 1f : Main.GlobalTimeWrappedHourly % 1f);
 
-                Main.spriteBatch.Draw(Numbers, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY + animate, 16, height), exoColors, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(Numbers.Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY + animate, 16, height), exoColors, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
             }
 
             return false;

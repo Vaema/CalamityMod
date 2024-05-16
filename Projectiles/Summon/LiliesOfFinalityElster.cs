@@ -201,7 +201,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (!Projectile.WithinRange(idlePosition, 8f))
                 {
                     int walkDirection = Sign(idlePosition.X - Projectile.Center.X);
-                    float maxSpeed = Utils.Remap(Abs(idlePosition.X - Projectile.Center.X), 160f, 0f, 6f, 0f);
+                    float maxSpeed = Utils.Remap(Abs(idlePosition.X - Projectile.Center.X), 160f, 0f, 8f, 0f);
                     Projectile.velocity.X += 0.08f * walkDirection;
                     if (Abs(Projectile.velocity.X) > maxSpeed)
                         Projectile.velocity.X = maxSpeed * walkDirection;
@@ -234,7 +234,7 @@ namespace CalamityMod.Projectiles.Summon
                 return;
             }
 
-            FlyTowardsPlace(Owner.velocity.Length() + 6f, Owner.Center, Sign(Projectile.velocity.X), AnimationState.Fly);
+            FlyTowardsPlace(Owner.velocity.Length() + 8f, Owner.Center, Sign(Projectile.velocity.X), AnimationState.Fly);
             Projectile.rotation = MathHelper.ToRadians(Projectile.velocity.Length()) * Sign(Projectile.velocity.X);
             ElevationDust(false);
         }

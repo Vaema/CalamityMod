@@ -53,9 +53,10 @@ namespace CalamityMod.UI
             else
             {
                 bool ridingLimitedFlightMount = player.mount.Active && player.mount._data.flightTimeMax > 0;
+                bool ridingCarpet = player.carpet && !player.canCarpet;
 
-                int currentFlight = ridingLimitedFlightMount ? player.mount._flyTime + (int)(player.mount._data.fatigueMax - player.mount._fatigue) : (int)player.wingTime;
-                int maxFlight = ridingLimitedFlightMount ? player.mount._data.flightTimeMax + (int)player.mount._data.fatigueMax : player.wingTimeMax;
+                int currentFlight = ridingCarpet ? player.carpetTime : ridingLimitedFlightMount ? player.mount._flyTime + (int)(player.mount._data.fatigueMax - player.mount._fatigue) : (int)player.wingTime;
+                int maxFlight = ridingCarpet ? 300 : ridingLimitedFlightMount ? player.mount._data.flightTimeMax + (int)player.mount._data.fatigueMax : player.wingTimeMax;
                 return (Math.Min(100f * currentFlight / maxFlight, 100f)).ToString("0.00"); // why the FUCK can wingtime be higher than max wingtime?????????
             }
 
@@ -105,7 +106,7 @@ namespace CalamityMod.UI
             CalamityPlayer modPlayer = player.Calamity();
 
             // If not drawing the flight bar, save its latest position to config and leave.
-            if (CalamityConfig.Instance.FlightBar && (player.wingsLogic > 0 || (player.mount.Active && player.mount._data.flightTimeMax > 0)))
+            if (CalamityConfig.Instance.FlightBar && (player.wingsLogic > 0 || (player.mount.Active && player.mount._data.flightTimeMax > 0) || player.carpet && !player.canCarpet))
             {
                 DrawFlightBar(spriteBatch, modPlayer, screenPos);
             }
@@ -140,7 +141,7 @@ namespace CalamityMod.UI
                 if (!CalamityConfig.Instance.MeterPosLock)
                     Main.LocalPlayer.mouseInterface = true;
 
-                if (modPlayer.Player.equippedWings != null && modPlayer.Player.wingTimeMax > 0 || (player.mount.Active && modPlayer.Player.mount._data.flightTimeMax > 0)) //equipped wings or riding a flying mount and max wingtime/flighttime above 0 (so not disabled bar)
+                if (modPlayer.Player.equippedWings != null && modPlayer.Player.wingTimeMax > 0 || (player.mount.Active && modPlayer.Player.mount._data.flightTimeMax > 0) || player.carpet && !player.canCarpet) //equipped wings or riding a flying mount and max wingtime/flighttime above 0 (so not disabled bar)
                 {
                     string textToDisplay = CalamityUtils.GetText("UI.Flight").Format((GetFlightTime(modPlayer).ToString() + (modPlayer.infiniteFlight ? "" : "%"))); //the percent is here and not in localisation otherwise it looks like a dick when it's infinite flight
                     Main.instance.MouseText(textToDisplay, 0, 0, -1, -1, -1, -1);
@@ -192,7 +193,7 @@ namespace CalamityMod.UI
             Player player = modPlayer.Player;
             float flightRatio = 1;
             if (!modPlayer.infiniteFlight && !RidingInfiniteFlightMount(player))
-                flightRatio = player.mount.Active && player.mount._data.flightTimeMax > 0 ? Math.Min((float)(player.mount._flyTime + (player.mount._data.fatigueMax - player.mount._fatigue)) / (player.mount._data.flightTimeMax + player.mount._data.fatigueMax), 1f) : Math.Min(player.wingTime / player.wingTimeMax, 1f); // why the FUCK can wingtime be higher than max wingtime?????????
+                flightRatio = player.carpet && !player.canCarpet ? Math.Min((float)player.carpetTime / 300f, 1f) : player.mount.Active && player.mount._data.flightTimeMax > 0 ? Math.Min((float)(player.mount._flyTime + (player.mount._data.fatigueMax - player.mount._fatigue)) / (player.mount._data.flightTimeMax + player.mount._data.fatigueMax), 1f) : Math.Min(player.wingTime / player.wingTimeMax, 1f); // why the FUCK can wingtime be higher than max wingtime?????????
             if (!completedAnimation && FlightAnimFrame == -1 && (modPlayer.infiniteFlight || RidingInfiniteFlightMount(modPlayer.Player)))
                 FlightAnimFrame++;
             if (FlightAnimFrame > -1) //animation started, complete it.

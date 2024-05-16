@@ -65,7 +65,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
             {
                 ModContent.ItemType<HolyCollider>(),
-                ModContent.ItemType<SolarFlare>(),
+                ModContent.ItemType<BurningRevelation>(),
                 ModContent.ItemType<BlissfulBombardier>(),
                 ModContent.ItemType<TelluricGlare>(),
                 ModContent.ItemType<PurgeGuzzler>(),

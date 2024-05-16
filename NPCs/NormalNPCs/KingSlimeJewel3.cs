@@ -85,7 +85,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         for (int dusty = 0; dusty < 10; dusty++)
                         {
-                            Vector2 dustVel = Main.rand.NextVector2CircularEdge(5f, 5f);
+                            Vector2 dustVel = NPC.SafeDirectionTo(Main.player[NPC.target].Center + Main.player[NPC.target].velocity * 20f, -Vector2.UnitY) * Main.rand.NextFloat(-4f, -1f);
                             int emerald = Dust.NewDust(NPC.Center, NPC.width, NPC.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                             Main.dust[emerald].velocity = dustVel * Main.rand.NextFloat(1f, 2f);
                             Main.dust[emerald].noGravity = true;

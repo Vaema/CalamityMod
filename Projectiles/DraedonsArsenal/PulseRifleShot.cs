@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
+using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -123,8 +124,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     {
                         distance = 3000;
 
-                        SoundStyle fire = new("CalamityMod/Sounds/Item/OpalFire");
-                        SoundEngine.PlaySound(fire with { Volume = 0.35f, Pitch = 1f }, Projectile.Center);
+                        SoundStyle fire = new("CalamityMod/Sounds/Item/PulseSound");
+                        SoundEngine.PlaySound(fire with { Volume = 0.35f, Pitch = 0.3f, MaxInstances = -1 }, Projectile.Center);
                             
 
                         Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, mainColor, new Vector2(1f, 1f), Main.rand.NextFloat(12f, 25f), 0f, 0.5f, 15);
@@ -242,9 +243,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 // These should do a large fraction of the beam's damage so they will easily kill even some decently bulky enemies regular enemies in one hit
                 // This is so it can better proc its on kill effect
                 int numProj = 4;
+                int projectileDamage = (int)(Projectile.damage * 0.5f);
                 for (int i = 0; i < numProj; i++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.Zero) * (14f - i * 0.7f)) * ((i + 1) * 0.25f), ModContent.ProjectileType<PulseRifleShot>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner, 0f, 1f + i);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.Zero) * (14f - i * 0.7f)) * ((i + 1) * 0.25f), ModContent.ProjectileType<PulseRifleShot>(), projectileDamage, Projectile.knockBack, Projectile.owner, 0f, 1f + i);
                 }
             }
             // Split projectile on hit effects

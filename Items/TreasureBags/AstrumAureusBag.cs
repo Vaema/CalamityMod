@@ -64,7 +64,7 @@ namespace CalamityMod.Items.TreasureBags
 
             // Materials
             itemLoot.Add(ModContent.ItemType<AureusCell>(), 1, 12, 16);
-            itemLoot.Add(ModContent.ItemType<Stardust>(), 1, 30, 40);
+            itemLoot.Add(ModContent.ItemType<StarblightSoot>(), 1, 30, 40);
             itemLoot.Add(ItemID.FallenStar, 1, 20, 30);
 
             // Weapons

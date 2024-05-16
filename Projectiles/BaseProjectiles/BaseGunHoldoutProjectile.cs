@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -171,7 +172,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         public virtual void KillHoldoutLogic()
         {
-            if (Owner.CantUseHoldout() || HeldItem.type != AssociatedItemID)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.netUpdate = true;
                 Projectile.Kill();
@@ -244,6 +245,40 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
             return false;
         }
+
+        #endregion
+
+        #region Syncing
+
+        public sealed override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(Projectile.rotation);
+            writer.Write(KeepRefreshingLifetime);
+            writer.Write(OffsetLengthFromArm);
+            SendExtraAIHoldout(writer);
+        }
+
+        public sealed override void ReceiveExtraAI(BinaryReader reader)
+        {
+            Projectile.rotation = reader.ReadSingle();
+            KeepRefreshingLifetime = reader.ReadBoolean();
+            OffsetLengthFromArm = reader.ReadSingle();
+            ReceiveExtraAIHoldout(reader);
+        }
+
+        /// <summary>
+        /// The common <see cref="SendExtraAI(BinaryWriter)"/> is sealed to avoid deleting syncing of other properties without noticing.<br/>
+        /// Use this method instead, which uses the same <see cref="BinaryWriter"/>.
+        /// </summary>
+        /// <param name="writer"></param>
+        public virtual void SendExtraAIHoldout(BinaryWriter writer) { }
+
+        /// <summary>
+        /// The common <see cref="ReceiveExtraAI(BinaryReader)"/> is sealed to avoid deleting syncing of other properties without noticing.<br/>
+        /// Use this method instead, which uses the same <see cref="BinaryReader"/>.
+        /// </summary>
+        /// <param name="reader"></param>
+        public virtual void ReceiveExtraAIHoldout(BinaryReader reader) { }
 
         #endregion
     }

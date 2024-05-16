@@ -601,6 +601,7 @@ namespace CalamityMod.Items
                 { ItemID.SpicyPepper, Do(Value(Item.sellPrice(copper: 40))) },
                 { ItemID.Starfruit, Do(Value(Item.sellPrice(copper: 40))) },
                 { ItemID.PortableStool, Do(Value(Item.sellPrice(copper: 20))) }, // Step Stool
+                { ItemID.UncumberingStone, Do(Worthless) },
                 { ItemID.ViciousMushroom, Do(Worthless) },
                 { ItemID.VileMushroom, Do(Worthless) },
                 #endregion

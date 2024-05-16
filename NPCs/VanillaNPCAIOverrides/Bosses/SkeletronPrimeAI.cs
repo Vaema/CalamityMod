@@ -49,6 +49,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         int head = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<SkeletronPrime2>(), npc.whoAmI);
                         Main.npc[head].ai[0] = npc.whoAmI;
+                        Main.npc[head].target = npc.target;
                         Main.npc[head].netUpdate = true;
                         npc.ai[0] = head;
 

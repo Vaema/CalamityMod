@@ -285,7 +285,7 @@ namespace CalamityMod.Projectiles.Rogue
                         _ => Color.LawnGreen,
                     };
 
-                    Particle pulse2 = new CustomPulse(Projectile.Center, Vector2.Zero, randomColor * 0.7f, "CalamityMod/Particles/HighResHollowCircleHardEdge", new Vector2(1f, 1f), 0f, 0f, 4f - i * 0.28f, 50);
+                    Particle pulse2 = new CustomPulse(Projectile.Center, Vector2.Zero, randomColor * 0.7f, "CalamityMod/Particles/FlameExplosion", new Vector2(1f, 1f), Main.rand.NextFloat(-20, 20), 0f, 4f - i * 0.28f, 50);
                     GeneralParticleHandler.SpawnParticle(pulse2);
                 }
 

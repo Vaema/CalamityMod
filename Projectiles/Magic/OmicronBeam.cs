@@ -15,6 +15,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public Color mainColor = Color.MediumVioletRed;
         public bool HitDirect = false;
+
+        public ref float isSplit => ref Projectile.ai[1];
+        public bool splitShot = false;
         public override void SetDefaults()
         {
             Projectile.width = 50;
@@ -30,6 +33,12 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void AI()
         {
+            if (isSplit == 0)
+            {
+                Projectile.netUpdate = true;
+                splitShot = true;
+            }
+
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
             if (Projectile.timeLeft % 2 == 0 && time > 2 && targetDist < 1400f)
@@ -55,7 +64,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             int numProj = 2;
             float rotation = MathHelper.ToRadians(10);
-            if (Projectile.ai[1] == 0 && time < 250 && !HitDirect)
+            if (splitShot && time < 250 && !HitDirect)
             {
                 for (int i = 0; i < numProj; i++)
                 {
@@ -91,7 +100,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.ai[1] == 0 && time > 7 && !HitDirect)
+            if (splitShot && time > 7 && !HitDirect)
                 Projectile.Kill();
 
             Player Owner = Main.player[Projectile.owner];
@@ -101,7 +110,7 @@ namespace CalamityMod.Projectiles.Magic
                 dust.noGravity = true;
                 dust.color = Main.rand.NextBool() ? Color.Lerp(mainColor, Color.White, 0.5f) : mainColor;
             }
-            if (time <= 7 && Projectile.ai[1] == 0) // This is the sweet spot
+            if (time <= 7 && splitShot) // This is the sweet spot
             {
                 modifiers.SourceDamage *= 5;
 
