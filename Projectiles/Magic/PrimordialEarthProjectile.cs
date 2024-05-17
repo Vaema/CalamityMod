@@ -9,6 +9,7 @@ using Terraria.Audio;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System.Collections.Generic;
 namespace CalamityMod.Projectiles.Magic
 {
     public class PrimordialEarthProjectile : ModProjectile, ILocalizedModType
@@ -18,6 +19,7 @@ namespace CalamityMod.Projectiles.Magic
         public ref float time => ref Projectile.ai[0];
         public int rotDirection = 1;
         public float curve = 0f;
+        public List<bool> buffList = new List<bool>(new bool[Main.maxPlayers]);
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 6;
@@ -66,23 +68,26 @@ namespace CalamityMod.Projectiles.Magic
                     float targetDist = Vector2.Distance(player.Center, Projectile.Center);
                     if (targetDist < Projectile.width * 0.5f * Projectile.scale)
                     {
-                        player.AddBuff(ModContent.BuffType<ForbiddenBuff>(), 360);
-
-                        int Dusts = 12;
-                        float radians = MathHelper.TwoPi / Dusts;
-                        Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
-                        for (int i = 0; i < Dusts; i++)
+                        if (buffList[playerIndex] == false)
                         {
-                            Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i) * 12.5f;
-                            Dust dust = Dust.NewDustPerfect(player.Center, 262, dustVelocity, 0, default, 0.9f);
-                            dust.noGravity = true;
+                            buffList[playerIndex] = true;
+                            player.AddBuff(ModContent.BuffType<ForbiddenBuff>(), 360);
 
-                            Dust dust2 = Dust.NewDustPerfect(player.Center, 262, dustVelocity * 0.6f, 0, default, 1.2f);
-                            dust2.noGravity = true;
+                            int Dusts = 12;
+                            float radians = MathHelper.TwoPi / Dusts;
+                            Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
+                            for (int i = 0; i < Dusts; i++)
+                            {
+                                Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i) * 12.5f;
+                                Dust dust = Dust.NewDustPerfect(player.Center, 262, dustVelocity, 0, default, 0.9f);
+                                dust.noGravity = true;
+
+                                Dust dust2 = Dust.NewDustPerfect(player.Center, 262, dustVelocity * 0.6f, 0, default, 1.2f);
+                                dust2.noGravity = true;
+                            }
+                            SoundStyle buff = new("CalamityMod/Sounds/Custom/Ravager/RavagerPillarSummon");
+                            SoundEngine.PlaySound(buff with { Volume = 0.65f, Pitch = 0.8f }, player.Center);
                         }
-
-                        SoundStyle buff = new("CalamityMod/Sounds/Custom/Ravager/RavagerPillarSummon");
-                        SoundEngine.PlaySound(buff with { Volume = 0.65f, Pitch = 0.8f }, player.Center);
                     }
                 }
             }
@@ -114,6 +119,7 @@ namespace CalamityMod.Projectiles.Magic
                         dust.noGravity = false;
                         dust.scale = Main.rand.NextFloat(0.75f, 1.2f);
                         dust.alpha = Main.rand.Next(100, 170 + 1);
+                        dust.velocity = dust.velocity.RotatedByRandom(0.3f);
                         if (dust.type == 262)
                         {
                             dust.noGravity = true;
@@ -155,16 +161,22 @@ namespace CalamityMod.Projectiles.Magic
                 SoundStyle explo = new("CalamityMod/Sounds/Item/MagicRockImpact");
                 SoundEngine.PlaySound(explo with { Volume = 0.75f }, Projectile.Center);
 
-                Particle bolt = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Gold * 0.4f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.16f, 16);
-                GeneralParticleHandler.SpawnParticle(bolt);
+                //Particle bolt = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Gold * 0.3f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 1.86f, 15);
+                //GeneralParticleHandler.SpawnParticle(bolt);
+                Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Gold * 0.55f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 2.56f, 15);
+                GeneralParticleHandler.SpawnParticle(bolt2);
             }
             for (int i = 0; i < 65; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(8) ? 262 : 287, new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.3f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? 262 : 287, new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.3f));
                 dust.noGravity = false;
-                if (dust.type == 262)
-                    dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.8f, 1.3f);
+                if (dust.type == 262)
+                {
+                    dust.noGravity = true;
+                    dust.fadeIn = 0.5f;
+                    dust.velocity *= 2;
+                }
                 dust.alpha = 100;
             }
             for (int i = 0; i < 9; i++)

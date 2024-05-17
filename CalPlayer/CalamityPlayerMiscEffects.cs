@@ -3004,8 +3004,13 @@ namespace CalamityMod.CalPlayer
 
             if (forbiddenBuff)
             {
-                Player.GetDamage<GenericDamageClass>() += 0.10f;
+                Player.GetDamage<GenericDamageClass>() += 0.12f;
                 Player.statDefense += 12;
+            }
+            if (primordialBuff)
+            {
+                Player.GetDamage<GenericDamageClass>() += 0.18f;
+                Player.endurance += 0.08f;
             }
 
             if (frostFlare)

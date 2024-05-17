@@ -871,10 +871,7 @@ Tradewinds: {
 
 UltraLiquidator: {
 	DisplayName: Ultra Liquidator
-	Tooltip:
-		'''
-		Summons liquidation blades that summon more blades on enemy hits
-		'''
+	Tooltip: Summons liquidation blades that summon more blades on enemy hits
 }
 
 UndinesRetribution: {

@@ -9,6 +9,7 @@ using Terraria.Audio;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System.Collections.Generic;
 namespace CalamityMod.Projectiles.Magic
 {
     public class DeathValleyDusterProjectile : ModProjectile, ILocalizedModType
@@ -17,6 +18,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public ref float time => ref Projectile.ai[0];
         public int rotDirection = 1;
+        public List<bool> buffList = new List<bool>(new bool[Main.maxPlayers]);
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 6;
@@ -55,23 +57,27 @@ namespace CalamityMod.Projectiles.Magic
                     float targetDist = Vector2.Distance(player.Center, Projectile.Center);
                     if (targetDist < Projectile.width * 0.5f * Projectile.scale)
                     {
-                        player.AddBuff(ModContent.BuffType<ForbiddenBuff>(), 240);
-
-                        int Dusts = 12;
-                        float radians = MathHelper.TwoPi / Dusts;
-                        Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
-                        for (int i = 0; i < Dusts; i++)
+                        if (buffList[playerIndex] == false)
                         {
-                            Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i) * 12.5f;
-                            Dust dust = Dust.NewDustPerfect(player.Center, 262, dustVelocity, 0, default, 0.9f);
-                            dust.noGravity = true;
+                            buffList[playerIndex] = true;
+                            player.AddBuff(ModContent.BuffType<ForbiddenBuff>(), 240);
 
-                            Dust dust2 = Dust.NewDustPerfect(player.Center, 262, dustVelocity * 0.6f, 0, default, 1.2f);
-                            dust2.noGravity = true;
+                            int Dusts = 12;
+                            float radians = MathHelper.TwoPi / Dusts;
+                            Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
+                            for (int i = 0; i < Dusts; i++)
+                            {
+                                Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i) * 12.5f;
+                                Dust dust = Dust.NewDustPerfect(player.Center, 262, dustVelocity, 0, default, 0.9f);
+                                dust.noGravity = true;
+
+                                Dust dust2 = Dust.NewDustPerfect(player.Center, 262, dustVelocity * 0.6f, 0, default, 1.2f);
+                                dust2.noGravity = true;
+                            }
+
+                            SoundStyle buff = new("CalamityMod/Sounds/Custom/Ravager/RavagerPillarSummon");
+                            SoundEngine.PlaySound(buff with { Volume = 0.65f, Pitch = 0.8f }, player.Center);
                         }
-
-                        SoundStyle buff = new("CalamityMod/Sounds/Custom/Ravager/RavagerPillarSummon");
-                        SoundEngine.PlaySound(buff with { Volume = 0.65f, Pitch = 0.8f }, player.Center);
                     }
                 }
             }
@@ -105,6 +111,7 @@ namespace CalamityMod.Projectiles.Magic
                         dust.noGravity = false;
                         dust.scale = Main.rand.NextFloat(0.75f, 1.2f);
                         dust.alpha = Main.rand.Next(100, 170 + 1);
+                        dust.velocity = dust.velocity.RotatedByRandom(0.5f);
                         if (dust.type == 262)
                         {
                             dust.noGravity = true;

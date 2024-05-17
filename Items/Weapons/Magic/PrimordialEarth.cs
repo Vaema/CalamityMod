@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 10;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
-            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/MagicRockSound") with { Volume = 0.4f, Pitch = -0.1f }; ;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/MagicRockSound") with { Volume = 0.4f, Pitch = -0.1f };
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<PrimordialEarthProjectile>();
             Item.shootSpeed = 4.5f;

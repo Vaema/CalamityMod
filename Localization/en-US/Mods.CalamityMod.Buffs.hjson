@@ -1529,3 +1529,12 @@ ForbiddenBuff: {
 		Defense increased by 10, damage increased by 12%
 		'''
 }
+
+PrimordialPowerBuff: {
+	DisplayName: Primordial Power Buff
+	Description:
+		'''
+		You are strengthened by primordial powers
+		Damage reduction increased by 8%, damage increased by 18%
+		'''
+}
