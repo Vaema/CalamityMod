@@ -3307,6 +3307,7 @@ namespace CalamityMod.NPCs
             // Apply flat reductions first. All vanilla debuffs check their internal booleans.
             FlatEditDR(ref calcDR, npc.poisoned, BuffID.Poisoned);
             FlatEditDR(ref calcDR, npc.onFire, BuffID.OnFire);
+            FlatEditDR(ref calcDR, npc.onFire3, BuffID.OnFire3);
             FlatEditDR(ref calcDR, npc.venom, BuffID.Venom);
             FlatEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             FlatEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
@@ -3325,6 +3326,7 @@ namespace CalamityMod.NPCs
             // Apply multiplicative reductions second. All vanilla debuffs check their internal booleans.
             MultEditDR(ref calcDR, npc.poisoned, BuffID.Poisoned);
             MultEditDR(ref calcDR, npc.onFire, BuffID.OnFire);
+            MultEditDR(ref calcDR, npc.onFire3, BuffID.OnFire3);
             MultEditDR(ref calcDR, npc.venom, BuffID.Venom);
             MultEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             MultEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
