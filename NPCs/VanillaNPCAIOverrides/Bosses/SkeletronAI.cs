@@ -64,10 +64,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 npc.TargetClosest();
 
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
-                npc.TargetClosest();
-
             // Spawn hands
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
@@ -467,7 +463,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.localAI[2] = 0f;
                         calamityGlobalNPC.newAI[1] = 0f;
 
-                        npc.TargetClosest();
                         npc.SyncExtraAI();
                         npc.SyncVanillaLocalAI();
                         npc.netUpdate = true;
@@ -870,10 +865,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 npc.TargetClosest();
 
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
-                npc.TargetClosest();
-
             float yMultiplier = 1f;
             if (calamityGlobalNPC.newAI[0] != 0f)
                 yMultiplier = calamityGlobalNPC.newAI[0];
@@ -1018,6 +1009,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[3] += slapTimerIncrement;
                         if (npc.ai[3] >= slapGateValue)
                         {
+                            npc.target = Main.npc[(int)npc.ai[1]].target;
                             npc.ai[2] += 1f;
                             npc.ai[3] = calamityGlobalNPC.newAI[2] = slapGateValue;
                             calamityGlobalNPC.newAI[3] = 0f;
@@ -1107,7 +1099,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Set damage
                     npc.damage = npc.defDamage;
 
-                    npc.TargetClosest();
                     npc.ai[2] = 2f;
                     npc.ai[3] = 0f;
                     npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * handSwipeVelocity;
@@ -1167,7 +1158,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Set damage
                     npc.damage = npc.defDamage;
 
-                    npc.TargetClosest();
                     npc.ai[2] = 5f;
                     npc.ai[3] = 0f;
                     npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * handSwipeVelocity;
@@ -1254,9 +1244,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             npc.reflectsProjectiles = false;
             npc.defense = npc.defDefense;
+
+            // Get a target
+            if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
+                npc.TargetClosest();
+
             if (npc.ai[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                npc.TargetClosest();
                 npc.ai[0] = 1f;
                 int num148 = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)npc.Center.Y, NPCID.SkeletronHand, npc.whoAmI);
                 Main.npc[num148].ai[0] = -1f;
@@ -1355,7 +1349,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     npc.ai[2] = 0f;
                     npc.ai[1] = 1f;
-                    npc.TargetClosest();
                     npc.netUpdate = true;
                 }
 
@@ -1451,6 +1444,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     npc.ai[2] = 0f;
                     npc.ai[1] = 0f;
+                    npc.TargetClosest();
                 }
 
                 npc.rotation += (float)npc.direction * 0.3f;
@@ -1575,6 +1569,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            // Get a target
+            if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
+                npc.TargetClosest();
+
             if (npc.ai[2] == 0f || npc.ai[2] == 3f)
             {
                 // Avoid cheap bullshit
@@ -1640,6 +1638,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     if (npc.ai[3] >= 300f)
                     {
+                        npc.target = Main.npc[(int)npc.ai[1]].target;
                         npc.ai[2] += 1f;
                         npc.ai[3] = 0f;
                         npc.netUpdate = true;
@@ -1765,7 +1764,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Set damage
                     npc.damage = npc.defDamage;
 
-                    npc.TargetClosest();
                     npc.ai[2] = 2f;
                     vector23 = npc.Center;
                     num184 = Main.player[npc.target].Center.X - vector23.X;
@@ -1820,7 +1818,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Set damage
                     npc.damage = npc.defDamage;
 
-                    npc.TargetClosest();
                     npc.ai[2] = 5f;
                     vector24 = npc.Center;
                     num187 = Main.player[npc.target].Center.X - vector24.X;

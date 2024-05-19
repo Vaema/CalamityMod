@@ -872,7 +872,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         npc.localAI[2] = 1f;
                         npc.localAI[1] = 0f;
-                        npc.TargetClosest();
                     }
                 }
                 else if (npc.localAI[1] > 45f && (canHit || masterModeDetach) && !charging)
@@ -880,7 +879,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[1] = 0f;
                     npc.localAI[2] += 1f;
                     if (npc.localAI[2] >= TotalLasersPerBarrage + 1f)
+                    {
                         npc.localAI[2] = 0f;
+                        npc.TargetClosest();
+                    }
 
                     if (shouldFireLasers)
                     {
@@ -1351,7 +1353,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Avoid cheap bullshit
             npc.damage = 0;
 
-            npc.TargetClosest();
             npc.position.X = Main.npc[Main.wofNPCIndex].position.X;
             npc.direction = Main.npc[Main.wofNPCIndex].direction;
             npc.spriteDirection = npc.direction;
@@ -1464,7 +1465,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.localAI[1] = 0f;
                 npc.localAI[2] += 1f;
                 if (npc.localAI[2] >= (float)num396)
+                {
                     npc.localAI[2] = 0f;
+                    npc.TargetClosest();
+                }
 
                 if (flag27)
                 {

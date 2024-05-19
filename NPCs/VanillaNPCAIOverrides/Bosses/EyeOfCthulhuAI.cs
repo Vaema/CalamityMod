@@ -55,10 +55,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 npc.TargetClosest();
 
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
-                npc.TargetClosest();
-
             bool dead = Main.player[npc.target].dead;
             float targetXDistance = npc.Center.X - Main.player[npc.target].position.X - (Main.player[npc.target].width / 2);
             float targetYDistance = npc.position.Y + npc.height - 59f - Main.player[npc.target].position.Y - (Main.player[npc.target].height / 2);
@@ -277,7 +273,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         npc.ai[3] += 1f;
                         npc.ai[2] = 0f;
-                        npc.TargetClosest();
                         npc.rotation = eyeRotation;
 
                         float numCharges = death ? 4f : 3f;
@@ -503,7 +498,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[1] = 1f;
                         npc.ai[2] = 0f;
                         npc.ai[3] = 0f;
-                        npc.TargetClosest();
                         npc.netUpdate = true;
                     }
                 }
@@ -570,7 +564,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         npc.ai[3] += 1f;
                         npc.ai[2] = 0f;
-                        npc.TargetClosest();
                         npc.rotation = eyeRotation;
 
                         float numCharges = death ? 4f : 3f;
@@ -598,7 +591,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Deal less damage overall while not charging
                         npc.damage = reducedSetDamage;
 
-                        npc.TargetClosest();
                         npc.ai[1] = 0f;
                         npc.ai[2] = 0f;
                         npc.ai[3] = 0f;
@@ -874,7 +866,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 break;
                         }
 
-                        npc.TargetClosest();
                         calamityGlobalNPC.newAI[0] += ((masterMode && calamityGlobalNPC.newAI[0] % 2f != 0f) ? Main.rand.Next(2) + 1f : 1f);
                         if (calamityGlobalNPC.newAI[0] > 3f)
                             calamityGlobalNPC.newAI[0] = masterMode ? Main.rand.Next(2) : 0f;
@@ -1114,7 +1105,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[1] = 1f;
                         npc.ai[2] = 0f;
                         npc.ai[3] = 0f;
-                        npc.target = Main.maxPlayers;
+                        npc.TargetClosest();
                         npc.netUpdate = true;
                     }
                     else if ((npc.position.Y + (float)npc.height < Main.player[npc.target].position.Y && num15 < 500f) || (Main.expertMode && num15 < (Main.masterMode ? 750f : 500f)))
@@ -1233,7 +1224,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         npc.ai[3] += 1f;
                         npc.ai[2] = 0f;
-                        npc.target = Main.maxPlayers;
                         npc.rotation = num7;
                         if (npc.ai[3] >= (Main.masterMode ? 4f : 3f))
                         {
@@ -1263,6 +1253,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[1] = 0f;
                     npc.ai[2] = 0f;
                     npc.ai[3] = 0f;
+                    npc.TargetClosest();
                     npc.netUpdate = true;
                     if (npc.netSpam > 10)
                         npc.netSpam = 10;
@@ -1464,13 +1455,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (Main.expertMode && (double)npc.life < (double)npc.lifeMax * (Main.masterMode ? 0.45 : 0.35))
                         npc.ai[1] = 3f;
 
-                    npc.target = Main.maxPlayers;
                     npc.netUpdate = true;
                 }
 
                 if (Main.expertMode && flag3)
                 {
-                    npc.TargetClosest();
                     npc.netUpdate = true;
                     npc.ai[1] = 3f;
                     npc.ai[2] = 0f;
@@ -1542,7 +1531,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     npc.ai[3] += 1f;
                     npc.ai[2] = 0f;
-                    npc.target = Main.maxPlayers;
                     npc.rotation = num7;
                     if (npc.ai[3] >= 3f)
                     {
@@ -1572,7 +1560,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Deal less damage while not charging
                     npc.damage = reducedSetDamage;
 
-                    npc.TargetClosest();
                     npc.ai[1] = 0f;
                     npc.ai[2] = 0f;
                     npc.ai[3] = 0f;
@@ -1582,7 +1569,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 else if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    npc.TargetClosest();
                     float num50 = Main.masterMode ? 24f : 20f;
                     Vector2 vector10 = npc.Center;
                     float num51 = Main.player[npc.target].Center.X - vector10.X;
@@ -1775,7 +1761,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[2] += 1f;
                 if (npc.ai[2] >= (Main.masterMode ? 40f : 70f))
                 {
-                    npc.TargetClosest();
                     npc.ai[1] = 3f;
                     npc.ai[2] = -1f;
                     npc.ai[3] = Main.rand.Next(-3, 1);
