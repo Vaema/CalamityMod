@@ -2819,7 +2819,7 @@ namespace CalamityMod.CalPlayer
                 (harpyRing ? 0.2 : 0D) +
                 (reaverSpeed ? 0.1 : 0D) +
                 (angelTreads ? 0.1 : 0D) +
-                (blueCandle ? 0.1 : 0D) +
+                (blueCandle ? 0.05 : 0D) +
                 (soaring ? 0.1 : 0D) +
                 (prismaticGreaves ? 0.1 : 0D) +
                 (plagueReaper ? 0.05 : 0D) +
@@ -2827,7 +2827,7 @@ namespace CalamityMod.CalPlayer
                 (Player.empressBrooch ? 0.25 : 0D);
 
             if (blueCandle)
-                Player.moveSpeed += 0.1f;
+                Player.moveSpeed += 0.05f;
 
             if (community)
             {

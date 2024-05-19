@@ -730,7 +730,7 @@ ResilientCandle: {
 	DisplayName: Resilient Candle
 	Tooltip:
 		'''
-		When placed, nearby players' defense blocks 15% more damage
+		When placed, nearby players' defense blocks 10% more damage
 		'Neither rain nor wind can snuff its undying flame'
 		'''
 }
@@ -984,7 +984,7 @@ WeightlessCandle: {
 	DisplayName: Weightless Candle
 	Tooltip:
 		'''
-		When placed, nearby players gain 10% movement speed, 10% wing time and 5% acceleration
+		When placed, nearby players gain 5% increased movement speed, wing time and acceleration
 		'The floating flame seems to uplift your very spirit'
 		'''
 }
