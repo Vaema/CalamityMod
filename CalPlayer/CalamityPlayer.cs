@@ -862,6 +862,7 @@ namespace CalamityMod.CalPlayer
         public bool shadowflame = false;
         public bool wDeath = false;
         public bool dragonFire = false;
+        public bool crimsonFlux = false;
         public bool miracleBlight = false;
         public bool aCrunch = false;
         public bool crumble = false;
@@ -1919,6 +1920,7 @@ namespace CalamityMod.CalPlayer
             shadowflame = false;
             wDeath = false;
             dragonFire = false;
+            crimsonFlux = false;
             miracleBlight = false;
             aCrunch = false;
             crumble = false;
@@ -2340,6 +2342,7 @@ namespace CalamityMod.CalPlayer
             shadowflame = false;
             wDeath = false;
             dragonFire = false;
+            crimsonFlux = false;
             miracleBlight = false;
             aCrunch = false;
             crumble = false;

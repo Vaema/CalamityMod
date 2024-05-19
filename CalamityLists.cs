@@ -1197,6 +1197,7 @@ namespace CalamityMod
                 BuffType<Vaporfied>(),
                 BuffType<Eutrophication>(),
                 BuffType<Dragonfire>(),
+                BuffType<CrimsonFlux>(),
                 BuffType<Nightwither>(),
                 BuffType<VulnerabilityHex>(),
                 BuffType<MiracleBlight>(),

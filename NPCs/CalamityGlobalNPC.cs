@@ -270,6 +270,7 @@ namespace CalamityMod.NPCs
         public int rTide = 0;
         public int gsInferno = 0;
         public int dragonFire = 0;
+        public int crimsonFlux = 0;
         public int miracleBlight = 0;
         public int astralInfection = 0;
         public int wDeath = 0;
@@ -486,6 +487,7 @@ namespace CalamityMod.NPCs
             myClone.gsInferno = gsInferno;
             myClone.miracleBlight = miracleBlight;
             myClone.dragonFire = dragonFire;
+            myClone.crimsonFlux = crimsonFlux;
             myClone.astralInfection = astralInfection;
             myClone.wDeath = wDeath;
             myClone.nightwither = nightwither;
@@ -961,6 +963,13 @@ namespace CalamityMod.NPCs
             {
                 int baseDragonFireDoTValue = (int)(960 * heatDamageMult);
                 ApplyDPSDebuff(baseDragonFireDoTValue, baseDragonFireDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Crimson Flux
+            if (crimsonFlux > 0)
+            {
+                int baseCrimsonFluxDoTValue = (int)(75 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 300 on moving targets
+                ApplyDPSDebuff(baseCrimsonFluxDoTValue, baseCrimsonFluxDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
             // Banishing Fire
@@ -5049,6 +5058,8 @@ namespace CalamityMod.NPCs
                 gsInferno--;
             if (dragonFire > 0)
                 dragonFire--;
+            if (crimsonFlux > 0)
+                crimsonFlux--;
             if (miracleBlight > 0)
                 miracleBlight--;
             if (astralInfection > 0)
@@ -6297,6 +6308,9 @@ namespace CalamityMod.NPCs
             if (dragonFire > 0)
                 Dragonfire.DrawEffects(npc, ref drawColor);
 
+            if (crimsonFlux > 0)
+                CrimsonFlux.DrawEffects(npc, ref drawColor);
+
             if (elementalMix > 0)
                 ElementalMix.DrawEffects(npc, ref drawColor);
 
@@ -6445,6 +6459,12 @@ namespace CalamityMod.NPCs
             {
                 int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
                 drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.SlateGray, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
+            }
+
+            else if (crimsonFlux > 0)
+            {
+                int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
+                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkRed, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
             }
 
             else if (absorberAffliction > 0)

@@ -163,6 +163,11 @@ Dragonfire: {
 	Description: Engulfed by roaring flames
 }
 
+CrimsonFlux: {
+	DisplayName: Crimson Flux
+	Description: Shredded by bolts of red
+}
+
 GodSlayerInferno: {
 	DisplayName: God Slayer Inferno
 	Description: Your flesh is burning off

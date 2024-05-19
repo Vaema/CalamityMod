@@ -223,6 +223,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.cDepth && drawInfo.shadow == 0f)
                 CrushDepth.DrawEffects(drawInfo);
 
+            if (calamityPlayer.crimsonFlux && drawInfo.shadow == 0f)
+                CrimsonFlux.DrawEffects(drawInfo);
+
             if (calamityPlayer.dragonFire && drawInfo.shadow == 0f)
                 Dragonfire.DrawEffects(drawInfo);
 
