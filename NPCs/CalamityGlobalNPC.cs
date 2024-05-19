@@ -6442,7 +6442,10 @@ namespace CalamityMod.NPCs
                 drawColor = Color.Cyan;
 
             else if (electrified > 0)
-                drawColor = Main.rand.NextBool(5) ? Color.White : Color.SlateGray;
+            {
+                int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
+                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.SlateGray, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
+            }
 
             else if (absorberAffliction > 0)
                 drawColor = Color.DarkSeaGreen;
