@@ -158,6 +158,9 @@ namespace CalamityMod.NPCs.SlimeGod
                     calamityGlobalNPC.newAI[0] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.X;
                     calamityGlobalNPC.newAI[1] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.Y;
 
+                    // Despawn check
+                    calamityGlobalNPC.newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodPurple].ai[0] == 4f ? 1f : 0f;
+
                     purpleSlimeAlive = true;
                 }
             }
@@ -173,6 +176,9 @@ namespace CalamityMod.NPCs.SlimeGod
 
                     NPC.ai[1] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.X;
                     NPC.ai[2] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.Y;
+                    
+                    // Despawn check
+                    calamityGlobalNPC.newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodRed].ai[0] == 3f ? 1f : 0f;
 
                     redSlimeAlive = true;
                 }
@@ -265,6 +271,7 @@ namespace CalamityMod.NPCs.SlimeGod
                     {
                         NPC.ApplyInteraction(i);
                     }
+
                     NPC.active = false;
                     NPC.HitEffect();
                     NPC.NPCLoot();
@@ -275,11 +282,15 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             // Despawn
-            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > (bossRush ? CalamityGlobalNPC.CatchUpDistance350Tiles : CalamityGlobalNPC.CatchUpDistance200Tiles))
+            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > (bossRush ? CalamityGlobalNPC.CatchUpDistance350Tiles : CalamityGlobalNPC.CatchUpDistance200Tiles) || calamityGlobalNPC.newAI[3] == 1f)
             {
-                NPC.TargetClosest(false);
-                player = Main.player[NPC.target];
-                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > (bossRush ? CalamityGlobalNPC.CatchUpDistance350Tiles : CalamityGlobalNPC.CatchUpDistance200Tiles))
+                if (calamityGlobalNPC.newAI[3] != 1f)
+                {
+                    NPC.TargetClosest(false);
+                    player = Main.player[NPC.target];
+                }
+
+                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > (bossRush ? CalamityGlobalNPC.CatchUpDistance350Tiles : CalamityGlobalNPC.CatchUpDistance200Tiles) || calamityGlobalNPC.newAI[3] == 1f)
                 {
                     if (NPC.velocity.Y < -3f)
                         NPC.velocity.Y = -3f;
