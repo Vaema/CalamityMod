@@ -125,9 +125,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
-            // Distance from target
-            float distance = Vector2.Distance(Main.player[npc.target].Center, npc.Center);
-
             // Despawn
             if (npc.ai[1] != 3f)
             {
