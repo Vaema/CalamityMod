@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class Cyclone : ModProjectile, ILocalizedModType
+    public class WindBolt : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public int dustvortex = 0;
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.ai[0] >= 12)
                 Projectile.tileCollide = true;
 
-            Projectile.rotation += 2.5f;
+            Projectile.rotation += MathHelper.ToRadians(15f);
             Projectile.alpha -= 5;
             if (Projectile.alpha < 50)
             {
@@ -95,14 +95,9 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(204, 255, 255, Projectile.alpha);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
             return false;
         }
 
