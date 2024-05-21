@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -12,12 +6,15 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class WindBladeHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<WindBlade>();
+
         public override float HitboxOutset => 60;
 
         public override Vector2 HitboxSize => new Vector2(70, 70);
