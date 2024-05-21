@@ -152,8 +152,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     int damage = NPC.GetProjectileDamage(type);
                     if (CalamityWorld.death || BossRushEvent.BossRushActive)
                     {
-                        int numProj = 5;
-                        float rotation = MathHelper.ToRadians(12);
+                        int numProj = Main.masterMode ? 5 : 4;
+                        float rotation = MathHelper.ToRadians(18);
                         for (int i = 0; i < numProj; i++)
                         {
                             Vector2 perturbedSpeed = projVector.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));

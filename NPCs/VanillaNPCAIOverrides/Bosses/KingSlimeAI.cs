@@ -276,6 +276,38 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (masterMode)
                     teleportRate *= 2f;
 
+                if (npc.ai[0] == 0f)
+                {
+                    // Move Blue Crystal
+                    if (blueCrystalAlive)
+                    {
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            NPC blueCrystal = Main.npc[i];
+                            if (blueCrystal.active && blueCrystal.type == ModContent.NPCType<KingSlimeJewel2>())
+                            {
+                                blueCrystal.position.X = npc.position.X;
+                                blueCrystal.position.Y = npc.position.Y - 200f;
+
+                                for (int dusty = 0; dusty < 10; dusty++)
+                                {
+                                    Vector2 dustVel = Main.rand.NextVector2CircularEdge(5f, 5f);
+                                    int sapphire = Dust.NewDust(blueCrystal.Center, blueCrystal.width, blueCrystal.height, DustID.GemSapphire, 0f, 0f, 100, default, 2f);
+                                    Main.dust[sapphire].velocity = dustVel * Main.rand.NextFloat(1f, 2f);
+                                    Main.dust[sapphire].noGravity = true;
+                                    if (Main.rand.NextBool())
+                                    {
+                                        Main.dust[sapphire].scale = 0.5f;
+                                        Main.dust[sapphire].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 npc.ai[0] += teleportRate;
                 teleportScale = MathHelper.Clamp(npc.ai[0] / 30f, 0f, 1f);
                 teleportScale = 0.5f + teleportScale * 0.5f;
