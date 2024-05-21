@@ -1350,6 +1350,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (Main.npc[Main.wofNPCIndex].life > 0)
                 npc.life = Main.npc[Main.wofNPCIndex].life;
 
+            // Get a target
+            if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
+                npc.target = Main.npc[Main.wofNPCIndex].target;
+
             // Avoid cheap bullshit
             npc.damage = 0;
 
