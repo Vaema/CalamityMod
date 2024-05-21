@@ -3353,7 +3353,9 @@ namespace CalamityMod.NPCs
             {
                 if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
                 {
-                    if (npc.life / (float)npc.lifeMax < 0.4f)
+                    float lifeRatio = npc.life / (float)npc.lifeMax;
+                    float mapIconVanishValue = Main.masterMode ? 0.3f : 0.4f;
+                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && Main.masterMode))
                         index = -1;
                 }
             }
