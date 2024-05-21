@@ -30,8 +30,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = 36;
-            Projectile.height = 36;
+            Projectile.width = 40;
+            Projectile.height = 40;
             Projectile.alpha = 255;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
@@ -40,13 +40,13 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = -1;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 50;
+            Projectile.localNPCHitCooldown = 8 * Projectile.MaxUpdates;
             Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
-            Projectile.velocity *= 0.95f;
+            Projectile.velocity *= 0.98f;
 
             Projectile.ai[0]++;
             Projectile.ai[1]++;
@@ -80,18 +80,27 @@ namespace CalamityMod.Projectiles.Melee
             float projY = Projectile.Center.Y;
             foreach (var npc in Main.ActiveNPCs)
             {
-                if (npc.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, npc.Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
+                if (npc.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, npc.Center, 1, 1))
                 {
-                    float npcCenterX = npc.position.X + (float)(npc.width / 2);
-                    float npcCenterY = npc.position.Y + (float)(npc.height / 2);
-                    float npcDistance = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcCenterY);
-                    if (npcDistance < 300f)
+                    if (!CalamityPlayer.areThereAnyDamnBosses) // Pulls enemies in while no boss is alive
                     {
-                        float factor = MathHelper.Lerp(1f,0f,CalamityUtils.SineBumpEasing(npcDistance / 300, 1));
+                        float npcCenterX = npc.position.X + (float)(npc.width / 2);
+                        float npcCenterY = npc.position.Y + (float)(npc.height / 2);
+                        float npcDistance = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcCenterY);
+                        if (npcDistance < 320f)
+                        {
+                            float factor = MathHelper.Lerp(1f, 0f, CalamityUtils.SineBumpEasing(npcDistance / 300, 1));
 
-                        npc.velocity += npc.DirectionTo(Projectile.Center) * factor * 0.25f;
+                            npc.velocity += npc.DirectionTo(Projectile.Center) * factor * 0.25f;
+                        }
+                        if (npcDistance < 40)
+                            npc.velocity *= 0.75f;
                     }
-                    if (npcDistance < 40) npc.velocity *= 0.75f;
+                    else // Pulls itself toward enemies while a boss is alive so that the gimmick isn't entirely lost
+                    {
+                        if (Math.Abs(Projectile.velocity.X) < 1.5f && Math.Abs(Projectile.velocity.Y) < 1.5f)
+                            CalamityUtils.HomeInOnNPC(Projectile, false, 320f, 1.5f, 20f);
+                    }
                 }
             }
         }
@@ -109,6 +118,16 @@ namespace CalamityMod.Projectiles.Melee
 
             return false;
         }
+
+        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        {
+            // The hitbox gets bigger over time, because the vortex visually grows
+            int sizeIncrease = (int)(Projectile.ai[0] * 0.3f);
+            hitbox.Inflate(sizeIncrease, sizeIncrease);
+        }
+
+        // The vortex slows down on enemies hits, so that it is easier for it to linger on top of stuff
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Projectile.velocity *= 0.5f;
 
         public override void OnKill(int timeLeft)
         {
