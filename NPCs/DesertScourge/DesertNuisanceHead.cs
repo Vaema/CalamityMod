@@ -317,8 +317,6 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (!shouldFly)
             {
-                NPC.TargetClosest();
-
                 NPC.velocity.Y += 0.15f;
                 if (NPC.velocity.Y > 0f && Math.Abs(NPC.Center.Y - Main.player[NPC.target].Center.Y) > 180f)
                     NPC.velocity.Y += 0.05f;
