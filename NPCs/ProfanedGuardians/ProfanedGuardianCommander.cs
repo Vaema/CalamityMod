@@ -33,7 +33,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
     {
         private int spearType = 0;
         private int healTimer = 0;
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private const float TimeForShieldDespawn = 120f;
         public static readonly SoundStyle HolyRaySound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRay") { Volume = 1.25f };
         public static readonly SoundStyle DashSound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
@@ -105,7 +104,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         {
             writer.Write(spearType);
             writer.Write(healTimer);
-            writer.Write(biomeEnrageTimer);
             writer.Write(NPC.chaseable);
             writer.Write(NPC.localAI[0]);
             writer.Write(NPC.localAI[1]);
@@ -119,7 +117,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         {
             spearType = reader.ReadInt32();
             healTimer = reader.ReadInt32();
-            biomeEnrageTimer = reader.ReadInt32();
             NPC.chaseable = reader.ReadBoolean();
             NPC.localAI[0] = reader.ReadSingle();
             NPC.localAI[1] = reader.ReadSingle();
@@ -334,21 +331,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             if (NPC.ai[3] < 0f)
                 NPC.ai[3] = 0f;
 
-            // Become immune over time if target isn't in hell or hallow
-            bool isHoly = player.ZoneHallow;
-            bool isHell = player.ZoneUnderworldHeight;
-            if (!isHoly && !isHell && !bossRush)
-            {
-                if (biomeEnrageTimer > 0)
-                    biomeEnrageTimer--;
-                else
-                    NPC.Calamity().CurrentlyEnraged = true;
-            }
-            else
-                biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-
-            bool biomeEnraged = biomeEnrageTimer <= 0;
-
             bool phase1 = healerAlive || defenderAlive;
 
             NPC.chaseable = !phase1;
@@ -373,7 +355,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             float goLowOrHighDistance = 540f;
 
             // Side swap variables for Phase 2
-            float defenderCommanderGuardPhase2Duration = (bossRush || biomeEnraged) ? 420f : death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
+            float defenderCommanderGuardPhase2Duration = bossRush ? 420f : death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
             float moveToOtherSideInPhase2GateValue = defenderCommanderGuardPhase2Duration - 120f;
             float timeBeforeMoveToOtherSideInPhase2Reset = moveToOtherSideInPhase2GateValue * 2f;
             float totalGoLowDurationPhase2 = 210f;
@@ -381,13 +363,13 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             // Charge variables
             float chargeVelocityMult = 0.25f;
-            float maxChargeVelocity = (bossRush || biomeEnraged) ? 32f : death ? 28f : revenge ? 26f : expertMode ? 24f : 20f;
+            float maxChargeVelocity = bossRush ? 32f : death ? 28f : revenge ? 26f : expertMode ? 24f : 20f;
             if (Main.getGoodWorld)
                 maxChargeVelocity *= 1.15f;
             if (CalamityWorld.LegendaryMode && revenge)
                 maxChargeVelocity *= 2f;
 
-            float inertia = (bossRush || biomeEnraged) ? 40f : death ? 45f : revenge ? 47f : expertMode ? 50f : 55f;
+            float inertia = bossRush ? 40f : death ? 45f : revenge ? 47f : expertMode ? 50f : 55f;
             if (lifeRatio < 0.5f)
                 inertia *= 0.8f;
             if (!phase1)
@@ -470,7 +452,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (!goLow && !goLowPhase2 && !goHigh)
                     calamityGlobalNPC.newAI[0] = -NPC.direction;
 
-                float velocity = (bossRush || biomeEnraged) ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+                float velocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
                 if (Main.getGoodWorld)
                     velocity *= 1.25f;
                 if (healerAlive)
@@ -507,7 +489,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                 Vector2 targetVector = destination - NPC.Center;
                 Vector2 desiredVelocity = targetVector.SafeNormalize(new Vector2(NPC.direction, 0f)) * velocity;
-                float phaseGateValue = (bossRush || biomeEnraged) ? 50f : death ? 66f : revenge ? 75f : expertMode ? 83f : 100f;
+                float phaseGateValue = bossRush ? 50f : death ? 66f : revenge ? 75f : expertMode ? 83f : 100f;
                 bool continueShootingProjectiles = phase1 || (NPC.ai[2] < (phaseGateValue * 5f));
 
                 if (continueShootingProjectiles)
@@ -521,7 +503,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     // Alternate between firing profaned spears and holy fire
                     // Shoot holy blasts in final phase
                     NPC.ai[2] += 1f;
-                    float projectileShootGateValue = (bossRush || biomeEnraged) ? 40f : death ? 60f : revenge ? 90f : expertMode ? 100f : 150f;
+                    float projectileShootGateValue = bossRush ? 40f : death ? 60f : revenge ? 90f : expertMode ? 100f : 150f;
                     if (NPC.ai[2] % projectileShootGateValue == 0f)
                     {
                         if (phase1)
@@ -535,7 +517,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             }
 
                             bool shootSpear = NPC.ai[2] % (projectileShootGateValue * 2f) == 0f;
-                            float projectileVelocity = (bossRush || biomeEnraged) ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+                            float projectileVelocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
                             Vector2 finalProjectileVelocity = Vector2.Normalize(player.Center - shootFrom) * projectileVelocity;
                             int type = shootSpear ? ModContent.ProjectileType<ProfanedSpear>() : ModContent.ProjectileType<HolyFire2>();
                             int damage = NPC.GetProjectileDamage(type);
@@ -548,8 +530,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                             if (fireExtraProjectiles && shootSpear)
                             {
-                                int baseProjectileAmt = (bossRush || biomeEnraged) ? 4 : 2;
-                                int spread = (bossRush || biomeEnraged) ? 18 : 10;
+                                int baseProjectileAmt = bossRush ? 4 : 2;
+                                int spread = bossRush ? 18 : 10;
                                 float rotation = MathHelper.ToRadians(spread);
                                 for (int i = 0; i < baseProjectileAmt; i++)
                                 {
@@ -568,7 +550,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         else
                         {
                             // Shoot holy blasts
-                            float holyBlastVelocity = (bossRush || biomeEnraged) ? 20f : death ? 18f : revenge ? 17f : expertMode ? 16f : 14f;
+                            float holyBlastVelocity = bossRush ? 20f : death ? 18f : revenge ? 17f : expertMode ? 16f : 14f;
                             int projTimeLeft = (int)(2000f / holyBlastVelocity);
                             Vector2 finalHolyBlastVelocity = Vector2.Normalize(player.Center - shootFrom) * holyBlastVelocity;
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -681,7 +663,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 NPC.spriteDirection = Math.Sign(NPC.velocity.X);
 
                 NPC.ai[1] += 1f;
-                float phaseGateValue = (bossRush || biomeEnraged) ? 90f : death ? 100f : revenge ? 110f : expertMode ? 120f : 135f;
+                float phaseGateValue = bossRush ? 90f : death ? 100f : revenge ? 110f : expertMode ? 120f : 135f;
                 if (NPC.ai[1] >= phaseGateValue)
                 {
                     NPC.ai[0] = 3f;
@@ -702,7 +684,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         // Accelerate
                         if (NPC.velocity.Length() < maxChargeVelocity)
                         {
-                            float velocityMult = (bossRush || biomeEnraged) ? 1.053333f : death ? 1.05037f : revenge ? 1.047407f : expertMode ? 1.044444f : 1.04f;
+                            float velocityMult = bossRush ? 1.053333f : death ? 1.05037f : revenge ? 1.047407f : expertMode ? 1.044444f : 1.04f;
                             NPC.velocity = targetVector * (NPC.velocity.Length() * velocityMult);
                             if (NPC.velocity.Length() > maxChargeVelocity)
                             {
@@ -790,7 +772,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                 bool targetRanAwayAndWillNowBeFucked = NPC.ai[2] == 1f;
                 bool boostVelocityToCatchUp = NPC.ai[1] == 0f || targetRanAwayAndWillNowBeFucked;
-                float velocity = (bossRush || biomeEnraged) ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+                float velocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
                 if (Main.getGoodWorld)
                     velocity *= 1.25f;
                 if (boostVelocityToCatchUp)
@@ -802,7 +784,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 Vector2 desiredVelocity = targetVector.SafeNormalize(new Vector2(NPC.direction, 0f)) * velocity;
 
                 float totalSpears = 12f;
-                float shootDuration = (bossRush || biomeEnraged) ? 240f : death ? 280f : revenge ? 300f : expertMode ? 320f : 360f;
+                float shootDuration = bossRush ? 240f : death ? 280f : revenge ? 300f : expertMode ? 320f : 360f;
                 float dontShootTime = shootDuration * 0.3f;
                 float phaseGateValue = dontShootTime + shootDuration;
 
@@ -847,7 +829,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     }
                     else if (NPC.ai[1] % spearShootDivisor == 0f)
                     {
-                        float spearVelocity = (bossRush || biomeEnraged) ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+                        float spearVelocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
                         if (Main.getGoodWorld)
                             spearVelocity *= 1.25f;
                         if (boostVelocityToCatchUp)
@@ -865,8 +847,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         if (NPC.ai[1] % (spearShootDivisor * 3) == 0f || targetRanAwayAndWillNowBeFucked)
                         {
                             knockbackVelocity *= 2f;
-                            int baseProjectileAmt = (bossRush || biomeEnraged) ? 8 : expertMode ? 6 : 4;
-                            int spread = (bossRush || biomeEnraged) ? 60 : expertMode ? 50 : 40;
+                            int baseProjectileAmt = bossRush ? 8 : expertMode ? 6 : 4;
+                            int spread = bossRush ? 60 : expertMode ? 50 : 40;
                             float rotation = MathHelper.ToRadians(spread);
                             for (int i = 0; i < baseProjectileAmt; i++)
                             {
@@ -902,7 +884,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 }
 
                 float laserGateValue = 120f;
-                float velocity = (bossRush || biomeEnraged) ? 4.5f : death ? 4f : revenge ? 3.75f : expertMode ? 3.5f : 3f;
+                float velocity = bossRush ? 4.5f : death ? 4f : revenge ? 3.75f : expertMode ? 3.5f : 3f;
                 if (NPC.ai[1] < laserGateValue)
                     velocity *= 6f;
                 if (Main.getGoodWorld)
@@ -958,7 +940,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 {
                     if (NPC.ai[2] == laserGateValue)
                     {
-                        float rotation = (bossRush || biomeEnraged) ? 435f : death ? 445f : revenge ? 450f : expertMode ? 455f : 465f;
+                        float rotation = bossRush ? 435f : death ? 445f : revenge ? 450f : expertMode ? 455f : 465f;
 
                         if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < 2800f)
                             SoundEngine.PlaySound(HolyRaySound, Main.LocalPlayer.Center);
