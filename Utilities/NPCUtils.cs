@@ -606,6 +606,53 @@ namespace CalamityMod
         }
 
         /// <summary>
+        /// Detects the hostile NPC that is closest angle-wise to the rotation vector
+        /// </summary>
+        /// <param name="origin">The position that will be used to find the rotation vector to NPCs</param>
+        /// <param name="checkRotationVector">The rotation vector that the other rotation vectors to NPCs will be compared to</param>
+        /// <param name="maxDistanceToCheck">Maximum amount of pixels to check around the origin</param>
+        /// <param name="wantedHalfCone">When the angle between the rotation vector and the vector to the NPC is less than or equal to this, NPCs start getting ranked by distance. Set to 0 or less to ignore</param>
+        /// <param name="ignoreTiles">Whether or not to ignore tiles when finding a target</param>
+        /// <returns>The NPC that best fits the parameters. Null if no NPC is found</returns>
+        public static NPC ClosestNPCToAngle(this Vector2 origin, Vector2 checkRotationVector, float maxDistanceToCheck, float wantedHalfCone = 0.125f, bool ignoreTiles = true)
+        {
+            NPC closestTarget = null;
+            float distance = maxDistanceToCheck;
+            float angle = MathHelper.Pi;
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+                if (!npc.CanBeChasedBy(null, false))
+                    continue;
+
+                float checkDist = origin.Distance(npc.Center);
+                if (checkDist >= distance) // Immediately disqualify anything beyond the distance that must be beaten
+                    continue;
+
+                float angleBetween = checkRotationVector.AngleBetween(npc.Center - origin);
+                if (angleBetween > angle) // Narrow down to the closest npc to the angle
+                    continue;
+
+                if (!ignoreTiles && !Collision.CanHit(origin, 1, 1, npc.Center, 1, 1)) // Tile LoS check if wanted
+                    continue;
+
+                if (angle <= wantedHalfCone)
+                {
+                    angle = wantedHalfCone; 
+                    distance = checkDist; // We are within the cone. Now npcs are further narrowed down by distance
+                    closestTarget = npc;
+                }
+                else
+                {
+                    angle = angleBetween;
+                    closestTarget = npc;
+                }
+            }
+
+            return closestTarget;
+        }
+
+        /// <summary>
         /// Detects nearby hostile NPCs from a given point with minion support
         /// </summary>
         /// <param name="origin">The position where we wish to check for nearby NPCs</param>
