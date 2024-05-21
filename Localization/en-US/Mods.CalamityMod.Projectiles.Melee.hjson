@@ -76,7 +76,6 @@ CosmicSpiritBomb3.DisplayName: Cosmic Bomb
 CrescentMoonFlail.DisplayName: Crescent Moon
 CrescentMoonProj.DisplayName: Crescent Moon
 CrystylCrusherRay.DisplayName: Crystyl Crusher Ray
-Cyclone.DisplayName: Cyclone
 DarkBall.DisplayName: Dark Ball
 DarkBeam.DisplayName: Dark Beam
 DarkIceZero.DisplayName: Dark Ice
@@ -311,8 +310,10 @@ Waterfall.DisplayName: Waterfall Beam
 WhiteBoltAura.DisplayName: White Aura
 WhiteOrb.DisplayName: White Orb
 Whiterain.DisplayName: White Rain
+WindBolt.DisplayName: Wind Bolt
 WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YateveoBloomProj.DisplayName: Yateveo Bloom
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
+Cyclone.DisplayName: Cyclone
