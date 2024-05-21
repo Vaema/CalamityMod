@@ -33,7 +33,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 10;
             NPC.DR_NERD(0.1f);
 
-            NPC.lifeMax = 140;
+            NPC.lifeMax = 120;
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
 
