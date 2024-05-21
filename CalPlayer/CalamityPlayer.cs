@@ -507,6 +507,7 @@ namespace CalamityMod.CalPlayer
         public bool ascendantTrail = false;
         public bool eGauntlet = false;
         public int gloveLevel = 0; // Used to prevent glove stacking
+        public bool alreadyHasFrogLeg = false; // Used to prevent Frog Leg tinker stacking
         public bool eTalisman = false;
         public int statisTimer = 0;
         public bool nucleogenesis = false;
@@ -1703,6 +1704,7 @@ namespace CalamityMod.CalPlayer
             ascendantTrail = false;
             eGauntlet = false;
             gloveLevel = 0;
+            alreadyHasFrogLeg = false;
             eTalisman = false;
             nucleogenesis = false;
             nuclearFuelRod = false;

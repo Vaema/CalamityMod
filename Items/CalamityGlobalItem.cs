@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
@@ -1235,6 +1236,29 @@ namespace CalamityMod.Items
             if (item.type == ItemID.FireGauntlet)
             {
                 player.GetDamage<MeleeDamageClass>() += 0.02f;
+            }
+
+            // The Frog Leg line is prevented from stacking.
+            // Additionally, Amphibian boots are directly nerfed so they aren't the best in slot boots at all times.
+            switch (item.type)
+            {
+                default:
+                    break;
+                case ItemID.AmphibianBoots:
+                    if (modPlayer.alreadyHasFrogLeg)
+                        player.jumpSpeedBoost -= BalancingConstants.VanillaFrogLegJumpSpeedBoost;
+                    else
+                        player.jumpSpeedBoost += BalancingConstants.AmphibianBootsJumpSpeedBoost - BalancingConstants.VanillaFrogLegJumpSpeedBoost;
+                    modPlayer.alreadyHasFrogLeg = true;
+                    break;
+                case ItemID.FrogLeg:
+                case ItemID.FrogFlipper:
+                case ItemID.FrogGear:
+                case ItemID.FrogWebbing:
+                    if (modPlayer.alreadyHasFrogLeg)
+                        player.jumpSpeedBoost -= BalancingConstants.VanillaFrogLegJumpSpeedBoost;
+                    modPlayer.alreadyHasFrogLeg = true;
+                    break;
             }
 
             // Feral Claws line melee speed adjustments and nonstacking
