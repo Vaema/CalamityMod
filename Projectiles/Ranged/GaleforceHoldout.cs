@@ -9,6 +9,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Melee;
 
 
 namespace CalamityMod.Projectiles.Ranged
@@ -53,6 +55,16 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+            if (Charge % 8 == 0 && Charge < 24)
+            {
+                SoundEngine.PlaySound(SoundID.Tink.WithPitchOffset(0.2f + Charge / 60), Owner.MountedCenter);
+            }
+
+            if (Charge == MaxCharge)
+            {
+                SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact.WithPitchOffset(0.2f + Charge / 60), Owner.MountedCenter);
+            }
+
             if (Owner.channel)
             {
                 Projectile.timeLeft = 2;
@@ -98,7 +110,7 @@ namespace CalamityMod.Projectiles.Ranged
                 float angleOffset = MathHelper.Lerp(Spread * -0.5f, Spread * 0.5f, i / ((float)ShotProjectiles - 1));
                 float direction = mainAngle + angleOffset;
                 Vector2 displacement = (direction + MathHelper.Pi / 12f).ToRotationVector2(); //Fixes some rotational offset with positions for the arrows
-                Main.EntitySpriteDraw(arrowTexture, Owner.MountedCenter - Main.screenPosition + (displacement * 26f), null, Color.White, direction - MathHelper.PiOver2, new Vector2(texture.Width / 2f, texture.Height / 2f), 1f, 0, 0);
+                Main.EntitySpriteDraw(arrowTexture, Owner.MountedCenter - Main.screenPosition + (displacement * 26f), null, Color.White, direction - MathHelper.PiOver2, new Vector2(texture.Width / 2f, texture.Height / 2f), CalamityUtils.ExpOutEasing(Math.Clamp((Charge - Math.Abs(angleOffset * 16)) / 30f, 0f, 1f), 1) * MathHelper.Lerp(1f, 0.8f, Math.Abs(angleOffset) * 2f), 0, 0);
 
             }
 
@@ -110,6 +122,7 @@ namespace CalamityMod.Projectiles.Ranged
             float mainAngle = (Projectile.Center - Owner.MountedCenter).ToRotation();
 
             SoundEngine.PlaySound(SoundID.Item5 with { Volume = SoundID.Item167.Volume * 0.4f + 0.2f * ChargeProgress }, Owner.MountedCenter);
+            SoundEngine.PlaySound(WulfrumScrewdriver.ScrewHitSound.WithPitchOffset(1f), Owner.MountedCenter);
 
             for (int i = 0; i < ShotProjectiles; i++)
             {
@@ -121,7 +134,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.MountedCenter + direction * 30f, direction * 20f, ModContent.ProjectileType<GaleforceArrow>(), Projectile.damage, Projectile.knockBack, Owner.whoAmI, ChargeProgress);
                 }
 
-                Particle pulse = new DirectionalPulseRing(Owner.MountedCenter + direction * 44f, Vector2.Zero, Color.Cyan, new Vector2(0.5f, 1f), direction.ToRotation(), 0.04f, 0.2f, 30);
+                Particle pulse = new DirectionalPulseRing(Owner.MountedCenter + direction * 44f, Vector2.Zero, Color.Cyan, Vector2.Lerp(new Vector2(0.5f, 1f), new Vector2(1f, 2.5f), ChargeProgress), direction.ToRotation(), 0.04f, 0.2f, 30);
                 GeneralParticleHandler.SpawnParticle(pulse);
             }
 
