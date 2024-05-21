@@ -1394,7 +1394,7 @@ WindBlade: {
 		'''
 		Perform a three swing combo which ends by thrusting the blade forwards
 		Thrusting the blade launches an expanding cyclone that lingers
-		      Cyclones pull enemies in, or pulls itself towards bosses
+		Cyclones pull enemies in, or pulls itself towards bosses
 		'''
 }
 
