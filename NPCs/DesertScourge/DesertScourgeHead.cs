@@ -670,7 +670,15 @@ namespace CalamityMod.NPCs.DesertScourge
             else if (!shouldFly)
             {
                 NPC.TargetClosest();
+
                 NPC.velocity.Y += 0.15f;
+                if (NPC.Center.Y - player.Center.Y < -180f)
+                {
+                    NPC.velocity.Y += 0.05f;
+                    if (NPC.velocity.Y > 0f)
+                        NPC.velocity.Y += 0.05f;
+                }
+
                 if (NPC.velocity.Y > maxChaseSpeed)
                     NPC.velocity.Y = maxChaseSpeed;
 
