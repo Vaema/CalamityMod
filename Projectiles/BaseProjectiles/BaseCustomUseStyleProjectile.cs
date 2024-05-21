@@ -22,6 +22,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             Projectile.friendly = true;
             Projectile.tileCollide = false;
+<<<<<<< Updated upstream
+=======
+            Projectile.penetrate = -1;
+>>>>>>> Stashed changes
         }
 
         public override void OnSpawn(IEntitySource source)
@@ -35,6 +39,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         public Vector2 Offset = Vector2.Zero;
 
+<<<<<<< Updated upstream
+=======
+        public float RestrikeDelay = 0;
+
+>>>>>>> Stashed changes
         /// <summary>
         /// The Player that is using the projectile.
         /// </summary>
@@ -91,29 +100,41 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// The origin of the sprite when drawn on your character.
         /// </summary>
         /// <returns></returns>
+<<<<<<< Updated upstream
         public virtual Vector2 SpriteOrigin()
         {
             return Projectile.Size / 2;
         }
+=======
+        public virtual Vector2 SpriteOrigin => Projectile.Size / 2;
+>>>>>>> Stashed changes
 
         /// <summary>
         /// Helper method for getting the rotation of the sprite plus RotationOffset, without having to make your own local variable every time.
         /// </summary>
         /// <returns></returns>
+<<<<<<< Updated upstream
         public float FinalRotation()
         {
             return Projectile.rotation + RotationOffset;
         }
+=======
+        public float FinalRotation => Projectile.rotation + RotationOffset;
+>>>>>>> Stashed changes
 
         /// <summary>
         /// Rotation offset for the hitbox that doesn't affect the sprite. 
         /// Useful for if you have, for instance, a sword sprite at a 45 degree angle, and need that to reflect on the hitbox.
         /// </summary>
         /// <returns></returns>
+<<<<<<< Updated upstream
         public virtual float HitboxRotationOffset()
         {
             return 0f;
         }
+=======
+        public virtual float HitboxRotationOffset => 0f;
+>>>>>>> Stashed changes
 
         /// <summary>
         /// Whether or not the projectile can hit enemies at the current frame. 
@@ -161,7 +182,13 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public override void AI()
         {
+<<<<<<< Updated upstream
             Projectile.penetrate = 100;
+=======
+            Owner.Calamity().mouseWorldListener = true;
+
+            RestrikeDelay--;
+>>>>>>> Stashed changes
 
             if (Owner.ItemAnimationActive)
             {
@@ -211,6 +238,18 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             }
         }
 
+<<<<<<< Updated upstream
+=======
+        public override bool? CanHitNPC(NPC target)
+        {
+            bool bb = (target.immune[0] <= 0) && !target.friendly && !target.dontTakeDamage && RestrikeDelay <= 0;
+
+            if (bb) RestrikeDelay = 1;
+
+            return bb;
+        }
+
+>>>>>>> Stashed changes
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.HitDirectionOverride = Owner.direction;
@@ -224,7 +263,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
+<<<<<<< Updated upstream
             Vector2 cen = Projectile.Center + new Vector2(HitboxOutset, 0).RotatedBy(FinalRotation() + HitboxRotationOffset());
+=======
+            Vector2 cen = Projectile.Center + new Vector2(HitboxOutset, 0).RotatedBy(FinalRotation + HitboxRotationOffset);
+>>>>>>> Stashed changes
 
             hitbox = new Rectangle((int)cen.X - (int)(HitboxSize.X / 2), (int)cen.Y - (int)(HitboxSize.Y / 2), (int)HitboxSize.X, (int)HitboxSize.Y);
 
@@ -240,7 +283,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
                 float r = FlipAsSword ? MathHelper.ToRadians(90) : 0f;
 
+<<<<<<< Updated upstream
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin().X, SpriteOrigin().Y) : SpriteOrigin(), Projectile.scale, FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
+=======
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
+>>>>>>> Stashed changes
             }
             return false; 
         }
