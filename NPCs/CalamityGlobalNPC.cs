@@ -5255,7 +5255,7 @@ namespace CalamityMod.NPCs
                 return;
 
             if (target.Calamity().sulphurSet)
-                npc.AddBuff(BuffID.Poisoned, 120);
+                npc.AddBuff(BuffID.Poisoned, 90);
 
             if (target.Calamity().snowman)
             {
