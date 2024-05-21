@@ -1240,6 +1240,9 @@ namespace CalamityMod.Items
 
             // The Frog Leg line is prevented from stacking.
             // Additionally, Amphibian boots are directly nerfed so they aren't the best in slot boots at all times.
+            //
+            // 21MAY2024: Ozzatron: Disabled this code. Frog Leg is allowed to stack. Amphibian Boots specific nerf is applied below.
+            /*
             switch (item.type)
             {
                 default:
@@ -1260,6 +1263,9 @@ namespace CalamityMod.Items
                     modPlayer.alreadyHasFrogLeg = true;
                     break;
             }
+            */
+            if (item.type == ItemID.AmphibianBoots)
+                player.jumpSpeedBoost += BalancingConstants.AmphibianBootsJumpSpeedBoost - BalancingConstants.VanillaFrogLegJumpSpeedBoost;
 
             // Feral Claws line melee speed adjustments and nonstacking
             // First removes all their melee speed so it can be given based on which you wear without stacking
