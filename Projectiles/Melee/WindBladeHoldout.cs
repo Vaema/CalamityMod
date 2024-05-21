@@ -22,6 +22,13 @@ namespace CalamityMod.Projectiles.Melee
 
         public override Vector2 SpriteOrigin => new(0, 80);
 
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
+        }
+
         public override void OnSpawn(IEntitySource source)
         {
             Projectile.scale = 0f;
@@ -78,8 +85,8 @@ namespace CalamityMod.Projectiles.Melee
             else if (NumberOfAnimations % 4 == 3)
             {
                 float ProjectileSpeed = 10;
-                int ProjectileDamage = 10;
-                float ProjectileKnockback = Projectile.knockBack;
+                int ProjectileDamage = (int)(Projectile.damage * 0.3f);
+                float ProjectileKnockback = (int)(Projectile.knockBack * 0.5f);
                 CanHit = true;
                 if ((int)AnimationProgress == 1)
                 {
