@@ -226,6 +226,9 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.crimsonFlux && drawInfo.shadow == 0f)
                 CrimsonFlux.DrawEffects(drawInfo);
 
+            if (calamityPlayer.staticDischarge && drawInfo.shadow == 0f)
+                StaticDischarge.DrawEffects(drawInfo);
+
             if (calamityPlayer.dragonFire && drawInfo.shadow == 0f)
                 Dragonfire.DrawEffects(drawInfo);
 

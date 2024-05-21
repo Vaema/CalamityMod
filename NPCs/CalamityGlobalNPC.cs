@@ -271,6 +271,7 @@ namespace CalamityMod.NPCs
         public int gsInferno = 0;
         public int dragonFire = 0;
         public int crimsonFlux = 0;
+        public int staticDischarge = 0;
         public int miracleBlight = 0;
         public int astralInfection = 0;
         public int wDeath = 0;
@@ -488,6 +489,7 @@ namespace CalamityMod.NPCs
             myClone.miracleBlight = miracleBlight;
             myClone.dragonFire = dragonFire;
             myClone.crimsonFlux = crimsonFlux;
+            myClone.staticDischarge = staticDischarge;
             myClone.astralInfection = astralInfection;
             myClone.wDeath = wDeath;
             myClone.nightwither = nightwither;
@@ -970,6 +972,13 @@ namespace CalamityMod.NPCs
             {
                 int baseCrimsonFluxDoTValue = (int)(75 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 300 on moving targets
                 ApplyDPSDebuff(baseCrimsonFluxDoTValue, baseCrimsonFluxDoTValue / 5, ref npc.lifeRegen, ref damage);
+            }
+
+            // Static Discharge
+            if (staticDischarge > 0)
+            {
+                int baseStaticDischargeDoTValue = (int)(8 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 32 on moving targets
+                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
             // Banishing Fire
@@ -5060,6 +5069,8 @@ namespace CalamityMod.NPCs
                 dragonFire--;
             if (crimsonFlux > 0)
                 crimsonFlux--;
+            if (staticDischarge > 0)
+                staticDischarge--;
             if (miracleBlight > 0)
                 miracleBlight--;
             if (astralInfection > 0)
@@ -6310,6 +6321,9 @@ namespace CalamityMod.NPCs
 
             if (crimsonFlux > 0)
                 CrimsonFlux.DrawEffects(npc, ref drawColor);
+
+            if (staticDischarge > 0)
+                StaticDischarge.DrawEffects(npc, ref drawColor);
 
             if (elementalMix > 0)
                 ElementalMix.DrawEffects(npc, ref drawColor);

@@ -168,6 +168,11 @@ CrimsonFlux: {
 	Description: Shredded by bolts of red
 }
 
+StaticDischarge: {
+	DisplayName: Static Discharge
+	Description: Shocked by static electricity
+}
+
 GodSlayerInferno: {
 	DisplayName: God Slayer Inferno
 	Description: Your flesh is burning off

@@ -98,8 +98,9 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(weakBrimstoneFlames, 7);
             ApplyDoTDebuff(bBlood, 8, purity);
             ApplyDoTDebuff(brainRot, 8, purity);
-            ApplyDoTDebuff(elementalMix, 50, purity);
             ApplyDoTDebuff(vaporfied, 8, purity);
+            int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
+            ApplyDoTDebuff(staticDischarge, staticDoT, purity);
             ApplyDoTDebuff(bFlames, abaddon ? 10 : 30, purity);
             ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
             ApplyDoTDebuff(hFlames, reducedHolyFlamesDamage ? 20 : 40, purity);
@@ -109,6 +110,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(pFlames, 30, purity);
             ApplyDoTDebuff(cragsLava, 30);
             ApplyDoTDebuff(shadowflame, 30, purity);
+            ApplyDoTDebuff(elementalMix, 50, purity);
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
             ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 60 : 50);
             int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 60 : 15) / (eleResist ? 2 : 1);
