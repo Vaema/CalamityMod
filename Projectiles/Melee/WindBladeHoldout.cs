@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -96,16 +97,17 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.NewProjectile(new EntitySource_ItemUse(Owner, Owner.HeldItem), Projectile.Hitbox.Center.ToVector2(), new Vector2(ProjectileSpeed, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)), ModContent.ProjectileType<WindBolt>(), ProjectileDamage, ProjectileKnockback, Owner.whoAmI);
                 }
                 RotationOffset = 0f;
-                if (AnimationProgress < Owner.itemAnimationMax / 3)
+                if (AnimationProgress < Owner.itemAnimationMax / 2)
                 {
                     Projectile.scale = MathHelper.Lerp(Projectile.scale, 1.5f, 0.4f);
 
                     float rot = FinalRotation + MathHelper.ToRadians(-45);
 
-                    GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(Owner.Center + new Vector2(105 * Projectile.scale, 0).RotatedBy(rot), new Vector2(5, 0).RotatedBy(rot + MathHelper.ToRadians(Main.rand.NextFloat(-20, 20))), Color.LightSkyBlue, 30, 2f, 0.3f, MathHelper.ToRadians(Main.rand.NextFloat(-10f, 10f)), true));
-                    GeneralParticleHandler.SpawnParticle(new LineParticle(Owner.Center + new Vector2(0, 20).RotatedBy(rot) + new Vector2(45 * Projectile.scale, 0).RotatedBy(rot), new Vector2(5, 0).RotatedBy(rot), false, 30, 1f, Color.LightSkyBlue));
-                    GeneralParticleHandler.SpawnParticle(new LineParticle(Owner.Center + new Vector2(0, -20).RotatedBy(rot) + new Vector2(45 * Projectile.scale, 0).RotatedBy(rot), new Vector2(5, 0).RotatedBy(rot), false, 30, 1f, Color.LightSkyBlue));
-                }
+                    float bb = Main.rand.NextFloat(-50, 50);
+
+                    GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(Owner.Center + new Vector2(105 * Projectile.scale, 0).RotatedBy(rot), new Vector2(5, 0).RotatedBy(rot + MathHelper.ToRadians(Main.rand.NextFloat(-20, 20))), Color.LightSkyBlue, 10, 2f, 0.3f, MathHelper.ToRadians(Main.rand.NextFloat(-10f, 10f)), true));
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(Owner.Center + new Vector2(0, bb).RotatedBy(rot) + new Vector2(45 * Projectile.scale, 0).RotatedBy(rot), new Vector2(5, 0).RotatedBy(rot), false, 10, 1 - (Math.Abs(bb) / 50), Color.LightSkyBlue, true));
+                    }
                 else
                 {
                     Projectile.scale = MathHelper.Lerp(Projectile.scale, 1.5f, -0.2f);

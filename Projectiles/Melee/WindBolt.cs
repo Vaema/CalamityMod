@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 float c = Math.Max(i, 1);
 
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, tex.Frame(), new Color(1f / c, 1f / c, 1f / c, 1f / c), -Projectile.rotation * c, tex.Size() / 2, (float)MathHelper.Lerp(1f, i, scFactor), SpriteEffects.None);
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, tex.Frame(), lightColor.MultiplyRGB(Color.Lerp(Color.White, Color.CadetBlue, (float)i / 5)).MultiplyRGBA(new Color(1f / c, 1f / c, 1f / c, 1f / c)), -Projectile.rotation * c, tex.Size() / 2, (float)MathHelper.Lerp(1f, i, scFactor), SpriteEffects.None);
             }
 
             return false;

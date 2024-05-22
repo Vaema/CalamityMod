@@ -24,14 +24,16 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.extraUpdates = 0;
             Projectile.alpha = 255;
             Projectile.ignoreWater = true;
+            Projectile.scale = 0f;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.timeLeft = 180;
+            Projectile.timeLeft = 120;
         }
 
         public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 150 && target.CanBeChasedBy(Projectile);
 
         public override void AI()
         {
+            Projectile.scale = MathHelper.Lerp(Projectile.scale, 1f, 0.2f);
 
             float rot = Main.rand.NextFloat(MathHelper.TwoPi);
 
@@ -58,21 +60,22 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.frame = 0;
                 }
             }
-            if (Projectile.Calamity().stealthStrike) //stealth strike
+            if (Projectile.frameCounter == 0)
             {
-                Projectile.ai[1]++;
-                if (Projectile.ai[1] % 3 == 1)
-                {
-                    GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(Projectile.Center, CalamityUtils.RandomVelocity(1f, 2, 5), Color.SkyBlue, 50, 1f, 255));
-                }
-                if (Projectile.ai[1] > 10) CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 8f, 20f);
+                GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(
+                Projectile.Center, new Vector2(2, 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi)), Color.White, Color.LightSkyBlue, (1f + Main.rand.NextFloat(0.3f)) * Projectile.scale, 50f));
             }
-            else
+            Projectile.ai[1]++;
+            if (Projectile.ai[1] > 40)
             {
-                if (Projectile.ai[1] % 8 == 1)
-                    GeneralParticleHandler.SpawnParticle(new SparkParticle(
-                        Projectile.Center + new Vector2(50, 0).RotatedBy(rot + MathHelper.ToRadians(180f)), new Vector2(10, 0).RotatedBy(rot), false, 10, 2f, Color.LightSkyBlue, true
-                        ));
+                if (Projectile.Calamity().stealthStrike)
+                {
+                    CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 18, 0.1f);
+                }
+                else
+                {
+                    CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 10f, 0.02f);
+                }
             }
         }
 
