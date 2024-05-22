@@ -32,6 +32,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
+
+            float rot = Main.rand.NextFloat(MathHelper.TwoPi);
+
             Projectile.velocity *= 0.9f;
             if (Projectile.localAI[0] == 0f)
             {
@@ -57,13 +60,24 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (Projectile.Calamity().stealthStrike) //stealth strike
             {
-                CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 8f, 20f);
+                Projectile.ai[1]++;
+                if (Projectile.ai[1] % 3 == 1)
+                {
+                    GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(Projectile.Center, CalamityUtils.RandomVelocity(1f, 2, 5), Color.SkyBlue, 50, 1f, 255));
+                }
+                if (Projectile.ai[1] > 10) CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 450f, 8f, 20f);
+            }
+            else
+            {
+                if (Projectile.ai[1] % 8 == 1)
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(
+                        Projectile.Center + new Vector2(50, 0).RotatedBy(rot + MathHelper.ToRadians(180f)), new Vector2(10, 0).RotatedBy(rot), false, 10, 2f, Color.LightSkyBlue, true
+                        ));
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
 

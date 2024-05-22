@@ -5,11 +5,15 @@ using Microsoft.Xna.Framework;
 using CalamityMod.Particles;
 using Terraria.Audio;
 using CalamityMod.Items.Weapons.Rogue;
+using Terraria.DataStructures;
 
 namespace CalamityMod.Projectiles.Rogue
 {
     public class TurbulanceProjectile : ModProjectile, ILocalizedModType
     {
+        NPC npcToStickTo = null;
+        Vector2 stickOffset;
+
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Turbulance";
 
@@ -25,13 +29,32 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 2;
+            Projectile.penetrate = 3;
             Projectile.ignoreWater = true;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.tileCollide = false;
+            Projectile.tileCollide = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.stopsDealingDamageAfterPenetrateHits = true;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            stickOffset = Vector2.Zero;
+        }
+
+        public override bool? CanHitNPC(NPC target)
+        {
+            return base.CanHitNPC(target);
         }
 
         public override void AI()
         {
+            if (npcToStickTo != null)
+            {
+                Projectile.position = npcToStickTo.Center + (stickOffset * npcToStickTo.scale) + (Projectile.Size / 2);
+            }
+
             if (!Projectile.Calamity().stealthStrike)
             {
                 Projectile.velocity.Y += 0.05f;
@@ -40,32 +63,31 @@ namespace CalamityMod.Projectiles.Rogue
             else
             {
                 Projectile.velocity *= 1.05f;
+
+                if (Projectile.velocity == Vector2.Zero)
+                {
+                    if (Projectile.ai[2] % 6 == 0)
+                    GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(Projectile.Center, CalamityUtils.RandomVelocity(1, 10, 20), Color.LightSkyBlue, 100, 2f, 1f, MathHelper.ToRadians(Main.rand.NextFloat(-3f, 3f))));
+                    Projectile.ai[2]++;
+                }
+            }
+
+            if (Projectile.velocity != Vector2.Zero)
+            {
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f);
+                if (Main.rand.NextBool(5))
+                {
+                    Dust dust = Dust.NewDustDirect(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 187, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100, new Color(53, Main.DiscoG, 255));
+                    dust.noGravity = true;
+                }
+                if (Main.rand.NextBool(5))
+                {
+                    Dust dust = Dust.NewDustDirect(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 16, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                    dust.noGravity = true;
+                }
             }
 
             Projectile.ai[0]++;
-            Projectile.tileCollide = Projectile.ai[0] >= 2f;
-
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f);
-
-            if (Main.rand.NextBool(5))
-            {
-                Dust dust = Dust.NewDustDirect(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 187, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100, new Color(53, Main.DiscoG, 255));
-                dust.noGravity = true;
-            }
-            if (Main.rand.NextBool(5))
-            {
-                Dust dust = Dust.NewDustDirect(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 16, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
-                dust.noGravity = true;
-            }
-
-            if (Projectile.Calamity().stealthStrike) //Stealth strike
-            {
-                if (Projectile.ai[0] % 4 == 1)
-                {
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TurbulanceWindSlash>(), Projectile.damage, Projectile.knockBack / 2, Projectile.owner, 1f, 1f);
-                    proj.Calamity().stealthStrike = true;
-                }
-            }
         }
 
         public override void OnKill(int timeLeft)
@@ -78,23 +100,19 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 GeneralParticleHandler.SpawnParticle(new ImpactParticle(
                     Projectile.Center + new Vector2(Main.rand.NextFloat(20, 50), 0).RotatedByRandom(MathHelper.TwoPi), MathHelper.ToRadians(Main.rand.NextFloat(-2, 2)), 20, 0.5f, Color.SkyBlue));
-            }    
-
-            if (Projectile.Calamity().stealthStrike)
-            {
-                SoundEngine.PlaySound(Turbulance.LightningStrike, Projectile.Center);
-
-                for (int i = 0; i <= 10; i++)
-                {
-                    GeneralParticleHandler.SpawnParticle(
-                        new CrackParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(20, 50), 0).RotatedByRandom(MathHelper.TwoPi), Vector2.Zero, Color.Gold, new Vector2(Main.rand.NextFloat(1f, 2f), Main.rand.NextFloat(2f)), Main.rand.NextFloat(MathHelper.TwoPi), 1f, 0.5f, 30)
-                        );
-                }
             }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            if (Projectile.Calamity().stealthStrike)
+            {
+                SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact.WithPitchOffset(-0.9f), Projectile.Center);
+
+                npcToStickTo = target;
+                stickOffset = target.DirectionTo(Projectile.Center) * ((target.width + target.height) / 4);
+                Projectile.velocity = Vector2.Zero;
+            }
             OnHitEffects(hit.Crit);
         }
 
@@ -106,7 +124,17 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             OnHitEffects(false);
-            return true;
+            if (Projectile.Calamity().stealthStrike)
+            {
+                SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact.WithPitchOffset(-0.7f), Projectile.Center);;
+                Projectile.velocity = Vector2.Zero;
+                stickOffset = oldVelocity * 1.7f;
+            }
+            else
+            {
+                return true;
+            }
+            return false;
         }
 
         private void OnHitEffects(bool homeIn)
