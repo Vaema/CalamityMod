@@ -19,6 +19,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 14;
+            Item.height = 14;
             Item.damage = 16;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -27,8 +28,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 18;
             Item.knockBack = 5f;
             Item.autoReuse = true;
-            Item.height = 14;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<TurbulanceProjectile>();
             Item.shootSpeed = 12f;
