@@ -80,7 +80,14 @@ namespace CalamityMod.Projectiles.Rogue
 
                     if (Projectile.ai[1] >= 50)
                     {
-                        Projectile.ai[2] = MathHelper.Lerp(Projectile.ai[2], 1f, 0.1f);
+                        if (Projectile.ai[1] < 100)
+                        {
+                            Projectile.ai[2] = MathHelper.Lerp(Projectile.ai[2], 1f, 0.1f);
+                        }
+                        else if (Projectile.timeLeft < 50)
+                        {
+                            Projectile.ai[2] = MathHelper.Lerp(Projectile.ai[2], 1f, -0.1f);
+                        }
 
                         if (Projectile.ai[1] % StealthProjectileFrequency == 0)
                         {
@@ -161,7 +168,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 SoundEngine.PlaySound(Main.rand.NextBool(2) ? SoundID.Item48 : SoundID.Item49, Projectile.Center);
                 Shake = 1f;
-                for (int w = 0; w < 3; w++)
+                for (int w = 0; w < (Projectile.Calamity().stealthStrike ? 3 : 2); w++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
                     int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<TurbulanceWindSlash>(), Projectile.damage / 3, Projectile.knockBack / 3, Main.myPlayer);
