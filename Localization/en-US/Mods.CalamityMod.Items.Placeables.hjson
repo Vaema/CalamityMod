@@ -360,7 +360,7 @@ AstrumAureusRelic: {
 
 AstrumDeusRelic: {
 	DisplayName: Astrum Deus Relic
-	Tooltip: A glimpse into what could have been...
+	Tooltip: ""
 }
 
 BrimstoneElementalRelic: {
