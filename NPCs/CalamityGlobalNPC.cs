@@ -270,7 +270,8 @@ namespace CalamityMod.NPCs
         public int rTide = 0;
         public int gsInferno = 0;
         public int dragonFire = 0;
-        public int crimsonFlux = 0;
+        public int vermillionFlux = 0;
+        public int auricRebuke = 0;
         public int staticDischarge = 0;
         public int miracleBlight = 0;
         public int astralInfection = 0;
@@ -488,7 +489,8 @@ namespace CalamityMod.NPCs
             myClone.gsInferno = gsInferno;
             myClone.miracleBlight = miracleBlight;
             myClone.dragonFire = dragonFire;
-            myClone.crimsonFlux = crimsonFlux;
+            myClone.vermillionFlux = vermillionFlux;
+            myClone.auricRebuke = auricRebuke;
             myClone.staticDischarge = staticDischarge;
             myClone.astralInfection = astralInfection;
             myClone.wDeath = wDeath;
@@ -967,18 +969,25 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseDragonFireDoTValue, baseDragonFireDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Crimson Flux
-            if (crimsonFlux > 0)
+            // Vermillion Flux
+            if (vermillionFlux > 0)
             {
-                int baseCrimsonFluxDoTValue = (int)(75 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 300 on moving targets
-                ApplyDPSDebuff(baseCrimsonFluxDoTValue, baseCrimsonFluxDoTValue / 5, ref npc.lifeRegen, ref damage);
+                int baseVermillionFluxDoTValue = (int)(75 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 300 on moving targets
+                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 40, ref npc.lifeRegen, ref damage);
+            }
+
+            // Auric Rebuke
+            if (auricRebuke > 0)
+            {
+                int baseAuricRebukeDoTValue = (int)(175 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 700 on moving targets
+                ApplyDPSDebuff(baseAuricRebukeDoTValue, baseAuricRebukeDoTValue / 70, ref npc.lifeRegen, ref damage);
             }
 
             // Static Discharge
             if (staticDischarge > 0)
             {
                 int baseStaticDischargeDoTValue = (int)(8 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 32 on moving targets
-                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 5, ref npc.lifeRegen, ref damage);
+                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
             }
 
             // Banishing Fire
@@ -5067,8 +5076,10 @@ namespace CalamityMod.NPCs
                 gsInferno--;
             if (dragonFire > 0)
                 dragonFire--;
-            if (crimsonFlux > 0)
-                crimsonFlux--;
+            if (vermillionFlux > 0)
+                vermillionFlux--;
+            if (auricRebuke > 0)
+                auricRebuke--;
             if (staticDischarge > 0)
                 staticDischarge--;
             if (miracleBlight > 0)
@@ -6319,8 +6330,11 @@ namespace CalamityMod.NPCs
             if (dragonFire > 0)
                 Dragonfire.DrawEffects(npc, ref drawColor);
 
-            if (crimsonFlux > 0)
-                CrimsonFlux.DrawEffects(npc, ref drawColor);
+            if (vermillionFlux > 0)
+                VermillionFlux.DrawEffects(npc, ref drawColor);
+
+            if (auricRebuke > 0)
+                AuricRebuke.DrawEffects(npc, ref drawColor);
 
             if (staticDischarge > 0)
                 StaticDischarge.DrawEffects(npc, ref drawColor);
@@ -6475,10 +6489,16 @@ namespace CalamityMod.NPCs
                 drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.SlateGray, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
             }
 
-            else if (crimsonFlux > 0)
+            else if (vermillionFlux > 0)
             {
                 int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
                 drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkRed, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
+            }
+
+            else if (auricRebuke > 0)
+            {
+                int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
+                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkBlue, Color.White, Utils.Remap(npc.width, 30, 400, 0.4f, 0.7f, true)) : Color.White;
             }
 
             else if (absorberAffliction > 0)

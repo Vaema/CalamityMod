@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
 {
-    public class CrimsonFlux : ModBuff
+    public class VermillionFlux : ModBuff
     {
         public override void SetStaticDefaults()
         {
@@ -19,13 +19,13 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().crimsonFlux = true;
+            player.Calamity().vermillionFlux = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().crimsonFlux < npc.buffTime[buffIndex])
-                npc.Calamity().crimsonFlux = npc.buffTime[buffIndex];
+            if (npc.Calamity().vermillionFlux < npc.buffTime[buffIndex])
+                npc.Calamity().vermillionFlux = npc.buffTime[buffIndex];
             npc.DelBuff(buffIndex);
             buffIndex--;
         }

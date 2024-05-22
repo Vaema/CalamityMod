@@ -111,13 +111,15 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(cragsLava, 30);
             ApplyDoTDebuff(shadowflame, 30, purity);
             ApplyDoTDebuff(elementalMix, 50, purity);
+            ApplyDoTDebuff(banishingFire, 60);
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
             ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 60 : 50);
             int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 60 : 15) / (eleResist ? 2 : 1);
-            ApplyDoTDebuff(crimsonFlux, fluxDoT);
+            ApplyDoTDebuff(vermillionFlux, fluxDoT);
             ApplyDoTDebuff(dragonFire, dynamoStemCells ? 30 : 60);
+            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 75 : 15) / (eleResist ? 2 : 1);
+            ApplyDoTDebuff(auricRebuke, rebukeDoT);
             ApplyDoTDebuff(miracleBlight, 80);
-            ApplyDoTDebuff(banishingFire, 60);
 
             // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player starts taking damage over time.
             bool nearSafeZone = false;

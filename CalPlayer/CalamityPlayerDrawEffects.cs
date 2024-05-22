@@ -223,8 +223,11 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.cDepth && drawInfo.shadow == 0f)
                 CrushDepth.DrawEffects(drawInfo);
 
-            if (calamityPlayer.crimsonFlux && drawInfo.shadow == 0f)
-                CrimsonFlux.DrawEffects(drawInfo);
+            if (calamityPlayer.vermillionFlux && drawInfo.shadow == 0f)
+                VermillionFlux.DrawEffects(drawInfo);
+
+            if (calamityPlayer.auricRebuke && drawInfo.shadow == 0f)
+                AuricRebuke.DrawEffects(drawInfo);
 
             if (calamityPlayer.staticDischarge && drawInfo.shadow == 0f)
                 StaticDischarge.DrawEffects(drawInfo);

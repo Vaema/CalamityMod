@@ -163,8 +163,8 @@ Dragonfire: {
 	Description: Engulfed by roaring flames
 }
 
-CrimsonFlux: {
-	DisplayName: Crimson Flux
+VermillionFlux: {
+	DisplayName: Vermillion Flux
 	Description: Shredded by bolts of red
 }
 
@@ -1529,4 +1529,9 @@ YoungDukeBuff: {
 LiliesOfFinalityBuff: {
 	DisplayName: Finality
 	Description: Remember our promise
+}
+
+AuricRebuke: {
+	DisplayName: Auric Rebuke
+	Description: Your cells are violently bouncing off each other
 }
