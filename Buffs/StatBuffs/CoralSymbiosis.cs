@@ -1,6 +1,6 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Weapons.Magic;
+using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.Buffs.StatBuffs
 {

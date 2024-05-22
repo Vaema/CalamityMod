@@ -1,8 +1,8 @@
+﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatDebuffs;
 namespace CalamityMod.Projectiles.Magic
 {
     public class MiasmaGas : ModProjectile, ILocalizedModType
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < 25; i++)
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position, 48, 30, 189, 0f, 0f);
+                Dust dust = Dust.NewDustDirect(Projectile.position, 48, 30, DustID.Pumpkin, 0f, 0f);
                 dust.velocity = Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(39f));
                 dust.alpha = 127;
             }

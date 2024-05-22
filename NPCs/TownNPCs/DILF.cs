@@ -1,6 +1,8 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Placeables.Furniture.Monoliths;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -9,7 +11,6 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.World;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
@@ -36,13 +37,14 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPC.Happiness
                 .SetBiomeAffection<SnowBiome>(AffectionLevel.Like)
-                .SetBiomeAffection<DesertBiome>(AffectionLevel.Dislike) 
-                .SetNPCAffection(NPCID.Wizard, AffectionLevel.Like) 
+                .SetBiomeAffection<DesertBiome>(AffectionLevel.Dislike)
+                .SetNPCAffection(NPCID.Wizard, AffectionLevel.Like)
                 .SetNPCAffection(NPCID.Cyborg, AffectionLevel.Dislike);
-			NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers(0) {
-				Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
-			};
-			NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
+            NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers()
+            {
+                Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
+            };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
         }
 
         public override void SetDefaults()
@@ -64,10 +66,10 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,  
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DILF")
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DILF")
             });
         }
 
@@ -81,7 +83,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override bool CanTownNPCSpawn(int numTownNPCs) => DownedBossSystem.downedCryogen;
 
-		public override List<string> SetNPCNameList() => new List<string>() { this.GetLocalizedValue("Name.Permafrost") };
+        public override List<string> SetNPCNameList() => new List<string>() { this.GetLocalizedValue("Name.Permafrost") };
 
         public override string GetChat()
         {
@@ -138,7 +140,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void AddShops()
         {
-            Condition potionSells = new(CalamityUtils.GetText("Condition.PotionConfig"), () => CalamityConfig.Instance.PotionSelling);
+            Condition potionSells = CalamityConditions.PotionSellingConfig;
             NPCShop shop = new(Type);
                 shop.Add(ModContent.ItemType<FrostbiteBlaster>())
                 .Add(ModContent.ItemType<IcicleTrident>())
@@ -150,12 +152,13 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add(ModContent.ItemType<AbsoluteZero>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
                 .Add(ModContent.ItemType<EternalBlizzard>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
                 .Add(ModContent.ItemType<WintersFury>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
-                .Add(ModContent.ItemType<IcyBullet>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
+                .Add(ModContent.ItemType<HailstormBullet>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
                 .Add(ModContent.ItemType<IcicleArrow>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
                 .Add(ModContent.ItemType<PermafrostsConcoction>())
                 .Add(ItemID.SuperManaPotion)
                 .Add(ModContent.ItemType<DeliciousMeat>())
                 .AddWithCustomValue(ModContent.ItemType<Popo>(), Item.buyPrice(5))
+                .AddWithCustomValue(ModContent.ItemType<FrigidMonolith>(), Item.buyPrice(5))
                 .Add(ModContent.ItemType<BloodRune>(), Condition.PlayerCarriesItem(ModContent.ItemType<IceBarrage>()))
                 .Add(ItemID.IceCream, Condition.HappyEnough, Condition.InSnow)
                 .Register();

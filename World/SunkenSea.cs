@@ -1,13 +1,13 @@
-﻿using CalamityMod.Tiles.SunkenSea;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-using Terraria.DataStructures;
 
 namespace CalamityMod.World
 {
@@ -67,13 +67,13 @@ namespace CalamityMod.World
 
             private void AttemptClaim(int x, int y, int[,] clusterIndexMap, List<List<Point>> pointClusters, int index) //Attempts to create a cluster
             {
-                int num = clusterIndexMap[x, y];
-                if (num != -1 && num != index)
+                int clusterPos = clusterIndexMap[x, y];
+                if (clusterPos != -1 && clusterPos != index)
                 {
-                    int num2 = (WorldGen.genRand.Next(2) == 0) ? -1 : index;
-                    foreach (Point current in pointClusters[num])
+                    int clusterHeight = (WorldGen.genRand.NextBool(2)) ? -1 : index;
+                    foreach (Point current in pointClusters[clusterPos])
                     {
-                        clusterIndexMap[current.X, current.Y] = num2;
+                        clusterIndexMap[current.X, current.Y] = clusterHeight;
                     }
                 }
             }
@@ -84,17 +84,17 @@ namespace CalamityMod.World
                 Height = height;
                 Clear();
                 bool[,] array = new bool[width, height];
-                int num = (width >> 1) - 1;
-                int num2 = (height >> 1) - 1;
-                int num3 = (num + 1) * (num + 1);
-                Point point = new Point(num, num2);
-                for (int i = point.Y - num2; i <= point.Y + num2; i++)
+                int clusterPos = (width >> 1) - 1;
+                int clusterHeight = (height >> 1) - 1;
+                int clusterSize = (clusterPos + 1) * (clusterPos + 1);
+                Point point = new Point(clusterPos, clusterHeight);
+                for (int i = point.Y - clusterHeight; i <= point.Y + clusterHeight; i++)
                 {
-                    float num4 = (float)num / (float)num2 * (float)(i - point.Y);
-                    int num5 = Math.Min(num, (int)Math.Sqrt((float)num3 - num4 * num4));
+                    float num4 = (float)clusterPos / (float)clusterHeight * (float)(i - point.Y);
+                    int num5 = Math.Min(clusterPos, (int)Math.Sqrt((float)clusterSize - num4 * num4));
                     for (int j = point.X - num5; j <= point.X + num5; j++)
                     {
-                        array[j, i] = WorldGen.genRand.Next(2) == 0;
+                        array[j, i] = WorldGen.genRand.NextBool(2);
                     }
                 }
                 List<List<Point>> list = new List<List<Point>>();
@@ -102,7 +102,7 @@ namespace CalamityMod.World
                 {
                     for (int l = 0; l < array.GetLength(1); l++)
                     {
-                        if (array[k, l] && WorldGen.genRand.Next(2) == 0)
+                        if (array[k, l] && WorldGen.genRand.NextBool(2))
                         {
                             List<Point> list2 = new List<Point>();
                             SearchForCluster(array, list2, k, l, 2);
@@ -210,7 +210,7 @@ namespace CalamityMod.World
                 for (int j = -20; j < totalHeight + 20; j++)
                 {
                     float num3 = 0f;
-                    int num4 = -1;
+                    int clusterAmt = -1;
                     float num5 = 0f;
                     int num6 = i + start.X;
                     int num7 = j + start.Y;
@@ -233,7 +233,7 @@ namespace CalamityMod.World
                                     num5 = num3;
                                 }
                                 num3 = num9;
-                                num4 = k;
+                                clusterAmt = k;
                             }
                             else if (num9 > num5)
                             {
@@ -248,7 +248,7 @@ namespace CalamityMod.World
                     {
                         tile.ClearEverything();
                         tile.LiquidAmount = 192;
-                        if (num4 % 5 == 2)
+                        if (clusterAmt % 5 == 2)
                         {
                             tile.ResetToType((ushort)ModContent.TileType<EutrophicSand>());
                             tile.Get<TileWallWireStateData>().HasTile = true;
@@ -335,10 +335,10 @@ namespace CalamityMod.World
                     }
 
                     //place extra caves throughout the biome for variance
-                    if (WorldGen.genRand.Next(1000) == 0 && tile != null && tile.HasTile && 
+                    if (WorldGen.genRand.NextBool(1000)&& tile != null && tile.HasTile &&
                     (tile.TileType == ModContent.TileType<Navystone>() || tile.TileType == ModContent.TileType<EutrophicSand>()))
                     {
-                        TileRunner runner = new TileRunner(new Vector2(x, y), new Vector2(0, 5), new Point16(-35, 35), 
+                        TileRunner runner = new TileRunner(new Vector2(x, y), new Vector2(0, 5), new Point16(-35, 35),
                         new Point16(-35, 35), 15f, WorldGen.genRand.Next(25, 50), 0, false, true);
                         runner.Start();
                     }
@@ -354,7 +354,7 @@ namespace CalamityMod.World
                     }
 
                     //kill any random clumps of navystone without eutrophic sand around them
-                    if (tile.TileType == ModContent.TileType<Navystone>() && tileUp.TileType != ModContent.TileType<EutrophicSand>() && 
+                    if (tile.TileType == ModContent.TileType<Navystone>() && tileUp.TileType != ModContent.TileType<EutrophicSand>() &&
                     tileDown.TileType != ModContent.TileType<EutrophicSand>() && tileLeft.TileType != ModContent.TileType<EutrophicSand>() &&
                     tileRight.TileType != ModContent.TileType<EutrophicSand>())
                     {
@@ -458,7 +458,7 @@ namespace CalamityMod.World
                     int smallHoleY = WorldGen.genRand.Next(start.Y + 20, sunkenSeaBottom);
                     point = new Point(smallHoleX, smallHoleY);
 
-                    if (smallHoles < totalHoleCount && WorldGen.genRand.Next(3) == 0 && !rectangle.Contains(point))
+                    if (smallHoles < totalHoleCount && WorldGen.genRand.NextBool(3)&& !rectangle.Contains(point))
                     {
                         smallHoles++;
                         int radiusSmall = (int)(((float)WorldGen.genRand.Next(8, 11)) * overallBiomeScale);
@@ -538,7 +538,7 @@ namespace CalamityMod.World
                     int num5 = k + start.X;
                     int num6 = l + start.Y;
                     Tile tile = Main.tile[num5, num6];
-                    if (tile.HasTile && (tile.TileType == ModContent.TileType<SeaPrism>() || 
+                    if (tile.HasTile && (tile.TileType == ModContent.TileType<SeaPrism>() ||
                     tile.TileType == ModContent.TileType<Navystone>() || tile.TileType == ModContent.TileType<EutrophicSand>()))
                     {
                         bool flag = true;
@@ -578,7 +578,7 @@ namespace CalamityMod.World
                             }
                         }
                         if (tile.TileType == ModContent.TileType<SeaPrism>() || ((tile.TileType == ModContent.TileType<Navystone>() ||
-                        tile.TileType == ModContent.TileType<EutrophicSand>()) && WorldGen.genRand.Next(8) == 0))
+                        tile.TileType == ModContent.TileType<EutrophicSand>()) && WorldGen.genRand.NextBool(8)))
                         {
                             if (flag3 ^ flag4)
                             {
@@ -620,73 +620,73 @@ namespace CalamityMod.World
                     }
                     if (tile.TileType == ModContent.TileType<Navystone>() || tile.TileType == ModContent.TileType<EutrophicSand>())
                     {
-                        if (WorldGen.genRand.Next(10) == 0)
+                        if (WorldGen.genRand.NextBool(10))
                         {
                             WorldGen.PlaceTile(num5, num6 - 1, (ushort)ModContent.TileType<BrainCoral>(), true, false, -1, 0);
                         }
-                        if (WorldGen.genRand.Next(20) == 0)
+                        if (WorldGen.genRand.NextBool(20))
                         {
                             WorldGen.PlaceTile(num5, num6 - 1, (ushort)ModContent.TileType<SmallBrainCoral>(), true, false, -1, 0);
                         }
-                        if (WorldGen.genRand.Next(8) == 0)
+                        if (WorldGen.genRand.NextBool(8))
                         {
                             WorldGen.PlaceTile(num5, num6 - 1, (ushort)ModContent.TileType<FanCoral>(), true, false, -1, 0);
                         }
-                        if (WorldGen.genRand.Next(30) == 0)
+                        if (WorldGen.genRand.NextBool(30))
                         {
                             WorldGen.PlaceTile(num5, num6 - 1, (ushort)ModContent.TileType<TubeCoral>(), true, false, -1, 0);
                         }
-                        if (WorldGen.genRand.Next(30) == 0)
+                        if (WorldGen.genRand.NextBool(30))
                         {
                             WorldGen.PlaceTile(num5, num6 - 1, (ushort)ModContent.TileType<SmallTubeCoral>(), true, false, -1, 0);
                         }
-                        if (WorldGen.genRand.Next(20) == 0)
+                        if (WorldGen.genRand.NextBool(20))
                         {
                             WorldGen.PlaceTile(num5, num6 - 1, (ushort)ModContent.TileType<SeaAnemone>(), true, false, -1, 0);
                         }
 
                         //colorful corals
-                        if (WorldGen.genRand.Next(20) == 0)
+                        if (WorldGen.genRand.NextBool(20))
                         {
                             WorldGen.PlaceTile(num5, num6 - 1, (ushort)ModContent.TileType<MediumCoral>(), true, false, -1, 0);
                         }
-                        if (WorldGen.genRand.Next(20) == 0)
+                        if (WorldGen.genRand.NextBool(20))
                         {
                             WorldGen.PlaceTile(num5, num6 - 1, (ushort)ModContent.TileType<MediumCoral2>(), true, false, -1, 0);
                         }
 
-                        if (WorldGen.genRand.Next(20) == 0)
+                        if (WorldGen.genRand.NextBool(20))
                         {
                             WorldGen.PlaceTile(num5, num6 - 1, (ushort)ModContent.TileType<SmallWideCoral>(), true, false, -1, 0);
                         }
 
-                        if (WorldGen.genRand.Next(20) == 0)
+                        if (WorldGen.genRand.NextBool(20))
                         {
                             WorldGen.PlaceTile(num5, num6 - 1, (ushort)ModContent.TileType<CoralPileLarge>(), true, false, -1, 0);
                         }
 
                         //stalactites
-                        if (WorldGen.genRand.Next(15) == 0)
+                        if (WorldGen.genRand.NextBool(15))
                         {
                             ushort[] Stalactites = new ushort[] { (ushort)ModContent.TileType<SunkenStalactite1>(),
                             (ushort)ModContent.TileType<SunkenStalactite2>(), (ushort)ModContent.TileType<SunkenStalactite3>() };
 
                             WorldGen.PlaceObject(num5, num6 + 2, WorldGen.genRand.Next(Stalactites));
                         }
-                        if (WorldGen.genRand.Next(15) == 0)
+                        if (WorldGen.genRand.NextBool(15))
                         {
                             WorldGen.PlaceTile(num5, num6 + 1, (ushort)ModContent.TileType<SunkenStalactitesSmall>(), true, false, -1, 0);
                         }
 
                         //stalagmites
-                        if (WorldGen.genRand.Next(10) == 0)
+                        if (WorldGen.genRand.NextBool(10))
                         {
                             ushort[] Stalagmites = new ushort[] { (ushort)ModContent.TileType<SunkenStalagmite1>(),
                             (ushort)ModContent.TileType<SunkenStalagmite2>(), (ushort)ModContent.TileType<SunkenStalagmite3>() };
 
                             WorldGen.PlaceObject(num5, num6 - 2, WorldGen.genRand.Next(Stalagmites));
                         }
-                        if (WorldGen.genRand.Next(10) == 0)
+                        if (WorldGen.genRand.NextBool(10))
                         {
                             WorldGen.PlaceTile(num5, num6 - 1, (ushort)ModContent.TileType<SunkenStalagmitesSmall>(), true, false, -1, 0);
                         }
@@ -695,7 +695,7 @@ namespace CalamityMod.World
                     {
                         if (tile.TileType == ModContent.TileType<Navystone>() || tile.WallType == ModContent.WallType<EutrophicSandWall>())
                         {
-                            if (WorldGen.genRand.Next(10) == 0)
+                            if (WorldGen.genRand.NextBool(10))
                             {
                                 WorldGen.PlaceTile(num5, num6 + 1, (ushort)ModContent.TileType<TableCoral>(), true, false, -1, 0);
                             }
@@ -704,7 +704,7 @@ namespace CalamityMod.World
                 }
             }
         }
-    
+
         //added this to 100% make sure the sunken sea places where it is supposed to be
         static bool foundValidPosition = false;
 

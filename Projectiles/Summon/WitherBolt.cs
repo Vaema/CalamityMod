@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D boltTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D boltTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             for (int i = 0; i < Projectile.oldPos.Length; i++)
             {
                 float completionRatio = i / (float)Projectile.oldPos.Length;
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     for (int j = 0; j < 2; j++)
                     {
-                        Dust plague = Dust.NewDustDirect(Projectile.oldPos[i], Projectile.width / 2, Projectile.height / 2, 107);
+                        Dust plague = Dust.NewDustDirect(Projectile.oldPos[i], Projectile.width / 2, Projectile.height / 2, DustID.TerraBlade);
                         plague.velocity = (Projectile.oldRot[i] - MathHelper.PiOver2).ToRotationVector2() * 4.5f + Main.rand.NextVector2Circular(2f, 2f);
                         plague.color = Color.Olive;
                         plague.noGravity = true;

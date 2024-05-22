@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ignoreWater = true;
             Projectile.penetrate = 5;
             Projectile.timeLeft = 420;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 7;
         }
 
         public override void AI()
@@ -49,7 +51,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.ai[1] = 1f;
                 Main.musicPitch = Projectile.ai[0];
-                SoundEngine.PlaySound(SoundID.Item26, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item26, Projectile.Center);
             }
 
             Lighting.AddLight(Projectile.Center, 0f, 0f, 1.2f);
@@ -88,10 +90,6 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.immune[Projectile.owner] = 7;
-            target.AddBuff(BuffID.Confused, 300);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Confused, 300);
     }
 }

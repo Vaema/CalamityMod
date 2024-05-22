@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.CalPlayer;
-using static CalamityMod.Items.Accessories.ProfanedSoulCrystal;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Plates;
 using CalamityMod.Items.Placeables.Ores;
+using CalamityMod.Items.Placeables.Plates;
 using CalamityMod.Rarities;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -14,27 +16,100 @@ using Terraria.DataStructures;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static CalamityMod.Items.Accessories.ProfanedSoulCrystal;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class ProfanedSoulArtifact : ModItem, ILocalizedModType 
+    public class ProfanedSoulArtifact : ModItem, ILocalizedModType, IDyeableShaderRenderer
     {
         public new string LocalizationCategory => "Items.Accessories";
         public static Asset<Texture2D> HeatTex;
-        
+
         public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(5);
         public static int TotalShieldRechargeTime = CalamityUtils.SecondsToFrames(2);
 
         public static int ShieldDurabilityMax = 25;
+
+        // Interface stuff.
+        public float RenderDepth => IDyeableShaderRenderer.ProfanedSoulShieldDepth;
+
+        public bool ShouldDrawDyeableShader
+        {
+            get
+            {
+                bool result = false;
+                foreach (Player player in Main.ActivePlayers)
+                {
+                    if (player.outOfRange || player.dead)
+                        continue;
+
+                    CalamityPlayer modPlayer = player.Calamity();
+
+                    // Do not render the shield if its visibility is off (or it does not exist)
+                    bool isVanityOnly = modPlayer.pSoulShieldVisible && !modPlayer.pSoulArtifact;
+                    bool shouldNotDraw = modPlayer.andromedaState >= AndromedaPlayerState.LargeRobot; //I am not dealing with drawing that :taxevasion:
+                    bool shieldExists = isVanityOnly || modPlayer.pSoulShieldDurability > 0;
+                    bool shouldntDraw = !modPlayer.pSoulShieldVisible || modPlayer.drawnAnyShieldThisFrame || shouldNotDraw || !shieldExists;
+                    result |= !shouldntDraw;
+                }
+                return result;
+            }
+        }
+
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
 
+        public void DrawDyeableShader(SpriteBatch spriteBatch) => DrawProfanedSoulShields();
+
+        public override void SetDefaults()
+        {
+            Item.width = 32;
+            Item.height = 40;
+            Item.accessory = true;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.Calamity().donorItem = true;
+        }
+
+        public override bool CanAccessoryBeEquippedWith(Item equippedItem, Item incomingItem, Player player)
+        {
+            return incomingItem.type != ModContent.ItemType<ProfanedSoulCrystal>();
+        }
+
+        public override void UpdateAccessory(Player player, bool hideVisual)
+        {
+            CalamityPlayer modPlayer = player.Calamity();
+            modPlayer.pSoulArtifact = true;
+            modPlayer.pSoulShieldVisible = !hideVisual;
+        }
+
+        public override void UpdateVanity(Player player)
+        {
+            player.Calamity().pSoulShieldVisible = true;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            string adrenTooltip = CalamityWorld.revenge ? this.GetLocalizedValue("ShieldAdren") : "";
+            tooltips.FindAndReplace("[ADREN]", adrenTooltip);
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<ExodiumCluster>(25).
+                AddIngredient<Havocplate>(25).
+                AddIngredient<DivineGeode>(5).
+                AddTile(TileID.DemonAltar).
+                Register();
+        }
+
         // Complex drawcode which draws Profaned Soul shields on ALL players who have it available. Supposedly.
         // This is applied as IL (On hook) which draws right before Inferno Ring.
-        internal static void DrawProfanedSoulShields(On_Main.orig_DrawInfernoRings orig, Main mainObj)
+        internal static void DrawProfanedSoulShields()
         {
             // TODO -- Control flow analysis indicates that this hook is not stable (as it was copied from Rover Drive).
             // Profaned Soul shields will be drawn for each player with the Profaned Soul artifact/crystal, yes.
@@ -42,14 +117,13 @@ namespace CalamityMod.Items.Accessories
             // Visibility is not net synced, for example.
             bool alreadyDrawnShieldForPlayer = false;
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active || player.outOfRange || player.dead)
+                if (player.outOfRange || player.dead)
                     continue;
 
                 CalamityPlayer modPlayer = player.Calamity();
-                
+
                 // Do not render the shield if its visibility is off (or it does not exist)
                 bool isVanityOnly = modPlayer.pSoulShieldVisible && !modPlayer.pSoulArtifact;
                 bool shouldNotDraw = modPlayer.andromedaState >= AndromedaPlayerState.LargeRobot; //I am not dealing with drawing that :taxevasion:
@@ -59,6 +133,7 @@ namespace CalamityMod.Items.Accessories
 
                 // Scale the shield is drawn at.
                 // The "i" parameter is to make different player's shields not be perfectly synced.
+                int i = player.whoAmI;
                 float scale = 0.15f + 0.03f * (0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.5f + i * 0.2f));
 
                 if (!alreadyDrawnShieldForPlayer)
@@ -67,11 +142,11 @@ namespace CalamityMod.Items.Accessories
                     DetermineTransformationEligibility(localModPlayer.Player);
                     var psState = (int)GetPscStateFor(localModPlayer.Player, localModPlayer.profanedCrystalAnim >= 0);
                     var psc = localModPlayer.profanedCrystalBuffs || (localModPlayer.profanedCrystalAnim >= 0 && psState >= (int)ProfanedSoulCrystalState.Buffs);
-                    
+
                     scale += ((ProfanedSoulCrystalState)psState) == ProfanedSoulCrystalState.Empowered ? 0.05f : psc ? 0.025f : 0f;
                     if (localModPlayer.profanedCrystalAnim >= 0)
                         scale = MathHelper.Lerp(0f, scale, ((float)maxPscAnimTime - (float)localModPlayer.profanedCrystalAnim) / (float)maxPscAnimTime); //i don't like casting this many times, i'm not a fucking wizard
-                    
+
                     float visualShieldStrength = 1f;
                     if (!isVanityOnly)
                     {
@@ -99,8 +174,7 @@ namespace CalamityMod.Items.Accessories
                     shieldEffect.Parameters["shieldOpacity"].SetValue(finalShieldOpacity);
                     shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
 
-                    // Profaned Soul shields are not team specific
-                    
+                    // Profaned Soul shields are not team specific                   
                     Color shieldColor = GetColorForPsc(psState, Main.dayTime);
                     if (psState >= (int)(ProfanedSoulCrystalState.Buffs))
                     {
@@ -108,7 +182,7 @@ namespace CalamityMod.Items.Accessories
                         shieldColor = tester ? CalamityUtils.ColorSwap(new Color(255, 166, 0), new Color(25, 250, 25) * 0.8f, 6f) :
                         GetLerpedColorForPsc(modPlayer);
                     }
-                    
+
                     Color primaryEdgeColor = new Color(230, 199, 102) * 0.8f;
                     Color secondaryEdgeColor = new Color(249, 231, 217) * 0.8f;
                     Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, primaryEdgeColor, secondaryEdgeColor);
@@ -127,7 +201,7 @@ namespace CalamityMod.Items.Accessories
                     Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
                     Texture2D tex = HeatTex.Value;
                     Main.spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
-                    
+
                     //The border circle MUST be drawn after otherwise it becomes visually fucked.
                     float shieldScale = scale * 1.75f;
                     Texture2D shieldTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleOpenCircle").Value;
@@ -150,45 +224,6 @@ namespace CalamityMod.Items.Accessories
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
             }
-
-            orig(mainObj);
-        }
-
-        public override void SetDefaults()
-        {
-            Item.width = 32;
-            Item.height = 40;
-            Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
-            Item.Calamity().donorItem = true;
-        }
-
-        public override bool CanAccessoryBeEquippedWith(Item equippedItem, Item incomingItem, Player player)
-        {
-            return incomingItem.type != ModContent.ItemType<ProfanedSoulCrystal>();
-        }
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.pSoulArtifact = true;
-            modPlayer.pSoulShieldVisible = !hideVisual;
-        }
-
-        public override void UpdateVanity(Player player)
-        {
-            player.Calamity().pSoulShieldVisible = true;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<ExodiumCluster>(25).
-                AddIngredient<Havocplate>(25).
-                AddIngredient<DivineGeode>(5).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

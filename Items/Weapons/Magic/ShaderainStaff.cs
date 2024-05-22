@@ -14,14 +14,14 @@ namespace CalamityMod.Items.Weapons.Magic
         #region Other stats
 
         // Stats for the shaderain.
-        public const int RainAmount = 3;
-        public const float LesserRainVELMultiplier = 0.75f; // The lowest speed modifier the rain can get.
-        public const float HigherRainVELMultiplier = 1.25f; // The highest speed modifier the rain can get.
+        public const int RainAmount = 2;
+        public const float LesserRainVELMultiplier = 0.9f; // The lowest speed modifier the rain can get.
+        public const float HigherRainVELMultiplier = 1.2f; // The highest speed modifier the rain can get.
         public const float GravityStrenght = 0.15f;
 
         // Stats for the shade clouds.
         public const int FadeoutSpeed = 2;
-        public const float CloudDMGMultiplier = 1.25f;
+        public const float CloudDMGMultiplier = 1f; // Keeping this here in case it gets changed in the future
         public const float CloudVELMultiplier = 1.25f;
         public const float DeaccelerationStrenght = 0.95f; // A number lower than 1, non-including 1, changing it very slightly will have drastic results.
 
@@ -34,20 +34,20 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
-            Item.damage = 21;
-            Item.shootSpeed = 10f;
-            Item.useTime = Item.useAnimation = 25;
+            Item.width = Item.height = 42;
+            Item.damage = 20;
+            Item.shootSpeed = 11f;
+            Item.useTime = Item.useAnimation = 30;
             Item.mana = 10;
             Item.knockBack = 0f;
 
             Item.shoot = ModContent.ProjectileType<Shaderain>();
 
-            Item.width = Item.height = 42;
             Item.DamageType = DamageClass.Magic;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item66;
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.autoReuse = true;
             Item.noMelee = true;
         }

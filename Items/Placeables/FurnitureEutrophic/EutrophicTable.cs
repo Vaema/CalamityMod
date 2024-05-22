@@ -1,6 +1,6 @@
-using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria.ModLoader;
+﻿using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureEutrophic
 {

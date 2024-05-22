@@ -1,4 +1,4 @@
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Abyss;
 using Terraria.ID;
 using Terraria.ModLoader;

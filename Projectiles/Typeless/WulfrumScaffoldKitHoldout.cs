@@ -140,7 +140,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Main.myPlayer != Owner.whoAmI)
                 return false;
 
-            Texture2D sprite = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Effect tileEffect = Filters.Scene["CalamityMod:WulfrumScaffoldSelection"].GetShader().Shader;
 
@@ -191,7 +191,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void OnKill(int timeLeft)
         {
             if (SelectedTiles.Keys.Count > 0)
-                SoundEngine.PlaySound(SoundID.Item101 with { Volume = SoundID.Item101.Volume * 0.6f}, Owner.Center);
+                SoundEngine.PlaySound(SoundID.Item101 with { Volume = SoundID.Item101.Volume * 0.6f }, Owner.Center);
 
             if (Main.myPlayer == Owner.whoAmI)
             {
@@ -201,7 +201,7 @@ namespace CalamityMod.Projectiles.Typeless
                         PipeCleanupManager = new WulfrumPipeManager();
 
                     TempTilesManagerSystem.AddTemporaryTile(pos, PipeCleanupManager);
-                    WorldGen.PlaceTile(pos.X, pos.Y, WulfrumScaffoldKit.PlacedTileType) ;
+                    WorldGen.PlaceTile(pos.X, pos.Y, WulfrumScaffoldKit.PlacedTileType);
                     NetMessage.SendTileSquare(-1, pos.X, pos.Y, TileChangeType.None);
                 }
             }

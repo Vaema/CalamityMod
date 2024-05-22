@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void SetDefaults()
         {
             Projectile.timeLeft = 600;
-            
+
             Projectile.width = 20;
             Projectile.height = 20;
 
@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             // The projectile will fall.
             Projectile.velocity.Y += ShaderainStaff.GravityStrenght;
-            
+
             // The projectile will look towards where it's going.
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
 

@@ -2,6 +2,7 @@
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,6 +11,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class Stormlion : ModNPC
     {
+        public static readonly SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/StormlionIdle");
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/StormlionHit");
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/StormlionDeath");
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
@@ -26,23 +30,35 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.WalkingAntlion;
             NPC.value = Item.buyPrice(0, 0, 2, 0);
-            NPC.HitSound = SoundID.NPCHit31;
-            NPC.DeathSound = SoundID.NPCDeath34;
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<StormlionBanner>();
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundDesert,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Stormlion")
             });
+        }
+
+        public override void AI()
+        {
+            if (Main.rand.NextBool(800))
+            {
+                SoundEngine.PlaySound(IdleSound, NPC.Center);
+            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)

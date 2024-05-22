@@ -18,17 +18,17 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = 86;
+            Item.height = 72;
             Item.damage = 245;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 26;
-            Item.width = 86;
-            Item.height = 72;
             Item.useTime = 18;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Cyan;
             Item.UseSound = SoundID.Item105;
             Item.autoReuse = true;

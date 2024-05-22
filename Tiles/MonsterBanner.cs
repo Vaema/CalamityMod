@@ -84,6 +84,9 @@ namespace CalamityMod.Tiles
                 case 4:
                     npc = NPCType<Toxicatfish>();
                     break;
+                case 5:
+                    npc = NPCType<SlabCrab>();
+                    break;
                 case 6:
                     npc = NPCType<Androomba>();
                     break;

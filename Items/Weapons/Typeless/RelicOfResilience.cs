@@ -1,7 +1,7 @@
-﻿using CalamityMod.Projectiles.Damageable;
+﻿using System.Linq;
+using CalamityMod.Projectiles.Damageable;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         public const float WeaknessDR = 0.45f;
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
         }
 
         public override void SetDefaults()
@@ -28,16 +28,16 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.UseSound = SoundID.Item45;
             Item.autoReuse = true;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<ArtifactOfResilienceBulwark>();
             Item.shootSpeed = 0f;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         public override bool CanUseItem(Player player) => !player.HasCooldown(Cooldowns.RelicOfResilience.ID);
         public override bool? UseItem(Player player) => true;
@@ -56,12 +56,12 @@ namespace CalamityMod.Items.Weapons.Typeless
             };
             if (player.ownedProjectileCounts[Item.shoot] > 0)
             {
-                for (int i = 0; i < Main.projectile.Length; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type == Item.shoot)
+                    if (p.type == Item.shoot)
                     {
-                        Main.projectile[i].Center = Main.MouseWorld;
-                        Main.projectile[i].netUpdate = true;
+                        p.Center = Main.MouseWorld;
+                        p.netUpdate = true;
                     }
                 }
             }

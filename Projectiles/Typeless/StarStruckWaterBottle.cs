@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 SoundEngine.PlaySound(SoundID.Shatter, Projectile.position);
                 for (int index = 0; index < 5; ++index)
-                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 13, 0f, 0f, 0, new Color(), 1f);
+                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Glass, 0f, 0f, 0, new Color(), 1f);
                 for (int index1 = 0; index1 < 30; ++index1)
                 {
                     int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, -2f, 0, new Color(), 1.1f);

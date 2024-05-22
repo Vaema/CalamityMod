@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 18;
             Item.height = 18;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
 
             if (Main.netMode != NetmodeID.Server)

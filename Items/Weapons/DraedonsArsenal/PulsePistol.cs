@@ -1,10 +1,10 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -22,9 +22,9 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 62;
             Item.height = 22;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 26;
+            Item.damage = 23;
             Item.knockBack = 0f;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useTime = Item.useAnimation = 21;
             Item.autoReuse = true;
             Item.mana = 6;
 
@@ -32,10 +32,10 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = PulseRifle.FireSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
 
-            Item.shoot = ModContent.ProjectileType<PulseRifleShot>();
+            Item.shoot = ModContent.ProjectileType<PulsePistolShot>();
             Item.shootSpeed = 5.2f; // This may seem low but the shot has 10 extra updates.
 
             modItem.UsesCharge = true;

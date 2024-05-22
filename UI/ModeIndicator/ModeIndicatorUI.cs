@@ -1,24 +1,24 @@
-﻿using CalamityMod.World;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using CalamityMod.CalPlayer;
+using CalamityMod.Events;
+using CalamityMod.Systems;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
-using CalamityMod.CalPlayer;
-using CalamityMod.Events;
-using System.Collections.Generic;
-using System.Linq;
-using Terraria.Localization;
-using static CalamityMod.CalamityUtils;
-using System;
-using Terraria.ID;
 using Terraria.Audio;
-using CalamityMod.Systems;
-using static CalamityMod.Systems.DifficultyModeSystem;
 using Terraria.GameInput;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 using Terraria.UI.Chat;
-using System.Text.RegularExpressions;
+using static CalamityMod.CalamityUtils;
+using static CalamityMod.Systems.DifficultyModeSystem;
 using static Terraria.GameContent.FontAssets;
-using System.Runtime.InteropServices;
 
 namespace CalamityMod.UI.ModeIndicator
 {
@@ -193,7 +193,7 @@ namespace CalamityMod.UI.ModeIndicator
                 //It'd be great to be able to add a background to it but i don't think i know how to get the position of the text for that.
                 //Also the "get string size" thing breaks with colored lines so :(
                 Utils.DrawInvBG(spriteBatch, new Rectangle((int)textboxStart.X - 10, (int)textboxStart.Y - 10, (int)regexedBoxSize.X + 20, (int)regexedBoxSize.Y + 16), new Color(50, 20, 35) * 0.925f);
-                
+
                 //Add the hover text.
                 Main.LocalPlayer.mouseInterface = true;
                 Main.instance.MouseText(textToDisplay);

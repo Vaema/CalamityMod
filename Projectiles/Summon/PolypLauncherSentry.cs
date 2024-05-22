@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -47,14 +47,12 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity.Y = 10f;
             }
 
-            Projectile.StickToTiles(false, false);
-
             if (Projectile.ai[0] > 0f)
             {
                 Projectile.ai[0] -= 1f;
                 return;
             }
-            Projectile.ai[1] += Main.rand.Next(1,3);
+            Projectile.ai[1] += Main.rand.Next(1, 3);
 
             NPC potentialTarget = Projectile.Center.MinionHoming(800f, player, false);
 
@@ -80,6 +78,12 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
 
         public override bool? CanDamage() => false;
     }

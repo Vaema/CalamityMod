@@ -12,17 +12,17 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = 28;
+            Item.height = 32;
             Item.damage = 52;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 12;
-            Item.width = 28;
-            Item.height = 32;
             Item.useTime = 49;
             Item.useAnimation = 49;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.UseSound = SoundID.Item84;
             Item.rare = ItemRarityID.Pink;
             Item.autoReuse = true;

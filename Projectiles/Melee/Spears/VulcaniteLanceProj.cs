@@ -12,6 +12,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
     public class VulcaniteLanceProj : BaseSpearProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<VulcaniteLance>();
+
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 44;
@@ -26,9 +27,10 @@ namespace CalamityMod.Projectiles.Melee.Spears
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 12;
         }
+
         public override float InitialSpeed => 3f;
         public override float ReelbackSpeed => 2.4f;
-        public override float ForwardSpeed => 0.95f;
+        public override float ForwardSpeed => 0.8f;
         public override void ExtraBehavior()
         {
             if (Main.rand.NextBool(5))

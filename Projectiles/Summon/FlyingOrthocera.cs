@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Summon
                 for (int i = 0; i < 56; i++)
                 {
                     float angle = MathHelper.TwoPi / 56f * i;
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulfurousSeaAcid);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulphurousSeaAcid);
                     dust.scale = 1.5f;
                     dust.velocity = angle.ToRotationVector2() * 7f;
                     dust.noGravity = true;

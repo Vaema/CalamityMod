@@ -1,4 +1,6 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
@@ -7,16 +9,14 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
-using Terraria.ID;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using ReLogic.Content;
 
 namespace CalamityMod.NPCs.Astral
 {
@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.Astral
     {
         //TODO -- draw 4 pixels lower than actual bottom position (arm overlaps tiles)
 
-        private static Texture2D glowmask;
+        public static Asset<Texture2D> glowmask;
 
         //CONSTANTS
         private const int sheetHeight = 852;
@@ -108,8 +108,8 @@ namespace CalamityMod.NPCs.Astral
             //also it's visuals are messed up on npc spawners etc. because the sheet is 3 wide.
             //not much we can do. looks fine in-game so /shrug
             if (!Main.dedServ)
-                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AtlasGlow", AssetRequestMode.ImmediateLoad).Value;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AtlasGlow", AssetRequestMode.AsyncLoad);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionYOverride = -5
             };
@@ -153,14 +153,18 @@ namespace CalamityMod.NPCs.Astral
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Atlas")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Atlas")
             });
         }
 
@@ -188,6 +192,9 @@ namespace CalamityMod.NPCs.Astral
 
         public override void AI()
         {
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             //PICK A TARGET
             if (!NPC.HasValidTarget || idling)
             {
@@ -263,13 +270,13 @@ namespace CalamityMod.NPCs.Astral
                     centerY - height / 2,
                     width, height);
 
-                for (int i = 0; i < Main.player.Length; i++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    if (Main.player[i].active && !Main.player[i].dead && Main.player[i].getRect().Intersects(hitbox))
+                    if (!player.dead && player.getRect().Intersects(hitbox))
                     {
-                        Vector2 before = Main.player[i].velocity;
-                        Main.player[i].Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage, NPC.direction);
-                        Vector2 after = Main.player[i].velocity;
+                        Vector2 before = player.velocity;
+                        player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.defDamage, NPC.direction);
+                        Vector2 after = player.velocity;
                         Vector2 difference = after - before;
 
                         float horMult = 3.5f;
@@ -284,7 +291,7 @@ namespace CalamityMod.NPCs.Astral
                             swingYeet = true;
                         }
 
-                        if (Main.player[i].noKnockback)
+                        if (player.noKnockback)
                         {
                             horMult *= 0.5f;
                             verMult *= 0.5f;
@@ -292,7 +299,7 @@ namespace CalamityMod.NPCs.Astral
 
                         difference *= new Vector2(horMult, verMult);
 
-                        Main.player[i].velocity = before + difference;
+                        player.velocity = before + difference;
                     }
                 }
             }
@@ -321,7 +328,7 @@ namespace CalamityMod.NPCs.Astral
                 {
                     NPC.velocity.X = idle_walkLeft ? -idle_walkMaxSpeed : idle_walkMaxSpeed;
                 }
-                idle_impulseWalk = idle_impulseWalk && idle_counter > 20 && Main.rand.Next(150) != 0;
+                idle_impulseWalk = idle_impulseWalk && idle_counter > 20 && !Main.rand.NextBool(150);
                 if (!idle_impulseWalk)
                 {
                     idle_counter = 0;
@@ -583,7 +590,7 @@ namespace CalamityMod.NPCs.Astral
 
             //draw glowmask
             spriteBatch.Draw(
-                glowmask, position, NPC.frame,
+                glowmask.Value, position, NPC.frame,
                 Color.White * 0.65f, 0f, default, 1f, //color, rotation, origin, scale
                 effect, 0f); //effect, drawlayer
 
@@ -650,7 +657,7 @@ namespace CalamityMod.NPCs.Astral
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<TitanHeart>());
-            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Stardust>(), 1, 6, 8, 7, 9));
+            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 1, 6, 8, 7, 9));
             npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<TitanArm>(), 7);
         }
     }

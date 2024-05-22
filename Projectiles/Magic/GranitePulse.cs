@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class GranitePulse : ModProjectile, ILocalizedModType
@@ -67,15 +67,14 @@ namespace CalamityMod.Projectiles.Magic
                 int index = 0;
                 float findOldest = 0f;
                 int projType = Projectile.type;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile proj in Main.ActiveProjectiles)
                 {
-                    Projectile proj = Main.projectile[i];
-                    if (proj.active && proj.owner == Projectile.owner && proj.type == projType && proj.ai[1] < 3600f)
+                    if (proj.owner == Projectile.owner && proj.type == projType && proj.ai[1] < 3600f)
                     {
                         projCount++;
                         if (proj.ai[1] > findOldest)
                         {
-                            index = i;
+                            index = proj.whoAmI;
                             findOldest = proj.ai[1];
                         }
                     }
@@ -93,7 +92,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.ExpandHitboxBy(20);
                 for (int d = 0; d < 5; d++)
                 {
-                    int ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 229, 0f, 0f, 100, default, 0.5f);
+                    int ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 100, default, 0.5f);
                     Main.dust[ecto].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -103,10 +102,10 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 for (int d = 0; d < 10; d++)
                 {
-                    int ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 206, 0f, 0f, 100, default, 1f);
+                    int ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, default, 1f);
                     Main.dust[ecto].noGravity = true;
                     Main.dust[ecto].velocity *= 5f;
-                    ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 206, 0f, 0f, 100, default, 0.5f);
+                    ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, default, 0.5f);
                     Main.dust[ecto].velocity *= 2f;
                 }
                 initialized = true;
@@ -117,7 +116,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.ExpandHitboxBy(20);
                 for (int d = 0; d < 5; d++)
                 {
-                    int ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 229, 0f, 0f, 100, default, 0.5f);
+                    int ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 100, default, 0.5f);
                     Main.dust[ecto].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -127,10 +126,10 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 for (int d = 0; d < 10; d++)
                 {
-                    int ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 206, 0f, 0f, 100, default, 1f);
+                    int ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, default, 1f);
                     Main.dust[ecto].noGravity = true;
                     Main.dust[ecto].velocity *= 5f;
-                    ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 206, 0f, 0f, 100, default, 0.5f);
+                    ecto = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, default, 0.5f);
                     Main.dust[ecto].velocity *= 2f;
                 }
                 if (Projectile.owner == Main.myPlayer)
@@ -146,7 +145,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
             int frameHeight = height * Projectile.frame;
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, frameHeight, texture.Width, height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, height / 2f), Projectile.scale, SpriteEffects.None, 0);

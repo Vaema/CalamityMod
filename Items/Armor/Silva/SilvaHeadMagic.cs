@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Armor.Silva
         {
             Item.width = 24;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 21; //110
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Armor.Silva
         {
             CreateRecipe().
                 AddIngredient<PlantyMush>(6).
-                AddIngredient<EffulgentFeather>(5).   
+                AddIngredient<EffulgentFeather>(5).
                 AddIngredient<AscendantSpiritEssence>(2).
                 AddTile<CosmicAnvil>().
                 Register();

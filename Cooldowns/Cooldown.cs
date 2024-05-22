@@ -30,6 +30,6 @@
     // The differences between all the cooldowns are implemented as various subclasses of CooldownHandler.
     public class Cooldown<T> : Cooldown where T : CooldownHandler
     {
-        internal Cooldown(string id, ushort nid) : base(id, nid) {}
+        internal Cooldown(string id, ushort nid) : base(id, nid) { }
     }
 }

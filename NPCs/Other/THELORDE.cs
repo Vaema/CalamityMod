@@ -1,18 +1,20 @@
 ﻿using System;
+using System.IO;
+using CalamityMod.Balancing;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Items.Pets;
+using CalamityMod.Items.Potions;
+using CalamityMod.Projectiles.Boss;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.IO;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Potions;
-using CalamityMod.Items.Pets;
-using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
-using CalamityMod.Balancing;
 
 namespace CalamityMod.NPCs.Other
 {
@@ -37,6 +39,8 @@ namespace CalamityMod.NPCs.Other
 
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/Lordeath");
 
+        public static Asset<Texture2D> DeathAnimationTexture;
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.MPAllowedEnemies[Type] = true;
@@ -44,6 +48,10 @@ namespace CalamityMod.NPCs.Other
             NPCID.Sets.ShouldBeCountedAsBoss[Type] = true;
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 7;
+            if (!Main.dedServ)
+            {
+                DeathAnimationTexture = ModContent.Request<Texture2D>(Texture + "DEATH", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -161,7 +169,7 @@ namespace CalamityMod.NPCs.Other
             {
                 // old was zombie 1 - zombie 62
                 // ideally would be collaborative inferal screeches of various devs
-                SoundEngine.PlaySound(Polterghast.Polterghast.creepySounds[Main.rand.Next(1, Polterghast.Polterghast.creepySounds.Count)] with { PitchVariance = 2}, NPC.position);
+                SoundEngine.PlaySound(Polterghast.Polterghast.creepySounds[Main.rand.Next(1, Polterghast.Polterghast.creepySounds.Count)] with { PitchVariance = 2 }, NPC.Center);
             }
             Player playerLOL = Main.player[NPC.target];
             playerLOL.velocity.X *= 0.99f;
@@ -201,18 +209,17 @@ namespace CalamityMod.NPCs.Other
             {
                 NPC.rotation += 5f;
                 NPC.TargetClosest(true);
-                float num1372 = 69f;
-                Vector2 vector167 = new Vector2(NPC.Center.X + (float)(NPC.direction * 20), NPC.Center.Y + 6f);
-                float num1373 = playerLOL.position.X + (float)playerLOL.width * 0.5f - vector167.X;
-                float num1374 = playerLOL.Center.Y - vector167.Y;
-                float num1375 = (float)Math.Sqrt((double)(num1373 * num1373 + num1374 * num1374));
-                float num1376 = num1372 / num1375;
-                num1373 *= num1376;
-                num1374 *= num1376;
+                Vector2 lordePosition = new Vector2(NPC.Center.X + (float)(NPC.direction * 20), NPC.Center.Y + 6f);
+                float targetXDist = playerLOL.position.X + (float)playerLOL.width * 0.5f - lordePosition.X;
+                float targetYDist = playerLOL.Center.Y - lordePosition.Y;
+                float targetDistance = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
+                float velocityMult = 69f / targetDistance;
+                targetXDist *= velocityMult;
+                targetYDist *= velocityMult;
                 NPC.ai[0] -= 1f;
-                if (num1375 < 50f || NPC.ai[0] > 0f)
+                if (targetDistance < 50f || NPC.ai[0] > 0f)
                 {
-                    if (num1375 < 50f)
+                    if (targetDistance < 50f)
                     {
                         NPC.ai[0] = 20f;
                     }
@@ -226,17 +233,17 @@ namespace CalamityMod.NPCs.Other
                     }
                     return;
                 }
-                NPC.velocity.X = (NPC.velocity.X * 50f + num1373) / 51f;
-                NPC.velocity.Y = (NPC.velocity.Y * 50f + num1374) / 51f;
-                if (num1375 < 150f)
+                NPC.velocity.X = (NPC.velocity.X * 50f + targetXDist) / 51f;
+                NPC.velocity.Y = (NPC.velocity.Y * 50f + targetYDist) / 51f;
+                if (targetDistance < 150f)
                 {
-                    NPC.velocity.X = (NPC.velocity.X * 10f + num1373) / 11f;
-                    NPC.velocity.Y = (NPC.velocity.Y * 10f + num1374) / 11f;
+                    NPC.velocity.X = (NPC.velocity.X * 10f + targetXDist) / 11f;
+                    NPC.velocity.Y = (NPC.velocity.Y * 10f + targetYDist) / 11f;
                 }
-                if (num1375 < 100f)
+                if (targetDistance < 100f)
                 {
-                    NPC.velocity.X = (NPC.velocity.X * 7f + num1373) / 8f;
-                    NPC.velocity.Y = (NPC.velocity.Y * 7f + num1374) / 8f;
+                    NPC.velocity.X = (NPC.velocity.X * 7f + targetXDist) / 8f;
+                    NPC.velocity.Y = (NPC.velocity.Y * 7f + targetYDist) / 8f;
                 }
                 return;
             }
@@ -313,9 +320,8 @@ namespace CalamityMod.NPCs.Other
                 NPC.ai[3] = 0f;
                 NPC.aiStyle = (urAMemeNow ? -1 : aiChoice);
                 NPC.netUpdate = true;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile proj in Main.ActiveProjectiles)
                 {
-                    Projectile proj = Main.projectile[i];
                     if (proj.type == ModContent.ProjectileType<AresDeathBeamStart>() || proj.type == ModContent.ProjectileType<AresDeathBeamTelegraph>())
                     {
                         proj.Kill();
@@ -413,7 +419,7 @@ namespace CalamityMod.NPCs.Other
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Rectangle frameUsed = texture.Frame(2, 7, 0, 1); // the idle frame by default
             Rectangle squintFrame = texture.Frame(2, 7, 0, 0);
 
@@ -426,7 +432,7 @@ namespace CalamityMod.NPCs.Other
             if (Dying)
             {
                 // death animation
-                texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Other/THELORDEDEATH").Value;
+                texture = DeathAnimationTexture.Value;
                 int xFrame = 0;
                 int yFrame = frameToUse;
                 if (frameToUse > 13)
@@ -575,7 +581,7 @@ namespace CalamityMod.NPCs.Other
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             double pisquaredover6 = Math.Pow(MathHelper.Pi, 2) / 6;
-            npcLoot.AddIf(()=> CalamityWorld.LegendaryMode && CalamityWorld.revenge, ModContent.ItemType<SuspiciousLookingNOU>()); // guaranteed in legendarev mode
+            npcLoot.AddIf(() => CalamityWorld.LegendaryMode && CalamityWorld.revenge, ModContent.ItemType<SuspiciousLookingNOU>()); // guaranteed in legendarev mode
             npcLoot.AddIf(() => !(CalamityWorld.LegendaryMode && CalamityWorld.revenge), ModContent.ItemType<SuspiciousLookingNOU>(), 27); // otherwise 1 in 27
             npcLoot.Add(ModContent.ItemType<DeliciousMeat>(), 1, 22, (int)(pisquaredover6 * 100));
         }

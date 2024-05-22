@@ -16,17 +16,17 @@ namespace CalamityMod.Items.Weapons.Magic
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/HadalUrnOpen");
         public override void SetDefaults()
         {
-            Item.damage = 32;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 10;
             Item.width = 58;
             Item.height = 38;
-            Item.useTime = 14;
-            Item.useAnimation = 14;
+            Item.damage = 37;
+            Item.DamageType = DamageClass.Magic;
+            Item.mana = 10;
+            Item.useTime = 16;
+            Item.useAnimation = 16;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.75f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.Calamity().donorItem = true;
             Item.UseSound = ShootSound;

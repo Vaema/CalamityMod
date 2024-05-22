@@ -1,15 +1,15 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -68,7 +68,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int ShockwaveAttunement_PassiveBaseDamage = 200;
 
 
-        public static int FlailBladeAttunement_BaseDamage = 320;
+        public static int FlailBladeAttunement_BaseDamage = 400;
         public static int FlailBladeAttunement_LocalIFrames = 30;
         public static int FlailBladeAttunement_FlailTime = 10;
         public static int FlailBladeAttunement_Reach = 400;
@@ -169,7 +169,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
         }
 
-    #endregion
+        #endregion
 
         public override void SetDefaults()
         {
@@ -183,7 +183,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Cyan;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 15f;
@@ -326,15 +326,24 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool CanUseItem(Player player)
         {
-            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
+            bool isRightClicking = player.altFunctionUse != ItemAlternativeFunctionID.None;
+            return !isRightClicking && !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
             (n.type == ProjectileType<SwordsmithsPride>() ||
              n.type == ProjectileType<MercurialTides>() ||
              n.type == ProjectileType<SanguineFury>() ||
              n.type == ProjectileType<LamentationsOfTheChained>()));
         }
 
-        //No need for any wacky zany hijinx in the shoot method for once??? damn
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) => mainAttunement == null ? false : true;
+        // 03FEB2024: Ozzatron: added so the Iban Blades don't break Overhaul compatibility. Weapons are functionally unchanged.
+        public override bool AltFunctionUse(Player player) => true;
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            if (mainAttunement == null || player.altFunctionUse != ItemAlternativeFunctionID.None)
+                return false;
+
+            return true;
+        }
 
         internal static ChargingEnergyParticleSet BiomeEnergyParticles = new ChargingEnergyParticleSet(-1, 2, Color.White, Color.White, 0.04f, 20f);
         internal static void UpdateAllParticleSets()

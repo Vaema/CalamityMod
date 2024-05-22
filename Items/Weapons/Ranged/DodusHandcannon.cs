@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 13f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;
@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PearlGod>().
+                AddIngredient<Arietes41>().
                 AddIngredient<RuinousSoul>(5).
                 AddIngredient(ItemID.LunarBar, 15).
                 AddTile(TileID.LunarCraftingStation).

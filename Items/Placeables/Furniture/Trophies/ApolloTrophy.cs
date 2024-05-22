@@ -1,4 +1,4 @@
-using CalamityMod.Tiles.Furniture.BossTrophies;
+﻿using CalamityMod.Tiles.Furniture.BossTrophies;
 using Terraria.ID;
 using Terraria.ModLoader;
 

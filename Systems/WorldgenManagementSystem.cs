@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Items.SummonItems;
 using CalamityMod.World;
 using CalamityMod.World.Planets;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-using CalamityMod.Items.SummonItems;
 using static CalamityMod.World.CalamityWorld;
-using Terraria.Localization;
 
 namespace CalamityMod.Systems
 {
@@ -41,13 +41,13 @@ namespace CalamityMod.Systems
                 }));
             }
 
-            // Replace the entire fucking Dungeon generation pass because nothing else will work as intended
+            // Generate the Astral Chest right after the dungeon has finished generating
             int DungeonIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Dungeon"));
-            tasks[DungeonIndex] = new PassLegacy("Dungeon", (progress, config) =>
+            tasks.Insert(DungeonIndex + 1, new PassLegacy("Astral Chest", (progress, config) =>
             {
-                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterDungeon").Value;
-                CustomDungeon.NewDungeon();
-            });
+                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.AstralChest").Value;
+                AstralChestGeneration.PlaceAstralChest();
+            }));
 
             // Larger Jungle Temple
             int JungleTempleIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Jungle Temple"));
@@ -190,7 +190,7 @@ namespace CalamityMod.Systems
                     {
                         progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.CorruptShrine").Value;
                         UndergroundShrines.PlaceCorruptionShrine(GenVars.structures);
-                    }                    
+                    }
 
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.DesertShrine").Value;
                     UndergroundShrines.PlaceDesertShrine(GenVars.structures);
@@ -216,7 +216,7 @@ namespace CalamityMod.Systems
                 tasks.Insert(++currentFinalIndex, new PassLegacy("Aerialite", (progress, config) =>
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Aerialite").Value;
-                    AerialiteOreGen.Generate(false);
+                    AerialiteOreGen.Generate();
                 }));
 
                 // Draedon Labs
@@ -291,9 +291,36 @@ namespace CalamityMod.Systems
         }
 
         // An Astral Meteor always falls at the beginning of Hardmode.
+        // T1 Hardmode Ores always generate after killing Wall of Flesh.
         public override void ModifyHardmodeTasks(List<GenPass> tasks)
         {
             int announceIndex = tasks.FindIndex(match => match.Name == "Hardmode Announcement");
+
+            //
+            // EARLY HARDMODE REWORK
+            //
+            {
+                var hardmodeOreT1Pass = new PassLegacy("CalamityMod:EarlyHMRework_HardmodeOreTier1", (progress, config) =>
+                {
+                    string key = CalamityMod.Instance.GetLocalization("Status.Progression.HardmodeOreTier1Text").Value;
+                    Color messageColor = new Color(50, 255, 130);
+
+                    CalamityUtils.SpawnOre(TileID.Cobalt, 12E-05, 0.45f, 0.7f, 3, 8);
+                    CalamityUtils.SpawnOre(TileID.Palladium, 12E-05, 0.45f, 0.7f, 3, 8);
+
+                    CalamityUtils.DisplayLocalizedText(key, messageColor);
+                });
+
+                // Disable gen pass if Early Hardmode Rework is disabled.
+                // Could just not add/remove gen pass, but that could lead to mod conflicts
+                // in case whatever mod targets this specific gen pass.
+                if (!CalamityConfig.Instance.EarlyHardmodeProgressionRework)
+                {
+                    hardmodeOreT1Pass.Disable();
+                }
+
+                tasks.Insert(announceIndex, hardmodeOreT1Pass);
+            }
 
             // Insert the Astral biome generation right before the final hardmode announcement.
             tasks.Insert(announceIndex, new PassLegacy("AstralMeteor", (progress, config) =>
@@ -320,7 +347,7 @@ namespace CalamityMod.Systems
                     bool isGoldChest = isContainer1 && (Main.tile[chest.x, chest.y].TileFrameX == 36 || Main.tile[chest.x, chest.y].TileFrameX == 2 * 36); // Includes Locked Gold Chests
                     bool isMahoganyChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 8 * 36;
                     bool isIvyChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 10 * 36;
-                    bool isIceChest = isContainer1 &&  Main.tile[chest.x, chest.y].TileFrameX == 11 * 36;
+                    bool isIceChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 11 * 36;
                     bool isMushroomChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 32 * 36;
                     bool isMarniteChest = isContainer1 && (Main.tile[chest.x, chest.y].TileFrameX == 50 * 36 || Main.tile[chest.x, chest.y].TileFrameX == 51 * 36);
 

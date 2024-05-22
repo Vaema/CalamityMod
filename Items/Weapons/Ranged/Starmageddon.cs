@@ -16,15 +16,20 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+        }
+
         public override void SetDefaults()
         {
+            Item.width = 166;
+            Item.height = 62;
             Item.damage = 100;
             Item.knockBack = 4f;
             Item.shootSpeed = 16f;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useTime = Item.useAnimation = 30;
-            Item.width = 166;
-            Item.height = 62;
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType<StarmageddonHeld>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;

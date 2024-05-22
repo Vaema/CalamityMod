@@ -1,13 +1,13 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -21,18 +21,17 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.damage = 2550;
-            Item.DamageType = RogueDamageClass.Instance;
-
             Item.width = 30;
             Item.height = 34;
+            Item.damage = 2850;
+            Item.DamageType = RogueDamageClass.Instance;
             Item.useTime = 42;
             Item.useAnimation = 42;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = false;
             Item.knockBack = 3f;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
 
             Item.noUseGraphic = true;
@@ -41,14 +40,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.autoReuse = true;
 
             Item.shoot = ModContent.ProjectileType<DynamicPursuerProjectile>();
-            Item.shootSpeed = 18f;
+            Item.shootSpeed = 17f;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 300f; // Tesla Cannon = 250f
-            modItem.ChargePerUse = 0.5f; // Tesla Cannon = 0.9f
+            modItem.ChargePerUse = 0.4f; // Tesla Cannon = 0.9f
         }
         public static float StealthDmgMult = 0.3f; //So I can edit it directly via DragonLens instead of having to do math with CalTestHelpers
-		public override float StealthDamageMultiplier => StealthDmgMult;
+        public override float StealthDamageMultiplier => StealthDmgMult;
         public override float StealthVelocityMultiplier => 0.8f;
 
         //Stuff to be used on the projectile, but here for ease of access ingame via DragonLens
@@ -56,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static float ReturnMaxSpeed = 24f;
         public static float RicochetShootingCooldown = 1000f;
         public static float RicochetVelocityCap = 28f;
-        public static float ElectricityDmgMult = 0.3f;
+        public static float ElectricityDmgMult = 0.4f;
         public static float ElectricityCooldown = 500f;
         public static float LaserDmgMult = 0.25f;
         public static float LaserCooldown = 300f;

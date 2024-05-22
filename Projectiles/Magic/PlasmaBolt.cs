@@ -1,6 +1,8 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class PlasmaBolt : ModProjectile, ILocalizedModType
@@ -27,7 +29,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int d = 0; d < 5; d++)
                 {
-                    Dust dust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f)];
+                    Dust dust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f)];
                     dust.velocity = Vector2.Zero;
                     dust.position -= Projectile.velocity / 5f * d;
                     dust.noGravity = true;

@@ -1,11 +1,11 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
+using log4net.Core;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using log4net.Core;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -14,19 +14,18 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static readonly SoundStyle ThrowSound = new("CalamityMod/Sounds/Item/CursedDaggerThrow") { Volume = 0.3f, PitchVariance = 0.4f };
         public override void SetDefaults()
         {
+            Item.width = 14;
+            Item.height = 48;
             Item.damage = 45;
             Item.useAnimation = Item.useTime = 18;
             Item.shootSpeed = 19f;
             Item.knockBack = 4.5f;
 
             Item.shoot = ModContent.ProjectileType<CursedDaggerProj>();
-
-            Item.width = 14;
-            Item.height = 48;
             Item.DamageType = RogueDamageClass.Instance;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = ThrowSound;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.autoReuse = true;
             Item.noMelee = true;

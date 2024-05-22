@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 18;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
         }
@@ -26,7 +26,8 @@ namespace CalamityMod.Items.Accessories
             player.npcTypeNoAggro[NPCID.PinkJellyfish] = true;
             player.npcTypeNoAggro[NPCID.Crab] = true;
             player.npcTypeNoAggro[NPCID.Squid] = true;
-            player.gills = true;
+            if (player.IsUnderwater())
+                player.gills = true;
         }
     }
 }

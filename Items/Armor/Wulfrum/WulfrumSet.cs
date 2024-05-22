@@ -1,15 +1,16 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Particles;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.DataStructures;
-using CalamityMod.Items.Accessories.Vanity;
-using CalamityMod.Cooldowns;
-using Terraria.Audio;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Cooldowns;
+using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Materials;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 using static Microsoft.Xna.Framework.Input.Keys;
 using static Terraria.ModLoader.ModContent;
 
@@ -54,7 +55,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         {
             if (Main.netMode != NetmodeID.Server)
             {
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Wulfrum/WulfrumHat_FemaleHead", EquipType.Head, name : "WulfrumHatFemale");
+                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Wulfrum/WulfrumHat_FemaleHead", EquipType.Head, name: "WulfrumHatFemale");
             }
 
             Terraria.On_Player.KeyDoubleTap += ActivateSetBonus;
@@ -69,7 +70,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
         private void ActivateSetBonus(Terraria.On_Player.orig_KeyDoubleTap orig, Player player, int keyDir)
         {
-            if (keyDir == 0 && HasArmorSet(player) && !player.mount.Active)
+            if (keyDir == (Main.ReversedUpDownArmorSetBonuses ? 1 : 0) && HasArmorSet(player) && !player.mount.Active)
             {
                 //Only activate if no cooldown & available scrap.
                 if (player.Calamity().cooldowns.TryGetValue(WulfrumBastion.ID, out CooldownInstance cd))
@@ -84,7 +85,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 else if (player.HasItem(ModContent.ItemType<WulfrumMetalScrap>()))
                 {
                     player.ConsumeItem(ModContent.ItemType<WulfrumMetalScrap>());
-                    //I Thiiiinnnk there's no need to add mp syncing packets sicne cooldowns get auto synced right.
+                    //I Thiiiinnnk there's no need to add mp syncing packets since cooldowns get auto synced right.
                     player.AddCooldown(WulfrumBastion.ID, BastionCooldown + BastionTime);
                     //Though do i need to sync that or is the player inventory auto synced?
                     DummyCannon.SetDefaults(ItemType<WulfrumFusionCannon>());
@@ -115,11 +116,11 @@ namespace CalamityMod.Items.Armor.Wulfrum
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs) =>  body.type == ItemType<WulfrumJacket>() && legs.type == ItemType<WulfrumOveralls>();
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ItemType<WulfrumJacket>() && legs.type == ItemType<WulfrumOveralls>();
         public static bool HasArmorSet(Player player) => player.armor[0].type == ItemType<WulfrumHat>() && player.armor[1].type == ItemType<WulfrumJacket>() && player.armor[2].type == ItemType<WulfrumOveralls>();
         public bool IsPartOfSet(Item item) => item.type == ItemType<WulfrumHat>() ||
                 item.type == ItemType<WulfrumJacket>() ||
@@ -146,7 +147,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 player.endurance += 0.05f; //10% Dr in total with the chestplate
 
                 //Can't account for previous fullbody transformations but at this point, whatever.
-                Item headItem = player.armor[10].type != 0 ? player.armor[10] : player.armor[0];
+                Item headItem = player.armor[10].type != ItemID.None ? player.armor[10] : player.armor[0];
                 bool hatVisible = !transformationPlayer.transformationActive && headItem.type == ItemType<WulfrumHat>();
 
                 //Spawn the hat
@@ -228,7 +229,8 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
                 if (setBonusIndex != -1)
                 {
-                    TooltipLine setBonus1 = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextValueFromModItem<WulfrumHat>("AbilityBrief"));
+                    string dir = Language.GetTextValue(Main.ReversedUpDownArmorSetBonuses ? "Key.UP" : "Key.DOWN");
+                    TooltipLine setBonus1 = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextFromModItem<WulfrumHat>("AbilityBrief").Format(dir));
                     setBonus1.OverrideColor = Color.Lerp(new Color(194, 255, 67), new Color(112, 244, 244), 0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f));
                     tooltips.Insert(setBonusIndex + 1, setBonus1);
 
@@ -284,7 +286,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 2;
         }
@@ -312,7 +314,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 1;
 
@@ -346,7 +348,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         public static int BastionShootTime = 10;
 
         public bool wulfrumSet = false;
-        
+
         public override void ResetEffects()
         {
             wulfrumSet = false;

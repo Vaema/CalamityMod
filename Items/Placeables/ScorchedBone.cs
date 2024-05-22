@@ -29,8 +29,8 @@ namespace CalamityMod.Items.Placeables
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Wood;
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Wood;
         }
 
         public override void AddRecipes()

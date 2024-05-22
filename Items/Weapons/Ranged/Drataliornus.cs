@@ -22,6 +22,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
+            Item.width = 64;
+            Item.height = 84;
             Item.damage = 129;
             Item.knockBack = 1f;
             Item.shootSpeed = 18f;
@@ -30,11 +32,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAnimation = 24;
             Item.reuseDelay = 48;
             Item.useLimitPerAnimation = 2;
-            Item.width = 64;
-            Item.height = 84;
             Item.UseSound = SoundID.Item5;
             Item.shoot = ModContent.ProjectileType<DrataliornusBow>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.DamageType = DamageClass.Ranged;
@@ -75,15 +75,15 @@ namespace CalamityMod.Items.Weapons.Ranged
                 const int numFlames = 5;
                 int flameDamage = (int)(damage * RightClickDamageRatio);
 
-                const float num3 = 0.471238898f;
+                const float fifteenHundredthPi = 0.471238898f;
                 Vector2 spinningpoint = velocity;
                 spinningpoint.Normalize();
                 spinningpoint *= 36f;
-                for (int index1 = 0; index1 < numFlames; ++index1)
+                for (int i = 0; i < numFlames; ++i)
                 {
-                    float num8 = index1 - (numFlames - 1) / 2;
-                    Vector2 vector2_5 = spinningpoint.RotatedBy(num3 * num8, new Vector2());
-                    Projectile.NewProjectile(source, position.X + vector2_5.X, position.Y + vector2_5.Y, velocity.X, velocity.Y, flameID, flameDamage, knockback, player.whoAmI, 1f, 0f);
+                    float piArrowOffset = i - (numFlames - 1) / 2;
+                    Vector2 offsetSpawn = spinningpoint.RotatedBy(fifteenHundredthPi * piArrowOffset, new Vector2());
+                    Projectile.NewProjectile(source, position.X + offsetSpawn.X, position.Y + offsetSpawn.Y, velocity.X, velocity.Y, flameID, flameDamage, knockback, player.whoAmI, 1f, 0f);
                 }
             }
             else

@@ -16,9 +16,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 160;
             Item.width = 48;
             Item.height = 82;
+            Item.damage = 117;
             Item.useTime = 12;
             Item.useAnimation = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient(ItemID.Phantasm).
                 AddIngredient<CosmiliteBar>(8).
-                AddIngredient<Polterplasm>(20).
+                AddIngredient<Necroplasm>(20).
                 AddIngredient<NightmareFuel>(20).
                 AddTile<CosmicAnvil>().
                 Register();

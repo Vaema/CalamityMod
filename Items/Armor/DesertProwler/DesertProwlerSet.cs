@@ -1,20 +1,21 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using CalamityMod.Cooldowns;
-using static Terraria.ModLoader.ModContent;
-using Microsoft.Xna.Framework;
+﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Particles;
-using System;
-using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.CalPlayer;
+using CalamityMod.Cooldowns;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using ReLogic.Utilities;
+using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using CalamityMod.Dusts;
-using ReLogic.Utilities;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Armor.DesertProwler
 {
@@ -47,7 +48,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
         private void ActivateSetBonus(Terraria.On_Player.orig_KeyDoubleTap orig, Player player, int keyDir)
         {
-            if (keyDir == 0 && HasArmorSet(player) && !player.mount.Active)
+            if (keyDir == (Main.ReversedUpDownArmorSetBonuses ? 1 : 0) && HasArmorSet(player) && !player.mount.Active)
             {
                 // The set bonus can only be activated if the player does not have the cooldown.
                 if (!player.Calamity().cooldowns.TryGetValue(SandsmokeBomb.ID, out CooldownInstance cd))
@@ -63,7 +64,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 1; //6
         }
@@ -76,7 +77,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
 
         public override void UpdateArmorSet(Player player)
-        {           
+        {
             player.setBonus = this.GetLocalization("SetBonus").Format(FlatDamageBonus); //More gets edited in elsewhere
             player.GetDamage<RangedDamageClass>().Flat += FlatDamageBonus;
 
@@ -87,7 +88,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
             {
                 if (cd.timeLeft == SmokeCooldown + SmokeDuration)
                     armorPlayer.SetBonusStartEffect();
-                
+
                 player.moveSpeed *= 1.5f;
                 player.invis = true;
                 player.aggro = (int)(player.aggro * 0.5f);
@@ -166,7 +167,8 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
                 if (setBonusIndex != -1)
                 {
-                    TooltipLine setBonus1 = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextValueFromModItem<DesertProwlerHat>("AbilityBrief"));
+                    string dir = Language.GetTextValue(Main.ReversedUpDownArmorSetBonuses ? "Key.UP" : "Key.DOWN");
+                    TooltipLine setBonus1 = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextFromModItem<DesertProwlerHat>("AbilityBrief").Format(dir));
                     setBonus1.OverrideColor = Color.Lerp(new Color(255, 229, 156), new Color(233, 225, 198), 0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f));
                     tooltips.Insert(setBonusIndex + 1, setBonus1);
 
@@ -216,7 +218,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 3;
         }
@@ -246,7 +248,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 2;
         }
@@ -299,7 +301,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
                 }
 
                 if (cd.timeLeft == DesertProwlerHat.SmokeCooldown)
-                SetBonusEndEffect();
+                    SetBonusEndEffect();
             }
         }
 
@@ -352,7 +354,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
                     for (int j = 0; j < 1; j++)
                     {
-                        Dust miniDust = Dust.NewDustDirect(dustPos, 32, 32, 124, dustVel.X, dustVel.Y * 0.3f, 150, default(Color), 1f);
+                        Dust miniDust = Dust.NewDustDirect(dustPos, 32, 32, DustID.SandstormInABottle, dustVel.X, dustVel.Y * 0.3f, 150, default(Color), 1f);
                         miniDust.fadeIn = 1.5f;
                     }
                 }
@@ -418,7 +420,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
                     projectile.CritChance += ExtraCrit;
 
-                    projectile.Calamity().supercritHits  = 1;
+                    projectile.Calamity().supercritHits = 1;
                     LightsOut = true;
                     Main.player[projectile.owner].GetModPlayer<DesertProwlerPlayer>().stopSmokeBomb = true;
                 }

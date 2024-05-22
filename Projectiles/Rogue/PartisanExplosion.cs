@@ -1,7 +1,8 @@
-using Terraria;
-using Terraria.ModLoader;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using CalamityMod.Buffs.DamageOverTime;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -35,7 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 float speedx = Main.rand.NextFloat(-0.9f, 0.9f);
                 float speedy = Main.rand.NextFloat(-0.9f, 0.9f);
-                int d = Dust.NewDust(Projectile.position, 33, 33, 244, speedx, speedy, 120, default(Color), 2.6f);
+                int d = Dust.NewDust(Projectile.position, 33, 33, DustID.CopperCoin, speedx, speedy, 120, default(Color), 2.6f);
                 Main.dust[d].position = Projectile.Center;
             }
         }

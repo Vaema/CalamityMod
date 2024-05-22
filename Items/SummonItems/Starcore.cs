@@ -10,7 +10,7 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 18; // Bloody Tear (1 below Celestial Sigil fsr)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 18; // Bloody Tear (1 below Celestial Sigil fsr)
         }
 
         public override void SetDefaults()
@@ -20,15 +20,15 @@ namespace CalamityMod.Items.SummonItems
             Item.rare = ItemRarityID.Cyan;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Stardust>(25).
+                AddIngredient<StarblightSoot>(25).
                 AddIngredient<AureusCell>(8).
                 AddIngredient<AstralBar>(4).
                 AddTile(TileID.LunarCraftingStation).

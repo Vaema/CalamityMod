@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -87,10 +87,10 @@ namespace CalamityMod.Projectiles.Melee
                     SoundEngine.PlaySound(UseSoundFunny with { Pitch = EmpoweredHammer * 0.1f - 0.2f }, Projectile.Center);
             else
                 if (HighBong == 1)
-                {
-                    SoundEngine.PlaySound(UseSound with { Pitch = 4 * 0.1f - 0.2f }, Projectile.Center);
-                    HighBong = 0;
-                }
+            {
+                SoundEngine.PlaySound(UseSound with { Pitch = 4 * 0.1f - 0.2f }, Projectile.Center);
+                HighBong = 0;
+            }
             else
                 SoundEngine.PlaySound(UseSound with { Pitch = EmpoweredHammer * 0.1f - 0.2f }, Projectile.Center);
 

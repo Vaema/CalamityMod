@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -20,9 +20,7 @@ namespace CalamityMod.Projectiles.Ranged
         private ref float CurrentChargingFrames => ref Projectile.ai[0];
         private ref float LoadedBolts => ref Projectile.ai[1];
         private ref float FramesToLoadBolt => ref Projectile.localAI[0];
-        private ref float LastDirection => ref Projectile.localAI[1];
-        
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
+
         private float storedVelocity = 1f;
 
         private float angularSpread = MathHelper.ToRadians(16);
@@ -46,7 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 tipPosition = armPosition + Projectile.velocity * Projectile.width * 0.5f;
 
             // If the player releases left click, shoot out the arrows
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
 
                 if (LoadedBolts <= 0f) //If theres no arrows to shoot

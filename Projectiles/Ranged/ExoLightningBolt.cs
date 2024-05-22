@@ -1,10 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Ranged;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Ranged;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -17,7 +18,6 @@ namespace CalamityMod.Projectiles.Ranged
     public class ExoLightningBolt : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        internal PrimitiveTrail LightningDrawer;
 
         public bool HasPlayedSound;
 
@@ -85,6 +85,10 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(HeavenlyGale.LightningStrikeSound with { Volume = 0.3f }, Main.player[Projectile.owner].Center);
                 HasPlayedSound = true;
             }
+
+            // This projectile is forced to critically strike.
+            // This technically is a nerf, as it makes DSO's crits deal less damage.
+            Projectile.Calamity().forcedCrit = true;
 
             Lighting.AddLight(Projectile.Center, Color.White.ToVector3());
             if (Projectile.frameCounter >= Projectile.extraUpdates * 2)
@@ -162,13 +166,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (LightningDrawer is null)
-                LightningDrawer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
-
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
 
-            LightningDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 18);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, false, shader: GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]), 18);
             return false;
         }
 

@@ -19,18 +19,18 @@ namespace CalamityMod.Items.Weapons.Ranged
         private int counter = 0;
         public override void SetDefaults()
         {
+            Item.width = 104;
+            Item.height = 44;
             Item.damage = 500;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 8;
             Item.useAnimation = 32; // 4 shots in just over half a second
             Item.reuseDelay = 60; // 1 second recharge
             Item.useLimitPerAnimation = 4;
-            Item.width = 104;
-            Item.height = 44;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 8.7f;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.autoReuse = true;
             Item.shootSpeed = 12.6f;

@@ -1,4 +1,6 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.Threading;
+using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
@@ -25,8 +27,6 @@ using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using CalamityMod.World.Planets;
 using Microsoft.Xna.Framework;
-using System;
-using System.Threading;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.ItemDropRules;
@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs
             // Progression shortcuts
             LeadingConditionRule postEoC = npcLoot.DefineConditionalDropSet(DropHelper.PostEoC());
             LeadingConditionRule hardmode = npcLoot.DefineConditionalDropSet(DropHelper.Hardmode());
-            LeadingConditionRule postCalPlant = npcLoot.DefineConditionalDropSet(DropHelper.PostCalPlant());
+            LeadingConditionRule postCal = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
             LeadingConditionRule postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
             LeadingConditionRule postDoG = npcLoot.DefineConditionalDropSet(DropHelper.PostDoG());
 
@@ -120,8 +120,11 @@ namespace CalamityMod.NPCs
 
                 // Wyvern Head
                 // 8-10 Essence of Sunlight @ 100%, 10-12 Expert+
+                // TODO: Move Aero Stone to the upcoming sky structure whenever it's implemented
+                // Aero Stone @ 25% Normal, 33.3% Expert+
                 case NPCID.WyvernHead:
                     npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<EssenceofSunlight>(), 1, 8, 10, 10, 12));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AeroStone>(), 4, 3));
                     break;
                 #endregion
 
@@ -583,24 +586,24 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Reaper, Psycho
-                // 2-4 Solar Veil @ 50% IF Clone or Plant dead
+                // 2-4 Solar Veil @ 50% IF Cal Clone dead
                 // Darksun Fragment @ 50% IF Devourer of Gods dead
                 case NPCID.Reaper:
                 case NPCID.Psycho:
-                    postCalPlant.Add(ModContent.ItemType<SolarVeil>(), 2, 2, 4);
+                    postCal.Add(ModContent.ItemType<SolarVeil>(), 2, 2, 4);
                     postDoG.Add(ModContent.ItemType<DarksunFragment>(), 2);
                     break;
 
                 // Vampire / Vampire Bat (same enemy)
                 // Moon Stone @ 15% INSTEAD OF 2.86%
                 // Bat Hook @ 2.5% Normal, 5% Expert+
-                // 2-4 Solar Veil @ 50% IF Clone or Plant dead
+                // 2-4 Solar Veil @ 50% IF Cal Clone dead
                 // Darksun Fragment @ 50% IF Devourer of Gods dead
                 case NPCID.VampireBat:
                 case NPCID.Vampire:
                     npcLoot.ChangeDropRate(ItemID.MoonStone, 3, 20);
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.BatHook, 40, 20));
-                    postCalPlant.Add(ModContent.ItemType<SolarVeil>(), 2, 2, 4);
+                    postCal.Add(ModContent.ItemType<SolarVeil>(), 2, 2, 4);
                     postDoG.Add(ModContent.ItemType<DarksunFragment>(), 2);
                     break;
 
@@ -772,7 +775,7 @@ namespace CalamityMod.NPCs
                             ItemID.LaserMachinegun,
                             ItemID.ElectrosphereLauncher,
                             ItemID.InfluxWaver,
-                            ModContent.ItemType<NullificationRifle>()
+                            ModContent.ItemType<NullificationPistol>()
                         };
 
                         npcLoot.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, saucerItems));
@@ -844,6 +847,16 @@ namespace CalamityMod.NPCs
                 // Clothiers Wrath @ 100% IF Hardmode
                 case NPCID.Clothier:
                     hardmode.Add(ModContent.ItemType<ClothiersWrath>());
+                    break;
+
+                // Merchant
+                // 20-30 Gel, 30-50 Rope & 10-15 Bombs @ 100% IF named "Morshu"
+                case NPCID.Merchant:
+                    LeadingConditionRule morshuLCR = new LeadingConditionRule(DropHelper.If((info) => info.npc.GivenName == "Morshu", false));
+                    morshuLCR.Add(ItemID.Gel, 1, 20, 30, true); // lamp oil?
+                    morshuLCR.Add(ItemID.Rope, 1, 30, 50, true); // rope?
+                    morshuLCR.Add(ItemID.Bomb, 1, 10, 15, true); // bombs? you want it?
+                    npcLoot.Add(morshuLCR); // it's yours, my friend
                     break;
 
                 // Angler
@@ -1162,6 +1175,7 @@ namespace CalamityMod.NPCs
                     // Expert+ drops are also available on Normal
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.VolatileGelatin));
                     npcLoot.AddNormalOnly(ItemID.SoulofLight, 1, 15, 20);
+                    npcLoot.AddNormalOnly(ItemID.PinkGel, 1, 15, 20);
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1436,8 +1450,13 @@ namespace CalamityMod.NPCs
                         // Remove the vanilla loot rule for Fishron Wings because it's part of the Calamity Style set.
                         npcLoot.RemoveWhere((rule) => rule is ItemDropWithConditionRule conditionalRule && conditionalRule.itemId == ItemID.FishronWings);
 
+                        // 02JAN2024: Ozzatron: Fixed silent breakage of Duke Fishron's weapon drops alteration caused by the 1.4.4 port and the Remix seed.
                         var dukeRootRules = npcLoot.Get(false);
-                        IItemDropRule notExpert = dukeRootRules.Find((rule) => rule is LeadingConditionRule dukeLCR && dukeLCR.condition is Conditions.NotExpert);
+                        IItemDropRule notRemix = dukeRootRules.Find((rule) => rule is LeadingConditionRule dukeLCR && dukeLCR.condition is Conditions.NotRemixSeed);
+                        if (notRemix is not LeadingConditionRule LCR_NotRemix)
+                            goto DukeEditFailed;
+                        var chain = notRemix.ChainedRules.Find((chain) => chain.RuleToChain is LeadingConditionRule dukeLCR2 && dukeLCR2.condition is Conditions.NotExpert);
+                        IItemDropRule notExpert = chain.RuleToChain;
                         if (notExpert is LeadingConditionRule LCR_NotExpert)
                         {
                             LCR_NotExpert.ChainedRules.RemoveAll((chainAttempt) =>
@@ -1459,8 +1478,9 @@ namespace CalamityMod.NPCs
                         }
                     }
                     catch (ArgumentNullException) { }
+DukeEditFailed:
 
-                    // Expert+ drops are also available on Normal
+// Expert+ drops are also available on Normal
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.ShrimpyTruffle));
 
                     // Would be in the bag otherwise
@@ -1656,7 +1676,7 @@ namespace CalamityMod.NPCs
             LeadingConditionRule goldBossDrop = new LeadingConditionRule(DropHelper.GoldSetBonusBossCondition);
             goldBossDrop.Add(ItemID.GoldCoin, minQuantity: 3, maxQuantity: 3, hideLootReport: true);
             globalLoot.Add(goldBossDrop);
-            
+
             // Tarragon armor set bonus: 20% chance to drop hearts from all valid enemies
             // See the condition lambda in DropHelper for details
             // Does not show up in the Bestiary
@@ -1727,6 +1747,10 @@ namespace CalamityMod.NPCs
             if (CalamityWorld.death && !SplittingWormLootBlockWrapper(npc, Mod))
                 DropHelper.BlockEverything();
 
+            // Correctly increment bestiary entries for splitting worms
+            if (npc.AnyInteractions())
+                SplittingWormBestiaryUpdate(npc);
+
             // Check whether bosses should be spawned naturally as a result of this NPC's death.
             CheckBossSpawn(npc);
 
@@ -1773,12 +1797,10 @@ namespace CalamityMod.NPCs
                     // First kill: Notify of Abyss chests being unlocked.
                     if (!NPC.downedBoss3)
                     {
-                        if (Main.netMode != NetmodeID.MultiplayerClient) //Only the server should do this to prevent already unlocked chests from attempting to be unlocked
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            World.Abyss.AbleToUnlockChests = true;
                             World.Abyss.UnlockAllAbyssChests();
                         }
-
                         string keysk = "Mods.CalamityMod.Status.Progression.SkeletronAbyssChestNotification";
                         CalamityUtils.DisplayLocalizedText(keysk, new Color(76, 181, 76));
                     }
@@ -1797,16 +1819,6 @@ namespace CalamityMod.NPCs
                         string key2 = "Mods.CalamityMod.Status.Progression.UglyBossText";
                         Color messageColor2 = Color.Aquamarine;
                         CalamityUtils.DisplayLocalizedText(key2, messageColor2);
-
-                        // TODO -- this should probably be moved to a thread like Aureus meteor
-                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework)
-                        {
-                            string key3 = "Mods.CalamityMod.Status.Progression.HardmodeOreTier1Text";
-                            Color messageColor3 = new Color(50, 255, 130);
-                            CalamityUtils.SpawnOre(TileID.Cobalt, 12E-05, 0.45f, 0.7f, 3, 8);
-                            CalamityUtils.SpawnOre(TileID.Palladium, 12E-05, 0.45f, 0.7f, 3, 8);
-                            CalamityUtils.DisplayLocalizedText(key3, messageColor3);
-                        }
                     }
                     break;
 
@@ -1928,12 +1940,10 @@ namespace CalamityMod.NPCs
 
                     string key5 = "Mods.CalamityMod.Status.Progression.MoonBossText";
                     Color messageColor5 = Color.Orange;
-                    string key6 = "Mods.CalamityMod.Status.Progression.MoonBossText2";
-                    Color messageColor6 = Color.Violet;
-                    string key7 = "Mods.CalamityMod.Status.Progression.ProfanedBossText2";
-                    Color messageColor7 = Color.Cyan;
-                    string key8 = "Mods.CalamityMod.Status.Progression.FutureOreText";
-                    Color messageColor8 = Color.LightGray;
+                    string key6 = "Mods.CalamityMod.Status.Progression.ProfanedBossText2";
+                    Color messageColor6 = Color.Cyan;
+                    string key7 = "Mods.CalamityMod.Status.Progression.FutureOreText";
+                    Color messageColor7 = Color.LightGray;
 
                     if (!CalamityWorld.HasGeneratedLuminitePlanetoids)
                     {
@@ -1951,13 +1961,12 @@ namespace CalamityMod.NPCs
                             CalamityNetcode.SyncWorld();
                     }
 
-                    // Spawn Exodium planetoids and send messages about Providence, Bloodstone, Polterplasm, etc. if ML has not been killed yet
+                    // Spawn Exodium planetoids and send messages about Providence, Exodium, and Necroplasm if ML has not been killed yet
                     if (!NPC.downedMoonlord)
                     {
                         CalamityUtils.DisplayLocalizedText(key5, messageColor5);
                         CalamityUtils.DisplayLocalizedText(key6, messageColor6);
                         CalamityUtils.DisplayLocalizedText(key7, messageColor7);
-                        CalamityUtils.DisplayLocalizedText(key8, messageColor8);
                     }
                     break;
             }
@@ -1988,13 +1997,77 @@ namespace CalamityMod.NPCs
             {
                 string key = "Mods.CalamityMod.Status.Progression.HardmodeOreTier4Text";
                 Color messageColor = new Color(50, 255, 130);
-                CalamityUtils.SpawnOre(ModContent.TileType<HallowedOre>(), 12E-05, 0.55f, 0.9f, 3, 8, TileID.Pearlstone, TileID.HallowHardenedSand, TileID.HallowSandstone, TileID.HallowedIce);
+                CalamityUtils.SpawnOre(ModContent.TileType<HallowedOre>(), 17E-05, 0.55f, 0.9f, 8, 14, TileID.Pearlstone, TileID.HallowHardenedSand, TileID.HallowSandstone, TileID.HallowedIce);
                 CalamityUtils.DisplayLocalizedText(key, messageColor);
             }
         }
         #endregion
 
         #region Splitting Worm Loot
+        internal static void SplittingWormBroadcastInteractionWrapper(NPC npc, int player)
+        {
+            if (!CalamityWorld.death)
+                return;
+
+            switch (npc.type)
+            {
+                case NPCID.DiggerHead:
+                case NPCID.DiggerBody:
+                case NPCID.DiggerTail:
+                    SplittingWormBroadcastInteraction(npc, player, NPCID.DiggerHead, NPCID.DiggerBody, NPCID.DiggerTail);
+                    return;
+                case NPCID.SeekerHead:
+                case NPCID.SeekerBody:
+                case NPCID.SeekerTail:
+                    SplittingWormBroadcastInteraction(npc, player, NPCID.SeekerHead, NPCID.SeekerBody, NPCID.SeekerTail);
+                    return;
+                case NPCID.DuneSplicerHead:
+                case NPCID.DuneSplicerBody:
+                case NPCID.DuneSplicerTail:
+                    SplittingWormBroadcastInteraction(npc, player, NPCID.DuneSplicerHead, NPCID.DuneSplicerBody, NPCID.DuneSplicerTail);
+                    return;
+            }
+        }
+
+        internal static void SplittingWormBroadcastInteraction(NPC npc, int player, int head, int body, int tail)
+        {
+            foreach (NPC n in Main.ActiveNPCs)
+            {
+                if (n.whoAmI != npc.whoAmI && (n.type == head || n.type == body || n.type == tail))
+                {
+                    n.ApplyInteraction(player);
+                }
+            }
+        }
+
+        internal static void SplittingWormBestiaryUpdate(NPC npc)
+        {
+            if (!CalamityWorld.death)
+                return;
+
+            switch (npc.type)
+            {
+                case NPCID.DiggerBody:
+                case NPCID.DiggerTail:
+                    NPC diggerHead = new();
+                    diggerHead.SetDefaults(NPCID.DiggerHead);
+                    Main.BestiaryTracker.Kills.RegisterKill(diggerHead);
+                    return;
+                case NPCID.SeekerBody:
+                case NPCID.SeekerTail:
+                    NPC seekerHead = new();
+                    seekerHead.SetDefaults(NPCID.SeekerHead);
+                    Main.BestiaryTracker.Kills.RegisterKill(seekerHead);
+                    return;
+                case NPCID.DuneSplicerBody:
+                case NPCID.DuneSplicerTail:
+                    NPC duneSplicerHead = new();
+                    duneSplicerHead.SetDefaults(NPCID.DuneSplicerHead);
+                    Main.BestiaryTracker.Kills.RegisterKill(duneSplicerHead);
+                    return;
+            }
+        }
+
         internal static bool SplittingWormLootBlockWrapper(NPC npc, Mod mod)
         {
             if (!CalamityWorld.death)
@@ -2032,9 +2105,9 @@ namespace CalamityMod.NPCs
 
             bool CheckSegments(int head, int body, int tail)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (i != npc.whoAmI && Main.npc[i].active && (Main.npc[i].type == head || Main.npc[i].type == body || Main.npc[i].type == tail))
+                    if (n.whoAmI != npc.whoAmI && (n.type == head || n.type == body || n.type == tail))
                     {
                         return false;
                     }

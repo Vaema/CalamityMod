@@ -1,16 +1,17 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.AcidRain
 {
@@ -24,10 +25,15 @@ namespace CalamityMod.NPCs.AcidRain
         public float LaserTelegraphOpacity => MathHelper.Lerp(0.3f, 0.9f, LaserTelegraphPower);
         public ref float GammaAcidShootTimer => ref NPC.ai[0];
         public ref float LaserShootCountdown => ref NPC.ai[1];
+        public static Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 2;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -58,18 +64,24 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AcidRainBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GammaSlime")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GammaSlime")
             });
         }
 
         public override void AI()
         {
+            NPC.damage = (NPC.velocity.Y == 0f || NPC.velocity.Length() < 3f) ? 0 : NPC.defDamage;
+
             // Release green light at the position of the slime.
             Lighting.AddLight((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16, 0.6f, 0.8f, 0.6f);
 
@@ -94,7 +106,7 @@ namespace CalamityMod.NPCs.AcidRain
                             float angle = MathHelper.TwoPi / 5f * i;
                             if (GammaAcidShootTimer % 60f == 58f)
                                 angle += MathHelper.PiOver2;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, angle.ToRotationVector2() * 7f, ModContent.ProjectileType<GammaAcid>(), Main.expertMode ? 36 : 45, 3f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, angle.ToRotationVector2() * 7f, ModContent.ProjectileType<GammaAcid>(), Main.masterMode ? 30 : Main.expertMode ? 36 : 45, 3f);
                         }
                     }
                     NPC.netUpdate = true;
@@ -118,7 +130,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 float scale = LaserShootCountdown < 530f ? 2.25f : 1.65f;
                 Vector2 destination = NPC.Top + new Vector2(0f, 6f);
-                Dust dust = Dust.NewDustPerfect(destination + Main.rand.NextVector2CircularEdge(12f, 12f), (int)CalamityDusts.SulfurousSeaAcid);
+                Dust dust = Dust.NewDustPerfect(destination + Main.rand.NextVector2CircularEdge(12f, 12f), (int)CalamityDusts.SulphurousSeaAcid);
                 dust.velocity = Vector2.Normalize(destination - dust.position) * 3f;
                 dust.scale = scale;
                 dust.noGravity = true;
@@ -129,7 +141,7 @@ namespace CalamityMod.NPCs.AcidRain
                     {
                         float angle = i / 24f;
                         Vector2 spawnPosition = new Vector2(NPC.Center.X, i);
-                        dust = Dust.NewDustPerfect(spawnPosition, (int)CalamityDusts.SulfurousSeaAcid);
+                        dust = Dust.NewDustPerfect(spawnPosition, (int)CalamityDusts.SulphurousSeaAcid);
                         dust.scale = 1.5f;
                         dust.velocity = Vector2.UnitX * (float)Math.Cos(angle) * (1f - LaserTelegraphPower) * 4f;
                         dust.noGravity = true;
@@ -145,7 +157,7 @@ namespace CalamityMod.NPCs.AcidRain
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     SoundEngine.PlaySound(SoundID.Zombie104, NPC.Center);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, -Vector2.UnitY, ModContent.ProjectileType<GammaBeam>(), Main.expertMode ? 96 : 120, 4f, Main.myPlayer, 0f, NPC.whoAmI);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, -Vector2.UnitY, ModContent.ProjectileType<GammaBeam>(), Main.masterMode ? 81 : Main.expertMode ? 96 : 120, 4f, Main.myPlayer, 0f, NPC.whoAmI);
                 }
                 NPC.netUpdate = true;
             }
@@ -157,12 +169,12 @@ namespace CalamityMod.NPCs.AcidRain
                 float horizontalSpeed = (float)Math.Sin(angle * DustAngleMultiplier1) * (float)Math.Cos(angle) * 4.5f;
                 float verticalSpeed = (float)Math.Cos(angle * DustAngleMultiplier1) * (float)Math.Sin(angle) * 2f;
                 Vector2 velocity = new Vector2(horizontalSpeed, verticalSpeed);
-                Dust dust = Dust.NewDustPerfect(NPC.Center + angle.ToRotationVector2() * 8f, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust dust = Dust.NewDustPerfect(NPC.Center + angle.ToRotationVector2() * 8f, (int)CalamityDusts.SulphurousSeaAcid);
                 dust.velocity = velocity;
                 dust.scale = (float)Math.Cos(angle) + 2f;
                 dust.noGravity = true;
 
-                dust = Dust.NewDustPerfect(NPC.Center + angle.ToRotationVector2() * 8f, (int)CalamityDusts.SulfurousSeaAcid);
+                dust = Dust.NewDustPerfect(NPC.Center + angle.ToRotationVector2() * 8f, (int)CalamityDusts.SulphurousSeaAcid);
                 dust.velocity = -velocity;
                 dust.scale = (float)Math.Cos(angle) + 2f;
                 dust.noGravity = true;
@@ -180,11 +192,11 @@ namespace CalamityMod.NPCs.AcidRain
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 10; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 if (Main.netMode != NetmodeID.Server)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GammaSlimeGore").Type, NPC.scale);
@@ -201,7 +213,7 @@ namespace CalamityMod.NPCs.AcidRain
                 Vector2 laserTop = laserBottom - Vector2.UnitY * LaserTelegraphLength;
                 Utils.DrawLine(spriteBatch, laserBottom, laserTop, Color.Lerp(Color.Lime, Color.Transparent, LaserTelegraphOpacity));
             }
-            CalamityGlobalNPC.DrawGlowmask(NPC, spriteBatch, ModContent.Request<Texture2D>(Texture + "Glow").Value);
+            CalamityGlobalNPC.DrawGlowmask(NPC, spriteBatch, GlowTexture.Value);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

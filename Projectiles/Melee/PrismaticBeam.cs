@@ -2,12 +2,12 @@
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using ReLogic.Content;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 spawnPos = Projectile.Center;
                 for (int k = 0; k < dustCount + 1; k++)
                 {
-                    Dust dust = Dust.NewDustDirect(spawnPos, 1, 1, 267, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f);
+                    Dust dust = Dust.NewDustDirect(spawnPos, 1, 1, DustID.RainbowMk2, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f);
                     dust.position += Main.rand.NextVector2Square(-10f, 10f);
                     dust.velocity = Main.rand.NextVector2Unit() * (10f - dustCount * 2f) / 10f;
                     dust.color = Main.rand.Next(Colors);

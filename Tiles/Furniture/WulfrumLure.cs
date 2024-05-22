@@ -1,23 +1,23 @@
-﻿using CalamityMod.Dusts;
+﻿using System.Linq;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.SummonItems;
-using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.Items.Tools;
+using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
-using Terraria.ID;
-using ReLogic.Content;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Projectiles.Typeless;
-using System.Linq;
 
 namespace CalamityMod.Tiles.Furniture
 {
@@ -74,7 +74,7 @@ namespace CalamityMod.Tiles.Furniture
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
         {
-            if (drawData.tileFrameX % (Width * 18) == 0 && drawData.tileFrameY % (Height * 18 ) == 0)
+            if (drawData.tileFrameX % (Width * 18) == 0 && drawData.tileFrameY % (Height * 18) == 0)
             {
                 Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
             }

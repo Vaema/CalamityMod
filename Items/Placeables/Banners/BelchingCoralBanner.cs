@@ -1,4 +1,4 @@
-namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners
 {
     public class BelchingCoralBanner : BaseBanner
     {

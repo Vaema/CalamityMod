@@ -4,8 +4,8 @@ using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // Play idle sounds every so often.
             if (Projectile.soundDelay <= 0)
             {
-                SoundEngine.PlaySound(SoundID.Item22, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item22, Projectile.Center);
                 Projectile.soundDelay = 30;
             }
             Vector2 center = Owner.RotatedRelativePoint(Owner.MountedCenter);
@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                 // Check if the player's held item still has sufficient charge. If so, and they're still using it, take a tiny bit of charge from it.
                 CalamityGlobalItem modItem = heldItem.Calamity();
-                if (Owner.channel && modItem.Charge >= HydraulicVoltCrasher.HoldoutChargeUse)
+                if ((Owner.channel || Owner.Calamity().mouseRight) && modItem.Charge >= HydraulicVoltCrasher.HoldoutChargeUse)
                 {
                     modItem.Charge -= HydraulicVoltCrasher.HoldoutChargeUse;
 
@@ -129,19 +129,19 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             chargeCooldown = 60;
             TryToSuperchargeNPC(target);
             int extraZaps = 0;
-            for (int i = 0; i < Main.npc.Length; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (i != target.whoAmI &&
-                    Main.npc[i].CanBeChasedBy(Projectile, false) &&
-                    Main.npc[i].Distance(target.Center) < 240f &&
+                if (n.whoAmI != target.whoAmI &&
+                    n.CanBeChasedBy(Projectile, false) &&
+                    n.Distance(target.Center) < 240f &&
                     extraZaps < 3)
                 {
                         
-                    if (TryToSuperchargeNPC(Main.npc[i]))
+                    if (TryToSuperchargeNPC(n))
                     {
                         for (float increment = 0f; increment <= 1f; increment += 0.05f)
                         {
-                            Vector2 spawnPosition = Vector2.Lerp(target.Center, Main.npc[i].Center, increment);
+                            Vector2 spawnPosition = Vector2.Lerp(target.Center, n.Center, increment);
                             Dust dust = Dust.NewDustPerfect(spawnPosition, 226);
                             dust.velocity = Vector2.Zero;
                             dust.scale = 1.6f;
@@ -160,13 +160,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // No more than 3 enemies with streams
             if (Owner.ownedProjectileCounts[attackType] > 3)
                 return false;
-            
+
             // Prevent supercharging an enemy twice.
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active &&
-                    Main.projectile[i].type == attackType &&
-                    Main.projectile[i].ai[1] == i)
+                if (p.type == attackType &&
+                    p.ai[1] == p.whoAmI)
                 {
                     return false;
                 }
@@ -184,7 +183,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
             int frameHeight = height * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;

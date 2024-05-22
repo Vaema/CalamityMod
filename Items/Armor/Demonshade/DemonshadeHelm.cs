@@ -1,14 +1,15 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ModLoader;
 using Terraria.DataStructures;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Demonshade
 {
@@ -24,7 +25,7 @@ namespace CalamityMod.Items.Armor.Demonshade
             Item.width = 18;
             Item.height = 18;
             Item.defense = 50;
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -58,8 +59,10 @@ namespace CalamityMod.Items.Armor.Demonshade
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<DemonshadeRedDevil>()] < 1)
                 {
-                    var baseDamage = 10000;
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(10000);
+                    // 08DEC2023: Ozzatron: Demonshade Red Devils spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                    var baseDamage = player.ApplyArmorAccDamageBonusesTo(10000);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+
                     var devil = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<DemonshadeRedDevil>(), damage, 0f, Main.myPlayer, 0f, 0f);
                     devil.originalDamage = baseDamage;
                 }

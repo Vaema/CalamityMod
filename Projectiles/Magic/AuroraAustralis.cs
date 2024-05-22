@@ -2,6 +2,7 @@
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -62,7 +63,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, Main.rand.Next(dustTypes), Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
-            int rainbow = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 66, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
+            int rainbow = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
             Dust dust = Main.dust[rainbow];
             dust.velocity *= 0.1f;
             dust.velocity += Projectile.velocity * 0.2f;

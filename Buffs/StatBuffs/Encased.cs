@@ -1,4 +1,6 @@
-﻿using Terraria;
+﻿using CalamityMod.Balancing;
+using CalamityMod.Items.Accessories;
+using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,7 +22,10 @@ namespace CalamityMod.Buffs.StatBuffs
             if (player.buffTime[buffIndex] == 2)
             {
                 SoundEngine.PlaySound(SoundID.Item27, player.Center);
-                player.GiveIFrames(90, true);
+
+                // 17APR2024: Ozzatron: Permafrost's Concoction gives true invulnerability to everything and is boosted by Cross Necklace.
+                int encasedIFrames = PermafrostsConcoction.EncasedIFrames + (player.longInvince ? BalancingConstants.CrossNecklaceIFrameBoost : 0);
+                player.GiveUniversalIFrames(encasedIFrames, true);
             }
         }
     }

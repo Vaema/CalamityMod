@@ -131,7 +131,7 @@ ExoticPheromones: {
 	DisplayName: Exotic Pheromones
 	Tooltip:
 		'''
-		Summons The Dragonfolly when used in the Jungle
+		Summons Dragonfolly when used in the Jungle
 		Enrages outside the Jungle
 		Not consumable
 		'Pheromones used for hunting Draconic Offshoots.'
@@ -174,7 +174,6 @@ NecroplasmicBeacon: {
 	Tooltip:
 		'''
 		Summons Polterghast when used in the Dungeon
-		Enrages in large spaces
 		Not consumable
 		'The wails of the spirits disturbed something far more terrifying.'
 		'''

@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowmaskTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/PhotonRipperGlowmask").Value;
             Rectangle glowmaskRectangle = glowmaskTexture.Frame(1, 6, 0, Projectile.frame);
             Vector2 origin = texture.Size() * 0.5f;
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 playerRotatedPosition = Owner.RotatedRelativePoint(Owner.MountedCenter);
             if (Main.myPlayer == Projectile.owner)
             {
-                if (Owner.channel && !Owner.noItems && !Owner.CCed)
+                if ((!Owner.CantUseHoldout() && Projectile.ai[2] == 1) || (Projectile.ai[2] == 0 && Owner.Calamity().mouseRight && Owner.active && !Owner.dead))
                     HandleChannelMovement(playerRotatedPosition);
                 else
                     Projectile.Kill();
@@ -226,9 +226,9 @@ namespace CalamityMod.Projectiles.Melee
                     shootReach = distanceFromMouse + 32f;
                 else
                     shootReach = 72f;
-			}
+            }
 
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Projectile.velocity, ModContent.ProjectileType<PrismTooth>(), (int)ToothDamage, 0f, Projectile.owner, shootReach, Projectile.whoAmI);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Projectile.velocity, ModContent.ProjectileType<PrismTooth>(), (int)ToothDamage, 0f, Projectile.owner, shootReach, Projectile.whoAmI, Projectile.ai[2]);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

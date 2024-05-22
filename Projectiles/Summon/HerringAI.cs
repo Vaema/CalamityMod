@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Projectile.netUpdate = true;
         }
-        
+
         public void CheckMinionExistance()
         {
             Owner.AddBuff(ModContent.BuffType<Herring>(), 1);

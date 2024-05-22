@@ -15,6 +15,8 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
+            Item.width = 82;
+            Item.height = 88;
             Item.damage = 500;
             Item.knockBack = 3.5f;
             Item.useAnimation = Item.useTime = 22;
@@ -24,12 +26,10 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shoot = ModContent.ProjectileType<EclipsesFallMain>();
 
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.width = 82;
-            Item.height = 88;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
 

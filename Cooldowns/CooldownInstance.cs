@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.UI;
 using Terraria;
 using Terraria.ModLoader.IO;
-using CalamityMod.UI;
 
 namespace CalamityMod.Cooldowns
 {

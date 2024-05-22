@@ -1,6 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.IO;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Healing
 
             for (int i = 0; i < 3; i++)
             {
-                Dust.NewDust(Projectile.TopLeft, Projectile.width, Projectile.height, 5, Main.rand.NextFloat(-3, 3), -5f, 0, new Color(99, 54, 84), Main.rand.NextFloat(0.5f, 1.5f));
+                Dust.NewDust(Projectile.TopLeft, Projectile.width, Projectile.height, DustID.Blood, Main.rand.NextFloat(-3, 3), -5f, 0, new Color(99, 54, 84), Main.rand.NextFloat(0.5f, 1.5f));
             }
 
             Player player = Main.player[Projectile.owner];

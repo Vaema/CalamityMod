@@ -1,16 +1,16 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
-using Terraria.Audio;
-using Terraria.GameContent;
 
 namespace CalamityMod.UI.DraedonsArsenal
 {
@@ -46,8 +46,8 @@ namespace CalamityMod.UI.DraedonsArsenal
                 return;
             }
 
-            // If the player's inventory isn't open, or they have a chest open, immediately destroy this UI.
-            if (!Main.playerInventory || p.chest != -1)
+            // If the player's inventory isn't open, or they have a chest open, OR they are using a channelled item, immediately destroy this UI.
+            if (!Main.playerInventory || p.chest != -1 || p.channel)
             {
                 mp.CurrentlyViewedChargerID = -1;
                 return;
@@ -126,7 +126,7 @@ namespace CalamityMod.UI.DraedonsArsenal
                     // 1) The player's held item is air and the plugged item is NOT air.
                     // 2) The player's held item is chargeable.
                     // If neither case meets, then nothing happens
-                    else if((playerHandItem.IsAir && !pluggedItem.IsAir) || (!playerHandItem.IsAir && playerHandItem.Calamity().UsesCharge))
+                    else if ((playerHandItem.IsAir && !pluggedItem.IsAir) || (!playerHandItem.IsAir && playerHandItem.Calamity().UsesCharge))
                     {
                         Utils.Swap(ref playerHandItem, ref pluggedItem);
                         SoundEngine.PlaySound(SoundID.Grab);

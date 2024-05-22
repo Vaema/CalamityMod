@@ -1,11 +1,11 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria.DataStructures;
-using Terraria.Audio;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.BaseItems
 {
@@ -22,7 +22,6 @@ namespace CalamityMod.Items.BaseItems
             Terraria.UI.On_ItemSlot.LeftClick_ItemArray_int_int += LockMouseToSpecialItem;
             Terraria.UI.On_ItemSlot.Draw_SpriteBatch_ItemArray_int_int_Vector2_Color += DrawSpecial;
         }
-
         private void DrawSpecial(Terraria.UI.On_ItemSlot.orig_Draw_SpriteBatch_ItemArray_int_int_Vector2_Color orig, SpriteBatch sb, Item[] inv, int context, int slot, Vector2 position, Color color)
         {
             if (inv[slot].ModItem is HeldOnlyItem && !(inv[slot].ModItem as HeldOnlyItem).VisibleInUI)
@@ -35,12 +34,12 @@ namespace CalamityMod.Items.BaseItems
         public override void PostUpdate()
         {
             //Die if in the world
-            Item.type = 0;
+            Item.type = ItemID.None;
             Item.stack = 0;
         }
 
         public override bool CanPickup(Player player) => false;
-        
+
         private void LockMouseToSpecialItem(Terraria.UI.On_ItemSlot.orig_LeftClick_ItemArray_int_int orig, Item[] inv, int context, int slot)
         {
             if (!(Main.mouseItem.ModItem is HeldOnlyItem))

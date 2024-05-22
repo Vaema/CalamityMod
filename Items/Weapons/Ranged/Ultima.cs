@@ -17,10 +17,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public const float FullChargeTime = 420f;
         public override void SetDefaults()
         {
-            Item.damage = 116;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 44;
             Item.height = 58;
+            Item.damage = 150;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 8;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useTurn = false;
             Item.autoReuse = true;
             Item.noUseGraphic = true;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.PulseBow).
                 AddIngredient(ItemID.LaserRifle).
                 AddIngredient<TheStorm>().
-                AddIngredient<AstralRepeater>().
+                AddIngredient<AstralBow>().
                 AddIngredient<ExodiumCluster>(15).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).

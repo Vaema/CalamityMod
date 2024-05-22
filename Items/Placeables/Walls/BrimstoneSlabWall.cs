@@ -1,6 +1,6 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria.ID;
+using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
-using Terraria.ID;
 
 namespace CalamityMod.Items.Placeables.Walls
 {
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Placeables.Walls
             Item.createWall = ModContent.WallType<WallTiles.BrimstoneSlabWall>();
         }
 
-        public override void AddRecipes() 
+        public override void AddRecipes()
         {
             CreateRecipe(4).
                 AddIngredient<BrimstoneSlab>().

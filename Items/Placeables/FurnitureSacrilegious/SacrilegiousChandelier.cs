@@ -1,4 +1,4 @@
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurnitureSacrilegious;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,11 +24,11 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
         public override void AddRecipes()
         {
             CreateRecipe().
-				AddIngredient<OccultBrickItem>(4).
-				AddIngredient(ItemID.Torch, 4).
+                AddIngredient<OccultBrickItem>(4).
+                AddIngredient(ItemID.Torch, 4).
                 AddIngredient(ItemID.Chain).
-				AddTile<SCalAltar>().
-				Register();
+                AddTile<SCalAltar>().
+                Register();
         }
     }
 }

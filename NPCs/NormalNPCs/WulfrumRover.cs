@@ -1,16 +1,17 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Sounds;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
+using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using CalamityMod.Sounds;
-using Terraria.Graphics.Effects;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -35,10 +36,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         public const float JumpSpeed = -4f;
         public bool Supercharged => SuperchargeTimer > 0;
 
+        //GetFuckedBoi
+        public int mineDelay = 0;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 16;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
             };
@@ -54,7 +58,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 40;
             NPC.defense = 4;
             NPC.lifeMax = 32;
-            NPC.knockBackResist = 0.15f;
+            NPC.knockBackResist = Main.zenithWorld ? 0f : 0.15f;
             NPC.value = Item.buyPrice(0, 0, 1, 15);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
@@ -62,11 +66,17 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<WulfrumRoverBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+            if (Main.zenithWorld)
+                NPC.scale = 2f;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.DayTime,
@@ -91,11 +101,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (Supercharged)
             {
                 SuperchargeTimer--;
-                NPC.defense = 13;
+                NPC.defense = CalamityWorld.LegendaryMode ? 20 : 13;
             }
             else if (!Supercharged)
             {
-                NPC.defense = 4;
+                NPC.defense = CalamityWorld.LegendaryMode ? 10 : 4;
             }
 
             Player player = Main.player[NPC.target];
@@ -135,10 +145,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.PlayerSafe || spawnInfo.Player.Calamity().ZoneSulphur || !spawnInfo.Player.ZoneOverworldHeight)
+            if (spawnInfo.PlayerSafe || spawnInfo.Player.Calamity().ZoneSulphur || (!spawnInfo.Player.ZoneOverworldHeight && !Main.remixWorld) || (!spawnInfo.Player.ZoneNormalCaverns && spawnInfo.Player.ZoneGlowshroom && Main.remixWorld))
                 return 0f;
 
-            return SpawnCondition.OverworldDaySlime.Chance * (Main.hardMode ? 0.010f : 0.135f) * (NPC.AnyNPCs(ModContent.NPCType<WulfrumAmplifier>()) ? 5.5f : 1f);
+            return (Main.remixWorld ? SpawnCondition.Cavern.Chance : SpawnCondition.OverworldDaySlime.Chance) * (Main.hardMode ? 0.010f : 0.135f) * (NPC.AnyNPCs(ModContent.NPCType<WulfrumAmplifier>()) ? 5.5f : 1f);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -147,13 +157,13 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 for (int k = 0; k < 4; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 3, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GrassBlades, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (NPC.life <= 0)
                 {
                     for (int k = 0; k < 20; k++)
                     {
-                        Dust.NewDust(NPC.position, NPC.width, NPC.height, 3, hit.HitDirection, -1f, 0, default, 1f);
+                        Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GrassBlades, hit.HitDirection, -1f, 0, default, 1f);
                     }
 
                     if (!Main.dedServ)
@@ -168,6 +178,20 @@ namespace CalamityMod.NPCs.NormalNPCs
                         }
                     }
                 }
+                if (Main.zenithWorld && mineDelay == 0)
+                {
+                    Vector2 roverBase = new Vector2(NPC.Center.X, NPC.Center.Y + 5f);
+                    int mine = Projectile.NewProjectile(NPC.GetSource_FromAI(), roverBase, Vector2.Zero, ProjectileID.ProximityMineI, 50, 0f);
+                    if (mine.WithinBounds(Main.maxProjectiles))
+                    {
+                        Main.projectile[mine].friendly = false;
+                        Main.projectile[mine].hostile = true;
+                        Main.projectile[mine].timeLeft = 60;
+                    }
+                    mineDelay = CalamityWorld.LegendaryMode ? 3 : 5;
+                }
+                else if (Main.zenithWorld && mineDelay >= 1)
+                    mineDelay--;
             }
         }
 
@@ -191,8 +215,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                 */
 
                 //0.6 : The noise upscale
-                //0.15 the scale its drawn at
-                float scale = 0.15f + 0.03f * (0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.5f + NPC.whoAmI * 0.2f));
+                //0.15 the scale its drawn at usually, 0.2 on Zenith
+                float scale = (Main.zenithWorld ? 0.2f : 0.15f) + 0.03f * (0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.5f + NPC.whoAmI * 0.2f));
                 float noiseScale = 0.6f;
 
                 Effect shieldEffect = Terraria.Graphics.Effects.Filters.Scene["CalamityMod:RoverDriveShield"].GetShader().Shader;

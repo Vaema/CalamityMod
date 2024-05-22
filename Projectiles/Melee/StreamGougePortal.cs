@@ -1,20 +1,21 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Particles.Metaballs;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class StreamGougePortal : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public static readonly SoundStyle SpawnSound = new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice")
+
+        public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/SwiftSlice")
         {
             PitchVariance = 0.1f
         };
@@ -43,7 +44,8 @@ namespace CalamityMod.Projectiles.Melee
             // Play a slice sound when spawning.
             if (Projectile.localAI[0] == 0f)
             {
-                SoundEngine.PlaySound(SpawnSound, Projectile.Center);
+                float volume = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 600f, 100f, 0.12f, 0.5f);
+                SoundEngine.PlaySound(SpawnSound with { Volume = volume }, Projectile.Center);
                 Projectile.localAI[0] = 1f;
             }
 
@@ -57,6 +59,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
+            
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/StreamGouge").Value;
             Vector2 spearDrawPosition = SpearCenter - Main.screenPosition;
             Vector2 spearOrigin = texture.Size() * 0.5f;
@@ -74,19 +77,17 @@ namespace CalamityMod.Projectiles.Melee
 
             // Black portal.
             Color color = Color.Lerp(baseColor, Color.Black, 0.55f).MultiplyRGB(Color.DarkGray) * Projectile.Opacity;
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, -rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
-
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, -rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
 
             // Cyan portal.
             color = Color.Lerp(baseColor, Color.Cyan, 0.55f) * Projectile.Opacity * 1.4f;
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, rotation * 0.6f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, rotation * 0.6f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
 
             // Magenta portal.
             color = Color.Lerp(baseColor, Color.Fuchsia, 0.55f) * Projectile.Opacity * 1.4f;
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, rotation * -0.7f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, rotation * -0.7f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
+            
             return false;
         }
 
@@ -106,11 +107,12 @@ namespace CalamityMod.Projectiles.Melee
             for (int i = 0; i < 20; i++)
             {
                 Vector2 spawnPosition = target.Center + Main.rand.NextVector2Circular(30f, 30f);
-                FusableParticleManager.GetParticleSetByType<StreamGougeParticleSet>()?.SpawnParticle(spawnPosition, 60f);
+                StreamGougeMetaball.SpawnParticle(spawnPosition, Main.rand.NextVector2Circular(3f, 3f), 60f);
 
                 float scale = MathHelper.Lerp(24f, 64f, CalamityUtils.Convert01To010(i / 19f));
                 spawnPosition = target.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * MathHelper.Lerp(-40f, 90f, i / 19f);
-                FusableParticleManager.GetParticleSetByType<StreamGougeParticleSet>()?.SpawnParticle(spawnPosition, scale);
+                Vector2 particleVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.23f) * Main.rand.NextFloat(2.5f, 9f);
+                StreamGougeMetaball.SpawnParticle(spawnPosition, particleVelocity, scale);
             }
         }
 

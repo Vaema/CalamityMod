@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
-    
+
     public class EutrophicGlass : ModTile
     {
         private static int sheetWidth = 216;

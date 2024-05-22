@@ -1,7 +1,8 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -11,8 +12,8 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         // Atom splitting is cool and all, but actual thermonuclear meltdown levels of DPS is unacceptable.
         // DO NOT increase this unless you are ABSOLUTELY SURE you know what will happen.
-        private const float NormalSplitMultiplier = 0.7f;
-        private const float StealthSplitMultiplier = 0.144f;
+        public static float NormalSplitMultiplier = 0.7f;
+        public static float StealthSplitMultiplier = 0.23f;
 
         public ref float HitTargetIndex => ref Projectile.ai[0];
         public ref float Time => ref Projectile.ai[1];
@@ -138,7 +139,7 @@ namespace CalamityMod.Projectiles.Rogue
             for (float i = 0f; i < dustCount; i++)
             {
                 Color dustColor = CalamityUtils.MulticolorLerp(Main.rand.NextFloat(), CalamityUtils.ExoPalette);
-                Dust explosionDust = Dust.NewDustDirect(spawnPosition, 0, 0, 267, 0f, 0f, 0, dustColor, 1f);
+                Dust explosionDust = Dust.NewDustDirect(spawnPosition, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, dustColor, 1f);
                 explosionDust.position = spawnPosition;
                 explosionDust.velocity = baseDustVelocity.RotatedBy(MathHelper.TwoPi * i / dustCount) * outwardFireSpeedFactor * Main.rand.NextFloat(0.8f, 1.2f);
                 explosionDust.velocity += Projectile.velocity * Main.rand.NextFloat(0.6f, 0.85f);

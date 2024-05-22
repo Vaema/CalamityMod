@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -39,11 +39,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-			if (player.Calamity().StealthStrikeAvailable())
-				type = ModContent.ProjectileType<CorpusAvertorStealth>();
+            if (player.Calamity().StealthStrikeAvailable())
+                type = ModContent.ProjectileType<CorpusAvertorStealth>();
         }
 
-		public override float StealthDamageMultiplier => 3.5f;
+        public override float StealthDamageMultiplier => 3.5f;
         public override float StealthKnockbackMultiplier => 2f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

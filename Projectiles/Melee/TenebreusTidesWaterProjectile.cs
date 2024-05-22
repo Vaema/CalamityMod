@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
     public class TenebreusTidesWaterProjectile : ModProjectile, ILocalizedModType
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void AI()
         {
             Lighting.AddLight((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16, 0f, 0f, (255 - Projectile.alpha) * 1f / 255f);
-            int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 0.4f);
+            int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 0.4f);
             Main.dust[water].noGravity = true;
             Main.dust[water].velocity *= 0.5f;
             Main.dust[water].velocity += Projectile.velocity * 0.1f;
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Melee
                 dist = dustSpeed / dist;
                 dustVel.X *= dist;
                 dustVel.Y *= dist;
-                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 1.2f);
+                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 1.2f);
                 Dust dust = Main.dust[water];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

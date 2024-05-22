@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shootSpeed = 10f;
 
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
         }
 
         public override bool CanUseItem(Player player)
@@ -71,7 +71,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 player.ChangeDir(-1);
             }
 
-            
+
             CalamityUtils.CleanHoldStyle(player, player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir, player.GetFrontHandPositionImproved(player.compositeFrontArm), new Vector2(42, 34), new Vector2(-15, 11), true);
         }
 

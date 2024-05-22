@@ -1,14 +1,14 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.UI.DraedonsArsenal
 {
@@ -41,8 +41,8 @@ namespace CalamityMod.UI.DraedonsArsenal
                 return;
             }
 
-            // If the player's inventory isn't open, or they have a chest open, immediately destroy this UI.
-            if (!Main.playerInventory || p.chest != -1)
+            // If the player's inventory isn't open, or they have a chest open, OR they are using a channelled item, immediately destroy this UI.
+            if (!Main.playerInventory || p.chest != -1 || p.channel)
             {
                 mp.CurrentlyViewedFactoryID = -1;
                 return;

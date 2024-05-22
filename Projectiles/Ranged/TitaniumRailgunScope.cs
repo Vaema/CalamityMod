@@ -1,13 +1,13 @@
-﻿using Terraria.DataStructures;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Particles;
-using Terraria.Graphics.Effects;
-using System;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // Play a sound to let the player know they're at max charge
                 if (Charge == MaxChargeOrTargetRotation)
                     SoundEngine.PlaySound(SoundID.Item82 with { Volume = SoundID.Item82.Volume * 0.7f }, Owner.MountedCenter);
-                
+
                 // Idly emit particles every other frame while at max charge
                 if (ChargePercent == 1f && Charge % 2 == 0)
                 {
@@ -151,7 +151,7 @@ namespace CalamityMod.Projectiles.Ranged
                 float newRotation = UpdateAimPostShotRecoil(MaxChargeOrTargetRotation.ToRotationVector2());
                 Owner.heldProj = Projectile.whoAmI;
                 Owner.itemRotation = newRotation;
-            }    
+            }
         }
 
         // Gently adjusts the aim vector of the cannon to point towards the mouse.
@@ -169,7 +169,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Converge the sights
             float spread = (1f - ChargePercent) * MaxSightAngle;
             float halfAngle = spread / 2f;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Color sightsColor = Color.Lerp(Color.LightBlue, Color.Crimson, ChargePercent);
 

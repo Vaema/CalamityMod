@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetDefaults()
         {
             Projectile.width = 38;
-            Projectile.height = 62;
+            Projectile.height = 60;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = true;
             Projectile.sentry = true;
@@ -47,45 +47,42 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity.Y = 10f;
             }
 
-            Projectile.StickToTiles(false, false);
-
             int target = 0;
-            float num633 = 800f;
-            Vector2 vector46 = Projectile.position;
-            bool flag25 = false;
+            float attackDist = 800f;
+            Vector2 projPos = Projectile.position;
+            bool canAttack = false;
             if (Main.player[Projectile.owner].HasMinionAttackTargetNPC)
             {
                 NPC npc = Main.npc[Main.player[Projectile.owner].MinionAttackTargetNPC];
                 if (npc.CanBeChasedBy(Projectile, false))
                 {
-                    float num646 = Vector2.Distance(npc.Center, Projectile.Center);
-                    if (!flag25 && num646 < num633)
+                    float targetDist = Vector2.Distance(npc.Center, Projectile.Center);
+                    if (!canAttack && targetDist < attackDist)
                     {
-                        vector46 = npc.Center;
-                        flag25 = true;
+                        projPos = npc.Center;
+                        canAttack = true;
                         target = npc.whoAmI;
                     }
                 }
             }
-            if (!flag25)
+            if (!canAttack)
             {
-                for (int num645 = 0; num645 < Main.maxNPCs; num645++)
+                foreach (NPC nPC2 in Main.ActiveNPCs)
                 {
-                    NPC nPC2 = Main.npc[num645];
                     if (nPC2.CanBeChasedBy(Projectile, false))
                     {
-                        float num646 = Vector2.Distance(nPC2.Center, Projectile.Center);
-                        if (!flag25 && num646 < num633)
+                        float targetDist = Vector2.Distance(nPC2.Center, Projectile.Center);
+                        if (!canAttack && targetDist < attackDist)
                         {
-                            num633 = num646;
-                            vector46 = nPC2.Center;
-                            flag25 = true;
-                            target = num645;
+                            attackDist = targetDist;
+                            projPos = nPC2.Center;
+                            canAttack = true;
+                            target = nPC2.whoAmI;
                         }
                     }
                 }
             }
-            if (Projectile.owner == Main.myPlayer && flag25)
+            if (Projectile.owner == Main.myPlayer && canAttack)
             {
                 if (Projectile.ai[0] != 0f)
                 {
@@ -105,6 +102,12 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
 
         public override bool? CanDamage() => false;
     }

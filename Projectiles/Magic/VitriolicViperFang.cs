@@ -1,9 +1,9 @@
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < 10; i++)
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, (int)CalamityDusts.SulphurousSeaAcid);
                 dust.noGravity = true;
             }
         }

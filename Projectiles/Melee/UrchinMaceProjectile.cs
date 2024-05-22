@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            Owner.direction = Math.Sign(Owner.Calamity().mouseWorld.X - Owner.position.X);
+            Owner.ChangeDir(Math.Sign(Owner.Calamity().mouseWorld.X - Owner.position.X));
 
             Projectile.velocity = Vector2.Zero;
 
@@ -135,16 +135,16 @@ namespace CalamityMod.Projectiles.Melee
         {
             // This would knock enemies away consistently, but i'm choosing to go with the other option
             //hitDirection = Math.Sign(target.Center.X - Owner.Center.X);
-            
+
             //Doing it this way lets the player choose if they want to knockback enemies towards them by pointing away from them
             modifiers.HitDirectionOverride = Owner.direction;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Owner.direction = Math.Sign(Owner.Calamity().mouseWorld.X - Owner.position.X);
+            Owner.ChangeDir(Math.Sign(Owner.Calamity().mouseWorld.X - Owner.position.X));
 
-            Texture2D maceTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D maceTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D whirlpoolTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/RedtideWhirlpool").Value;
 
             float whirlpoolScale = MathHelper.Clamp(WindupProgress * 3f - 0.4f, 0f, 1f) * 2f;

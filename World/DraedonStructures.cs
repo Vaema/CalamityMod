@@ -1,19 +1,18 @@
-﻿using CalamityMod.Tiles.SunkenSea;
-using CalamityMod.Walls;
-using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.LabFinders;
-using CalamityMod.Schematics;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Items.DraedonMisc;
+using CalamityMod.Items.LabFinders;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Schematics;
+using CalamityMod.Tiles.SunkenSea;
+using CalamityMod.Walls;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-
 using static CalamityMod.Schematics.SchematicManager;
 
 namespace CalamityMod.World
@@ -73,13 +72,13 @@ namespace CalamityMod.World
                 new ChestItem(potionType, WorldGen.genRand.Next(3, 5 + 1)),
             };
             float rng = WorldGen.genRand.NextFloat();
-            
+
             //Adds a Lab Seeking Mechanism at a 50% chance, or any of the 5 Bio Lab Seeking Mechanisms at a 10% chance each
-            if(rng < 0.5f)
+            if (rng < 0.5f)
                 contents.Insert(0, new ChestItem(ModContent.ItemType<LabSeekingMechanism>(), 1));
-            else if(rng < 0.6f)
+            else if (rng < 0.6f)
                 contents.Insert(0, new ChestItem(ModContent.ItemType<CyanSeekingMechanism>(), 1));
-            else if(rng < 0.7f)
+            else if (rng < 0.7f)
                 contents.Insert(0, new ChestItem(ModContent.ItemType<GreenSeekingMechanism>(), 1));
             else if (rng < 0.8f)
                 contents.Insert(0, new ChestItem(ModContent.ItemType<WhiteSeekingMechanism>(), 1));
@@ -101,7 +100,7 @@ namespace CalamityMod.World
 
             do
             {
-                int underworldTop = Main.maxTilesY - 200;
+                int underworldTop = Main.UnderworldLayer;
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.1f), (int)(Main.maxTilesX * 0.9f));
                 int placementPositionY = WorldGen.genRand.Next(underworldTop - 550, underworldTop - 50);
 
@@ -180,7 +179,7 @@ namespace CalamityMod.World
 
             do
             {
-                int underworldTop = Main.maxTilesY - 200;
+                int underworldTop = Main.UnderworldLayer;
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.15f), (int)(Main.maxTilesX * 0.85f));
                 int placementPositionY = WorldGen.genRand.Next(underworldTop - 400, underworldTop - 50);
 
@@ -252,10 +251,10 @@ namespace CalamityMod.World
             string mapKey = HellLabKey;
             PilePlacementMaps.TryGetValue(mapKey, out PilePlacementFunction pilePlacementFunction);
             SchematicMetaTile[,] schematic = TileMaps[mapKey];
-            
+
             do
             {
-                int underworldTop = Main.maxTilesY - 200;
+                int underworldTop = Main.UnderworldLayer;
                 //gen opposite to the brimstone crags
                 int placementPositionX = (Main.dungeonX > Main.maxTilesX / 2) ? WorldGen.genRand.Next((int)(Main.maxTilesX / 12), (int)(Main.maxTilesX / 9)) : WorldGen.genRand.Next((int)(Main.maxTilesX * 0.82), (int)(Main.maxTilesX * 0.925));
                 int placementPositionY = WorldGen.genRand.Next(Main.maxTilesY - 150, Main.maxTilesY - 125);
@@ -352,9 +351,9 @@ namespace CalamityMod.World
                 int sunkenSeaY = 0;
 
                 //copied the desert position code from the sunken sea's generation so the lab always generates within the sunken sea properly
-                for (int y = Main.maxTilesY - 200; y >= Main.worldSurface; y--)
+                for (int y = Main.UnderworldLayer; y >= Main.worldSurface; y--)
                 {
-                    if (Main.tile[placementPositionX, y].WallType == ModContent.WallType<NavystoneWall>() || 
+                    if (Main.tile[placementPositionX, y].WallType == ModContent.WallType<NavystoneWall>() ||
                     Main.tile[placementPositionX, y].WallType == ModContent.WallType<EutrophicSandWall>())
                     {
                         sunkenSeaY = y - 80; //offset so it generates nicely
@@ -426,7 +425,7 @@ namespace CalamityMod.World
 
             do
             {
-                int underworldTop = Main.maxTilesY - 200;
+                int underworldTop = Main.UnderworldLayer;
                 int placementPositionX = WorldGen.genRand.Next(120, Main.maxTilesX - 120);
                 int placementPositionY = WorldGen.genRand.Next((int)Main.worldSurface + 160, underworldTop - HellVerticalAvoidance);
 
@@ -509,7 +508,7 @@ namespace CalamityMod.World
 
             do
             {
-                int underworldTop = Main.maxTilesY - 200;
+                int underworldTop = Main.UnderworldLayer;
                 int placementPositionX = WorldGen.genRand.Next(120, Main.maxTilesX - 120);
                 int placementPositionY = WorldGen.genRand.Next((int)Main.worldSurface + 160, underworldTop - HellVerticalAvoidance);
 
@@ -628,7 +627,7 @@ namespace CalamityMod.World
                 new ChestItem(potionType, WorldGen.genRand.Next(4, 7 + 1)),
                 new ChestItem(ModContent.ItemType<LabSeekingMechanism>(), 1),
             };
-            
+
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);

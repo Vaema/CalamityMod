@@ -15,8 +15,9 @@ namespace CalamityMod.Items.Weapons.Typeless
         public new string LocalizationCategory => "Items.Weapons.Typeless";
         public override void SetDefaults()
         {
-            Item.DamageType = AverageDamageClass.Instance;
             Item.width = 58;
+            Item.height = 58;
+            Item.DamageType = AverageDamageClass.Instance;
             Item.damage = 8;
             Item.useAnimation = 25;
             Item.useTime = 25;
@@ -24,9 +25,8 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
-            Item.height = 58;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;
 
@@ -34,10 +34,10 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.shootSpeed = 5f;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ClasslessWeapon;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ClasslessWeapon;
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

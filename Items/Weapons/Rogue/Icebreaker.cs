@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,6 +12,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 60;
+            Item.height = 60;
             Item.damage = 60;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -21,9 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 14;
             Item.knockBack = 6.75f;
             Item.UseSound = SoundID.Item1;
-            Item.DamageType = DamageClass.Melee;
-            Item.height = 60;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<IcebreakerHammer>();
             Item.shootSpeed = 16f;

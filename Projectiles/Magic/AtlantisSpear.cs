@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.extraUpdates = (Main.zenithWorld && devourer) ? 1 : 0;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = (Main.zenithWorld && devourer) ? 2 : 6;
+            Projectile.idStaticNPCHitCooldown = (Main.zenithWorld && devourer) ? 2 : 8;
         }
 
         public override void AI()
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     for (int i = 0; i < 8; i++)
                     {
-                        Dust blue = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 206, Projectile.velocity.X * 0.005f, Projectile.velocity.Y * 0.005f, 200, default, 1f);
+                        Dust blue = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, Projectile.velocity.X * 0.005f, Projectile.velocity.Y * 0.005f, 200, default, 1f);
                         blue.noGravity = true;
                         blue.velocity *= 0.5f;
                     }
@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.Kill();
             }
             if (Main.rand.NextBool(4))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 206, Projectile.velocity.X * 0.005f, Projectile.velocity.Y * 0.005f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, Projectile.velocity.X * 0.005f, Projectile.velocity.Y * 0.005f);
         }
 
         // This is essential for Vilethorn-type projectiles, as velocity is a stored parameter and isn't supposed to actually move the projectile
@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 206, Projectile.oldVelocity.X * 0.005f, Projectile.oldVelocity.Y * 0.005f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, Projectile.oldVelocity.X * 0.005f, Projectile.oldVelocity.Y * 0.005f);
             }
 
             // Prevent recursion: the segments that are being spawned here will deliberately be set higher than total segments

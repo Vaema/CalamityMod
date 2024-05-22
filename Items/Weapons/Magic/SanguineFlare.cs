@@ -19,17 +19,17 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = 56;
+            Item.height = 60;
             Item.damage = 143;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 22;
-            Item.width = 56;
-            Item.height = 60;
             Item.useTime = 25;
             Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 8f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;

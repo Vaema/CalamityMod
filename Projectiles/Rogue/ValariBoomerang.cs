@@ -1,12 +1,12 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -37,9 +37,9 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             //Dust trail
-            if (Main.rand.Next(5) == 0)
+            if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 67, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
 
             //Constant rotation
@@ -132,15 +132,15 @@ namespace CalamityMod.Projectiles.Rogue
 
                 Projectile.ai[0] = 1;
 
-                int icicleAmt = Main.rand.Next(2, 4);
-                if (Projectile.owner == Main.myPlayer)
+            int icicleAmt = Main.rand.Next(2, 4);
+            if (Projectile.owner == Main.myPlayer)
+            {
+                for (int i = 0; i < icicleAmt; i++)
                 {
-                    for (int i = 0; i < icicleAmt; i++)
-                    {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
                     int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, Main.rand.NextBool() ? ModContent.ProjectileType<Valaricicle>() : ModContent.ProjectileType<Valaricicle2>(), Projectile.damage / 3, 0f, Projectile.owner);
-                    }
                 }
+            }
         }
 
 

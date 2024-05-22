@@ -1,9 +1,12 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+using ReLogic.Utilities;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -14,6 +17,9 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheObliterator>();
         private const int FramesPerShot = 5;
+        public SlotId GFB;
+        public int GFBCounter = 0;
+        public int time = 0;
 
         // Ensures that the main AI only runs once per frame, despite the projectile's multiple updates
         private int extraUpdateCounter = 0;
@@ -46,6 +52,30 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         // localAI[1] counts up to 19 (4 x 5 - 1), then resets back to 0 for a 20-frame cycle.
         public override void AI()
         {
+            time++;
+            if (Main.zenithWorld)
+            {
+                if (time == 1)
+                {
+                    GFB = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BoomBoomKawaii") with { IsLooped = true });
+                    GFBCounter++;
+                }
+                if (time % 30 == 0 && GFBCounter > 0)
+                    GFBCounter--;
+                for (int i = 0; i < 13; i++)
+                {
+                    Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 2f;
+                    Dust dust = Dust.NewDustPerfect(dustPos, Main.rand.Next(130, 134 + 1), (i * MathHelper.Pi + Projectile.rotation * Math.Sign(Projectile.velocity.X)).ToRotationVector2() * Main.rand.NextFloat(1f, 90f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.1f, 1.7f);
+                }
+                if (SoundEngine.TryGetActiveSound(GFB, out var RumblePitch) && RumblePitch.IsPlaying)
+                {
+                    RumblePitch.Pitch = MathHelper.Lerp(0f, 1f, MathHelper.Clamp(GFBCounter * 0.1f, 0, 1));
+                    RumblePitch.Volume = MathHelper.Lerp(1f, 1.5f, GFBCounter * 0.1f);
+                }
+            }
+
             if ((Projectile.position - Main.player[Projectile.owner].position).Length() > 3200f) //200 blocks
                 Projectile.Kill();
 
@@ -61,23 +91,19 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 Projectile.localAI[1] = 0f;
 
             // Attempt to fire a laser every 5 frames
-            if(Projectile.localAI[1] % FramesPerShot == 0f)
+            if (Projectile.localAI[1] % FramesPerShot == 0f)
             {
                 List<int> targets = new List<int>();
                 float laserRange = 300f;
-                for (int i = 0; i < Main.npc.Length; ++i)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    ref NPC n = ref Main.npc[i];
-                    if (n is null || !n.active)
-                        continue;
-
                     if (n.CanBeChasedBy(Projectile, false) && (n.Center - Projectile.Center).Length() <= laserRange && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
                     {
-                        targets.Add(i);
+                        targets.Add(n.whoAmI);
                         // Bosses are added 5 times instead of 1 so that they are preferentially but not exclusively targeted.
                         if (n.boss)
                             for (int j = 0; j < 4; ++j)
-                                targets.Add(i);
+                                targets.Add(n.whoAmI);
                     }
                 }
                 if (targets.Count == 0)
@@ -120,7 +146,17 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Vector2 origin = new Vector2(10f, 10f);
             Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/Yoyos/ObliteratorYoyoGlow").Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, 2f, SpriteEffects.None, 0);
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+        public override void OnKill(int timeLeft)
+        {
+            if (Main.zenithWorld && SoundEngine.TryGetActiveSound(GFB, out var RumblePlaying) && RumblePlaying.IsPlaying)
+            {
+                RumblePlaying?.Stop();
+            }
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            GFBCounter = 15;
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+        }
     }
 }

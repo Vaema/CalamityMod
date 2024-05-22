@@ -24,10 +24,10 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override void SetDefaults()
         {
-            Item.damage = 200;
-            Item.mana = 12;
             Item.width = 38;
             Item.height = 24;
+            Item.damage = 200;
+            Item.mana = 12;
             Item.useTime = Item.useAnimation = 14;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;

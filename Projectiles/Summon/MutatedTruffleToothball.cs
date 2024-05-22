@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(1f, 3f);
                     Dust.NewDustPerfect(Projectile.Center, 7, velocity);
 
-                    Dust deathDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 7);
+                    Dust deathDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.WoodFurniture);
                     deathDust.noGravity = true;
                 }
 

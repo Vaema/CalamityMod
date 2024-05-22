@@ -15,12 +15,12 @@ namespace CalamityMod.Items.Tools
         {
             // Instead of copying these values, we can clone and modify the ones we want to copy
             Item.CloneDefaults(ItemID.AmethystHook);
-            Item.shootSpeed = BobbitHead.LaunchSpeed; // How quickly the hook is shot.
-            Item.shoot = ProjectileType<BobbitHead>();
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
-            Item.rare = ModContent.RarityType<PureGreen>();
             Item.width = 30;
             Item.height = 32;
+            Item.shootSpeed = BobbitHead.LaunchSpeed; // How quickly the hook is shot.
+            Item.shoot = ProjectileType<BobbitHead>();
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+            Item.rare = ModContent.RarityType<PureGreen>();
         }
     }
 }

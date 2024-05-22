@@ -1,12 +1,14 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Placeables.Banners;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Critters;
-using System;
+using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.SunkenSea
 {
     public class SeaMinnow : ModNPC
@@ -40,7 +42,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SeaMinnow")
             });
@@ -48,10 +50,10 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
-            CalamityAI.PassiveSwimmingAI(NPC, Mod, 3, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
+            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 3, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             NPC.noGravity = true;
-            bool flag14 = false;
+            bool shouldSwimAway = false;
             if (NPC.direction == 0)
             {
                 NPC.TargetClosest(true);
@@ -62,13 +64,13 @@ namespace CalamityMod.NPCs.SunkenSea
                 if (Main.player[NPC.target].wet && !Main.player[NPC.target].dead &&
                     (Main.player[NPC.target].Center - NPC.Center).Length() < 150f)
                 {
-                    flag14 = true;
+                    shouldSwimAway = true;
                 }
-                if ((!Main.player[NPC.target].wet || Main.player[NPC.target].dead) && flag14)
+                if ((!Main.player[NPC.target].wet || Main.player[NPC.target].dead) && shouldSwimAway)
                 {
-                    flag14 = false;
+                    shouldSwimAway = false;
                 }
-                if (!flag14)
+                if (!shouldSwimAway)
                 {
                     if (NPC.collideX || NPC.velocity.X == 0f)
                     {
@@ -93,7 +95,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         }
                     }
                 }
-                if (flag14)
+                if (shouldSwimAway)
                 {
                     NPC.TargetClosest(true);
                     NPC.velocity.X = NPC.velocity.X - (float)NPC.direction * 0.25f;
@@ -140,15 +142,15 @@ namespace CalamityMod.NPCs.SunkenSea
                         }
                     }
                 }
-                int num258 = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
-                int num259 = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
-                if (Main.tile[num258, num259 - 1].LiquidAmount > 128)
+                int npcTileX = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
+                int npcTileY = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
+                if (Main.tile[npcTileX, npcTileY - 1].LiquidAmount > 128)
                 {
-                    if (Main.tile[num258, num259 + 1].HasTile)
+                    if (Main.tile[npcTileX, npcTileY + 1].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
-                    else if (Main.tile[num258, num259 + 2].HasTile)
+                    else if (Main.tile[npcTileX, npcTileY + 2].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
@@ -213,7 +215,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 68, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
     }

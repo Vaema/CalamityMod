@@ -9,8 +9,7 @@ namespace CalamityMod.Projectiles.Melee
     {
         public new string LocalizationCategory => "Projectiles.Melee";
 
-        public static int OnHitIFrames = 3;
-        public static int TotalSegments = 6;
+        public static int TotalSegments = 10;
 
         public override void SetDefaults()
         {
@@ -23,7 +22,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.penetrate = -1;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 12;
+            Projectile.idStaticNPCHitCooldown = 6;
         }
 
         public override void AI()
@@ -61,7 +60,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     for (int i = 0; i < 3; i++)
                     {
-                        Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 234, Projectile.velocity.X * 0.005f, Projectile.velocity.Y * 0.005f, 200, default, 1f);
+                        Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.BoneTorch, Projectile.velocity.X * 0.005f, Projectile.velocity.Y * 0.005f, 200, default, 1f);
                         dust.noGravity = true;
                         dust.velocity *= 0.5f;
                     }
@@ -71,7 +70,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.Kill();
             }
             if (Main.rand.NextBool(10))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 234, Projectile.velocity.X * 0.005f, Projectile.velocity.Y * 0.005f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BoneTorch, Projectile.velocity.X * 0.005f, Projectile.velocity.Y * 0.005f);
         }
 
         // This is essential for Vilethorn-type projectiles, as velocity is a stored parameter and isn't supposed to actually move the projectile
@@ -81,12 +80,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnKill(int timeLeft)
         {
-            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 234, Projectile.oldVelocity.X * 0.005f, Projectile.oldVelocity.Y * 0.005f);
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            Main.player[Projectile.owner].GiveIFrames(OnHitIFrames);
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BoneTorch, Projectile.oldVelocity.X * 0.005f, Projectile.oldVelocity.Y * 0.005f);
         }
     }
 }

@@ -60,9 +60,9 @@ namespace CalamityMod.Projectiles.Typeless
                 {
                     for (int i = 0; i < 3; i++)
                     {
-                        Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 18, Projectile.velocity.X * 0.025f, Projectile.velocity.Y * 0.025f, 170, new Color(), 1.2f);
+                        Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CorruptGibs, Projectile.velocity.X * 0.025f, Projectile.velocity.Y * 0.025f, 170, new Color(), 1.2f);
                     }
-                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 14, 0f, 0f, 170, new Color(), 1.1f);
+                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 170, new Color(), 1.1f);
                 }
 
                 if (Projectile.alpha >= 255)
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Typeless
         // Draw the tip for the final thorn
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (Projectile.ai[0] == TotalSegments)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ThornTip").Value;
 

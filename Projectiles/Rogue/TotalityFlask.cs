@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Rogue
             Vector2 vector2 = spinningpoint.RotatedBy((double)rotation, new Vector2());
             for (int index1 = 0; index1 < 1; ++index1)
             {
-                int index2 = Dust.NewDust(Projectile.Center + vector2 - Vector2.One * 5f, 4, 4, 6, 0.0f, 0.0f, 0, new Color(), 1f);
+                int index2 = Dust.NewDust(Projectile.Center + vector2 - Vector2.One * 5f, 4, 4, DustID.Torch, 0.0f, 0.0f, 0, new Color(), 1f);
                 Main.dust[index2].scale = 1.5f;
                 Main.dust[index2].noGravity = true;
                 Main.dust[index2].velocity = Main.dust[index2].velocity * 0.25f + Vector2.Normalize(vector2) * 1f;
@@ -62,20 +62,20 @@ namespace CalamityMod.Projectiles.Rogue
 
             Vector2 vector2 = new Vector2(20f, 20f);
             for (int d = 0; d < 5; ++d)
-                Dust.NewDust(Projectile.Center - vector2 / 2f, (int) vector2.X, (int) vector2.Y, 191, 0.0f, 0.0f, 0, Color.Red, 1f);
+                Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.SpookyWood, 0.0f, 0.0f, 0, Color.Red, 1f);
             for (int d = 0; d < 10; ++d)
             {
-                int index2 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int) vector2.X, (int) vector2.Y, 31, 0.0f, 0.0f, 100, new Color(), 1.5f);
+                int index2 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Smoke, 0.0f, 0.0f, 100, new Color(), 1.5f);
                 Dust dust = Main.dust[index2];
                 dust.velocity *= 1.4f;
             }
             for (int d = 0; d < 20; ++d)
             {
-                int index2 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int) vector2.X, (int) vector2.Y, 6, 0.0f, 0.0f, 100, new Color(), 2.5f);
+                int index2 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 2.5f);
                 Dust dust1 = Main.dust[index2];
                 dust1.noGravity = true;
                 dust1.velocity *= 5f;
-                int index3 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int) vector2.X, (int) vector2.Y, 6, 0.0f, 0.0f, 100, new Color(), 1.5f);
+                int index3 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 1.5f);
                 Dust dust2 = Main.dust[index3];
                 dust2.velocity *= 3f;
             }

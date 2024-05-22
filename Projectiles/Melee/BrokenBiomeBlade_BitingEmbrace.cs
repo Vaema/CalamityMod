@@ -1,16 +1,16 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Particles;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 
 namespace CalamityMod.Projectiles.Melee
@@ -119,7 +119,6 @@ namespace CalamityMod.Projectiles.Melee
                     case 1:
                         Projectile.width = Projectile.height = 140;
                         SoundEngine.PlaySound(SoundID.DD2_OgreSpit, Projectile.Center);
-                        Projectile.damage = (int)(Projectile.damage * BrokenBiomeBlade.ColdAttunement_SecondSwingBoost);
                         break;
                     case 2:
                         Projectile.width = Projectile.height = 130;
@@ -175,7 +174,7 @@ namespace CalamityMod.Projectiles.Melee
 
             //Make the owner look like theyre holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;
-            Owner.direction = Math.Sign(rotation.ToRotationVector2().X);
+            Owner.ChangeDir(Math.Sign(rotation.ToRotationVector2().X));
             Owner.itemRotation = rotation;
             if (Owner.direction != 1)
             {

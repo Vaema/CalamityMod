@@ -1,4 +1,4 @@
-using CalamityMod.Tiles;
+﻿using CalamityMod.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;

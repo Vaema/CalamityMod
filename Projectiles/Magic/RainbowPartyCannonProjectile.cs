@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Localization;
@@ -31,8 +31,7 @@ namespace CalamityMod.Projectiles.Magic
 
             UpdatePlayerVisuals(Owner.Center);
 
-            bool stillUsingCannon = Owner.channel && !Owner.noItems && !Owner.CCed;
-            if (!stillUsingCannon)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;

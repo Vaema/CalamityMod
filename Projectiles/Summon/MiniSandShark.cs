@@ -1,7 +1,7 @@
 ﻿using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class MiniSandShark : ModProjectile, ILocalizedModType
@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation(); // The projectile looks towards where it's going.
-            
+
             Projectile.netUpdate = true;
         }
 
@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
                 Dust.NewDust(Projectile.Center,
                     Projectile.width,
                     Projectile.height,
-                    85,
+                    DustID.UnusedBrown,
                     Projectile.velocity.X / 2f,
                     Projectile.velocity.Y / 2f);
             }

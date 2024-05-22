@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {
@@ -13,19 +14,19 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Molten";
 
-        public const int MiningSpeedPercentSetBonus = 10;
-
         public override void UpdateSetBonusText(ref string setBonusText)
         {
-            string extraLine = "\n20% extra true melee damage\nGrants immunity to fire blocks and temporary immunity to lava";
-            setBonusText += extraLine;
+            setBonusText = $"{CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}")}";
         }
 
         public override void ApplyArmorSetBonus(Player player)
         {
+            // Nerf the set bonus damage slightly
+            player.GetDamage<MeleeDamageClass>() -= 0.03f;
+
             player.fireWalk = true;
             player.lavaMax += 300;
-            player.GetDamage<TrueMeleeDamageClass>() += 0.2f;
+            player.GetDamage<TrueMeleeDamageClass>() += 0.1f;
         }
     }
 }

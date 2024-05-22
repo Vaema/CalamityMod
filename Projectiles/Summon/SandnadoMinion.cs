@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Summon
         public ref float TimerForShooting => ref Projectile.ai[0];
 
         public bool CheckForSpawning = false;
-        
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 6;
@@ -157,10 +157,10 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.damage,
                     Projectile.knockBack,
                     Projectile.owner);
-                
+
                 TimerForShooting = 0f;
             }
-            
+
             if (TimerForShooting < SandSharknadoStaff.FireSpeed)
                 TimerForShooting++;
         }

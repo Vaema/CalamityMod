@@ -125,12 +125,19 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(5), ScaleExact(1.5f)) },
                 { ProjectileID.ChlorophyteChainsaw, standardChainsawTweaks },
                 { ProjectileID.ChlorophyteDrill, standardDrillTweaks },
+                { ProjectileID.ChlorophyteOrb, Do(NoPiercing) },
                 { ProjectileID.CobaltChainsaw, standardChainsawTweaks },
                 { ProjectileID.CobaltDrill, standardDrillTweaks },
                 { ProjectileID.CrystalBullet, standardBulletTweaks },
                 { ProjectileID.CrystalVileShardHead, Do(LocalIFrames(23)) },
                 { ProjectileID.CrystalVileShardShaft, Do(LocalIFrames(23)) },
                 { ProjectileID.CursedBullet, standardBulletTweaks },
+                { ProjectileID.ClusterRocketI, Do(LocalIFrames(15)) },
+                { ProjectileID.ClusterFragmentsI, Do(IDStaticIFrames(15)) },
+                { ProjectileID.ClusterRocketII, Do(LocalIFrames(15)) },
+                { ProjectileID.ClusterFragmentsII, Do(IDStaticIFrames(15)) },
+                { ProjectileID.ClusterSnowmanRocketI, Do(LocalIFrames(15)) },
+                { ProjectileID.ClusterSnowmanRocketII, Do(LocalIFrames(15)) },
                 { ProjectileID.DD2SquireSonicBoom, Do(PiercingExact(3)) }, // Flying Dragon
                 { ProjectileID.EmeraldBolt, Do(NoPiercing) },
                 { ProjectileID.EmpressBlade, Do(LocalIFrames(30)) }, // Terraprisma
@@ -139,21 +146,24 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.FairyQueenRangedItemShot, Do(PiercingExact(7), ExtraUpdatesExact(1))  }, // Eventide Convert
                 { ProjectileID.FlaironBubble, Do(ExtraUpdatesExact(1), TimeLeftExact(400)) },
                 { ProjectileID.Flamarang, Do(ExtraUpdatesExact(2)) },
-                { ProjectileID.Flames, Do(IDStaticIFrames(10)) }, // Flamethrower + Elf Melter
+                { ProjectileID.Flames, Do(IDStaticIFrames(5)) }, // Flamethrower AND Elf Melter flames
                 { ProjectileID.FlamingJack, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.FlowerPetal, Do(MaxUpdatesExact(4), LocalIFrames(10)) }, // Orichalcum armor
                 { ProjectileID.FlowerPow, Do(ExtraUpdatesExact(1)) },
-                { ProjectileID.FlyingKnife, Do(ExtraUpdatesExact(1)) }, 
+                { ProjectileID.FlyingKnife, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.FrostBoltStaff, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.FruitcakeChakram, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.GiantBee, Do(PiercingExact(2)) },
                 { ProjectileID.GoldenBullet, standardBulletTweaks },
+                { ProjectileID.GoldenShowerFriendly, Do(PiercingExact(2)) },
                 { ProjectileID.GreenCounterweight, counterweightTweaks },
                 { ProjectileID.Hamdrax, standardDrillTweaks }, // Drax (never internally renamed since 1.1)
                 { ProjectileID.IceBoomerang, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.IceSickle, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.IchorBullet, standardBulletTweaks },
                 { ProjectileID.InfluxWaver, Do(ExtraUpdatesExact(1)) },
+                { ProjectileID.InfernoFriendlyBolt, Do(ExtraUpdatesExact(1)) },
+                { ProjectileID.InfernoFriendlyBlast, Do(ExtraUpdatesExact(2)) },
                 { ProjectileID.LaserDrill, Do(ArmorPenetrationDelta(+25), LocalIFrames(5)) },
                 { ProjectileID.LightDisc, Do(MaxUpdatesExact(3)) },
                 { ProjectileID.LostSoulHostile, Do(TileCollide) }, // Ragged Caster
@@ -178,6 +188,10 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.QueenSlimeGelAttack, Do(NoPiercing) },
                 { ProjectileID.QueenSlimeMinionPinkBall, Do(NoPiercing) },
                 { ProjectileID.RedCounterweight, counterweightTweaks },
+                { ProjectileID.RocketFireworkBlue, Do(TimeLeftDelta(+45)) },
+                { ProjectileID.RocketFireworkGreen, Do(TimeLeftDelta(+45)) },
+                { ProjectileID.RocketFireworkRed, Do(TimeLeftDelta(+45)) },
+                { ProjectileID.RocketFireworkYellow, Do(TimeLeftDelta(+45)) },
                 { ProjectileID.SawtoothShark, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(6)) },
                 { ProjectileID.ShadowBeamHostile, Do(TimeLeftExact(60)) },
                 { ProjectileID.Shroomerang, Do(ExtraUpdatesExact(1)) },
@@ -186,6 +200,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.StarWrath, Do(NoPiercing) },
                 { ProjectileID.Sunfury, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.SwordBeam, Do(ExtraUpdatesExact(1)) }, // Beam Sword projectile
+                { ProjectileID.ThunderStaffShot, Do(PiercingExact(3)) }, //Thunder Zapper projectile
                 { ProjectileID.TitaniumChainsaw, standardChainsawTweaks },
                 { ProjectileID.TitaniumDrill, standardDrillTweaks },
                 { ProjectileID.Trimarang, Do(ExtraUpdatesExact(1)) },
@@ -193,6 +208,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.VenomBullet, standardBulletTweaks },
                 { ProjectileID.VenomFang, Do(LocalIFrames(10)) },
                 { ProjectileID.VortexDrill, standardDrillTweaks },
+                { ProjectileID.Wasp, Do(PiercingExact(2)) },
                 { ProjectileID.YellowCounterweight, counterweightTweaks },
                 #endregion
 

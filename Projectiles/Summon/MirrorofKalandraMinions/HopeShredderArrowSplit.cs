@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = MirrorofKalandra.Vile_SplitIFrames;
             Projectile.penetrate = 3;
-            
+
             Projectile.DamageType = DamageClass.Summon;
             Projectile.width = Projectile.height = 18;
             Projectile.usesLocalNPCImmunity = true;

@@ -1,9 +1,9 @@
-﻿using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Typeless;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Typeless;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Typeless
                         }
                         SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact, Projectile.Center);
                     }
-                    player.direction = (Math.Cos(Projectile.rotation) > 0).ToDirectionInt();
+                    player.ChangeDir((Math.Cos(Projectile.rotation) > 0).ToDirectionInt());
                 }
             }
             else
@@ -176,11 +176,8 @@ namespace CalamityMod.Projectiles.Typeless
                 // Adjust the player's held projectile type.
                 if (player.heldProj == -1)
                     player.heldProj = Projectile.whoAmI;
-                if (player.mount != null)
-                {
-                    player.mount.Dismount(player);
-                }
-                player.direction = (Projectile.velocity.X > 0).ToDirectionInt();
+                player.mount?.Dismount(player);
+                player.ChangeDir(Math.Sign(Projectile.velocity.X) <= 0 ? -1 : 1);
                 // Generate dust
                 if (Projectile.ai[0] % DustSpawnInterval == DustSpawnInterval - 1f)
                 {

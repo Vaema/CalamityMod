@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,16 +14,16 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 140;
-            Item.mana = 10;
             Item.width = 28;
             Item.height = 20;
+            Item.damage = 140;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 14;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item14;
             Item.autoReuse = true;
             Item.DamageType = DamageClass.Summon;
@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Summon
             {
                 int p = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, 1f);
                 if (Main.projectile.IndexInRange(p))
-                   Main.projectile[p].originalDamage = Item.damage;
+                    Main.projectile[p].originalDamage = Item.damage;
             }
             return false;
         }

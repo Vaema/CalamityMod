@@ -1,8 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Magic
         #region Drawing
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D lightningSegmentTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D lightningSegmentTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Projectile.GetAlpha(lightColor);
             Vector2 lightningScale = new Vector2(Projectile.scale) / 2f;
             for (int i = 0; i < 3; i++)

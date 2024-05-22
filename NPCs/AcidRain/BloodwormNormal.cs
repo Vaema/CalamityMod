@@ -1,8 +1,8 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Events;
 using CalamityMod.Items.SummonItems;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -56,10 +56,9 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.velocity.X = xSpeed * NPC.ai[0];
             NPC.spriteDirection = (int)NPC.ai[0];
             bool flee = false;
-            for (int i = 0; i < Main.player.Length; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player.active && !player.dead && Vector2.Distance(player.Center, NPC.Center) <= 220f)
+                if (!player.dead && Vector2.Distance(player.Center, NPC.Center) <= 220f)
                 {
                     flee = true;
                     break;
@@ -81,7 +80,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bloodworm")
             });

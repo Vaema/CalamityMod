@@ -1,6 +1,6 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
 {
@@ -10,8 +10,8 @@ namespace CalamityMod.Items.Placeables.Furniture
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 40;
+            Item.width = 26;
+            Item.height = 36;
             Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;

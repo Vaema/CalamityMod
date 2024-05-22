@@ -3,10 +3,10 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Ravager
 {
@@ -32,7 +32,6 @@ namespace CalamityMod.NPCs.Ravager
             AIType = -1;
             NPC.netAlways = true;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.alpha = 255;
             NPC.HitSound = RavagerBody.HitSound;
@@ -50,6 +49,10 @@ namespace CalamityMod.NPCs.Ravager
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -112,11 +115,11 @@ namespace CalamityMod.NPCs.Ravager
         {
             if (NPC.life > 0)
             {
-                int num285 = 0;
-                while ((double)num285 < hit.Damage / (double)NPC.lifeMax * 100.0)
+                int dustCounter = 0;
+                while ((double)dustCounter < hit.Damage / (double)NPC.lifeMax * 100.0)
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, (float)hit.HitDirection, -1f, 0, default, 1f);
-                    num285++;
+                    dustCounter++;
                 }
             }
             else if (Main.netMode != NetmodeID.MultiplayerClient && !Main.zenithWorld) //GFB does something else

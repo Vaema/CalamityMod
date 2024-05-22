@@ -3,9 +3,9 @@ using CalamityMod.Items.Placeables;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.Enums;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -37,7 +37,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SulphurousSea
             TileObjectData.newTile.LavaDeath = true;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(150, 100, 50), CalamityUtils.GetText("Tiles.Column"));
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
 
             RegisterItemDrop(ModContent.ItemType<SulphurousSandstone>());
             FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<SulphurousSandstone>(), Type, 0);

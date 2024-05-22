@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 18;
             Item.height = 46;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.defense = 4;
             Item.accessory = true;
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Accessories
                 if (Main.rand.NextBool(15))
                 {
                     var source = player.GetSource_Accessory(Item);
-                    int cloudCount = Main.rand.Next(2,5);
+                    int cloudCount = Main.rand.Next(2, 5);
                     for (int i = 0; i < cloudCount; i++)
                     {
                         int type = Utils.SelectRandom(Main.rand, new int[]

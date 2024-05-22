@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 30;
             Item.height = 30;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.FeralClaws).
+                AddIngredient(ItemID.WarriorEmblem).
                 AddIngredient<UelibloomBar>(2).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

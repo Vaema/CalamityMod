@@ -1,13 +1,13 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
     public class StarSwallowerSummon : ModProjectile, ILocalizedModType
@@ -271,7 +271,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(2, Main.projFrames[Projectile.type], ReleasingAcid.ToInt(), Projectile.frame);
             Main.EntitySpriteDraw(texture,
                              Projectile.Center - Main.screenPosition,

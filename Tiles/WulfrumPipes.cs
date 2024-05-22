@@ -1,14 +1,14 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.DataStructures;
-using System;
-using CalamityMod.Systems;
+﻿using System;
 using CalamityMod.Items.Tools;
+using CalamityMod.Systems;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles
 {
@@ -19,7 +19,7 @@ namespace CalamityMod.Tiles
         //public float PlaceProgress(Point pos) => Math.Clamp((PlaceTimeStart - Main.GameUpdateCount) / (pos.GetTileRNG() * 5f + 5f), 0, 1);
 
         public static Vector2 DisplaceStart(Point pos) => new Vector2(0, -(pos.GetTileRNG() * 10f + 7f));
-        public static float RotationStart(Point pos) => - MathHelper.PiOver4 * 0.8f + MathHelper.PiOver4 * 1.6f * pos.GetTileRNG(1);
+        public static float RotationStart(Point pos) => -MathHelper.PiOver4 * 0.8f + MathHelper.PiOver4 * 1.6f * pos.GetTileRNG(1);
 
 
         public override void SetStaticDefaults()
@@ -47,9 +47,9 @@ namespace CalamityMod.Tiles
 
         public override void PlaceInWorld(int i, int j, Item item)
         {
-            SoundEngine.PlaySound(SoundID.Item52 with { Volume = SoundID.Item52.Volume * 0.75f, Pitch = SoundID.Item52.Pitch - 0.5f }, new Vector2( i * 16, j * 16 ));
+            SoundEngine.PlaySound(SoundID.Item52 with { Volume = SoundID.Item52.Volume * 0.75f, Pitch = SoundID.Item52.Pitch - 0.5f }, new Vector2(i * 16, j * 16));
         }
-        
+
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
             return false;

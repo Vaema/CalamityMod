@@ -1,26 +1,27 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.BiomeManagers.BestiaryCategories;
+using CalamityMod.Projectiles.Enemy;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using ReLogic.Content;
-using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.Astral
 {
     public class FusionFeeder : ModNPC
     {
-        private static Texture2D glowmask;
+        public static Asset<Texture2D> glowmask;
 
         public Player Target => Main.player[NPC.target];
 
@@ -35,8 +36,8 @@ namespace CalamityMod.NPCs.Astral
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
-                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/FusionFeederGlow", AssetRequestMode.ImmediateLoad).Value;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/FusionFeederGlow", AssetRequestMode.AsyncLoad);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.5f,
                 PortraitPositionXOverride = 0f,
@@ -75,7 +76,11 @@ namespace CalamityMod.NPCs.Astral
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralDesertBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<AstralDesert>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public static bool ValidMovementPosition(Tile tile)
@@ -123,6 +128,9 @@ namespace CalamityMod.NPCs.Astral
                 // Move towards the target and lunge at them, releasing meteors.
                 if (attemptingToAttackTarget)
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     NPC.TargetClosest(true);
                     NPC.velocity += new Vector2(NPC.direction, NPC.directionY) * 0.15f;
                     NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -6f, 6f);
@@ -149,7 +157,7 @@ namespace CalamityMod.NPCs.Astral
                             SoundEngine.PlaySound(SoundID.Item73, NPC.Center);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int damage = DownedBossSystem.downedAstrumAureus ? 55 : 45;
+                                int damage = DownedBossSystem.downedAstrumAureus ? (Main.masterMode ? 34 : Main.expertMode ? 40 : 55) : (Main.masterMode ? 30 : Main.expertMode ? 35 : 45);
                                 Vector2 meteorShootVelocity = NPC.SafeDirectionTo(Target.Center) * 9f;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + meteorShootVelocity * 6f, meteorShootVelocity, ModContent.ProjectileType<AstralMeteorProj>(), damage, 0f);
                             }
@@ -162,6 +170,9 @@ namespace CalamityMod.NPCs.Astral
                 }
                 else
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     // Rebound on collision.
                     if (NPC.collideX)
                     {
@@ -207,6 +218,9 @@ namespace CalamityMod.NPCs.Astral
             }
             else
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 if (NPC.velocity.Y == 0f)
                 {
                     // Search for any potential closer targets if attempting to attack.
@@ -231,7 +245,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.FusionFeeder")
             });
@@ -282,7 +296,7 @@ namespace CalamityMod.NPCs.Astral
             spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + offset, NPC.frame, drawColor, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
 
             //draw glowmask
-            spriteBatch.Draw(glowmask, NPC.Center - screenPos + offset, NPC.frame, Color.White * 0.6f, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            spriteBatch.Draw(glowmask.Value, NPC.Center - screenPos + offset, NPC.frame, Color.White * 0.6f, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
 
             return false;
         }
@@ -309,7 +323,7 @@ namespace CalamityMod.NPCs.Astral
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemID.SharkFin, 8);
-            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Stardust>(), 1, 2, 3, 3, 4));
+            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 1, 2, 3, 3, 4));
         }
     }
 }

@@ -9,7 +9,7 @@ namespace CalamityMod.Systems
     {
         public override SceneEffectPriority Priority => SceneEffectPriority.BossHigh;
 
-        public override bool IsSceneEffectActive(Player player) => ExoMechsSky.CanSkyBeActive;
+        public override bool IsSceneEffectActive(Player player) => ExoMechsSky.CanSkyBeActive || player.Calamity().monolithExoShader > 0;
 
         public override void SpecialVisuals(Player player, bool isActive)
         {

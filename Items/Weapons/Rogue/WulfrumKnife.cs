@@ -1,12 +1,12 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static readonly SoundStyle Throw3Sound = new("CalamityMod/Sounds/Item/WulfrumKnifeThrowFull") { PitchVariance = 0.4f };
         public static readonly SoundStyle Throw2Sound = new("CalamityMod/Sounds/Item/WulfrumKnifeThrowTwo") { PitchVariance = 0.4f };
         public static readonly SoundStyle Throw1Sound = new("CalamityMod/Sounds/Item/WulfrumKnifeThrowSingle") { PitchVariance = 0.4f };
-        public static readonly SoundStyle TileHitSound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit", 2) { PitchVariance = 0.4f , MaxInstances = 3};
+        public static readonly SoundStyle TileHitSound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit", 2) { PitchVariance = 0.4f, MaxInstances = 3 };
 
         public override void SetStaticDefaults()
         {
@@ -28,6 +28,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 22;
+            Item.height = 38;
             Item.damage = 9;
             Item.noMelee = true;
             Item.consumable = true;
@@ -42,7 +43,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1f;
             Item.UseSound = Throw3Sound;
             Item.autoReuse = true;
-            Item.height = 38;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(0, 0, 0, 5);
             Item.rare = ItemRarityID.Blue;
@@ -85,7 +85,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
         }
 
-        
+
         //While this may look stupid, its necessary because ReuseDelay fucks up the consumption of the item otherwise.
         public override bool ConsumeItem(Player player) => shootCount < 0;
         public override bool? UseItem(Player player)
@@ -121,7 +121,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 Item.UseSound = Throw1Sound;
         }
 
-		public override float StealthDamageMultiplier => 0.8f;
+        public override float StealthDamageMultiplier => 0.8f;
         public override bool AdditionalStealthCheck() => stealthStrikeStarted;
 
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)

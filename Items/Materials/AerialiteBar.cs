@@ -12,14 +12,14 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 69; // Hellstone
+            ItemID.Sets.SortingPriorityMaterials[Type] = 69; // Hellstone
         }
 
         public override void SetDefaults()
         {
-            Item.createTile = ModContent.TileType<AerialiteBarTile>();
             Item.width = 30;
             Item.height = 24;
+            Item.createTile = ModContent.TileType<AerialiteBarTile>();
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.Orange;

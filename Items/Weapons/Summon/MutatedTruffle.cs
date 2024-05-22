@@ -31,6 +31,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = 24;
+            Item.height = 26;
             Item.damage = 275;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<MutatedTruffleMinion>();
@@ -38,13 +40,11 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.useTime = Item.useAnimation = 10;
             Item.mana = 10;
-            Item.width = 24;
-            Item.height = 26;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.NPCHit14;
             Item.rare = ModContent.RarityType<PureGreen>();
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

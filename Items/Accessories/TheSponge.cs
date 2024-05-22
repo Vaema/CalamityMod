@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.CalPlayer;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -17,7 +20,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("Sponge")]
-    public class TheSponge : ModItem, ILocalizedModType
+    public class TheSponge : ModItem, ILocalizedModType, IDyeableShaderRenderer
     {
         public new string LocalizationCategory => "Items.Accessories";
 
@@ -37,6 +40,29 @@ namespace CalamityMod.Items.Accessories
         public static int ShieldActiveDefense = 30;
         public static float ShieldActiveDamageReduction = 0.1f;
 
+        public float RenderDepth => IDyeableShaderRenderer.SpongeShieldDepth;
+
+        public bool ShouldDrawDyeableShader
+        {
+            get
+            {
+                bool result = false;
+                foreach (Player player in Main.ActivePlayers)
+                {
+                    if (player.outOfRange || player.dead)
+                        continue;
+
+                    CalamityPlayer modPlayer = player.Calamity();
+
+                    // Do not render the shield if its visibility is off (or it does not exist)
+                    bool isVanityOnly = modPlayer.spongeShieldVisible && !modPlayer.sponge;
+                    bool shieldExists = isVanityOnly || modPlayer.SpongeShieldDurability > 0;
+                    bool shouldntDraw = !modPlayer.spongeShieldVisible || modPlayer.drawnAnyShieldThisFrame || !shieldExists;
+                    result |= !shouldntDraw;
+                }
+                return result;
+            }
+        }
 
         public override void SetStaticDefaults()
         {
@@ -48,7 +74,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
@@ -69,6 +95,12 @@ namespace CalamityMod.Items.Accessories
         // In vanity, provides a visual shield but no actual functionality
         public override void UpdateVanity(Player player) => player.Calamity().spongeShieldVisible = true;
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            string adrenTooltip = CalamityWorld.revenge ? this.GetLocalizedValue("ShieldAdren") : "";
+            tooltips.FindAndReplace("[ADREN]", adrenTooltip);
+        }
+
         // Renders the bubble shield over the item in the world.
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
@@ -76,7 +108,7 @@ namespace CalamityMod.Items.Accessories
             if (Texture == "CalamityMod/Items/Accessories/TheSponge")
             {
                 Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Items/Accessories/TheSpongeShield").Value;
-                spriteBatch.Draw(tex, Item.Center - Main.screenPosition + new Vector2(0f, 0f), Main.itemAnimations[Item.type].GetFrame(tex), Color.Cyan * 0.5f, 0f, new Vector2(tex.Width / 2f, (tex.Height / 30f ) * 0.8f), 1f, SpriteEffects.None, 0);
+                spriteBatch.Draw(tex, Item.Center - Main.screenPosition + new Vector2(0f, 0f), Main.itemAnimations[Item.type].GetFrame(tex), Color.Cyan * 0.5f, 0f, new Vector2(tex.Width / 2f, (tex.Height / 30f) * 0.8f), 1f, SpriteEffects.None, 0);
             }
         }
 
@@ -137,7 +169,7 @@ namespace CalamityMod.Items.Accessories
 
         // Complex drawcode which draws Sponge shields on ALL players who have it available. Supposedly.
         // This is applied as IL (On hook) which draws right before Inferno Ring.
-        internal static void DrawSpongeShields(On_Main.orig_DrawInfernoRings orig, Main mainObj)
+        public void DrawDyeableShader(SpriteBatch spriteBatch)
         {
             // TODO -- Control flow analysis indicates that this hook is not stable (as it was copied from Rover Drive).
             // Sponge shields will be drawn for each player with the Sponge equipped, yes.
@@ -145,10 +177,9 @@ namespace CalamityMod.Items.Accessories
             // Visibility is not net synced, for example.
             bool alreadyDrawnShieldForPlayer = false;
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active || player.outOfRange || player.dead)
+                if (player.outOfRange || player.dead)
                     continue;
 
                 CalamityPlayer modPlayer = player.Calamity();
@@ -161,6 +192,7 @@ namespace CalamityMod.Items.Accessories
 
                 // Scale the shield is drawn at. The Sponge shield gently grows and shrinks; it should be largely imperceptible.
                 // The "i" parameter is to make different player's shields not be perfectly synced.
+                int i = player.whoAmI;
                 float baseScale = 0.155f;
                 float maxExtraScale = 0.025f;
                 float extraScalePulseInterpolant = MathF.Pow(4f, MathF.Sin(Main.GlobalTimeWrappedHourly * 0.791f + i) - 1);
@@ -198,64 +230,9 @@ namespace CalamityMod.Items.Accessories
                     shieldEffect.Parameters["shieldOpacity"].SetValue(finalShieldOpacity);
                     shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
 
-                    Color shieldColor, primaryEdgeColor, secondaryEdgeColor;
-                    
-                    // Outside of single player, the shield color is overridden if the player is on a team.
-                    if (Main.netMode != NetmodeID.SinglePlayer && player.team != 0)
-                    {
-                        switch (Main.player[i].team)
-                        {
-                            // Red team
-                            case 1:
-                                shieldColor = new Color(163, 25, 26); // #A3191A
-                                primaryEdgeColor = shieldColor;
-                                secondaryEdgeColor = new Color(196, 51, 31); // #C4331F
-                                break;
-
-                            // Green team
-                            case 2:
-                                shieldColor = new Color(13, 143, 22); // #0D8F16
-                                primaryEdgeColor = shieldColor;
-                                secondaryEdgeColor = new Color(30, 201, 62); // #1EC93E
-                                break;
-
-                            // Blue team
-                            case 3:
-                                shieldColor = new Color(18, 57, 163); // #1239A3
-                                primaryEdgeColor = shieldColor;
-                                secondaryEdgeColor = new Color(38, 110, 191); // #266EBF
-                                break;
-
-                            // Yellow team
-                            case 4:
-                                shieldColor = new Color(194, 154, 10); // #C29A0A
-                                primaryEdgeColor = shieldColor;
-                                secondaryEdgeColor = new Color(230, 209, 25); // #E6D119
-                                break;
-
-                            // Pink team
-                            case 5:
-                                shieldColor = new Color(184, 22, 143); // #B8168F
-                                primaryEdgeColor = shieldColor;
-                                secondaryEdgeColor = new Color(220, 40, 213); // #DE28D5
-                                break;
-
-                            // Invalid team
-                            default:
-                                shieldColor = new Color(148, 162, 176); // #94A2B0
-                                primaryEdgeColor = shieldColor;
-                                secondaryEdgeColor = new Color(193, 197, 201); // #C1C5C9
-                                break;
-                        }
-                    }
-
-                    // Un-teamed / single player shield colors
-                    else
-                    {
-                        shieldColor = new Color(24, 156, 204); // #189CCC
-                        primaryEdgeColor = shieldColor;
-                        secondaryEdgeColor = new Color(34, 224, 227); // #22E0E3
-                    }
+                    Color shieldColor = new Color(24, 156, 204); // #189CCC
+                    Color primaryEdgeColor = shieldColor;
+                    Color secondaryEdgeColor = new Color(34, 224, 227); // #22E0E3                   
 
                     // Final shield edge color, which lerps about
                     Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, primaryEdgeColor, secondaryEdgeColor);
@@ -285,8 +262,6 @@ namespace CalamityMod.Items.Accessories
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
             }
-
-            orig(mainObj);
         }
     }
 }

@@ -1,9 +1,13 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -21,7 +25,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.width = 42;
             Projectile.height = 36;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.timeLeft = 90;
+            Projectile.timeLeft = 120;
             Projectile.friendly = true;
             Projectile.hostile = false;
             Projectile.tileCollide = false;
@@ -32,6 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 2;
             Projectile.alpha = 180;
+            Projectile.scale = 1.25f;
         }
         public override SpearType SpearAiType => SpearType.GhastlyGlaiveSpear;
         public override float TravelSpeed => 8f;
@@ -50,7 +55,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 drawPosition = Projectile.position + new Vector2(Projectile.width, Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D alternateHookTexture = Projectile.spriteDirection == -1 ? ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SlickCaneProjectileAlt").Value : ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D alternateHookTexture = Projectile.spriteDirection == -1 ? ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SlickCaneProjectileAlt").Value : Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 origin = new Vector2(Projectile.spriteDirection == 1 ? alternateHookTexture.Width + 8f : -8f, -8f);
             Main.EntitySpriteDraw(alternateHookTexture, drawPosition, null,
                 lightColor, Projectile.rotation,
@@ -80,19 +85,21 @@ namespace CalamityMod.Projectiles.Rogue
                 float moneyValueToDrop = target.value / Main.rand.NextFloat(15f, 35f);
                 // Maximum of 50 silver, not counting steath strikes
                 moneyValueToDrop = (int)MathHelper.Clamp(moneyValueToDrop, 0, 5000f);
-                if (Projectile.Calamity().stealthStrike && Main.rand.NextBool(15))
+                if (Projectile.Calamity().stealthStrike && Main.rand.NextBool(20))
                 {
                     moneyValueToDrop += Item.buyPrice(0, Main.rand.Next(1, 4), Main.rand.Next(0, 100), Main.rand.Next(0, 100));
+                    SoundEngine.PlaySound(TheSevensStriker.TriplesSound, Projectile.Center);
                 }
-
+                else if (moneyValueToDrop > 0f)
+                    SoundEngine.PlaySound(TheSevensStriker.DoublesSound, Projectile.Center);
                 while (moneyValueToDrop > 10000f)
                 {
                     int modifiedMoneyValue = (int)(moneyValueToDrop / 10000f);
-                    if (modifiedMoneyValue > 50 && Main.rand.Next(5) == 0)
+                    if (modifiedMoneyValue > 50 && Main.rand.NextBool(5))
                     {
                         modifiedMoneyValue /= Main.rand.Next(3) + 1;
                     }
-                    if (Main.rand.Next(5) == 0)
+                    if (Main.rand.NextBool(5))
                     {
                         modifiedMoneyValue /= Main.rand.Next(3) + 1;
                     }
@@ -102,11 +109,11 @@ namespace CalamityMod.Projectiles.Rogue
                 while (moneyValueToDrop > 100f)
                 {
                     int modifiedMoneyValue = (int)(moneyValueToDrop / 100f);
-                    if (modifiedMoneyValue > 50 && Main.rand.Next(5) == 0)
+                    if (modifiedMoneyValue > 50 && Main.rand.NextBool(5))
                     {
                         modifiedMoneyValue /= Main.rand.Next(3) + 1;
                     }
-                    if (Main.rand.Next(5) == 0)
+                    if (Main.rand.NextBool(5))
                     {
                         modifiedMoneyValue /= Main.rand.Next(3) + 1;
                     }
@@ -116,11 +123,11 @@ namespace CalamityMod.Projectiles.Rogue
                 while (moneyValueToDrop > 0f)
                 {
                     int modifiedMoneyValue = (int)moneyValueToDrop;
-                    if (modifiedMoneyValue > 50 && Main.rand.Next(5) == 0)
+                    if (modifiedMoneyValue > 50 && Main.rand.NextBool(5))
                     {
                         modifiedMoneyValue /= Main.rand.Next(3) + 1;
                     }
-                    if (Main.rand.Next(5) == 0)
+                    if (Main.rand.NextBool(5))
                     {
                         modifiedMoneyValue /= Main.rand.Next(4) + 1;
                     }
@@ -130,6 +137,30 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     moneyValueToDrop -= modifiedMoneyValue;
                     Item.NewItem(target.GetSource_Loot(), target.Hitbox, ItemID.CopperCoin, modifiedMoneyValue);
+                }
+            }
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            // Boost dmg in proportion to money, caps at 2 plat
+            if (Projectile.Calamity().stealthStrike)
+            {
+                Player player = Main.player[Projectile.owner];
+                double money = Utils.CoinsCount(out bool overflow, player.inventory);
+                if (money >= 2000000)
+                    money = 2000000;
+                if (money != 0)
+                {
+                    modifiers.SourceDamage *= (float)(money / 500000 + 1);
+                    SoundEngine.PlaySound(TheSevensStriker.JackpotSound, Projectile.Center);
+                    for (int j = 0; j < 8; j++)
+                    {
+                        int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 3f);
+                        Main.dust[dust2].noGravity = true;
+                        Main.dust[dust2].velocity *= 5f;
+                        dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust2].velocity *= 2f;
+                    }
                 }
             }
         }

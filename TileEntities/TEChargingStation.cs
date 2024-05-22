@@ -1,10 +1,10 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.IO;
+using System.Reflection;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Tiles.DraedonStructures;
 using Microsoft.Xna.Framework;
-using System.IO;
-using System.Reflection;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -140,10 +140,9 @@ namespace CalamityMod.TileEntities
         // If this charging station breaks, anyone's who's viewing it is no longer viewing it.
         public override void OnKill()
         {
-            for (int i = 0; i < Main.maxPlayers; ++i)
+            foreach (Player p in Main.ActivePlayers)
             {
-                Player p = Main.player[i];
-                if (!p.active)
+                if (p.dead)
                     continue;
 
                 // Use reflection to stop TML from spitting an error here.

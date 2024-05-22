@@ -12,13 +12,13 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
+            Item.width = 24;
+            Item.height = 48;
             Item.damage = 0;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
-            Item.width = 24;
-            Item.height = 48;
             Item.UseSound = SoundID.NPCHit9;
             Item.shoot = ModContent.ProjectileType<PerforaMini>();
             Item.buffType = ModContent.BuffType<BloodBound>();

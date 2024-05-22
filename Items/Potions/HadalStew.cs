@@ -1,11 +1,11 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
-using System.Collections.Generic;
+using CalamityMod.Items.Placeables;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using System.Linq;
 
 namespace CalamityMod.Items.Potions
 {

@@ -1,12 +1,12 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Rogue;
-using Microsoft.Xna.Framework;
-using Terraria.Audio;
-using CalamityMod.Rarities;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -24,13 +24,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 225;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 43;
+            Item.useAnimation = 37;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 43;
+            Item.useTime = 37;
             Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<RealityRuptureMini>();
             Item.shootSpeed = 10f;

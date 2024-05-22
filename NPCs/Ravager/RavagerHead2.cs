@@ -1,13 +1,13 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Ravager
 {
@@ -32,7 +32,6 @@ namespace CalamityMod.NPCs.Ravager
             AIType = -1;
             NPC.netAlways = true;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.HitSound = RavagerBody.HitSound;
             NPC.DeathSound = RavagerBody.LimbLossSound;
@@ -49,6 +48,10 @@ namespace CalamityMod.NPCs.Ravager
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -74,38 +77,38 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.timeLeft = 1800;
 
             // Rotation
-            float num801 = NPC.position.X + (NPC.width / 2) - player.position.X - (player.width / 2);
-            float num802 = NPC.position.Y + NPC.height - 59f - player.position.Y - (player.height / 2);
-            float num803 = (float)Math.Atan2(num802, num801) + MathHelper.PiOver2;
-            if (num803 < 0f)
-                num803 += MathHelper.TwoPi;
-            else if (num803 > MathHelper.TwoPi)
-                num803 -= MathHelper.TwoPi;
+            float playerXDist = NPC.position.X + (NPC.width / 2) - player.position.X - (player.width / 2);
+            float playerYDist = NPC.position.Y + NPC.height - 59f - player.position.Y - (player.height / 2);
+            float headRotation = (float)Math.Atan2(playerYDist, playerXDist) + MathHelper.PiOver2;
+            if (headRotation < 0f)
+                headRotation += MathHelper.TwoPi;
+            else if (headRotation > MathHelper.TwoPi)
+                headRotation -= MathHelper.TwoPi;
 
-            float num804 = 0.1f;
-            if (NPC.rotation < num803)
+            float headRotateIncrement = 0.1f;
+            if (NPC.rotation < headRotation)
             {
-                if ((num803 - NPC.rotation) > MathHelper.Pi)
-                    NPC.rotation -= num804;
+                if ((headRotation - NPC.rotation) > MathHelper.Pi)
+                    NPC.rotation -= headRotateIncrement;
                 else
-                    NPC.rotation += num804;
+                    NPC.rotation += headRotateIncrement;
             }
-            else if (NPC.rotation > num803)
+            else if (NPC.rotation > headRotation)
             {
-                if ((NPC.rotation - num803) > MathHelper.Pi)
-                    NPC.rotation += num804;
+                if ((NPC.rotation - headRotation) > MathHelper.Pi)
+                    NPC.rotation += headRotateIncrement;
                 else
-                    NPC.rotation -= num804;
+                    NPC.rotation -= headRotateIncrement;
             }
 
-            if (NPC.rotation > num803 - num804 && NPC.rotation < num803 + num804)
-                NPC.rotation = num803;
+            if (NPC.rotation > headRotation - headRotateIncrement && NPC.rotation < headRotation + headRotateIncrement)
+                NPC.rotation = headRotation;
             if (NPC.rotation < 0f)
                 NPC.rotation += MathHelper.TwoPi;
             else if (NPC.rotation > MathHelper.TwoPi)
                 NPC.rotation -= MathHelper.TwoPi;
-            if (NPC.rotation > num803 - num804 && NPC.rotation < num803 + num804)
-                NPC.rotation = num803;
+            if (NPC.rotation > headRotation - headRotateIncrement && NPC.rotation < headRotation + headRotateIncrement)
+                NPC.rotation = headRotation;
 
             NPC.ai[1] += 1f;
             bool fireProjectiles = NPC.ai[1] >= (bossRush ? 240f : 480f);
@@ -141,52 +144,52 @@ namespace CalamityMod.NPCs.Ravager
                 }
             }
 
-            float num823 = 22f;
-            float num824 = 0.3f;
+            float attackMovementVel = 22f;
+            float attackMovementAccel = 0.3f;
             if (death)
             {
-                num823 += 4f;
-                num824 += 0.05f;
+                attackMovementVel += 4f;
+                attackMovementAccel += 0.05f;
             }
             if (provy)
             {
-                num823 *= 1.25f;
-                num824 *= 1.25f;
+                attackMovementVel *= 1.25f;
+                attackMovementAccel *= 1.25f;
             }
 
-            Vector2 vector82 = NPC.Center;
+            Vector2 npcCenter = NPC.Center;
             float distanceX = NPC.ai[0] % 2f == 0f ? 480f : -480f;
             float distanceY = fireProjectiles ? -320f : 320f;
-            float num825 = player.Center.X + (fireProjectiles ? distanceX : 0f) - vector82.X;
-            float num826 = player.Center.Y + distanceY - vector82.Y;
-            float num827 = (float)Math.Sqrt(num825 * num825 + num826 * num826);
-            num827 = num823 / num827;
-            num825 *= num827;
-            num826 *= num827;
+            float playerXDistAttack = player.Center.X + (fireProjectiles ? distanceX : 0f) - npcCenter.X;
+            float playerYDistAttack = player.Center.Y + distanceY - npcCenter.Y;
+            float playerDistanceAttack = (float)Math.Sqrt(playerXDistAttack * playerXDistAttack + playerYDistAttack * playerYDistAttack);
+            playerDistanceAttack = attackMovementVel / playerDistanceAttack;
+            playerXDistAttack *= playerDistanceAttack;
+            playerYDistAttack *= playerDistanceAttack;
 
-            if (NPC.velocity.X < num825)
+            if (NPC.velocity.X < playerXDistAttack)
             {
-                NPC.velocity.X += num824;
-                if (NPC.velocity.X < 0f && num825 > 0f)
-                    NPC.velocity.X += num824;
+                NPC.velocity.X += attackMovementAccel;
+                if (NPC.velocity.X < 0f && playerXDistAttack > 0f)
+                    NPC.velocity.X += attackMovementAccel;
             }
-            else if (NPC.velocity.X > num825)
+            else if (NPC.velocity.X > playerXDistAttack)
             {
-                NPC.velocity.X -= num824;
-                if (NPC.velocity.X > 0f && num825 < 0f)
-                    NPC.velocity.X -= num824;
+                NPC.velocity.X -= attackMovementAccel;
+                if (NPC.velocity.X > 0f && playerXDistAttack < 0f)
+                    NPC.velocity.X -= attackMovementAccel;
             }
-            if (NPC.velocity.Y < num826)
+            if (NPC.velocity.Y < playerYDistAttack)
             {
-                NPC.velocity.Y += num824;
-                if (NPC.velocity.Y < 0f && num826 > 0f)
-                    NPC.velocity.Y += num824;
+                NPC.velocity.Y += attackMovementAccel;
+                if (NPC.velocity.Y < 0f && playerYDistAttack > 0f)
+                    NPC.velocity.Y += attackMovementAccel;
             }
-            else if (NPC.velocity.Y > num826)
+            else if (NPC.velocity.Y > playerYDistAttack)
             {
-                NPC.velocity.Y -= num824;
-                if (NPC.velocity.Y > 0f && num826 < 0f)
-                    NPC.velocity.Y -= num824;
+                NPC.velocity.Y -= attackMovementAccel;
+                if (NPC.velocity.Y > 0f && playerYDistAttack < 0f)
+                    NPC.velocity.Y -= attackMovementAccel;
             }
         }
 
@@ -195,7 +198,7 @@ namespace CalamityMod.NPCs.Ravager
             for (int k = 0; k < 3; k++)
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 6, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
@@ -208,7 +211,7 @@ namespace CalamityMod.NPCs.Ravager
                 for (int k = 0; k < 20; k++)
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 6, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

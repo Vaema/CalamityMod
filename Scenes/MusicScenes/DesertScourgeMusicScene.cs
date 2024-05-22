@@ -1,4 +1,4 @@
-using CalamityMod.NPCs.DesertScourge;
+﻿using CalamityMod.NPCs.DesertScourge;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,9 +14,9 @@ namespace CalamityMod.Systems
         public override int VanillaMusic => MusicID.Boss1;
         public override int OtherworldMusic => MusicID.OtherworldlyBoss1;
         public override int[] AdditionalNPCs => new int[]
-		{
-			ModContent.NPCType<DesertScourgeBody>(),
-			ModContent.NPCType<DesertScourgeTail>()
-		};
+        {
+            ModContent.NPCType<DesertScourgeBody>(),
+            ModContent.NPCType<DesertScourgeTail>()
+        };
     }
 }

@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Sounds;
+﻿using System.IO;
 using CalamityMod.Items.Weapons.Summon;
-using System.IO;
+using CalamityMod.Sounds;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         // This is how many small, regular lasers will happen before the laser will charge up and prepare a laserbeam.
         public const int NormalLasersBeforeBeam = 6;
-        
+
         public override int ShootRate => ShootCounter % NormalLasersBeforeBeam == 0f ? 150 : AresExoskeleton.LaserCannonNormalShootRate;
 
         public override float ShootSpeed => 19f;

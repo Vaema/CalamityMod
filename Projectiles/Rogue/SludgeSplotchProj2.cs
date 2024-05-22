@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
 
-            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 191, 0f, 0f, 225, new Color(255, 255, 255), 2);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpookyWood, 0f, 0f, 225, new Color(255, 255, 255), 2);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].noLight = true;
             Main.dust[dust].velocity = Main.dust[dust].velocity * 0.25f;
@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

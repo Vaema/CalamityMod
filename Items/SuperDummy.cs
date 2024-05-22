@@ -11,9 +11,9 @@ namespace CalamityMod.Items
         public new string LocalizationCategory => "Items.Misc";
         public override void SetDefaults()
         {
-            Item.damage = 0;
             Item.width = 20;
             Item.height = 30;
+            Item.damage = 0;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -30,16 +30,15 @@ namespace CalamityMod.Items
 
         public static void DeleteDummies()
         {
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (npc.type == ModContent.NPCType<SuperDummyNPC>() && npc.active)
+                if (npc.type == ModContent.NPCType<SuperDummyNPC>())
                 {
                     npc.life = 0;
                     npc.active = false;
 
                     if (Main.netMode == NetmodeID.Server)
-                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, i);
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
                 }
             }
         }

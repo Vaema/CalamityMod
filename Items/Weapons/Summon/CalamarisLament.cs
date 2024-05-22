@@ -38,20 +38,20 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = 88;
+            Item.height = 108;
             Item.damage = 110;
             Item.shoot = ModContent.ProjectileType<CalamarisLamentMinion>();
             Item.DamageType = DamageClass.Summon;
 
             Item.useTime = Item.useAnimation = 10;
             Item.mana = 10;
-            Item.width = 88;
-            Item.height = 108;
             Item.noMelee = true;
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item85;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.rare = ModContent.RarityType<PureGreen>();
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
 
             // This does nothing, it's just here so it's able to act like a staff.
             Item.shootSpeed = 1f;

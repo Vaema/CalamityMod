@@ -1,14 +1,14 @@
 ﻿using CalamityMod.BiomeManagers;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Banners;
 using Terraria;
-using Terraria.ID;
 using Terraria.GameContent.Bestiary;
+using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Buffs.DamageOverTime;
 namespace CalamityMod.NPCs.AcidRain
 {
     public class Radiator : ModNPC
@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.defense = 10;
             }
 
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.8f;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.lavaImmune = false;
             NPC.noGravity = false;
@@ -56,13 +56,17 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AcidRainBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
-            { 
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Radiator")
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Radiator")
             });
         }
 
@@ -70,21 +74,21 @@ namespace CalamityMod.NPCs.AcidRain
         {
             Lighting.AddLight(NPC.Center, 0.3f, 1.5f, 0.3f);
 
-			if (Main.netMode != NetmodeID.Server)
-			{
-				int auraSize = 200; //roughly 12 blocks (half the size of Wither Beast aura)
-				Player player = Main.player[Main.myPlayer];
-				if (!player.dead && player.active && (player.Center - NPC.Center).Length() < auraSize && !player.creativeGodMode)
-				{
-					player.AddBuff(ModContent.BuffType<Irradiated>(), 3, false);
-					player.AddBuff(BuffID.Poisoned, 2, false);
-					if (DownedBossSystem.downedPolterghast)
-					{
-						player.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 3, false);
-						player.AddBuff(BuffID.Venom, 2, false);
-					}
-				}
-			}
+            if (Main.netMode != NetmodeID.Server)
+            {
+                int auraSize = 200; //roughly 12 blocks (half the size of Wither Beast aura)
+                Player player = Main.player[Main.myPlayer];
+                if (!player.dead && player.active && (player.Center - NPC.Center).Length() < auraSize && !player.creativeGodMode)
+                {
+                    player.AddBuff(ModContent.BuffType<Irradiated>(), 3, false);
+                    player.AddBuff(BuffID.Poisoned, 2, false);
+                    if (DownedBossSystem.downedPolterghast)
+                    {
+                        player.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 3, false);
+                        player.AddBuff(BuffID.Venom, 2, false);
+                    }
+                }
+            }
         }
 
         public override void FindFrame(int frameHeight)
@@ -105,7 +109,7 @@ namespace CalamityMod.NPCs.AcidRain
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
 

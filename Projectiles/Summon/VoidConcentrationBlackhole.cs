@@ -54,20 +54,20 @@ namespace CalamityMod.Projectiles.Summon
             Vector2 velocity = Projectile.Center - npc.Center;
             velocity *= 2f;
             velocity.SafeNormalize(Vector2.Zero);
-            float num550 = 5f * Projectile.scale;
-            Vector2 vector43 = new Vector2(npc.position.X + (float)npc.width * 0.5f, npc.position.Y + (float)npc.height * 0.5f);
-            float num551 = Projectile.Center.X - vector43.X;
-            float num552 = Projectile.Center.Y - vector43.Y;
-            float num553 = (float)Math.Sqrt((double)(num551 * num551 + num552 * num552));
-            if (num553 < 100f)
+            float projSpeed = 5f * Projectile.scale;
+            Vector2 fireDirection = npc.Center;
+            float fireXVel = Projectile.Center.X - fireDirection.X;
+            float fireYVel = Projectile.Center.Y - fireDirection.Y;
+            float fireVelocity = (float)Math.Sqrt((double)(fireXVel * fireXVel + fireYVel * fireYVel));
+            if (fireVelocity < 100f)
             {
-                num550 = 28f; //14
+                projSpeed = 28f; //14
             }
-            num553 = num550 / num553;
-            num551 *= num553;
-            num552 *= num553;
-            npc.velocity.X = (velocity.X * 15f + num551) / 16f;
-            npc.velocity.Y = (velocity.Y * 15f + num552) / 16f;
+            fireVelocity = projSpeed / fireVelocity;
+            fireXVel *= fireVelocity;
+            fireYVel *= fireVelocity;
+            npc.velocity.X = (velocity.X * 15f + fireXVel) / 16f;
+            npc.velocity.Y = (velocity.Y * 15f + fireYVel) / 16f;
             npc.velocity = (velocity / succStrength);
         }
 
@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int d = 0; d < 6; d++)
             {
-                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, new Color(0, 0, 0), 4f);
+                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, new Color(0, 0, 0), 4f);
                 Main.dust[shadow].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -104,10 +104,10 @@ namespace CalamityMod.Projectiles.Summon
             }
             for (int d = 0; d < 18; d++)
             {
-                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, new Color(0, 0, 0), 4f);
+                int shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, new Color(0, 0, 0), 4f);
                 Main.dust[shadow].noGravity = true;
                 Main.dust[shadow].velocity *= 5f;
-                shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 27, 0f, 0f, 100, new Color(0, 0, 0), 3f);
+                shadow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, new Color(0, 0, 0), 3f);
                 Main.dust[shadow].velocity *= 2f;
             }
         }
@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             int height = texture.Height / Main.projFrames[Projectile.type];
             int frameHeight = height * Projectile.frame;
@@ -166,14 +166,14 @@ namespace CalamityMod.Projectiles.Summon
             }
             Projectile.frameCounter++;
 
-                for (int i = 0; i < Main.npc.Length; i++)
+            foreach (NPC n in Main.ActiveNPCs)
+            {
+                if (!n.friendly && CalamityGlobalNPC.ShouldAffectNPC(n))
                 {
-                    if (Main.npc[i].active && !Main.npc[i].friendly && CalamityGlobalNPC.ShouldAffectNPC(Main.npc[i]))
-                    {
-                        if (Vector2.Distance(Projectile.Center, Main.npc[i].Center) <= radius)
-                            ApplySucc(Main.npc[i]);
-                    }
+                    if (Vector2.Distance(Projectile.Center, n.Center) <= radius)
+                        ApplySucc(n);
                 }
+            }
 
 
             if (Projectile.scale >= 2.5f) //it's boom o' clock

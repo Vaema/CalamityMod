@@ -13,9 +13,7 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheMaelstrom>();
         private Player Owner => Main.player[Projectile.owner];
-        private bool OwnerCanShoot => Owner.channel && Owner.HasAmmo(Owner.ActiveItem()) && !Owner.noItems && !Owner.CCed;
         private ref float CurrentChargingFrames => ref Projectile.ai[0];
-        private ref float ArrowsLoaded => ref Projectile.ai[1];
         private ref float FramesToLoadNextArrow => ref Projectile.localAI[0];
 
         public override string Texture => "CalamityMod/Items/Weapons/Ranged/TheMaelstrom";
@@ -37,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 shootPosition = armPosition + Projectile.velocity * Projectile.width * 0.5f;
 
             // Destroy the holdout projectile if the owner is no longer eligible to hold it.
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout() || !Owner.HasAmmo(Owner.ActiveItem()))
             {
                 Projectile.Kill();
                 return;
@@ -93,7 +91,6 @@ namespace CalamityMod.Projectiles.Ranged
             float shootSpeed = heldItem.shootSpeed;
             float knockback = heldItem.knockBack;
 
-            bool uselessFuckYou = OwnerCanShoot;
             int projectileType = 0;
             Owner.PickAmmo(heldItem, out projectileType, out shootSpeed, out arrowDamage, out knockback, out _);
             projectileType = ModContent.ProjectileType<TheMaelstromShark>();

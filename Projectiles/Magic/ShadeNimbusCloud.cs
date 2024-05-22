@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Magic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -9,7 +10,7 @@ namespace CalamityMod.Projectiles.Magic
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public bool StartFading = false;
-        
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
@@ -18,7 +19,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void SetDefaults()
         {
             Projectile.timeLeft = 300;
-            
+
             Projectile.width = Projectile.height = 28;
 
             Projectile.netImportant = true;
@@ -32,7 +33,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             // Makes the projectile deaccelerate.
             Projectile.velocity *= ShaderainStaff.DeaccelerationStrenght;
-            
+
             // Does the animation of the projectile, the number in the middle determines the speed of the animatino.
             Projectile.frameCounter++;
             Projectile.frame = Projectile.frameCounter / 8 % Main.projFrames[Projectile.type];
@@ -56,7 +57,7 @@ namespace CalamityMod.Projectiles.Magic
             for (int dustIndex = 0; dustIndex < 40; dustIndex++)
             {
                 // I choose .position (Which is the top left) instead of .Center because Dust.NewDust was made to spawn given .position.
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 14, 0, 0, 0, default, 0.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0, 0, 0, default, 0.5f);
             }
 
             target.AddBuff(ModContent.BuffType<BrainRot>(), 90);

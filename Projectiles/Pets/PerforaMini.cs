@@ -1,8 +1,10 @@
-using CalamityMod.Buffs.Pets;
+﻿using CalamityMod.Buffs.Pets;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Pets
 {
     public class PerforaMini : ModProjectile, ILocalizedModType
@@ -12,6 +14,9 @@ namespace CalamityMod.Projectiles.Pets
         {
             Main.projFrames[Projectile.type] = 8;
             Main.projPet[Projectile.type] = true;
+
+            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Projectile.type], 6)
+            .WithOffset(-8f, -20f).WithSpriteDirection(1).WhenNotSelected(0, 0);
         }
 
         public override void SetDefaults()
@@ -58,8 +63,8 @@ namespace CalamityMod.Projectiles.Pets
             //Dust
             if (Main.rand.NextBool(50))
             {
-                int d1 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 5, 0f, 0f, 100, default, 1.5f);
-                int d2 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 170, 0f, 0f, 170, default, 0.5f);
+                int d1 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
+                int d2 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Ichor, 0f, 0f, 170, default, 0.5f);
                 Main.dust[d2].noLight = true;
                 Main.dust[d1].position = Projectile.Center;
                 Main.dust[d2].position = Projectile.Center;

@@ -1,10 +1,10 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Events;
 using CalamityMod.Rarities;
 using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
-using System;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items
@@ -26,7 +26,7 @@ namespace CalamityMod.Items
             Item.rare = ModContent.RarityType<HotPink>();
             Item.value = 0;
             Item.autoReuse = false;
-            Item.useStyle = 4;
+            Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item111;
         }
 

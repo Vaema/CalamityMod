@@ -14,7 +14,6 @@ using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crags;
 using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.DevourerofGods;
-using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
@@ -64,7 +63,7 @@ namespace CalamityMod
             //
             // PART 1: General Immunity Status and applying all data contained in EnemyStats.DebuffImmunities
             //
-            
+
             // Also, can I just say that I hate Sorted Dictionaries and Tuples and want to make something explode? -Ben
             // I mean you can but sorted dicts and dicts in general are pre great -Amber
             // Neither of you are free of sin. In porting, we are all brothers in damnation. -Ozzatron
@@ -170,6 +169,8 @@ namespace CalamityMod
             EnemyStats.DebuffImmunities = new SortedDictionary<int, Tuple<GeneralImmunityStatus, int[]>>
             {
                 { ModContent.NPCType<KingSlimeJewel>(), immuneToEverything },
+                { ModContent.NPCType<KingSlimeJewel2>(), immuneToEverything },
+                { ModContent.NPCType<KingSlimeJewel3>(), immuneToEverything },
 
                 { NPCID.Deerclops, ice },
 
@@ -272,10 +273,6 @@ namespace CalamityMod
                 { ModContent.NPCType<ThanatosBody2>(), immuneToEverything },
                 { ModContent.NPCType<ThanatosTail>(), immuneToEverything },
 
-                // 20FEB2023: Ozzatron: made Ares immune to Miracle Blight, because otherwise he vanishes when affected by it
-                // The "correct" way to fix this involves a colossal amount of work and will be handled at a later date
-                { ModContent.NPCType<AresBody>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<MiracleBlight>() }) },
-
                 { ModContent.NPCType<SupremeCalamitas>(), crags },
                 { ModContent.NPCType<SupremeCatastrophe>(), crags },
                 { ModContent.NPCType<SupremeCataclysm>(), crags },
@@ -348,6 +345,7 @@ namespace CalamityMod
                 { ModContent.NPCType<MorayEel>(), abyss },
                 { ModContent.NPCType<OarfishHead>(), abyss },
                 { ModContent.NPCType<OarfishBody>(), abyss },
+                { ModContent.NPCType<SlabCrab>(), abyss },
                 { ModContent.NPCType<OarfishTail>(), abyss },
                 { ModContent.NPCType<ToxicMinnow>(), abyss },
                 { ModContent.NPCType<Viperfish>(), abyss },

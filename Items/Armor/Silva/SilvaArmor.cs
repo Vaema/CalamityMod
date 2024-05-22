@@ -14,9 +14,9 @@ namespace CalamityMod.Items.Armor.Silva
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
         {
-            Item.width = 34;
+            Item.width = 24;
             Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 44;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

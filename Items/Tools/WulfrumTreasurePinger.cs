@@ -41,10 +41,10 @@ namespace CalamityMod.Items.Tools
             timeBeforeBlast = breakTime;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         public override void HoldItem(Player player)
         {
@@ -287,5 +287,5 @@ namespace CalamityMod.Items.Tools
         }
     }
 
-    
+
 }

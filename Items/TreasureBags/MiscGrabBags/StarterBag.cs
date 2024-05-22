@@ -20,9 +20,9 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 
         public override void SetDefaults()
         {
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Blue;
         }
 
@@ -89,7 +89,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
                 return playerName == "Heart Plus Up";
             };
             itemLoot.AddIf(getsHapuFruit, ModContent.ItemType<HapuFruit>());
-            
+
             // Apelusa dev item
             // Name specific: "Pelusa"
             static bool getsRedBow(DropAttemptInfo info)
@@ -99,7 +99,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             }
 
             itemLoot.AddIf(getsRedBow, ModContent.ItemType<RedBow>());
-            
+
             // Mishiro dev vanity
             // Name specific: "Amber" or "Mishiro"
             static bool getsOracleHeadphones(DropAttemptInfo info)
@@ -119,6 +119,16 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             }
 
             itemLoot.AddIf(getsSakuraFeather, ModContent.ItemType<CocosFeather>());
+
+            // Fabsol dev item
+            // Name specific: "Fabsol" or "Cirrus"
+            static bool getsCrystalHeartVodka(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName is "Fabsol" or "Cirrus";
+            }
+
+            itemLoot.AddIf(getsCrystalHeartVodka, ModContent.ItemType<CrystalHeartVodka>());
         }
     }
 }

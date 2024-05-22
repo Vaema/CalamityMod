@@ -1,9 +1,9 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using System.Linq;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.alpha = 255;
-            Projectile.localNPCHitCooldown = 15;
+            Projectile.localNPCHitCooldown = 20;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.DamageType = DamageClass.Summon;
         }
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.projectile[OwnerIndex].localAI[0] == 0f)
                 Projectile.Kill();
         }
-        
+
         public override bool ShouldUpdatePosition() => false;
 
         public override void ExtraBehavior()
@@ -92,16 +92,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     dust.noGravity = true;
                 }
             }
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            Projectile.damage = (int)(Projectile.damage * 0.6);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            Projectile.damage = (int)(Projectile.damage * 0.6);
         }
     }
 }

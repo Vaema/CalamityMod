@@ -1,7 +1,7 @@
-﻿using CalamityMod.World;
+﻿using System.IO;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.localAI[0] = 255f;
             }
 
-            float lightValues = (255 - Projectile.alpha) * 0.3f / 255f;
+            float lightValues = (255 - Projectile.alpha) * 0.6f / 255f;
             Lighting.AddLight(Projectile.Center, lightValues, 0f, lightValues);
 
             Projectile.alpha = (int)(100.0 + Projectile.localAI[0] * 0.7);
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             // Changes the texture of the projectile
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             switch ((int)Projectile.ai[0])
             {
                 case 0:

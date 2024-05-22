@@ -1,12 +1,12 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Timer == 0)
             {
-                Particle spark = new FlareShine(Projectile.Center, Vector2.Zero, Color.White, Color.OrangeRed, 0f,new Vector2(0.5f, 1f), new Vector2(1.5f, 3f), 20, 0f, hueShift: 0.01f);
+                Particle spark = new FlareShine(Projectile.Center, Vector2.Zero, Color.White, Color.OrangeRed, 0f, new Vector2(0.5f, 1f), new Vector2(1.5f, 3f), 20, 0f, hueShift: 0.01f);
                 GeneralParticleHandler.SpawnParticle(spark);
 
                 for (int i = 0; i < 2; i++)
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity *= 0.95f;
             }
 
-            if (Main.rand.Next(3) == 0)
+            if (Main.rand.NextBool(3))
             {
                 int dustType = Main.rand.Next(3);
                 dustType = dustType == 0 ? 15 : dustType == 1 ? 57 : 58;

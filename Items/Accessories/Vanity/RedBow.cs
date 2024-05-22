@@ -4,9 +4,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories.Vanity
 {
-    public class RedBow  : ModItem, ILocalizedModType
+    public class RedBow : ModItem, ILocalizedModType
     {
-        
+
         public new string LocalizationCategory => "Items.Accessories";
         public override void Load()
         {
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void SetStaticDefaults()
         {
-           
+
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.width = 22;
             Item.height = 30;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
             Item.Calamity().devItem = true;
@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Accessories.Vanity
                 player.Calamity().redBow = true;
             }
         }
-        
+
         public override void AddRecipes()
         {
             CreateRecipe().

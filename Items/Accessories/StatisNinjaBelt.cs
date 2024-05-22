@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 30;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.accessory = true;
         }
@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.autoJump = true;
-            player.jumpSpeedBoost += 0.3f;
+            player.jumpSpeedBoost += 1.6f;
             player.extraFall += 35;
             player.blackBelt = true;
             player.dashType = 1;
@@ -38,11 +38,22 @@ namespace CalamityMod.Items.Accessories
 
         public override void AddRecipes()
         {
+            // 20FEB2024: Ozzatron: used to have one recipe which was MNG + Frog Gear. This requires 2 Tiger Climbing Gear.
+            // There are now two recipes depending on whether you made Frog Gear or Master Ninja Gear.
             CreateRecipe().
                 AddIngredient(ItemID.MasterNinjaGear).
+                AddIngredient(ItemID.FrogFlipper).
+                AddIngredient<PurifiedGel>(50).
+                AddIngredient<Necroplasm>(5).
+                AddTile(TileID.LunarCraftingStation).
+                Register();
+
+            CreateRecipe().
+                AddIngredient(ItemID.Tabi).
+                AddIngredient(ItemID.BlackBelt).
                 AddIngredient(ItemID.FrogGear).
                 AddIngredient<PurifiedGel>(50).
-                AddIngredient<Polterplasm>(5).
+                AddIngredient<Necroplasm>(5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

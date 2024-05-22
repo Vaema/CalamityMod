@@ -47,13 +47,13 @@ namespace CalamityMod
                 // This makes sense to be here but also not
                 case -1:
                     if (DownedBossSystem.downedDoG)
-                        return 20;
+                        return 14;
                     else if (NPC.downedMoonlord)
-                        return 16;
-                    else if (Main.hardMode)
                         return 12;
+                    else if (Main.hardMode)
+                        return 10;
                     return 8;
-                
+
                 case PrefixID.Hard:
                     if (DownedBossSystem.downedDoG)
                         return 4;
@@ -65,7 +65,7 @@ namespace CalamityMod
 
                 case PrefixID.Guarding:
                     if (DownedBossSystem.downedDoG)
-                        return 6;
+                        return 5;
                     else if (NPC.downedMoonlord)
                         return 4;
                     else if (Main.hardMode)
@@ -74,20 +74,20 @@ namespace CalamityMod
 
                 case PrefixID.Armored:
                     if (DownedBossSystem.downedDoG)
-                        return 8;
-                    else if (NPC.downedMoonlord)
                         return 6;
-                    else if (Main.hardMode)
+                    else if (NPC.downedMoonlord)
                         return 5;
+                    else if (Main.hardMode)
+                        return 4;
                     return 3;
 
                 case PrefixID.Warding:
                     if (DownedBossSystem.downedDoG)
-                        return 10;
+                        return 7;
                     else if (NPC.downedMoonlord)
-                        return 8;
-                    else if (Main.hardMode)
                         return 6;
+                    else if (Main.hardMode)
+                        return 5;
                     return 4;
             }
         }
@@ -147,11 +147,14 @@ namespace CalamityMod
                     };
                     prefix = IteratePrefix(rand, terrarianReforgeTiers, currentPrefix);
                 }
-                
+
                 // Yoyos, Flails, Spears, etc.
                 // Spears actually work fine with Legendary, but vanilla doesn't give it to them, so we won't either.
                 // Rapiers, whips, and other specific vanilla weapons (ie. Zenith or Excalibur) are specifically excluded from this, so they get broadsword reforges despite not scaling with melee speed.
-                else if ((item.channel || item.noMelee) && item.useStyle != ItemUseStyleID.Rapier && !item.CountsAsClass<SummonMeleeSpeedDamageClass>() && !PrefixLegacy.ItemSets.SwordsHammersAxesPicks[item.type])
+                //
+                // 18FEB2024: Ozzatron: removed the (item.channel || item.noMelee) because vanilla lets Burning Sky get Legendary
+                // 12MAY2024: Shade: added item.useStyle != ItemUseStyleID.Shoot because vanilla lets Sahara Slicers and Death's Ascension get Legendary
+                else if (item.channel && item.useStyle != ItemUseStyleID.Rapier && !item.CountsAsClass<SummonMeleeSpeedDamageClass>() && !PrefixLegacy.ItemSets.SwordsHammersAxesPicks[item.type] && item.useStyle != ItemUseStyleID.Shoot)
                 {
                     int[][] meleeNoSpeedReforgeTiers = new int[][]
                     {
@@ -329,7 +332,7 @@ namespace CalamityMod
         {
             if (Main.dedServ || mhk is null)
                 return;
-            
+
             string finalKey = mhk.TooltipHotkeyString();
             tooltips.FindAndReplace("[KEY]", finalKey);
         }
@@ -684,7 +687,7 @@ namespace CalamityMod
             {
                 SoundEngine.PlaySound(item.UseSound.GetValueOrDefault(), player.Center);
 
-                int healAmt = (int)(item.healLife * player.Calamity().healingPotBonus);
+                int healAmt = (int)(item.healLife * player.Calamity().healingPotionMultiplier);
                 if (healAmt > 0 && player.QuickHeal_GetItemToUse() != null)
                 {
                     if (player.QuickHeal_GetItemToUse().type != item.type)
@@ -772,29 +775,29 @@ namespace CalamityMod
                 mod.Find<ModPrefix>("Flimsy").Type,
                 mod.Find<ModPrefix>("Unbalanced").Type,
                 mod.Find<ModPrefix>("Atrocious").Type,
-				PrefixID.Keen,
-				PrefixID.Superior,
-				PrefixID.Forceful,
-				PrefixID.Broken,
-				PrefixID.Damaged,
-				PrefixID.Hurtful,
-				PrefixID.Strong,
-				PrefixID.Unpleasant,
-				PrefixID.Weak,
-				PrefixID.Ruthless,
-				PrefixID.Godly,
-				PrefixID.Demonic,
-				PrefixID.Zealous,
-				PrefixID.Quick,
-				PrefixID.Deadly2,
-				PrefixID.Agile,
-				PrefixID.Nimble,
-				PrefixID.Murderous,
-				PrefixID.Slow,
-				PrefixID.Sluggish,
-				PrefixID.Lazy,
-				PrefixID.Annoying,
-				PrefixID.Nasty
+                PrefixID.Keen,
+                PrefixID.Superior,
+                PrefixID.Forceful,
+                PrefixID.Broken,
+                PrefixID.Damaged,
+                PrefixID.Hurtful,
+                PrefixID.Strong,
+                PrefixID.Unpleasant,
+                PrefixID.Weak,
+                PrefixID.Ruthless,
+                PrefixID.Godly,
+                PrefixID.Demonic,
+                PrefixID.Zealous,
+                PrefixID.Quick,
+                PrefixID.Deadly2,
+                PrefixID.Agile,
+                PrefixID.Nimble,
+                PrefixID.Murderous,
+                PrefixID.Slow,
+                PrefixID.Sluggish,
+                PrefixID.Lazy,
+                PrefixID.Annoying,
+                PrefixID.Nasty
             });
             return roguePrefix;
         }

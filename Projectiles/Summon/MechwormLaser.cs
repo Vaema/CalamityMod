@@ -1,6 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Summon
             int dustAmt = Main.rand.Next(3, 7);
             for (int d = 0; d < dustAmt; d++)
             {
-                int rainbow = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, 66, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 2.1f);
+                int rainbow = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 2.1f);
                 Main.dust[rainbow].velocity *= 2f;
                 Main.dust[rainbow].noGravity = true;
             }

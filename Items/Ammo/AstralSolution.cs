@@ -11,15 +11,15 @@ namespace CalamityMod.Items.Ammo
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-           	ItemID.Sets.SortingPriorityTerraforming[Type] = 95; // Red Solution
+            ItemID.Sets.SortingPriorityTerraforming[Type] = 95; // Red Solution
         }
 
         public override void SetDefaults()
         {
-            Item.ammo = AmmoID.Solution;
-            Item.shoot = ModContent.ProjectileType<AstralSpray>() - ProjectileID.PureSpray;
             Item.width = 10;
             Item.height = 12;
+            Item.ammo = AmmoID.Solution;
+            Item.shoot = ModContent.ProjectileType<AstralSpray>() - ProjectileID.PureSpray;
             Item.value = Item.buyPrice(silver: 15);
             Item.rare = ItemRarityID.Orange;
             Item.maxStack = 9999;
@@ -27,10 +27,10 @@ namespace CalamityMod.Items.Ammo
             return;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Solutions;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Solutions;
+        }
 
         public override bool CanConsumeAmmo(Item ammo, Player player)
         {

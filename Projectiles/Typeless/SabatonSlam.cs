@@ -1,13 +1,13 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.Graphics.Shaders;
-using System;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -57,15 +57,15 @@ namespace CalamityMod.Projectiles.Typeless
 
                 Projectile.localAI[0]++;
             }
-                
-            
+
+
         }
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.EnterShaderRegion();
             Texture2D telegraphBase = ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj").Value;
 
-            GameShaders.Misc["CalamityMod:CircularGradientWithEdge"].UseOpacity(0.75f * Projectile.timeLeft/(float)timeLeft);
+            GameShaders.Misc["CalamityMod:CircularGradientWithEdge"].UseOpacity(0.75f * Projectile.timeLeft / (float)timeLeft);
             GameShaders.Misc["CalamityMod:CircularGradientWithEdge"].UseColor(Color.Lerp(Color.Cyan, Color.LightCyan, 0.5f));
             GameShaders.Misc["CalamityMod:CircularGradientWithEdge"].UseSecondaryColor(Color.White);
             GameShaders.Misc["CalamityMod:CircularGradientWithEdge"].UseSaturation(scaleFromFall);
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Typeless
             GameShaders.Misc["CalamityMod:CircularGradientWithEdge"].Apply();
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Main.EntitySpriteDraw(telegraphBase, drawPosition, null, lightColor, 0, telegraphBase.Size() / 2f, scaleFromFall*156f, 0, 0);
+            Main.EntitySpriteDraw(telegraphBase, drawPosition, null, lightColor, 0, telegraphBase.Size() / 2f, scaleFromFall * 156f, 0, 0);
             Main.spriteBatch.ExitShaderRegion();
 
             return false;

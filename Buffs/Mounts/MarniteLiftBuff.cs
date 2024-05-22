@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Mounts;
+﻿using CalamityMod.Items.Armor.MarniteArchitect;
+using CalamityMod.Items.Mounts;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Items.Armor.MarniteArchitect;
 
 namespace CalamityMod.Buffs.Mounts
 {

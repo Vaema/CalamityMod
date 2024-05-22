@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Summon
         public bool shieldActive => !ForcedVanity && Owner.Calamity().pSoulShieldDurability > 0;
 
         public bool shieldActiveBefore = false;
-        
+
 
         public MiniDefenderAIState AIState => ForcedVanity ? MiniDefenderAIState.Vanity : (shieldActive ? MiniDefenderAIState.ShieldActive : MiniDefenderAIState.ShieldInactive);
 
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Summon
                 //spawn rocks
                 bool psc = Owner.Calamity().profanedCrystalBuffs;
                 int rockCount = psc ? 10 : 5;
-                int[] validRockTypes = psc ? new int[]{ 1, 3, 4, 5, 6 } : new int[]{ 3, 5, 6 }; //1 and 4 are chonkier and psc pushes shield so it looks less weirdge
+                int[] validRockTypes = psc ? new int[] { 1, 3, 4, 5, 6 } : new int[] { 3, 5, 6 }; //1 and 4 are chonkier and psc pushes shield so it looks less weirdge
                 float angleVariance = MathHelper.TwoPi / rockCount;
                 float angle = 0f;
                 for (int i = 0; i < rockCount; i++)
@@ -112,13 +112,13 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             var shieldIsActive = shieldActive; //avoid checkiing cooldowns multiple times per frame
-            
+
             bool shouldSpawnRocks = !shieldActiveBefore && shieldIsActive;
             bool shouldYeetRocks = shieldActiveBefore && !shieldIsActive;
-            HandleRocks(shouldSpawnRocks, shouldYeetRocks); 
-            
-            bool shouldDust = shouldSpawnRocks || shouldYeetRocks; 
-            
+            HandleRocks(shouldSpawnRocks, shouldYeetRocks);
+
+            bool shouldDust = shouldSpawnRocks || shouldYeetRocks;
+
             if (shouldDust)
             {
                 for (int i = 0; i < 20; i++)
@@ -131,8 +131,8 @@ namespace CalamityMod.Projectiles.Summon
                         dust.noGravity = true;
                 }
             }
-            
-            
+
+
             // Doesn't deal damage directly, damage used for rocks
             NPC potentialTarget = Projectile.Center.MinionHoming(1500f, Owner);
             Vector2 playerDestination = Owner.Center - Projectile.Center;
@@ -165,7 +165,7 @@ namespace CalamityMod.Projectiles.Summon
                     else
                     {
                         playerDestination.X += Main.rand.NextFloat(-10f, 10f) + (75f * (shieldIsActive ? Owner.direction : -Owner.direction));
-                        playerDestination.Y += Main.rand.NextFloat(-10f, 10f);  
+                        playerDestination.Y += Main.rand.NextFloat(-10f, 10f);
                     }
                     break;
                 case MiniDefenderAIState.Vanity:
@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Summon
                 float num543 = playerDestination.X;
                 float num544 = playerDestination.Y;
                 float num550 = 40f;
-                Vector2 vector43 = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 vector43 = Projectile.Center;
                 float num551 = num543 - vector43.X;
                 float num552 = num544 - vector43.Y;
                 float num553 = (float)Math.Sqrt((double)(num551 * num551 + num552 * num552));
@@ -197,7 +197,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity *= dist > 10 ? 0.9f : 0.3f;
                 Projectile.spriteDirection = Projectile.DirectionTo(potentialTarget.Center).X > 0 ? 1 : -1;
             }
-            else 
+            else
             {
                 float playerDist = playerDestination.Length();
                 float acceleration = 0.5f;
@@ -220,7 +220,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     if (playerDist < 100f)
                         acceleration = 0.1f;
-                    
+
                     if (playerDist > 300f)
                         acceleration = 1f;
 
@@ -255,16 +255,16 @@ namespace CalamityMod.Projectiles.Summon
                             Projectile.velocity.Y -= acceleration * 2f;
                     }
                 }
-                
+
                 // Direction
                 if (Math.Abs(Projectile.velocity.X) > 0.2f)
                     Projectile.direction = Projectile.spriteDirection = Math.Sign(Projectile.velocity.X);
             }
-            
+
             Projectile.netUpdate = Projectile.netUpdate || (shieldIsActive != shieldActiveBefore);
             shieldActiveBefore = shieldIsActive;
         }
-        
+
         public override bool? CanDamage() => false;
 
         public override void SendExtraAI(BinaryWriter writer)

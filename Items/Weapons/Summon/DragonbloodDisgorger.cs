@@ -14,15 +14,15 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 215;
-            Item.mana = 10;
             Item.width = 64;
             Item.height = 62;
+            Item.damage = 215;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.DD2_SkeletonDeath;
             Item.shoot = ModContent.ProjectileType<SkeletalDragonMother>();

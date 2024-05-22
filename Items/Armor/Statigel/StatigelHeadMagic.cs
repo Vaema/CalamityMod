@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Armor.Statigel
             player.GetDamage<MagicDamageClass>() += 0.1f;
             player.GetCritChance<MagicDamageClass>() += 7;
             player.manaCost *= 0.9f;
-            player.statManaMax2 += 30;
+            player.statManaMax2 += 40;
         }
 
         public override void AddRecipes()

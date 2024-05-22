@@ -1,11 +1,11 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Summon
                 int dustAmt = 50;
                 for (int d = 0; d < dustAmt; d++)
                 {
-                    int sand = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 32, 0f, 0f, 0, default, 1f);
+                    int sand = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.Sand, 0f, 0f, 0, default, 1f);
                     Main.dust[sand].velocity *= 2f;
                     Main.dust[sand].scale *= 1.15f;
                 }
@@ -175,7 +175,7 @@ namespace CalamityMod.Projectiles.Summon
                             Vector2 source = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                             source = source.RotatedBy((double)((float)(d - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
                             Vector2 dustVel = source - Projectile.Center;
-                            int green = Dust.NewDust(source + dustVel, 0, 0, 107, dustVel.X * 1.5f, dustVel.Y * 1.5f, 100, new Color(0, 200, 0), 1f);
+                            int green = Dust.NewDust(source + dustVel, 0, 0, DustID.TerraBlade, dustVel.X * 1.5f, dustVel.Y * 1.5f, 100, new Color(0, 200, 0), 1f);
                             Main.dust[green].noGravity = true;
                             Main.dust[green].noLight = true;
                             Main.dust[green].velocity = dustVel;

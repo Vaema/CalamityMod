@@ -1,7 +1,7 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Summon
                     }
                 }
             }
-			hasHitNPC = false;
+            hasHitNPC = false;
             if (!foundTarget)
             {
                 for (int k = 0; k < Main.maxNPCs; k++)
@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Summon
 
             for (int i = 0; i < 3; i++)
             {
-                Dust sulphuricAcid = Dust.NewDustDirect(Projectile.position, 8, 8, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 0.75f);
+                Dust sulphuricAcid = Dust.NewDustDirect(Projectile.position, 8, 8, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 0.75f);
                 sulphuricAcid.noGravity = true;
                 sulphuricAcid.velocity *= 1.8f;
 

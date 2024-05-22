@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;

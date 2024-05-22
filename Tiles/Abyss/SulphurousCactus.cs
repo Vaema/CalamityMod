@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using Terraria.ModLoader;
 using ReLogic.Content;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Abyss
 {

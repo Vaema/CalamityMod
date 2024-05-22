@@ -11,19 +11,24 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class StormSurge : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+        }
         public override void SetDefaults()
         {
-            Item.damage = 18;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 58;
             Item.height = 22;
+            Item.damage = 18;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 18;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item122;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.autoReuse = true; //GRRRRRRRRRRRRRRRR false begone
             Item.shoot = ModContent.ProjectileType<StormSurgeTornado>();

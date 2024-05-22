@@ -11,6 +11,8 @@ namespace CalamityMod.Items.Tools
         public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
+            Item.width = 66;
+            Item.height = 56;
             Item.damage = 51;
             Item.knockBack = 8f;
             Item.useTime = 5;
@@ -18,11 +20,9 @@ namespace CalamityMod.Items.Tools
             Item.axe = 180 / 5;
 
             Item.DamageType = DamageClass.Melee;
-            Item.width = 66;
-            Item.height = 56;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Tools
         {
             if (Main.rand.NextBool(5))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 61);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.GreenTorch);
             }
         }
 

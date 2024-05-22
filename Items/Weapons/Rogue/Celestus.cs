@@ -6,9 +6,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -18,6 +18,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void SetDefaults()
         {
+            Item.width = 150;
+            Item.height = 132;
             Item.damage = 280;
             Item.DamageType = RogueDamageClass.Instance;
             Item.useAnimation = Item.useTime = 22;
@@ -25,13 +27,10 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
 
             Item.shoot = ModContent.ProjectileType<CelestusProj>();
-            
-            Item.width = 150;
-            Item.height = 132;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
             Item.rare = ModContent.RarityType<Violet>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.autoReuse = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -44,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
                 if (stealth.WithinBounds(Main.maxProjectiles))
                     Main.projectile[stealth].Calamity().stealthStrike = true;
-				return false;
+                return false;
             }
             return true;
         }

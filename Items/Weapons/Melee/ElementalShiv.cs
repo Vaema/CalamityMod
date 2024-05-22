@@ -19,14 +19,14 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noUseGraphic = true;
             Item.autoReuse = true;
             Item.useStyle = ItemUseStyleID.Rapier;
-            Item.damage = 190;
+            Item.damage = 138;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 13;
             Item.shoot = ModContent.ProjectileType<ElementalShivProj>();
             Item.shootSpeed = 2.4f;
             Item.knockBack = 8.5f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
         }
 

@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Summon;
 using CalamityMod.Items.Placeables.Ores;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -16,19 +16,16 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetDefaults()
         {
             Item.width = Item.height = 62;
-
             Item.damage = 600;
             Item.useTime = Item.useAnimation = 10;
             Item.mana = 10;
             Item.knockBack = 10f;
-            
             Item.shoot = ModContent.ProjectileType<SiriusMinion>();
-
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item44;
             Item.rare = ModContent.RarityType<PureGreen>();
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.noMelee = true;
         }
 

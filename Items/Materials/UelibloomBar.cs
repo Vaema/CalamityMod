@@ -14,14 +14,14 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 106;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 106;
         }
 
         public override void SetDefaults()
         {
-            Item.createTile = ModContent.TileType<Tiles.UelibloomBar>();
             Item.width = 15;
             Item.height = 12;
+            Item.createTile = ModContent.TileType<Tiles.UelibloomBar>();
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 5);
             Item.rare = ModContent.RarityType<Turquoise>();

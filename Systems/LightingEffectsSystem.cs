@@ -97,6 +97,12 @@ namespace CalamityMod.Systems
                 Main.ColorOfTheSkies = Color.Lerp(Main.ColorOfTheSkies, Color.DarkGray, intensity * 0.9f);
                 Main.ColorOfTheSkies = Color.Lerp(Main.ColorOfTheSkies, Color.Black, intensity * 0.65f);
             }
+            else if (Main.LocalPlayer?.Calamity()?.monolithAstralShader > 0)
+            {
+                float intensity = SkyManager.Instance["CalamityMod:Astral"].Opacity;
+                backgroundColor = Color.Lerp(backgroundColor, Color.Purple, intensity * 0.4f);
+                backgroundColor = Color.Lerp(backgroundColor, Color.Black, intensity * 0.75f);
+            }
         }
     }
 }

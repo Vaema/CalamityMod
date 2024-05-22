@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -25,11 +25,11 @@ namespace CalamityMod.Projectiles.Typeless
         public override void AI()
         {
             //Dust
-            for (int i = 0; i< 3; i++)
+            for (int i = 0; i < 3; i++)
             {
-                int dint = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 0, default, 0.75f);
+                int dint = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 0, default, 0.75f);
                 Dust dust = Main.dust[dint];
-                dust.velocity = Projectile.velocity * Main.rand.NextFloat(-0.3f,0.3f);
+                dust.velocity = Projectile.velocity * Main.rand.NextFloat(-0.3f, 0.3f);
                 dust.color = Main.hslToRgb((float)(0.40000000596046448 + Main.rand.NextDouble() * 0.20000000298023224), 0.9f, 0.5f);
                 dust.color = Color.Lerp(dust.color, Color.White, 0.3f);
             }
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Typeless
             for (int i = 0; i < 20; i++)
             {
                 Vector2 dspeed = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-6f, 6f));
-                int dint = Dust.NewDust(Projectile.Center, 1, 1, 107, dspeed.X, dspeed.Y, 0, default, 0.7f);
+                int dint = Dust.NewDust(Projectile.Center, 1, 1, DustID.TerraBlade, dspeed.X, dspeed.Y, 0, default, 0.7f);
                 Dust dust = Main.dust[dint];
                 dust.color = Main.hslToRgb((float)(0.40000000596046448 + Main.rand.NextDouble() * 0.20000000298023224), 0.9f, 0.5f);
                 dust.color = Color.Lerp(dust.color, Color.White, 0.3f);

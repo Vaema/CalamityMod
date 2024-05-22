@@ -107,9 +107,9 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.alpha = (int)MathHelper.Lerp(0f, 255f, (Projectile.ai[0] - 600f) / 120f);
 
                 bool canSpawnBoomer = false;
-                for (int i = 0; i < Main.player.Length; i++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    if (!Main.player[i].dead && Projectile.Distance(Main.player[i].Center) < 12000f)
+                    if (!player.dead && Projectile.Distance(player.Center) < 12000f)
                     {
                         canSpawnBoomer = true;
                         break;
@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles.Boss
                     {
                         for (int i = 0; i < 160; i++)
                         {
-                            Dust dust = Dust.NewDustPerfect(Projectile.Top + Vector2.UnitY * 100f, (int)CalamityDusts.SulfurousSeaAcid);
+                            Dust dust = Dust.NewDustPerfect(Projectile.Top + Vector2.UnitY * 100f, (int)CalamityDusts.SulphurousSeaAcid);
                             dust.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(5f, 23f);
                             dust.noGravity = true;
                             dust.scale = 3f;
@@ -181,7 +181,7 @@ namespace CalamityMod.Projectiles.Boss
             bottomY--;
             Vector2 bottomVector = new Vector2(centerAsTileCoords.X, bottomY) * 16f + new Vector2(8f);
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float yMax = 1600f * Projectile.scale;
             for (int y = 0; y < yMax; y += 30)
             {

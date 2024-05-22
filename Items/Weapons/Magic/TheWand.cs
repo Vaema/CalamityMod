@@ -23,6 +23,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetDefaults()
         {
             Item.width = 40;
+            Item.height = 36;
             Item.damage = 14; // same as 1.4 Wand of Sparking
             Item.mana = 150;
             Item.DamageType = DamageClass.Magic;
@@ -34,8 +35,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 0.5f;
             Item.UseSound = SoundID.Item102;
             Item.autoReuse = true;
-            Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ModContent.ProjectileType<SparkInfernal>();
             Item.shootSpeed = 24f;
             Item.rare = ModContent.RarityType<Violet>();
@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 6);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Torch);
         }
 
         public override void AddRecipes()

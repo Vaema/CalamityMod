@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -43,8 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public void AttemptToFireProjectiles(Player player)
         {
-            bool canFire = player.channel && player.HasAmmo(player.ActiveItem()) && !player.noItems && !player.CCed;
-            if (!canFire)
+            if (player.CantUseHoldout() || !player.HasAmmo(player.ActiveItem()))
             {
                 Projectile.Kill();
                 return;

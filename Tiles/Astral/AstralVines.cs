@@ -19,11 +19,11 @@ namespace CalamityMod.Tiles.Astral
             Main.tileBlockLight[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileNoFail[Type] = true;
-			TileID.Sets.IsVine[Type] = true;
-			TileID.Sets.ReplaceTileBreakDown[Type] = true;
+            TileID.Sets.IsVine[Type] = true;
+            TileID.Sets.ReplaceTileBreakDown[Type] = true;
             TileID.Sets.VineThreads[Type] = true;
-			TileID.Sets.DrawFlipMode[Type] = 1;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+            TileID.Sets.DrawFlipMode[Type] = 1;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
 
             DustType = ModContent.DustType<AstralBasic>();
 
@@ -56,6 +56,12 @@ namespace CalamityMod.Tiles.Astral
             r *= brightness;
             g *= brightness;
             b *= brightness;
+        }
+
+        public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
+        {
+            sightColor = Color.Cyan;
+            return true;
         }
     }
 }

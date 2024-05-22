@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-                   }
+        }
 
         public override void SetDefaults()
         {

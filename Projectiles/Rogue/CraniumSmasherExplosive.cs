@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -91,11 +91,11 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
 
-            for (int num194 = 0; num194 < 25; num194++)
+            for (int i = 0; i < 25; i++)
             {
-                int num195 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 135, 0f, 0f, 100, default, 2f);
-                Main.dust[num195].noGravity = true;
-                Main.dust[num195].velocity *= 0f;
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceTorch, 0f, 0f, 100, default, 2f);
+                Main.dust[dust].noGravity = true;
+                Main.dust[dust].velocity *= 0f;
             }
         }
     }

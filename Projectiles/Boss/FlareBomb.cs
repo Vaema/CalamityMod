@@ -4,9 +4,9 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
     public class FlareBomb : ModProjectile, ILocalizedModType
@@ -57,15 +57,14 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             float inertia = revenge ? 70f : 77f;
-            float num954 = 40f;
-            float scaleFactor12 = revenge ? 35f : 28f;
-            int num959 = (int)Projectile.ai[0];
-            if (num959 >= 0 && Main.player[num959].active && !Main.player[num959].dead)
+            float velocityMult = revenge ? 35f : 28f;
+            int playerTracker = (int)Projectile.ai[0];
+            if (playerTracker >= 0 && Main.player[playerTracker].active && !Main.player[playerTracker].dead)
             {
-                if (Projectile.Distance(Main.player[num959].Center) > num954)
+                if (Projectile.Distance(Main.player[playerTracker].Center) > 40f)
                 {
-                    Vector2 moveDirection = Projectile.SafeDirectionTo(Main.player[num959].Center, Vector2.UnitY);
-                    Projectile.velocity = (Projectile.velocity * (inertia - 1f) + moveDirection * scaleFactor12) / inertia;
+                    Vector2 moveDirection = Projectile.SafeDirectionTo(Main.player[playerTracker].Center, Vector2.UnitY);
+                    Projectile.velocity = (Projectile.velocity * (inertia - 1f) + moveDirection * velocityMult) / inertia;
                 }
             }
             else
@@ -80,25 +79,22 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.timeLeft < 60)
                 return;
 
-            float num1247 = 0.5f;
-            for (int num1248 = 0; num1248 < Main.maxProjectiles; num1248++)
+            float acceleration = 0.5f;
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[num1248].active)
+                if (p.whoAmI != Projectile.whoAmI && p.type == Projectile.type)
                 {
-                    if (num1248 != Projectile.whoAmI && Main.projectile[num1248].type == Projectile.type)
+                    if (Vector2.Distance(Projectile.Center, p.Center) < 24f)
                     {
-                        if (Vector2.Distance(Projectile.Center, Main.projectile[num1248].Center) < 24f)
-                        {
-                            if (Projectile.position.X < Main.projectile[num1248].position.X)
-                                Projectile.velocity.X -= num1247;
-                            else
-                                Projectile.velocity.X += num1247;
-
-                            if (Projectile.position.Y < Main.projectile[num1248].position.Y)
-                                Projectile.velocity.Y -= num1247;
-                            else
-                                Projectile.velocity.Y += num1247;
-                        }
+                        if (Projectile.position.X < p.position.X)
+                            Projectile.velocity.X -= acceleration;
+                        else
+                            Projectile.velocity.X += acceleration;
+                        
+                        if (Projectile.position.Y < p.position.Y)
+                            Projectile.velocity.Y -= acceleration;
+                        else
+                            Projectile.velocity.Y += acceleration;
                     }
                 }
             }
@@ -108,10 +104,10 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int num214 = texture.Height / Main.projFrames[Projectile.type];
-            int y6 = num214 * Projectile.frame;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Rectangle(0, y6, texture.Width, num214), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = texture.Height / Main.projFrames[Projectile.type];
+            int y6 = framing * Projectile.frame;
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Rectangle(0, y6, texture.Width, framing), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
@@ -121,7 +117,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.ExpandHitboxBy(48);
             for (int d = 0; d < 2; d++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
                 Main.dust[idx].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -131,10 +127,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int d = 0; d < 4; d++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 5f;
-                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1f);
+                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
                 Main.dust[idx].velocity *= 2f;
             }
 

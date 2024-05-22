@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 28;
             Item.height = 26;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Accessories
                 // Show the bar if the player doesn't have it.
                 if (!Player.HasCooldown(OldDukeScalesFatigue.ID))
                     Player.AddCooldown(OldDukeScalesFatigue.ID, OldDukeScales.MaxFatigue);
-                
+
                 if (!IsTired)
                 {
                     // +10% DR.

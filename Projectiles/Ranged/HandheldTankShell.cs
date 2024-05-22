@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int i = 0; i < 5; ++i)
                 {
                     pos -= Projectile.velocity * ((float)i * 0.25f);
-                    int idx = Dust.NewDust(pos, 1, 1, 158, 0f, 0f, 0, default, 1f);
+                    int idx = Dust.NewDust(pos, 1, 1, DustID.OrangeTorch, 0f, 0f, 0, default, 1f);
                     Main.dust[idx].noGravity = true;
                     Main.dust[idx].position = pos;
                     Main.dust[idx].scale = (float)Main.rand.Next(70, 110) * 0.013f;

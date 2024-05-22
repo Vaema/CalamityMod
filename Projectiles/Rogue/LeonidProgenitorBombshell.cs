@@ -1,13 +1,13 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Rogue
                 ModContent.DustType<AstralOrange>(),
                 ModContent.DustType<AstralBlue>()
             });
-            int astral = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, CalamityUtils.ColorSwap(LeonidProgenitor.blueColor, LeonidProgenitor.purpleColor, 1f), 0.8f);
+            int astral = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, CalamityUtils.ColorSwap(LeonidProgenitor.blueColor, LeonidProgenitor.purpleColor, 1f), 0.8f);
             Main.dust[astral].noGravity = true;
             Main.dust[astral].velocity *= 0f;
 
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -107,12 +107,12 @@ namespace CalamityMod.Projectiles.Rogue
                 return;
 
             Vector2 spinningpoint = new Vector2(0f, 6f);
-            float num1 = MathHelper.ToRadians(45f);
+            float radian45 = MathHelper.ToRadians(45f);
             int cometAmt = 5;
-            float num3 = -(num1 * 2f) / (cometAmt - 1f);
+            float cometSpread = -(radian45 * 2f) / (cometAmt - 1f);
             for (int projIndex = 0; projIndex < cometAmt; ++projIndex)
             {
-                int index2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, spinningpoint.RotatedBy((double)num1 + (double)num3 * (double)projIndex, new Vector2()), ModContent.ProjectileType<LeonidCometSmall>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, -1f);
+                int index2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, spinningpoint.RotatedBy((double)radian45 + (double)cometSpread * (double)projIndex, new Vector2()), ModContent.ProjectileType<LeonidCometSmall>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, -1f);
                 Projectile proj = Main.projectile[index2];
                 for (int index3 = 0; index3 < Projectile.localNPCImmunity.Length; ++index3)
                 {

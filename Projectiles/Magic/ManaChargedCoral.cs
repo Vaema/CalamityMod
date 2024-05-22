@@ -1,4 +1,6 @@
 ﻿using System;
+using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -6,8 +8,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (Main.rand.NextBool())
                 {
                     Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(15f, 15f), 45, Vector2.UnitY * -7f, Alpha: Main.rand.Next(100) + 120, Scale: Main.rand.NextFloat(1f, 2f));
-                    dust.noGravity = true; 
+                    dust.noGravity = true;
                 }
 
                 if (Main.rand.NextBool(5))
@@ -133,14 +133,14 @@ namespace CalamityMod.Projectiles.Magic
                 float fallSpeed = Projectile.velocity.Y;
                 if (Projectile.velocity.X != 0)
                     Projectile.rotation += 0.02f * Math.Sign(Projectile.velocity.X) * Math.Clamp(Projectile.velocity.Length(), 0f, 5f);
-                
+
                 if (Projectile.timeLeft < 345)
                     Projectile.velocity += Vector2.UnitY * 0.5f * (1 - Math.Clamp((Projectile.timeLeft - 310f) / 35f, 0f, 1f));
 
                 Projectile.velocity *= 0.98f;
 
                 if (Projectile.velocity.Y > 0)
-                    Projectile.velocity.Y = Math.Clamp(Projectile.velocity.Y, 0,  Math.Max(18f, fallSpeed));
+                    Projectile.velocity.Y = Math.Clamp(Projectile.velocity.Y, 0, Math.Max(18f, fallSpeed));
 
                 //Sharticles
                 if (Main.rand.NextBool())
@@ -239,7 +239,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             int variant = (int)(Projectile.frame - 1);
             Rectangle frame = new Rectangle(0, 26 * variant, 24, 24);

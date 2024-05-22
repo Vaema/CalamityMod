@@ -1,8 +1,8 @@
-﻿using Terraria;
-using Microsoft.Xna.Framework;
-using Terraria.ModLoader;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
-using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -40,10 +40,10 @@ namespace CalamityMod.Projectiles.Rogue
                     if (Projectile.localAI[1] >= 30f)
                     {
                         Vector2 velocity = Projectile.velocity;
-                        Vector2 vector2_1 = new Vector2((float) Main.rand.Next(-100, 101), (float) Main.rand.Next(-100, 101));
+                        Vector2 vector2_1 = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
                         vector2_1.Normalize();
-                        Vector2 vector2_2 = vector2_1 * ((float) Main.rand.Next(10, 41) * 0.1f);
-                        if (Main.rand.Next(3) == 0)
+                        Vector2 vector2_2 = vector2_1 * ((float)Main.rand.Next(10, 41) * 0.1f);
+                        if (Main.rand.NextBool(3))
                             vector2_2 *= 2f;
                         Vector2 vector2_3 = velocity * 0.25f + vector2_2;
                         Vector2 vector2_5 = vector2_3 * 0.8f;
@@ -56,10 +56,10 @@ namespace CalamityMod.Projectiles.Rogue
                     if (Projectile.localAI[1] >= 60f)
                     {
                         Vector2 velocity = Projectile.velocity;
-                        Vector2 vector2_1 = new Vector2((float) Main.rand.Next(-100, 101), (float) Main.rand.Next(-100, 101));
+                        Vector2 vector2_1 = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
                         vector2_1.Normalize();
-                        Vector2 vector2_2 = vector2_1 * ((float) Main.rand.Next(10, 41) * 0.1f);
-                        if (Main.rand.Next(3) == 0)
+                        Vector2 vector2_2 = vector2_1 * ((float)Main.rand.Next(10, 41) * 0.1f);
+                        if (Main.rand.NextBool(3))
                             vector2_2 *= 2f;
                         Vector2 vector2_3 = velocity * 0.25f + vector2_2;
                         Vector2 vector2_5 = vector2_3 * 0.8f;

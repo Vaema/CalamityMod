@@ -12,11 +12,13 @@ namespace CalamityMod.Items.Placeables
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 200;
-			ItemID.Sets.SortingPriorityExtractibles[Type] = 1; // Silt Block
+            ItemID.Sets.SortingPriorityExtractibles[Type] = 1; // Silt Block
         }
 
         public override void SetDefaults()
         {
+            Item.width = 16;
+            Item.height = 16;
             ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
             Item.createTile = ModContent.TileType<Tiles.Astral.NovaeSlag>();
             Item.useStyle = ItemUseStyleID.Swing;
@@ -25,8 +27,6 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 16;
-            Item.height = 16;
             Item.maxStack = 9999;
         }
         public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
@@ -70,7 +70,7 @@ namespace CalamityMod.Items.Placeables
             }
             else if (val < 58.03f)
             {
-                resultType = ModContent.ItemType<Stardust>();
+                resultType = ModContent.ItemType<StarblightSoot>();
                 resultStack = Main.rand.Next(1, 21);
             }
             else if (val < 61.03f)

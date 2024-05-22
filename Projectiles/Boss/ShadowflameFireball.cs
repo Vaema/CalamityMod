@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -56,21 +56,22 @@ namespace CalamityMod.Projectiles.Boss
 
             Projectile.rotation += 0.3f * (float)Projectile.direction;
 
-            if (Projectile.ai[1] == 1f)
+            if (Projectile.ai[1] > 0f)
             {
-                int num103 = (int)Player.FindClosest(Projectile.Center, 1, 1);
-                Vector2 vector11 = Main.player[num103].Center - Projectile.Center;
+                int playerTracker = (int)Player.FindClosest(Projectile.Center, 1, 1);
+                Vector2 playerDirection = Main.player[playerTracker].Center - Projectile.Center;
                 Projectile.ai[0] += 1f;
                 if (Projectile.ai[0] >= 60f)
                 {
                     if (Projectile.ai[0] < 240f)
                     {
-                        float scaleFactor2 = Projectile.velocity.Length();
-                        vector11.Normalize();
-                        vector11 *= scaleFactor2;
-                        Projectile.velocity = (Projectile.velocity * 24f + vector11) / 25f;
+                        float inertia = 25f;
+                        float scaleFactor = Projectile.velocity.Length();
+                        playerDirection.Normalize();
+                        playerDirection *= scaleFactor;
+                        Projectile.velocity = (Projectile.velocity * (inertia - 1f) + playerDirection) / inertia;
                         Projectile.velocity.Normalize();
-                        Projectile.velocity *= scaleFactor2;
+                        Projectile.velocity *= scaleFactor;
                     }
                     else if (Projectile.velocity.Length() < 18f)
                     {
@@ -86,7 +87,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Shadowflame>(), 180, true);
+            target.AddBuff(ModContent.BuffType<Shadowflame>(), 120, true);
         }
 
         public override void OnKill(int timeLeft)

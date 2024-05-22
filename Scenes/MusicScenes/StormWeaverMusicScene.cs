@@ -14,9 +14,9 @@ namespace CalamityMod.Systems
         public override int VanillaMusic => MusicID.Boss3;
         public override int OtherworldMusic => MusicID.OtherworldlyBoss2;
         public override int[] AdditionalNPCs => new int[]
-		{
-			ModContent.NPCType<StormWeaverBody>(),
-			ModContent.NPCType<StormWeaverTail>()
-		};
+        {
+            ModContent.NPCType<StormWeaverBody>(),
+            ModContent.NPCType<StormWeaverTail>()
+        };
     }
 }

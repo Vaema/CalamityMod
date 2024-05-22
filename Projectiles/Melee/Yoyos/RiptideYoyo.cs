@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System.IO;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

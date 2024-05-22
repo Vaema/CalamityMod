@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     chargeBubble = new GenericBubbleParticle(bubblePosition, Vector2.Zero, 0.4f, Owner.itemRotation, ChargeupTime / Projectile.extraUpdates);
                     GeneralParticleHandler.SpawnParticle(chargeBubble);
-                }    
+                }
                 else
                 {
                     chargeBubble.Position = bubblePosition;
@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 for (int i = 0; i < numDust; i++)
                 {
-                    Vector2 ringSpeed = new Vector2((float)Math.Cos(i / (float)numDust * MathHelper.TwoPi), (float)Math.Sin(i / (float)numDust * MathHelper.TwoPi) * 0.5f).RotatedBy(Projectile.velocity.ToRotation() + MathHelper.PiOver2) * (3.5f * (1 - Progress) + 3f) ;
+                    Vector2 ringSpeed = new Vector2((float)Math.Cos(i / (float)numDust * MathHelper.TwoPi), (float)Math.Sin(i / (float)numDust * MathHelper.TwoPi) * 0.5f).RotatedBy(Projectile.velocity.ToRotation() + MathHelper.PiOver2) * (3.5f * (1 - Progress) + 3f);
                     Dust ringDust = Dust.NewDustPerfect(Projectile.position, 211, ringSpeed, 100, default, 1.25f);
                     ringDust.noGravity = true;
 
@@ -124,7 +124,7 @@ namespace CalamityMod.Projectiles.Ranged
             //Water trail
             for (int i = 0; i < 6; i++)
             {
-                Dust waterDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 0.9f);
+                Dust waterDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 0.9f);
                 waterDust.noGravity = true;
                 waterDust.velocity *= 0.5f;
                 waterDust.velocity -= Projectile.velocity * 0.1f;

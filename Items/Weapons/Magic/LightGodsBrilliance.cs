@@ -14,11 +14,11 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = 42;
+            Item.height = 48;
             Item.damage = 111;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 6;
-            Item.width = 42;
-            Item.height = 48;
             Item.useTime = Item.useAnimation = 4;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ShadecrystalTome>().
+                AddIngredient<ShadecrystalBarrage>().
                 AddIngredient<AbyssalTome>().
                 AddIngredient(ItemID.HolyWater, 10).
                 AddIngredient(ItemID.SoulofLight, 30).

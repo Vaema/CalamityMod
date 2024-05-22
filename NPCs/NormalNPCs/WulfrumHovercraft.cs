@@ -1,15 +1,19 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Projectiles.Pets;
+using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Sounds;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -59,7 +63,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 12;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
             };
@@ -84,11 +88,15 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<WulfrumHovercraftBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.DayTime,
@@ -124,19 +132,26 @@ namespace CalamityMod.NPCs.NormalNPCs
             Player player = Main.player[NPC.target];
 
             bool farFromPlayer = NPC.Distance(player.Center) > 960f;
-            bool obstanceInFrontOfPlayer = !Collision.CanHitLine(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
+            bool obstacleInFrontOfPlayer = Main.remixWorld ? false : !Collision.CanHitLine(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
 
-            if (NPC.target < 0 || NPC.target >= 255 || farFromPlayer || obstanceInFrontOfPlayer || player.dead || !player.active)
+            if (NPC.target < 0 || NPC.target >= 255 || farFromPlayer || obstacleInFrontOfPlayer || player.dead || !player.active)
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
                 farFromPlayer = NPC.Distance(player.Center) > 960f;
-                obstanceInFrontOfPlayer = !Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
-                // Fly away if there is no living target, or the closest target is too far away.
-                if (player.dead || !player.active || farFromPlayer || obstanceInFrontOfPlayer)
+                obstacleInFrontOfPlayer = !Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
+                // Fly away if there is no living target, or the closest target is too far away... unless its Gfb
+                if (player.dead || !player.active || farFromPlayer || obstacleInFrontOfPlayer)
                 {
-                    if (FlyAwayTimer > 360)
+                    if (FlyAwayTimer > 420)
                     {
+                        // Don't go away from me >:(
+                        if (Main.zenithWorld && player.active && !farFromPlayer)
+                        {
+                            AIState = HovercraftAIState.SwoopDownward;
+                            SoundEngine.PlaySound(SoundID.DD2_KoboldFlyerHurt with { Pitch = SoundID.DD2_KoboldFlyerHurt.Pitch + 0.5f }, NPC.Center);
+                            return;
+                        }
                         NPC.velocity = Vector2.Lerp(NPC.velocity, Vector2.UnitY * -8f, 0.1f);
                         NPC.rotation = NPC.rotation.AngleTowards(0f, MathHelper.ToRadians(15f));
                         NPC.noTileCollide = true;
@@ -159,6 +174,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             if (StunTime > 0)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 if (!Main.dedServ && Main.rand.NextBool(4))
                 {
                     for (int i = 0; i < 2; i++)
@@ -189,6 +207,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             if (AIState == HovercraftAIState.Searching || AIState == HovercraftAIState.Hover)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 Vector2 destination = player.Center + new Vector2(SearchXOffset * SearchDirection, -160f);
                 NPC.velocity = NPC.SafeDirectionTo(destination, Vector2.UnitY) * (Supercharged ? 7f : 5f);
                 if (AIState == HovercraftAIState.Hover)
@@ -214,6 +235,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             if (AIState == HovercraftAIState.Slowdown)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 SubphaseTime++;
                 if (SubphaseTime < 30f)
                 {
@@ -229,6 +253,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             if (AIState == HovercraftAIState.SwoopDownward)
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
                 NPC.rotation = 0f;
                 float swoopType = Supercharged ? TotalSubphaseTime - 40f : TotalSubphaseTime;
                 float swoopSlowdownTime = Supercharged ? 10f : 45f;
@@ -263,10 +290,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.PlayerSafe || spawnInfo.Player.Calamity().ZoneSulphur || !spawnInfo.Player.ZoneOverworldHeight)
+            if (spawnInfo.PlayerSafe || spawnInfo.Player.Calamity().ZoneSulphur || (!spawnInfo.Player.ZoneOverworldHeight && !Main.remixWorld) || (!spawnInfo.Player.ZoneNormalCaverns && spawnInfo.Player.ZoneGlowshroom && Main.remixWorld))
                 return 0f;
 
-            return SpawnCondition.OverworldDaySlime.Chance * (Main.hardMode ? 0.015f : 0.1f) * (NPC.AnyNPCs(ModContent.NPCType<WulfrumAmplifier>()) ? 5.5f : 1f);
+            return (Main.remixWorld ? SpawnCondition.Cavern.Chance : SpawnCondition.OverworldDaySlime.Chance) * (Main.hardMode ? 0.010f : 0.135f) * (NPC.AnyNPCs(ModContent.NPCType<WulfrumAmplifier>()) ? 5.5f : 1f);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -275,13 +302,13 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 for (int k = 0; k < 5; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 3, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GrassBlades, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (NPC.life <= 0)
                 {
                     for (int k = 0; k < 20; k++)
                     {
-                        Dust.NewDust(NPC.position, NPC.width, NPC.height, 3, hit.HitDirection, -1f, 0, default, 1f);
+                        Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GrassBlades, hit.HitDirection, -1f, 0, default, 1f);
                     }
 
                     if (!Main.dedServ)
@@ -293,6 +320,21 @@ namespace CalamityMod.NPCs.NormalNPCs
                         for (int i = 0; i < randomGoreCount; i++)
                         {
                             Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("WulfrumEnemyGore" + Main.rand.Next(1, 11).ToString()).Type, 1f);
+                        }
+                    }
+                }
+                //Become a spark piñata in Legendary
+                if (CalamityWorld.LegendaryMode && Supercharged)
+                {
+                    for (int Sparks = Main.rand.Next(2, 5); Sparks > 0; Sparks--)
+                    {
+                        Vector2 velocity = CalamityUtils.RandomVelocity(50f, 30f, 60f);
+                        int spark = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitX * 6f * NPC.spriteDirection, velocity, ModContent.ProjectileType<EGloveSpark>(), 10, 0f);
+                        if (spark.WithinBounds(Main.maxProjectiles))
+                        {
+                            Main.projectile[spark].friendly = false;
+                            Main.projectile[spark].hostile = true;
+                            Main.projectile[spark].timeLeft = 90;
                         }
                     }
                 }

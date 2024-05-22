@@ -1,7 +1,7 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Ranged
             //Dust trail
             if (Main.rand.NextBool(13))
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 22, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 150, default, 0.9f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pot, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 150, default, 0.9f);
             }
         }
 
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Ranged
             int dust_splash = 0;
             while (dust_splash < 9)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 9, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 120, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Copper, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 120, default, 1.5f);
                 dust_splash += 1;
             }
         }

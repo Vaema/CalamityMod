@@ -12,6 +12,8 @@ namespace CalamityMod.Items.Weapons.Magic
         public static int PlayerExplosionDmgMax = 60;
         public override void SetDefaults()
         {
+            Item.width = 30;
+            Item.height = 58;
             Item.damage = 120;
             Item.knockBack = 10f;
             Item.useTime = Item.useAnimation = 30;
@@ -20,17 +22,16 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.channel = true;
             Item.shootSpeed = 7f;
             Item.shoot = ModContent.ProjectileType<MeteorStar>();
-
-            Item.width = 30;
-            Item.height = 58;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item9;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.Calamity().donorItem = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
     }
 }

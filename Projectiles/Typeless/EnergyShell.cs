@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Cooldowns;
 using CalamityMod.Items.Weapons.Melee;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {

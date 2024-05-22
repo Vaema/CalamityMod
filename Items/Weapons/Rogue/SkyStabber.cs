@@ -1,41 +1,39 @@
-﻿using Terraria.DataStructures;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
-using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
     public class SkyStabber : RogueWeapon
     {
-        private static int damage = 50;
         private static int knockBack = 2;
 
         public override void SetDefaults()
         {
-            Item.damage = damage;
+            Item.width = 16;
+            Item.height = 16;
+            Item.damage = 50;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.width = 16;
-            Item.height = 16;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = knockBack;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item1;
 
-            Item.shootSpeed = 2f;
+            Item.shootSpeed = 2.2f;
             Item.shoot = ModContent.ProjectileType<SkyStabberProj>();
         }
 
-        // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 4;
+        public override float StealthDamageMultiplier => 0.5f;
 
         public override bool CanUseItem(Player player)
         {

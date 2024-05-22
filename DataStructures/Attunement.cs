@@ -26,7 +26,7 @@ namespace CalamityMod.DataStructures
 
         public static void Load()
         {
-             attunementArray = new Attunement[] {
+            attunementArray = new Attunement[] {
                   new DefaultAttunement(), new HotAttunement(), new ColdAttunement(), new TropicalAttunement(), new EvilAttunement(),
                   new TrueDefaultAttunement(), new TrueHotAttunement(), new TrueColdAttunement(), new TrueTropicalAttunement(), new TrueEvilAttunement(), new HolyAttunement(), new AstralAttunement(), new MarineAttunement(),
                   new WhirlwindAttunement(), new FlailBladeAttunement(), new SuperPogoAttunement(), new ShockwaveAttunement(),
@@ -508,7 +508,7 @@ namespace CalamityMod.DataStructures
 
         public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
         {
-            if (UseTimer % 30 == 29 && Main.rand.Next(2) == 0)
+            if (UseTimer % 30 == 29 && Main.rand.NextBool(2))
             {
                 SoundEngine.PlaySound(SoundID.Item78);
                 int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(OmegaBiomeBlade.WhirlwindAttunement_PassiveBaseDamage);

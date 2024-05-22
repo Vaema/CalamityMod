@@ -13,11 +13,13 @@ namespace CalamityMod.Items.Placeables
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 200;
-			ItemID.Sets.SortingPriorityExtractibles[Type] = 3; // Desert Fossil
+            ItemID.Sets.SortingPriorityExtractibles[Type] = 3; // Desert Fossil
         }
 
         public override void SetDefaults()
         {
+            Item.width = 16;
+            Item.height = 16;
             ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
             Item.createTile = ModContent.TileType<Tiles.AstralDesert.CelestialRemains>();
             Item.useStyle = ItemUseStyleID.Swing;
@@ -26,8 +28,6 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 16;
-            Item.height = 16;
             Item.maxStack = 9999;
         }
 
@@ -82,7 +82,7 @@ namespace CalamityMod.Items.Placeables
             }
             else if (val < 68.03f)
             {
-                resultType = ModContent.ItemType<Stardust>();
+                resultType = ModContent.ItemType<StarblightSoot>();
                 resultStack = Main.rand.Next(1, 11);
             }
             else if (val < 69.03f)

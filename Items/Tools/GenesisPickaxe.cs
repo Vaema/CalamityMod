@@ -13,6 +13,8 @@ namespace CalamityMod.Items.Tools
         public override void SetDefaults()
         {
             // These stats exactly match vanilla's Luminite pickaxes.
+            Item.width = 84;
+            Item.height = 80;
             Item.damage = 80;
             Item.knockBack = 5.5f;
             Item.useTime = 6;
@@ -21,11 +23,9 @@ namespace CalamityMod.Items.Tools
             Item.tileBoost += 4;
 
             Item.DamageType = DamageClass.Melee;
-            Item.width = 84;
-            Item.height = 80;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Tools
         {
             if (Main.rand.NextBool(5))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 62);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.PurpleTorch);
             }
         }
     }

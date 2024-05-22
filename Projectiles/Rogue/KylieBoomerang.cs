@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -38,9 +38,9 @@ namespace CalamityMod.Projectiles.Rogue
 
             timer++;
             //Dust trail
-            if (Main.rand.Next(15) == 0)
+            if (Main.rand.NextBool(15))
             {
-                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 7, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 100, default, 0f);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.WoodFurniture, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 100, default, 0f);
                 Main.dust[d].position = Projectile.Center;
             }
             //Constant sound effects

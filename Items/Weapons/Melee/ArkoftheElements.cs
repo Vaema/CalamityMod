@@ -1,13 +1,13 @@
-﻿using Terraria.DataStructures;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public const float ComboLength = 4f; //How many regular swings before the long throw happens
         public static float snapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
-        public static float chargeDamageMultiplier = 1.2f; //Extra damage from charge
+        public static float chargeDamageMultiplier = 1.35f; //Extra damage from charge
 
         public static float needleDamageMultiplier = 0.8f; //Damage multiplier for non-homing needle projectile
         public static float glassStarDamageMultiplier = 0.2f; //Damage multiplier for the homing glass stars (4 glass stars per shot)
@@ -64,7 +64,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 112;
             Item.height = 172;
-            Item.damage = 560;
+            Item.damage = 507;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noUseGraphic = true;
             Item.noMelee = true;
@@ -75,7 +75,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8.5f;
             Item.UseSound = null;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 16f;

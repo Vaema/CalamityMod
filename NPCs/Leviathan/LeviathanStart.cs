@@ -1,8 +1,9 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.IO;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -13,18 +14,25 @@ namespace CalamityMod.NPCs.Leviathan
 {
     public class LeviathanStart : ModNPC
     {
+
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionYOverride = -6f,
                 Scale = 0.65f,
                 PortraitScale = 0.75f
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -56,10 +64,10 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.LeviathanStart")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.LeviathanStart")
             });
         }
 
@@ -116,7 +124,7 @@ namespace CalamityMod.NPCs.Leviathan
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D drawTex = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/NPCs/Leviathan/Leviathan").Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D drawTex = Main.zenithWorld ? TextureAssets.Npc[ModContent.NPCType<Leviathan>()].Value : TextureAssets.Npc[NPC.type].Value;
             Rectangle frame = Main.zenithWorld ? drawTex.Frame(2, 3, 0, 0) : NPC.frame;
             Vector2 origin = new Vector2(drawTex.Width / 2, drawTex.Height / 2);
 
@@ -136,7 +144,7 @@ namespace CalamityMod.NPCs.Leviathan
 
             if (!Main.zenithWorld)
             {
-                drawTex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Leviathan/LeviathanStartGlow").Value;
+                drawTex = GlowTexture.Value;
 
                 spriteBatch.Draw(drawTex, drawPos, frame, Color.White, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
             }
@@ -176,10 +184,10 @@ namespace CalamityMod.NPCs.Leviathan
 
             return SpawnCondition.OceanMonster.Chance * 0.4f;
         }
-        
+
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<AquaticHeart>(), 4); 
+            npcLoot.Add(ModContent.ItemType<AquaticHeart>(), 4);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

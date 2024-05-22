@@ -1,8 +1,8 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Projectile.soundDelay <= 0)
             {
-                SoundEngine.PlaySound(CoralSpout.ChargeSound with { Pitch = 0.5f * ChargeProgress}, Owner.MountedCenter);
+                SoundEngine.PlaySound(CoralSpout.ChargeSound with { Pitch = 0.5f * ChargeProgress }, Owner.MountedCenter);
                 Projectile.soundDelay = 10;
             }
 
@@ -91,17 +91,17 @@ namespace CalamityMod.Projectiles.Magic
             effect.Parameters["centerOpacity"].SetValue(0.7f);
             effect.Parameters["mainOpacity"].SetValue((float)Math.Sqrt(ChargeProgress));
             effect.Parameters["halfSpreadAngle"].SetValue(Spread / 2f);
-            effect.Parameters["edgeColor"].SetValue(Color.Lerp(Color.DeepSkyBlue, Color.Coral, blinkage ).ToVector3());
+            effect.Parameters["edgeColor"].SetValue(Color.Lerp(Color.DeepSkyBlue, Color.Coral, blinkage).ToVector3());
             effect.Parameters["centerColor"].SetValue(Color.Lerp(Color.DodgerBlue, Color.Coral, blinkage).ToVector3());
             effect.Parameters["edgeBlendLength"].SetValue(0.07f);
             effect.Parameters["edgeBlendStrength"].SetValue(8f);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, effect, Main.GameViewMatrix.TransformationMatrix);
-            
+
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj").Value;
 
-            Main.EntitySpriteDraw(texture, Owner.MountedCenter - Main.screenPosition, null, Color.White, angle, new Vector2(texture.Width / 2f, texture.Height/2f), 700f, 0, 0);
+            Main.EntitySpriteDraw(texture, Owner.MountedCenter - Main.screenPosition, null, Color.White, angle, new Vector2(texture.Width / 2f, texture.Height / 2f), 700f, 0, 0);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

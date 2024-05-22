@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Armor.Demonshade
             Item.height = 18;
             Item.defense = 50;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }

@@ -16,6 +16,8 @@ namespace CalamityMod.Items.Placeables
 
         public override void SetDefaults()
         {
+            Item.width = 13;
+            Item.height = 10;
             Item.createTile = ModContent.TileType<Tiles.SunkenSea.Navystone>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -23,8 +25,6 @@ namespace CalamityMod.Items.Placeables
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 13;
-            Item.height = 10;
             Item.maxStack = 9999;
         }
 

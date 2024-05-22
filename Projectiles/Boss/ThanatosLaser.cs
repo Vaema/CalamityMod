@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Boss
                     else
                     {
                         Projectile.spriteDirection = 1;
-                        Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                        Projectile.rotation = Projectile.velocity.ToRotation();
                     }
                 }
                 else if (Velocity == Vector2.Zero)
@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Boss
                 else
                 {
                     Projectile.spriteDirection = 1;
-                    Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                    Projectile.rotation = Projectile.velocity.ToRotation();
                 }
             }
             else if (Destination == Vector2.Zero)

@@ -19,10 +19,10 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 450;
-            Item.mana = 10;
             Item.width = 50;
             Item.height = 50;
+            Item.damage = 450;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
@@ -36,6 +36,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<MoonFist>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
+            Item.Calamity().donorItem = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

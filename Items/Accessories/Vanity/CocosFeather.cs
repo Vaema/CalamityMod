@@ -1,11 +1,11 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod;
+using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework;
-using CalamityMod;
 
 
 namespace CalamityMod.Items.Accessories.Vanity
@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void SetStaticDefaults()
         {
-           
+
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.width = 42;
             Item.height = 38;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
             Item.Calamity().devItem = true;

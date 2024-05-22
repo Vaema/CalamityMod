@@ -1,8 +1,8 @@
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.velocity *= 1.01f;
 
             // Trail dust.
-            int trailDust = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 172, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f);
+            int trailDust = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.DungeonWater, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f);
             Main.dust[trailDust].noGravity = true;
         }
 
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Enemy
         {
             if (CalamityConfig.Instance.Afterimages)
                 CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
-            
+
             return true;
         }
     }

@@ -1,9 +1,9 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
     public class SnapClamProj : ModProjectile, ILocalizedModType
@@ -80,11 +80,11 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 20;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            for (int num194 = 0; num194 < 20; num194++)
+            for (int i = 0; i < 20; i++)
             {
-                int num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 14, 0f, 0f, 0, new Color(115, 124, 124), 1f);
-                Main.dust[num195].noGravity = true;
-                Main.dust[num195].velocity *= 2f;
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 0, new Color(115, 124, 124), 1f);
+                Main.dust[dust].noGravity = true;
+                Main.dust[dust].velocity *= 2f;
             }
         }
 

@@ -17,14 +17,14 @@ namespace CalamityMod.Items.Tools.ClimateChange
             Item.UseSound = SoundID.Item66;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
-            return DownedBossSystem.downedDesertScourge;
+            return DownedBossSystem.downedDesertScourge || Main.hardMode;
         }
 
         // this is extremely ugly and has to be fully qualified because we add an item called Sandstorm

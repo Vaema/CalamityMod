@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -28,6 +28,8 @@ namespace CalamityMod.Items.Tools
 
         public override void SetDefaults()
         {
+            Item.width = 70;
+            Item.height = 70;
             Item.damage = 400;
             Item.knockBack = 9f;
             Item.useTime = 1;
@@ -37,14 +39,12 @@ namespace CalamityMod.Items.Tools
 
             Item.DamageType = DamageClass.Melee;
             Item.channel = true;
-            Item.width = 70;
-            Item.height = 70;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.shootSpeed = LaserSpeed;
             Item.UseSound = SoundID.Item1;
             Item.shoot = ModContent.ProjectileType<CrystylCrusherRay>();
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }

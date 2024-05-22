@@ -1,4 +1,4 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ModLoader;
@@ -19,9 +19,9 @@ namespace CalamityMod.Buffs.Summon
             CalamityPlayer modPlayer = player.Calamity();
             if (player.ownedProjectileCounts[ModContent.ProjectileType<IceClasperMinion>()] > 0)
             {
-                modPlayer.iClasper = true;
+                modPlayer.IceClasperBool = true;
             }
-            if (!modPlayer.iClasper)
+            if (!modPlayer.IceClasperBool)
             {
                 player.DelBuff(buffIndex);
                 buffIndex--;
