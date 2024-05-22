@@ -2,6 +2,9 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using CalamityMod.Particles;
+using Terraria.Audio;
+using CalamityMod.Items.Weapons.Rogue;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -29,6 +32,16 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
+            if (!Projectile.Calamity().stealthStrike)
+            {
+                Projectile.velocity.Y += 0.05f;
+                Projectile.velocity.X *= 0.995f;
+            }
+            else
+            {
+                Projectile.velocity *= 1.05f;
+            }
+
             Projectile.ai[0]++;
             Projectile.tileCollide = Projectile.ai[0] >= 2f;
 
@@ -36,27 +49,47 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 187, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100, new Color(53, Main.DiscoG, 255));
+                Dust dust = Dust.NewDustDirect(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 187, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100, new Color(53, Main.DiscoG, 255));
+                dust.noGravity = true;
             }
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 16, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust dust = Dust.NewDustDirect(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 16, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                dust.noGravity = true;
             }
 
             if (Projectile.Calamity().stealthStrike) //Stealth strike
             {
-                if (Projectile.timeLeft % 14 == 0)
+                if (Projectile.ai[0] % 4 == 1)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TurbulanceWindSlash>(), Projectile.damage, Projectile.knockBack / 2, Projectile.owner, 1f, 1f);
+                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TurbulanceWindSlash>(), Projectile.damage, Projectile.knockBack / 2, Projectile.owner, 1f, 1f);
+                    proj.Calamity().stealthStrike = true;
                 }
             }
         }
 
         public override void OnKill(int timeLeft)
         {
-            for (int i = 0; i <= 10; i++)
+            SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Projectile.Center);
+
+            GeneralParticleHandler.SpawnParticle(new ImpactParticle(
+                Projectile.Center, MathHelper.ToRadians(Main.rand.NextFloat(-2, 2)), 20, 2f, Color.SkyBlue));
+            for (int i = 0; i < 3; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 187, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 50, new Color(53, Main.DiscoG, 255));
+                GeneralParticleHandler.SpawnParticle(new ImpactParticle(
+                    Projectile.Center + new Vector2(Main.rand.NextFloat(20, 50), 0).RotatedByRandom(MathHelper.TwoPi), MathHelper.ToRadians(Main.rand.NextFloat(-2, 2)), 20, 0.5f, Color.SkyBlue));
+            }    
+
+            if (Projectile.Calamity().stealthStrike)
+            {
+                SoundEngine.PlaySound(Turbulance.LightningStrike, Projectile.Center);
+
+                for (int i = 0; i <= 10; i++)
+                {
+                    GeneralParticleHandler.SpawnParticle(
+                        new CrackParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(20, 50), 0).RotatedByRandom(MathHelper.TwoPi), Vector2.Zero, Color.Gold, new Vector2(Main.rand.NextFloat(1f, 2f), Main.rand.NextFloat(2f)), Main.rand.NextFloat(MathHelper.TwoPi), 1f, 0.5f, 30)
+                        );
+                }
             }
         }
 
