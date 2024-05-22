@@ -1,14 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Items.Armor.DesertProwler;
+using CalamityMod.Particles;
+using CalamityMod.UI;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.Localization;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Items.Armor.DesertProwler;
-using CalamityMod.Particles;
-using CalamityMod.UI;
 
 namespace CalamityMod.Cooldowns
 {

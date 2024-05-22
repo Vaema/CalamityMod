@@ -1,10 +1,12 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class VividBeam : ModProjectile, ILocalizedModType
@@ -38,7 +40,7 @@ namespace CalamityMod.Projectiles.Magic
                     Vector2 offset = Vector2.UnitX * 0f;
                     offset += -Vector2.UnitY.RotatedBy((double)((float)d * (MathHelper.TwoPi / dustAmt)), default) * new Vector2(1f, 4f);
                     offset = offset.RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                    int i = Dust.NewDust(Projectile.Center, 0, 0, 66, 0f, 0f, 0, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
+                    int i = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowTorch, 0f, 0f, 0, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
                     Main.dust[i].scale = 1.5f;
                     Main.dust[i].noGravity = true;
                     Main.dust[i].position = Projectile.Center + offset;
@@ -59,7 +61,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Vector2 offset = Vector2.UnitX * -12f;
                     offset = -Vector2.UnitY.RotatedBy((double)(Projectile.ai[0] * pi / 24f + (float)d * pi), default) * new Vector2(5f, 10f) - Projectile.rotation.ToRotationVector2() * 10f;
-                    int i = Dust.NewDust(Projectile.Center, 0, 0, 66, 0f, 0f, 160, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
+                    int i = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowTorch, 0f, 0f, 160, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
                     Main.dust[i].scale = 0.75f;
                     Main.dust[i].noGravity = true;
                     Main.dust[i].position = Projectile.Center + offset;
@@ -115,7 +117,7 @@ namespace CalamityMod.Projectiles.Magic
             switch (Projectile.ai[1])
             {
                 case 0f:
-                    CalamityUtils.ProjectileRain(source, Projectile.Center, 400f, 100f, 500f, 800f, 6f, ModContent.ProjectileType<VividClarityBeam>(), (int)(Projectile.damage * 0.7), Projectile.knockBack, Projectile.owner);
+                    CalamityUtils.ProjectileRain(source, Projectile.Center, 320f, 100f, 400f, 640f, 6f, ModContent.ProjectileType<VividClarityBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     break;
 
                 case 1f:

@@ -12,26 +12,26 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class ReedBlowgun : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        public static readonly SoundStyle BubbleBurstSound = new ("CalamityMod/Sounds/Custom/PistolShrimpBubbleBurst") { PitchVariance = 0.15f, Volume = 0.2f};
+        public static readonly SoundStyle BubbleBurstSound = new("CalamityMod/Sounds/Custom/PistolShrimpBubbleBurst") { PitchVariance = 0.15f, Volume = 0.2f };
 
         public override void SetStaticDefaults()
         {
-           
+            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 21;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 22;
             Item.height = 46;
+            Item.damage = 21;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 25;
             Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.holdStyle = 16;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = null;
             Item.autoReuse = true;

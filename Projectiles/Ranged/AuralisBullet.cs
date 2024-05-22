@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int d = 0; d < 5; d++)
                 {
-                    Dust dust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 229, Projectile.velocity.X, Projectile.velocity.Y, 100, CalamityUtils.ColorSwap(Auralis.blueColor, Auralis.greenColor, 1f), 1f)];
+                    Dust dust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, Projectile.velocity.X, Projectile.velocity.Y, 100, CalamityUtils.ColorSwap(Auralis.blueColor, Auralis.greenColor, 1f), 1f)];
                     dust.velocity = Vector2.Zero;
                     dust.position -= Projectile.velocity / 5f * d;
                     dust.noGravity = true;

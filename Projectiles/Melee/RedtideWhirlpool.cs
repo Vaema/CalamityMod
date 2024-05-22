@@ -23,6 +23,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 40;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -43,9 +45,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
-            SpriteEffects flip = Math.Sign(Projectile.velocity.X) < 0? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            SpriteEffects flip = Math.Sign(Projectile.velocity.X) < 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor * 0.3f, Projectile.rotation * 1.2f, texture.Size() / 2f, 1.5f, flip, 0);
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor * 0.4f, Projectile.rotation, texture.Size() / 2f, 2f, flip, 0);

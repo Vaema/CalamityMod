@@ -1,7 +1,7 @@
-﻿using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             Item.width = 24;
             Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }

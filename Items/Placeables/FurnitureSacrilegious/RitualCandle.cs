@@ -1,4 +1,4 @@
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurnitureSacrilegious;
 using Terraria;
 using Terraria.ID;
@@ -33,11 +33,11 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
         {
             if (player.altFunctionUse == ItemAlternativeFunctionID.ActivatedAndUsed)
             {
-				Item.placeStyle = 1;
+                Item.placeStyle = 1;
             }
             else
             {
-				Item.placeStyle = 0;
+                Item.placeStyle = 0;
             }
             return base.CanUseItem(player);
         }
@@ -45,10 +45,10 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
         public override void AddRecipes()
         {
             CreateRecipe().
-				AddIngredient<OccultBrickItem>(5).
-				AddIngredient(ItemID.Torch).
-				AddTile<SCalAltar>().
-				Register();
+                AddIngredient<OccultBrickItem>(5).
+                AddIngredient(ItemID.Torch).
+                AddTile<SCalAltar>().
+                Register();
         }
     }
 }

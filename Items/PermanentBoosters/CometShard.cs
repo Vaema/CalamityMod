@@ -1,13 +1,13 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
@@ -20,8 +20,8 @@ namespace CalamityMod.Items.PermanentBoosters
 
         public override void SetStaticDefaults()
         {
-			// For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 21; // Mana Crystal
+            // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 21; // Mana Crystal
         }
 
         public override void SetDefaults()
@@ -71,7 +71,7 @@ namespace CalamityMod.Items.PermanentBoosters
             CreateRecipe().
                 AddIngredient(ItemID.MeteoriteBar, 10).
                 AddIngredient(ItemID.FallenStar, 10).
-                AddIngredient<Stardust>(50).
+                AddIngredient<StarblightSoot>(50).
                 AddTile(TileID.Anvils).
                 Register();
         }

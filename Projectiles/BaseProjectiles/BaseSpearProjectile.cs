@@ -1,6 +1,6 @@
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 Player player = Main.player[Projectile.owner];
 
                 // Adjust owner stats based on this projectile
-                player.direction = Projectile.direction;
+                player.ChangeDir(Projectile.direction);
                 player.heldProj = Projectile.whoAmI;
                 player.itemTime = player.itemAnimation;
 
@@ -66,7 +66,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 }
 
                 // If at the end of the animation, kill the projectile.
-                if (player.itemAnimation == 0)
+                //Checking if == 0 is too late, lets the projectile linger into chained item uses.
+                if (player.itemAnimation <= 1)
                     Projectile.Kill();
 
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2 + MathHelper.PiOver4;
@@ -161,7 +162,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             if (SpearAiType == SpearType.TypicalSpear)
             {
-                Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+                Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
                 Vector2 drawPosition = Projectile.Center - Main.screenPosition;
                 Vector2 origin = Vector2.Zero;
                 Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, 0, 0);

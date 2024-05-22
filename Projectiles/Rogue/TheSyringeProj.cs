@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             if (Main.rand.NextBool(8))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, Main.rand.Next(2) == 1 ? 107 : 89, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, Main.rand.NextBool(2)? 107 : 89, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
 
             // TODO -- This will almost never work due to the base damage being too low, and will round down.
             Projectile.damage += Projectile.originalDamage / 200;
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item107, Projectile.position);
             for (int k = 0; k < 7; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 89, Projectile.oldVelocity.X, Projectile.oldVelocity.Y);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GemEmerald, Projectile.oldVelocity.X, Projectile.oldVelocity.Y);
             }
             int fireAmt = Main.rand.Next(1, 3);
             if (Projectile.owner == Main.myPlayer)

@@ -1,4 +1,6 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
@@ -7,15 +9,14 @@ using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
 namespace CalamityMod.NPCs.Abyss
 {
     public class DevilFish : ModNPC
@@ -24,16 +25,21 @@ namespace CalamityMod.NPCs.Abyss
 
         public bool brokenMask = false;
         public int hitCounter = 0;
+        public static Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 16;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 5f
             };
             value.Position.X += 30f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -59,13 +65,17 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer3Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DevilFish")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DevilFish")
             });
         }
 
@@ -112,17 +122,17 @@ namespace CalamityMod.NPCs.Abyss
 
             if (NPC.wet)
             {
-                bool flag14 = brokenMask;
+                bool canAttack = brokenMask;
                 NPC.TargetClosest(false);
                 if (player.statLife <= player.statLifeMax2 / 4)
                 {
-                    flag14 = true;
+                    canAttack = true;
                 }
-                if ((!player.wet || player.dead || !Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height)) && flag14)
+                if ((!player.wet || player.dead || !Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height)) && canAttack)
                 {
-                    flag14 = false;
+                    canAttack = false;
                 }
-                if (!flag14)
+                if (!canAttack)
                 {
                     if (NPC.collideX)
                     {
@@ -147,7 +157,7 @@ namespace CalamityMod.NPCs.Abyss
                         }
                     }
                 }
-                if (flag14)
+                if (canAttack)
                 {
                     NPC.TargetClosest(true);
                     NPC.velocity.X = NPC.velocity.X + (float)NPC.direction * (CalamityWorld.death ? 0.5f : CalamityWorld.revenge ? 0.375f : 0.25f) * speedBoost;
@@ -194,15 +204,15 @@ namespace CalamityMod.NPCs.Abyss
                         }
                     }
                 }
-                int num258 = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
-                int num259 = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
-                if (Main.tile[num258, num259 - 1].LiquidAmount > 128)
+                int npcTileX = (int)(NPC.position.X + (float)(NPC.width / 2)) / 16;
+                int npcTileY = (int)(NPC.position.Y + (float)(NPC.height / 2)) / 16;
+                if (Main.tile[npcTileX, npcTileY - 1].LiquidAmount > 128)
                 {
-                    if (Main.tile[num258, num259 + 1].HasTile)
+                    if (Main.tile[npcTileX, npcTileY + 1].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
-                    else if (Main.tile[num258, num259 + 2].HasTile)
+                    else if (Main.tile[npcTileX, npcTileY + 2].HasTile)
                     {
                         NPC.ai[0] = -1f;
                     }
@@ -282,11 +292,9 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/DevilFishGlow").Value;
-
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4), 
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }
@@ -308,9 +316,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public static void DefineDevilFishLoot(NPCLoot npcLoot)
         {
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 1, 2, 2, 3));
-            postClone.Add(ModContent.ItemType<Lumenyl>(), 2);
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 1, 2, 2, 3));
+            postLevi.Add(ModContent.ItemType<Lumenyl>(), 2);
             npcLoot.AddIf(() => NPC.downedGolemBoss, ModContent.ItemType<ScoriaOre>(), 1, 3, 9);
             npcLoot.Add(ModContent.ItemType<PyreMantle>(), 1, 10, 20);
         }

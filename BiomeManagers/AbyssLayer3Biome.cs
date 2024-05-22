@@ -32,7 +32,7 @@ namespace CalamityMod.BiomeManagers
             if (Main.remixWorld)
             {
                 return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords) && BiomeTileCounterSystem.Layer3Tiles >= 200 &&
-                playerYTileCoords <= SulphurousSea.YStart - (int)((Main.maxTilesY - 200) * 0.4f) && playerYTileCoords > SulphurousSea.YStart - (int)((Main.maxTilesY - 200) * 0.6f);
+                playerYTileCoords <= SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.4f) && playerYTileCoords > SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.6f);
             }
 
             return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords2) && BiomeTileCounterSystem.Layer3Tiles >= 200 &&

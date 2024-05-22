@@ -21,10 +21,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
-            Item.damage = 100;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 54;
             Item.height = 28;
+            Item.damage = 100;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 10;
             Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.noUseGraphic = true;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             modItem.donorItem = true;
             Item.UseSound = SoundID.Item75;

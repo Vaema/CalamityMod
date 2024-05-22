@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/PhantasmalRuin";
-        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/WulfrumKnifeThrowSingle") { Volume = 0.8f};
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/WulfrumKnifeThrowSingle") { Volume = 0.8f };
         private const int Lifetime = 600;
 
         public override void SetStaticDefaults()
@@ -68,15 +68,24 @@ namespace CalamityMod.Projectiles.Rogue
                 return;
 
             SoundEngine.PlaySound(HitSound with { PitchVariance = 0.4f }, Projectile.position);
-
             if (Projectile.Calamity().stealthStrike)
             {
-                for (int i = 0; i < 5; i += 2)
+                if (Projectile.penetrate >= 3)
                 {
-                    int soulDamage = (int)(Projectile.damage * 0.3f);
-                    Vector2 velocity = new Vector2(0f, -15f);
-                    velocity = velocity.RotatedByRandom(0.5f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + new Vector2(0, 600f), velocity, ModContent.ProjectileType<PhantasmalSoulBlue>(), soulDamage, 0f, Projectile.owner, 0f);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        int soulDamage = (int)(Projectile.damage * 0.3f);
+                        Vector2 velocity = new Vector2(0f, -15f);
+                        velocity = velocity.RotatedByRandom(0.5f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + new Vector2(0, 600f), velocity, ModContent.ProjectileType<PhantasmalSoulBlue>(), soulDamage, 0f, Projectile.owner, 0f);
+                    }
+                    for (int j = 0; j < 3; j++)
+                    {
+                        int soulDamage = (int)(Projectile.damage * 0.3f);
+                        Vector2 velocity = new Vector2(0f, -24f);
+                        velocity = velocity.RotatedByRandom(0.25f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + new Vector2(0, 1300f), velocity, ModContent.ProjectileType<PhantasmalSoulBlue>(), soulDamage, 0f, Projectile.owner, 0f);
+                    }
                 }
             }
             else

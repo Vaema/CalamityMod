@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Audio;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {

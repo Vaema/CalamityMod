@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Projectile.frame = 0;
                     Shards();
-                    SoundEngine.PlaySound(SoundID.Item42, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item42, Projectile.Center);
                     Projectile.ai[1]++;
                     Projectile.ai[0] = 0;
                 }
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnKill(int timeLeft)
         {
             if (Projectile.ai[1] < 2) //Do not shoot more spikes if two rounds have already been shot
-            Shards();
+                Shards();
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Vector2 velocity = new Vector2(0f, 10f);
                 velocity = velocity.RotatedBy(variance * i + Projectile.rotation);
-                int p = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, velocity, ModContent.ProjectileType<HadalUrnStarfishShard>(), (int)(0.33f * Projectile.damage), 0, Projectile.owner);
+                int p = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, velocity, ModContent.ProjectileType<HadalUrnStarfishShard>(), (int)(0.25f * Projectile.damage), 0, Projectile.owner);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Projectile.originalDamage;
             }

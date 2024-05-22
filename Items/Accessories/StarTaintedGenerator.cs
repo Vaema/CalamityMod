@@ -1,11 +1,11 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Materials;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.GameContent;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 38;
             Item.height = 60;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 

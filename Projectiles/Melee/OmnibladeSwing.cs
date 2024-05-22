@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 playerRotatedPoint = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
             if (Main.myPlayer == Projectile.owner)
             {
-                if (Owner.channel && !Owner.noItems && !Owner.CCed)
+                if (!Owner.CantUseHoldout())
                     HandleChannelMovement(playerRotatedPoint);
                 else
                     Projectile.Kill();
@@ -54,9 +54,9 @@ namespace CalamityMod.Projectiles.Melee
             // Sprite and player directioning.
             Projectile.spriteDirection = -Projectile.direction;
             if (Projectile.direction == 1)
-                Projectile.Left = Owner.Center;
+                Projectile.Left = Owner.MountedCenter;
             else
-                Projectile.Right = Owner.Center;
+                Projectile.Right = Owner.MountedCenter;
             Projectile.position.X += Projectile.spriteDirection == -1 ? -116f : 88f;
             Projectile.position.Y -= Projectile.scale * 66f;
             Owner.ChangeDir(Projectile.direction);

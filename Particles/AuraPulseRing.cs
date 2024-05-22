@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using static CalamityMod.CalamityUtils;
 using Terraria;
 using Terraria.ModLoader;
+using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Particles
 {
@@ -32,8 +32,8 @@ namespace CalamityMod.Particles
 
         public override void Update()
         {
-            float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new CurveSegment(SineBumpEasing, 0f, 0f, 1f)});
-            
+            float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new CurveSegment(SineBumpEasing, 0f, 0f, 1f) });
+
             float heightProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new CurveSegment(SineInOutEasing, 0f, 0f, 1f) });
 
             opacity = (float)Math.Sin(LifetimeCompletion * MathHelper.Pi) * 0.8f + 0.2f;
@@ -44,7 +44,7 @@ namespace CalamityMod.Particles
             if (StuckTo != null && StuckTo.active)
             {
                 CurrentScale = Vector2.Lerp(OriginalScale, FinalScale, pulseProgress) * StuckTo.scale;
-                RelativeOffset = - Vector2.UnitY.RotatedBy(StuckTo.rotation) * StuckTo.height / 2f + Vector2.UnitY.RotatedBy(StuckTo.rotation) * StuckTo.height * heightProgress;
+                RelativeOffset = -Vector2.UnitY.RotatedBy(StuckTo.rotation) * StuckTo.height / 2f + Vector2.UnitY.RotatedBy(StuckTo.rotation) * StuckTo.height * heightProgress;
                 Rotation = StuckTo.rotation;
             }
         }

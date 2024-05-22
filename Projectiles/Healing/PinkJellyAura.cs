@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Healing
         public override void AI()
         {
             Framecounter++;
-            
+
             for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
             {
                 Player player = Main.player[playerIndex];

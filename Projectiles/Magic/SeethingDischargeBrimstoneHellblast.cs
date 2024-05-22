@@ -1,11 +1,11 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             }
             Projectile.velocity.X *= 1.03f;
             Projectile.velocity.Y *= 1.03f;
@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Magic
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
         }
 
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             for (int dust = 0; dust <= 5; dust++)
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f);

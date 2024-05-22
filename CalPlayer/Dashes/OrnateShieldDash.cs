@@ -29,7 +29,7 @@ namespace CalamityMod.CalPlayer.Dashes
         {
             for (int d = 0; d < 3; d++)
             {
-                Dust iceDashDust = Dust.NewDustPerfect(player.Center + new Vector2 (Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.7f), Main.rand.NextBool(8) ? 223 : 180, -player.velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.6f, 0.8f));
+                Dust iceDashDust = Dust.NewDustPerfect(player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.7f), Main.rand.NextBool(8) ? 223 : 180, -player.velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.6f, 0.8f));
                 iceDashDust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
                 iceDashDust.noGravity = true;
                 iceDashDust.fadeIn = 0.5f;
@@ -43,22 +43,18 @@ namespace CalamityMod.CalPlayer.Dashes
 
         public override void OnHitEffects(Player player, NPC npc, IEntitySource source, ref DashHitContext hitContext)
         {
-            float kbFactor = 3f;
-            if (player.kbGlove)
-                kbFactor *= 2f;
-            if (player.kbBuff)
-                kbFactor *= 1.5f;
-
+            // Define hit context variables.
             int hitDirection = player.direction;
             if (player.velocity.X != 0f)
                 hitDirection = Math.Sign(player.velocity.X);
-
-            // Define hit context variables.
-            hitContext.CriticalHit = false;
             hitContext.HitDirection = hitDirection;
-            hitContext.KnockbackFactor = kbFactor;
             hitContext.PlayerImmunityFrames = OrnateShield.ShieldSlamIFrames;
-            hitContext.Damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(50f);
+
+            // Define damage parameters.
+            int dashDamage = OrnateShield.ShieldSlamDamage;
+            hitContext.damageClass = DamageClass.Melee;
+            hitContext.BaseDamage = player.ApplyArmorAccDamageBonusesTo(dashDamage);
+            hitContext.BaseKnockback = OrnateShield.ShieldSlamKnockback;
 
             npc.AddBuff(BuffID.Frostburn2, 180); //Great, Frostbite is ACTUALLY called Frostburn 2
         }

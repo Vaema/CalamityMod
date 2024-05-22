@@ -1,7 +1,8 @@
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria.ModLoader;
+using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureAshen
 {
@@ -29,6 +30,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
                 AddIngredient<SmoothBrimstoneSlag>(10).
                 AddIngredient<UnholyCore>(5).
                 AddTile<AshenAltar>().
+                AddDecraftCondition(Condition.DownedMechBossAny).
                 Register();
         }
     }

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.Accessories.Wings
 {
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             Item.width = 28;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity6BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.accessory = true;
         }
@@ -69,10 +69,10 @@ namespace CalamityMod.Items.Accessories.Wings
                     {
                         yStart += player.velocity.Y;
                     }
-                    int num69 = Dust.NewDust(new Vector2(xStart, yStart), 8, 8, type, 0f, 0f, alpha, default, scale);
-                    Dust dust = Main.dust[num69];
+                    int boosterDust = Dust.NewDust(new Vector2(xStart, yStart), 8, 8, type, 0f, 0f, alpha, default, scale);
+                    Dust dust = Main.dust[boosterDust];
                     dust.velocity.X *= 0.1f;
-                    dust.velocity.Y = Main.dust[num69].velocity.Y * 1f + 2f * player.gravDir - player.velocity.Y * 0.3f;
+                    dust.velocity.Y = Main.dust[boosterDust].velocity.Y * 1f + 2f * player.gravDir - player.velocity.Y * 0.3f;
                     dust.noGravity = true;
                     dust.shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
                     if (dustAmt == 4)
@@ -89,7 +89,7 @@ namespace CalamityMod.Items.Accessories.Wings
             player.jumpBoost = true;
             player.autoJump = true;
             player.noFallDmg = true;
-            player.jumpSpeedBoost += 0.5f;
+            player.jumpSpeedBoost += 1.6f;
             player.luck += 0.05f;
         }
 

@@ -1,10 +1,11 @@
-﻿using CalamityMod.Dusts;
+﻿using System.Collections.Generic;
+using CalamityMod.Dusts;
+using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Tiles.Astral;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles
 {
@@ -13,8 +14,7 @@ namespace CalamityMod.Tiles
         private const short subsheetWidth = 324;
         private const short subsheetHeight = 90;
 
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -22,8 +22,8 @@ namespace CalamityMod.Tiles
             HitSound = SoundID.Tink;
             AddMapEntry(new Color(128, 128, 158));
 
-            TileFraming.SetUpUniversalMerge(Type, TileID.Dirt, out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<AstralDirt>(), out secondTileAdjacency);
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -34,8 +34,6 @@ namespace CalamityMod.Tiles
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.GetAdjacencyData(i, j, TileID.Dirt, out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<AstralDirt>(), out secondTileAdjacency[i, j]);
             return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
         }
 
@@ -62,12 +60,8 @@ namespace CalamityMod.Tiles
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
             Color drawColour = GetDrawColour(i, j, new Color(50, 50, 50, 50));
             Tile trackTile = Main.tile[i, j];
-            double num6 = Main.time * 0.08;
 
             TileFraming.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
-
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/AstralDirtMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/DirtMerge");
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

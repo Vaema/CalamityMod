@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.ai[0] > 7f)
             {
                 int[] dustTypes = new int[] { 27, 27, 112, 173 };
-                if(true)
+                if (true)
                 {
                     int dustType = dustTypes[Main.rand.Next(4)];
                     int dustID;
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Shadowflame>(), 300, true);
+            target.AddBuff(ModContent.BuffType<Shadowflame>(), 120, true);
         }
     }
 }

@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Balancing;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Healing
@@ -11,8 +12,11 @@ namespace CalamityMod.Projectiles.Healing
     public class GladiatorHealOrb : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Healing";
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
         public int target = -1;
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -28,7 +32,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 4800;
-			Projectile.tileCollide = false;
+            Projectile.tileCollide = false;
             Projectile.extraUpdates = 3;
         }
 
@@ -52,6 +56,7 @@ namespace CalamityMod.Projectiles.Healing
             }
             else HealHome();
         }
+
         public void PassiveBehavior()
         {
             float maxYVelocity = 2f;
@@ -61,6 +66,7 @@ namespace CalamityMod.Projectiles.Healing
                 Projectile.velocity.Y += 0.02f;
             if (Projectile.velocity.Y > maxYVelocity) { Projectile.velocity.Y = maxYVelocity; }
         }
+
         public void HealHome()
         {
             Player player = Main.player[target];
@@ -69,20 +75,22 @@ namespace CalamityMod.Projectiles.Healing
             float playerDist = playerVector.Length();
             if (playerDist < 50f && Projectile.position.X < player.position.X + player.width && Projectile.position.X + Projectile.width > player.position.X && Projectile.position.Y < player.position.Y + player.height && Projectile.position.Y + Projectile.height > player.position.Y)
             {
-                int healAmt = 10;
-                player.HealEffect(healAmt, false);
-                player.statLife += healAmt;
+                int heal = 10;
+                player.HealEffect(heal, false);
+                player.statLife += heal;
                 if (player.statLife > player.statLifeMax2)
-                {
                     player.statLife = player.statLifeMax2;
-                }
+
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/OrbHeal", 5) { Volume = 0.15f }, Projectile.Center);
-                NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, target, healAmt, 0f, 0f, 0, 0, 0);
+
+                NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, target, heal, 0f, 0f, 0, 0, 0);
+
                 Projectile.Kill();
             }
 
             Projectile.velocity = (playerVector.SafeNormalize(Vector2.UnitY) * 3.5f) + (player.velocity / 4);
         }
+
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D lightTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SmallGreyscaleCircle").Value;

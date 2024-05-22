@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }
@@ -24,7 +24,6 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.abyssalAmulet = true;
             modPlayer.lumenousAmulet = true;
             player.buffImmune[ModContent.BuffType<RiptideDebuff>()] = true;
             player.buffImmune[ModContent.BuffType<CrushDepth>()] = true;

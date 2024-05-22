@@ -1,12 +1,13 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs.ExoMechs.Artemis;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -17,11 +18,6 @@ namespace CalamityMod.Projectiles.Boss
     public class ArtemisSpinLaserbeam : BaseLaserbeamProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
-        public PrimitiveTrail LaserDrawer
-        {
-            get;
-            set;
-        } = null;
 
         public int OwnerIndex
         {
@@ -34,7 +30,7 @@ namespace CalamityMod.Projectiles.Boss
         public override float Lifetime => 600;
         public override Color LaserOverlayColor => new Color(250, 180, 100, 100);
         public override Color LightCastColor => Color.White;
-        public override Texture2D LaserBeginTexture => ModContent.Request<Texture2D>(Texture).Value;
+        public override Texture2D LaserBeginTexture => Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/AresLaserBeamMiddle", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/AresLaserBeamEnd", AssetRequestMode.ImmediateLoad).Value;
         public override string Texture => "CalamityMod/Projectiles/Boss/AresLaserBeamStart";
@@ -136,7 +132,6 @@ namespace CalamityMod.Projectiles.Boss
             // This should never happen, but just in case.
             if (Projectile.velocity == Vector2.Zero)
                 return false;
-            LaserDrawer ??= new(LaserWidthFunction, LaserColorFunction, null, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
 
             Vector2 laserEnd = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * LaserLength;
             Vector2[] baseDrawPoints = new Vector2[8];
@@ -147,8 +142,7 @@ namespace CalamityMod.Projectiles.Boss
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseColor(Color.Cyan);
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage2("Images/Misc/Perlin");
-
-            LaserDrawer.Draw(baseDrawPoints, -Main.screenPosition, 64);
+            PrimitiveRenderer.RenderTrail(baseDrawPoints, new(LaserWidthFunction, LaserColorFunction, shader: GameShaders.Misc["CalamityMod:ArtemisLaser"]), 64);
             return false;
         }
 

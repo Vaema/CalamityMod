@@ -1,6 +1,6 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Vanity
 {
@@ -10,9 +10,7 @@ namespace CalamityMod.Items.Armor.Vanity
         public new string LocalizationCategory => "Items.Armor.Vanity";
         public override void SetStaticDefaults()
         {
-
-            if (Main.netMode != NetmodeID.Server)
-                ArmorIDs.Head.Sets.DrawHead[Item.headSlot] = false;
+            ArmorIDs.Head.Sets.DrawHatHair[Item.headSlot] = true;
         }
 
         public override void SetDefaults()

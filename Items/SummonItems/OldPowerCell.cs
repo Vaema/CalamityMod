@@ -14,8 +14,8 @@ namespace CalamityMod.Items.SummonItems
 
         public override void SetStaticDefaults()
         {
-           			NPCID.Sets.MPAllowedEnemies[NPCID.Golem] = true;
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 15; // Lihzahrd Power Cell
+            NPCID.Sets.MPAllowedEnemies[NPCID.Golem] = true;
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 15; // Lihzahrd Power Cell
         }
 
         public override void SetDefaults()
@@ -29,19 +29,19 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
             bool canSummon = false;
             if (player.Center.Y > Main.worldSurface * 16.0)
             {
-                int num = (int)player.Center.X / 16;
-                int num2 = (int)player.Center.Y / 16;
-                Tile tile = Framing.GetTileSafely(num, num2);
+                int playerTileX = (int)player.Center.X / 16;
+                int playerTileY = (int)player.Center.Y / 16;
+                Tile tile = Framing.GetTileSafely(playerTileX, playerTileY);
                 if (tile.WallType == 87)
                     canSummon = true;
             }

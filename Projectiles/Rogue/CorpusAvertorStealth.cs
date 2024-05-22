@@ -1,6 +1,7 @@
-﻿using CalamityMod.Buffs.StatBuffs;
+﻿using System;
+using CalamityMod.Balancing;
+using CalamityMod.Buffs.StatBuffs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -40,7 +41,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.velocity.Y *= 1.01f;
 
             int scale = (int)((Projectile.ai[0] - 60f) * 4.25f);
-            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 5, 0f, 0f, 100, new Color(scale, 0, 0, 50), 2f);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, new Color(scale, 0, 0, 50), 2f);
             Main.dust[dust].velocity *= 0f;
             Main.dust[dust].noGravity = true;
         }
@@ -55,7 +56,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            OnHitEffects(hit.Damage);
+            if (target.lifeMax > 5)
+                OnHitEffects(hit.Damage);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
@@ -80,17 +82,14 @@ namespace CalamityMod.Projectiles.Rogue
                 Main.LocalPlayer.AddBuff(ModContent.BuffType<AvertorBonus>(), CalamityUtils.SecondsToFrames(20f), true);
                 player.AddBuff(ModContent.BuffType<AvertorBonus>(), CalamityUtils.SecondsToFrames(20f), true);
 
-                float heal = damage * 0.025f;
-                if ((int)heal == 0)
+                int heal = (int)Math.Round(damage * 0.025);
+                if (heal > BalancingConstants.LifeStealCap)
+                    heal = BalancingConstants.LifeStealCap;
+
+                if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
                     return;
 
-                if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                    return;
-
-                if (heal > CalamityMod.lifeStealCap)
-                    heal = CalamityMod.lifeStealCap;
-
-                CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, player, heal, ProjectileID.VampireHeal, 1200f, 3f);
+                CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, player, heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
             }
         }
     }

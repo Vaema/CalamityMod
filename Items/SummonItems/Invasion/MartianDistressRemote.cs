@@ -14,7 +14,7 @@ namespace CalamityMod.Items.SummonItems.Invasion
         public int frame = 0;
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Solar Tablet (1 above Lihzahrd Power Cell)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Solar Tablet (1 above Lihzahrd Power Cell)
         }
 
         public override void SetDefaults()
@@ -27,12 +27,13 @@ namespace CalamityMod.Items.SummonItems.Invasion
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.consumable = false;
+            Item.UseSound = SoundID.Zombie67;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
+        }
 
         public override bool CanUseItem(Player player) => Main.invasionType == InvasionID.None;
 

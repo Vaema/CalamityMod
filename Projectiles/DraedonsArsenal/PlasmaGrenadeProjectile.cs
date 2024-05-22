@@ -1,10 +1,10 @@
 ﻿using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
@@ -44,8 +44,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (!Main.dedServ && Main.rand.NextBool()) // 50% chance to spawn smoke
             {
                 Color plasmaLime = Color.Lerp(Color.Lime, Color.LimeGreen, Main.rand.NextFloat(1f));
-                Color fadeColor = Color.Lerp(Color.LightGreen, plasmaLime, Main.rand.NextFloat(0.5f,1f));
-                Particle plasma = new SmallSmokeParticle(projectileTop, Projectile.oldVelocity*0.7f, Color.LightGreen, fadeColor, Main.rand.NextFloat(0.4f,0.9f), 100f);
+                Color fadeColor = Color.Lerp(Color.LightGreen, plasmaLime, Main.rand.NextFloat(0.5f, 1f));
+                Particle plasma = new SmallSmokeParticle(projectileTop, Projectile.oldVelocity * 0.7f, Color.LightGreen, fadeColor, Main.rand.NextFloat(0.4f, 0.9f), 100f);
                 GeneralParticleHandler.SpawnParticle(plasma);
             }
             Time++;
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(PlasmaGrenade.ExplosionSound, Projectile.position);
+            SoundEngine.PlaySound(PlasmaGrenade.ExplosionSound, Projectile.Center);
             if (Projectile.Calamity().stealthStrike)
             {
                 if (Main.myPlayer == Projectile.owner)
@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     for (int i = 0; i < 120; i++)
                     {
-                        int type = Main.rand.NextBool(3) ? 261 : (int)CalamityDusts.SulfurousSeaAcid;
+                        int type = Main.rand.NextBool(3) ? 261 : (int)CalamityDusts.SulphurousSeaAcid;
                         Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10f, 10f), type);
                         dust.scale = Main.rand.NextFloat(1.3f, 1.5f);
                         dust.velocity = Main.rand.NextVector2CircularEdge(15f, 15f);

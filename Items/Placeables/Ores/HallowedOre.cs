@@ -10,11 +10,13 @@ namespace CalamityMod.Items.Placeables.Ores
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 89; // Hallowed Bar
+            ItemID.Sets.SortingPriorityMaterials[Type] = 89; // Hallowed Bar
         }
 
         public override void SetDefaults()
         {
+            Item.width = 13;
+            Item.height = 10;
             Item.createTile = ModContent.TileType<Tiles.Ores.HallowedOre>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -22,8 +24,6 @@ namespace CalamityMod.Items.Placeables.Ores
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 13;
-            Item.height = 10;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 12);
             Item.rare = ItemRarityID.Pink;

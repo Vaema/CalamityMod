@@ -1,8 +1,10 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,11 +15,14 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         private const int Lifetime = 600;
         private static readonly Color Alpha = new Color(1f, 1f, 1f, 0f);
+        private bool ColorStyle = false;
+        private float SizeVariance;
+        private float SizeBonus = 2;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
 
         public override void SetDefaults()
@@ -33,24 +38,35 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+            if (Projectile.localAI[0] == 0)
+            {
+                SizeVariance = Main.rand.NextFloat(0.95f, 1.05f);
+                ColorStyle = Main.rand.NextBool();
+                Projectile.velocity *= 0.7f;
+            }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
             Projectile.spriteDirection = Projectile.direction;
-
+            if (Projectile.localAI[0] >= 30 && SizeBonus > 1)
+            {
+                SizeBonus -= 0.02f;
+            }
             // Flaking dust
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
-                if (Main.rand.NextBool())
+                if (Main.rand.NextBool(3))
                 {
-                    float scale = Main.rand.NextFloat(0.6f, 1.6f);
-                    int dustID = Dust.NewDust(Projectile.Center, 1, 1, 244);
-                    Main.dust[dustID].position = Projectile.Center;
-                    Main.dust[dustID].noGravity = true;
-                    Main.dust[dustID].scale = scale;
-                    float angleDeviation = 0.17f;
-                    float angle = Main.rand.NextFloat(-angleDeviation, angleDeviation);
-                    Vector2 sprayVelocity = Projectile.velocity.RotatedBy(angle) * 0.6f;
-                    Main.dust[dustID].velocity = sprayVelocity;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5), Main.rand.NextBool() ? 262 : 87, -Projectile.velocity.RotatedByRandom(0.05f) * Main.rand.NextFloat(0.01f, 0.1f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.5f, 0.85f);
+                    dust.alpha = 235;
+                }
+                if (Main.rand.NextBool(15))
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, -Projectile.velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.2f, 0.4f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.4f, 0.7f);
+                    dust.color = ColorStyle ? Color.Orange : Color.Khaki;
                 }
             }
         }
@@ -59,8 +75,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesFromEdge(Projectile, 0, lightColor);
-            return false;
+            CalamityUtils.DrawAfterimagesFromEdge(Projectile, 0, ColorStyle ? Color.OrangeRed * 8 : Color.Khaki * 8);
+            return true;
         }
 
         public override void OnKill(int timeLeft)
@@ -68,27 +84,41 @@ namespace CalamityMod.Projectiles.Ranged
             // Spawn an on-hit explosion which deals 75% of the projectile's damage.
             if (Projectile.owner == Main.myPlayer)
             {
-                int blastDamage = (int)(Projectile.damage * HolyFireBullet.ExplosionMultiplier);
-                float scale = 0.85f + Main.rand.NextFloat() * 1.15f;
-                int boom = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FuckYou>(), blastDamage, Projectile.knockBack, Projectile.owner, 0f, scale);
-
-                // Explosions match the bullet's damage type (e.g. ranged or summon)
-                if (boom.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[boom].DamageType = Projectile.DamageType;
+                Projectile.damage = (int)(Projectile.damage * HolyFireBullet.ExplosionMultiplier);
+                Projectile.penetrate = -1;
+                Projectile.ExpandHitboxBy((25 * SizeVariance) * SizeBonus);
+                Projectile.Damage();
             }
+            SoundEngine.PlaySound(HolyFireBullet.Explosion with { Pitch = -0.15f, Volume = 0.3f }, Projectile.Center);
 
-            // Spawn four shrapnel dust. This deals no damage.
-            for (int k = 0; k < 4; k++)
+            Vector2 Offset = Main.rand.NextVector2Circular(15, 15);
+
+            Particle explosion = new DetailedExplosion(Projectile.Center + Offset, Vector2.Zero, (ColorStyle ? Color.Orange : Color.Khaki) * 0.9f, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, (0.28f * SizeVariance) * SizeBonus, 10);
+            GeneralParticleHandler.SpawnParticle(explosion);
+
+            SparkleParticle impactParticle = new SparkleParticle(Projectile.Center + Offset, Vector2.Zero, Color.White, ColorStyle ? Color.Orange : Color.OrangeRed, 2.5f * (SizeBonus * 0.3f), 7, 0f, 2f);
+            GeneralParticleHandler.SpawnParticle(impactParticle);
+
+            for (int k = 0; k < 9; k++)
             {
-                float scale = Main.rand.NextFloat(1.4f, 1.8f);
-                int dustID = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244);
-                Main.dust[dustID].noGravity = false;
-                Main.dust[dustID].scale = scale;
-                float angleDeviation = 0.25f;
-                float angle = Main.rand.NextFloat(-angleDeviation, angleDeviation);
-                float velMult = Main.rand.NextFloat(0.08f, 0.14f);
-                Vector2 shrapnelVelocity = Projectile.oldVelocity.RotatedBy(angle) * velMult;
-                Main.dust[dustID].velocity = shrapnelVelocity;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 262 : 87, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.7f, 1.25f);
+                dust.alpha = 235;
+                if (Main.rand.NextBool())
+                {
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 303, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f));
+                    dust2.noGravity = true;
+                    dust2.scale = Main.rand.NextFloat(0.8f, 1.5f);
+                    dust2.alpha = 70;
+                }
+            }
+            for (int k = 0; k < 3; k++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f) + new Vector2(0, -3));
+                dust.noGravity = false;
+                dust.scale = Main.rand.NextFloat(0.85f, 1f);
+                dust.color = ColorStyle ? Color.Orange : Color.Khaki;
             }
         }
 

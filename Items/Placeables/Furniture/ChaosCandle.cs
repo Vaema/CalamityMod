@@ -1,4 +1,4 @@
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
 using Microsoft.Xna.Framework;
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void HoldItem(Player player)
         {
             player.Calamity().chaosCandle = true;
-            if (Main.rand.Next(player.itemAnimation > 0 ? 10 : 20) == 0)
+            if (Main.rand.NextBool(player.itemAnimation > 0 ? 10 : 20))
             {
                 Dust.NewDust(new Vector2(player.itemLocation.X + 12f * player.direction, player.itemLocation.Y - 10f * player.gravDir), 4, 4, (int)CalamityDusts.Brimstone);
             }

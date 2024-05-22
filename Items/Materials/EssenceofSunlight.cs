@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 25;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
 
-			ItemID.Sets.SortingPriorityMaterials[Type] = 71; // Soul of Light
+            ItemID.Sets.SortingPriorityMaterials[Type] = 71; // Soul of Light
         }
 
         public override void SetDefaults()

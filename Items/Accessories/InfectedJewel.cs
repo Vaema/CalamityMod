@@ -13,10 +13,10 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.defense = 6;
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.defense = 6;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }
@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<CrownJewel>().
                 AddIngredient<AureusCell>(10).
-                AddIngredient<Stardust>(25).
+                AddIngredient<StarblightSoot>(25).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

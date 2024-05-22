@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
@@ -10,7 +11,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
 
 namespace CalamityMod.Projectiles.Healing
 {

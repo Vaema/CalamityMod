@@ -53,10 +53,10 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
             // Flavor visual dust effect.
             if (Main.rand.NextBool(3))
             {
-                int flavorDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 228, 0, 0, 0, default, 1.2f);
+                int flavorDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldFlame, 0, 0, 0, default, 1.2f);
                 Main.dust[flavorDust].noGravity = true;
             }
-            
+
             if (Target is not null)
             {
                 // The distance to the target plus a small number so it's not 0, it'd break calculations.
@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

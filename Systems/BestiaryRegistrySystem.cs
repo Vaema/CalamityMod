@@ -1,5 +1,6 @@
 ﻿using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.Astral;
+using CalamityMod.NPCs.NormalNPCs;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -13,6 +14,7 @@ namespace CalamityMod.Systems
             // Manually register variants post-initiailization
             ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<AstralachneaGround>()] = ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<AstralachneaWall>()];
             ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<DevilFishAlt>()] = ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<DevilFish>()];
+            ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<LavaSlimeNoLavaDrop>()] = ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCID.LavaSlime];
         }
     }
 }

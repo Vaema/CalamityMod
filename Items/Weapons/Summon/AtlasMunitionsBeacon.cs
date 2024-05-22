@@ -1,11 +1,11 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
+using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Rarities;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         // How long it takes for the cannon to fully cool off from the maximum heat value.
         public const int HeatDissipationTime = 180;
-        
+
         // This shouldn't be too high. If it is, the overdrive mode will be frustratingly inconsistent to use.
         public const float OverdriveProjectileAngularRandomness = 0.1f;
 
@@ -44,10 +44,10 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 200;
-            Item.mana = 10;
             Item.width = 40;
             Item.height = 38;
+            Item.damage = 200;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
@@ -64,16 +64,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.sentry = true;
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<AtlasMunitionsAutocannonHeld>()] >= 1)
-                return false;
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<AtlasMunitionsDropPod>()] >= 1)
-                return false;
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<AtlasMunitionsAutocannon>()] >= 1)
-                return false;
-            return true;
-        }
+        // Keeps the sentry from being re-summoned if the player took out the usable Autocannon
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<AtlasMunitionsAutocannonHeld>()] < 1;
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
@@ -84,9 +76,16 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
+                CalamityUtils.KillShootProjectileMany(player, new int[]
+                {
+                    type,
+                    ModContent.ProjectileType<AtlasMunitionsAutocannon>(),
+                    ModContent.ProjectileType<AtlasMunitionsAutocannonHeld>()
+                });
                 position = Main.MouseWorld - Vector2.UnitY * 1020f;
                 velocity = (Main.MouseWorld - position).SafeNormalize(Vector2.UnitY) * Main.rand.NextFloat(9f, 10f);
                 Projectile.NewProjectile(source, position, velocity, type, Item.damage, knockback, player.whoAmI, Main.MouseWorld.Y - 40f);
+                player.UpdateMaxTurrets();
             }
             return false;
         }

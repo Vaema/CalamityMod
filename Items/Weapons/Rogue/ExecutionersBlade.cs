@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 64;
+            Item.height = 64;
             Item.damage = 195;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -27,7 +28,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6.75f;
             Item.UseSound = SoundID.Item73;
             Item.autoReuse = true;
-            Item.height = 64;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.shoot = ModContent.ProjectileType<ExecutionersBladeProj>();
             Item.shootSpeed = 24f;

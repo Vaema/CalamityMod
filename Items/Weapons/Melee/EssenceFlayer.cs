@@ -14,9 +14,11 @@ namespace CalamityMod.Items.Weapons.Melee
     public class EssenceFlayer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
         public override void SetDefaults()
         {
             Item.width = 100;
+            Item.height = 78;
             Item.damage = 225;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 19;
@@ -26,7 +28,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
-            Item.height = 78;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.shoot = ModContent.ProjectileType<EssenceScythe>();
             Item.shootSpeed = 21f;
@@ -42,7 +43,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(3))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 173);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.ShadowbeamStaff);
+                Main.dust[dust].velocity *= 0f;
             }
         }
 

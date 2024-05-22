@@ -1,8 +1,8 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Rogue
             int splash = 0;
             while (splash < 4)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 67, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 150, default, 0.9f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 150, default, 0.9f);
                 splash += 1;
             }
         }

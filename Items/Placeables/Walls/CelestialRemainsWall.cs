@@ -1,6 +1,6 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria.ID;
+using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
-using Terraria.ID;
 
 namespace CalamityMod.Items.Placeables.Walls
 {

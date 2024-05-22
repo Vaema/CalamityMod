@@ -1,12 +1,12 @@
-﻿using CalamityMod.NPCs.Providence;
+﻿using System;
+using CalamityMod.Items.Accessories;
+using CalamityMod.NPCs.Providence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using CalamityMod.Items.Accessories;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -33,7 +33,8 @@ namespace CalamityMod.Projectiles.Summon
 
             Player owner = Main.player[Projectile.owner];
             Projectile.damage = (int)owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            
+            Projectile.damage = owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
+
             if (Projectile.ai[0] < 240f)
             {
                 Projectile.ai[0] += 1f;
@@ -41,7 +42,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Projectile.timeLeft < 160)
                     Projectile.timeLeft = 160;
             }
-            
+
             if (Projectile.velocity.Length() < 16f)
                 Projectile.velocity *= 1.01f;
         }
@@ -50,7 +51,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             float lerpMult = Utils.GetLerpValue(15f, 30f, Projectile.timeLeft, clamped: true) * Utils.GetLerpValue(240f, 200f, Projectile.timeLeft, clamped: true) * (1f + 0.2f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 30f / 0.5f * (MathHelper.Pi * 2f) * 3f)) * 0.8f;
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Color baseColor = ProfanedSoulCrystal.GetColorForPsc(Main.player[Projectile.owner].Calamity().pscState, Main.dayTime);
             baseColor *= 0.5f;
@@ -119,7 +120,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             if ((info.Damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red) || target.creativeGodMode)
                 return;
-            
+
             Projectile.Kill();
         }
     }

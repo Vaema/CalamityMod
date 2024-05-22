@@ -20,11 +20,11 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = 16;
+            Item.height = 16;
             Item.damage = 60;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
-            Item.width = 16;
-            Item.height = 16;
             Item.useTime = 10;
             Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.HoldUp;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.knockBack = 0f;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<DarkSparkPrism>();

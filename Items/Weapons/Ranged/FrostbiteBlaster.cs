@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -12,10 +12,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 50;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 56;
             Item.height = 22;
+            Item.damage = 50;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 7;
             Item.useAnimation = 21;
             Item.reuseDelay = 54;
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useTurn = false;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.useAmmo = AmmoID.Bullet;
             Item.UseSound = SoundID.Item36;

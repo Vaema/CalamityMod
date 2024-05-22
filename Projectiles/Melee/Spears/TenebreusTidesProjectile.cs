@@ -1,8 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -30,16 +30,16 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override float InitialSpeed => 3f;
         public override float ReelbackSpeed => 2.4f;
-        public override float ForwardSpeed => 0.95f;
+        public override float ForwardSpeed => 0.8f;
         public override Action<Projectile> EffectBeforeReelback => (proj) =>
         {
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X + Projectile.velocity.X, Projectile.Center.Y + Projectile.velocity.Y, Projectile.velocity.X * 2.4f, Projectile.velocity.Y * 2.4f, 
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X + Projectile.velocity.X, Projectile.Center.Y + Projectile.velocity.Y, Projectile.velocity.X * 2.4f, Projectile.velocity.Y * 2.4f,
                 ModContent.ProjectileType<TenebreusTidesWaterProjectile>(), (int)(Projectile.damage * 0.75), Projectile.knockBack * 0.85f, Projectile.owner, 0f, 0f);
         };
         public override void ExtraBehavior()
         {
             if (Main.rand.NextBool(5))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 33, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Water, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

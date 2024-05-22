@@ -1,6 +1,7 @@
-﻿using CalamityMod.Projectiles.Melee;
-using CalamityMod.Rarities;
+﻿using Microsoft.Xna.Framework;
 using System;
+using CalamityMod.Projectiles.Melee;
+using CalamityMod.Rarities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -15,7 +16,6 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 94;
             Item.height = 80;
-            Item.scale = 1.5f;
             Item.damage = 270;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 22;
@@ -27,8 +27,13 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.shootSpeed = 10f;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
+        }
+
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
+        {
+            player.itemLocation += new Vector2(5f * player.direction, 13f * player.gravDir).RotatedBy(player.itemRotation);
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)

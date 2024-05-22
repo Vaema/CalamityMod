@@ -1,11 +1,11 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using System;
 using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
@@ -15,15 +15,15 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 16;
-            Item.mana = 10;
             Item.width = 28;
             Item.height = 20;
+            Item.damage = 16;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 34;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item15; //phaseblade sound effect
             Item.autoReuse = true;
@@ -92,9 +92,9 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (buffingDrones > 0 && Main.rand.NextBool(3))
             {
-                Vector2 dustPos = Player.position + (Player.height * Main.rand.NextFloat(0.7f, 1f)  + Player.gfxOffY) * Vector2.UnitY + Vector2.UnitX * Main.rand.NextFloat() * Player.width;
+                Vector2 dustPos = Player.position + (Player.height * Main.rand.NextFloat(0.7f, 1f) + Player.gfxOffY) * Vector2.UnitY + Vector2.UnitX * Main.rand.NextFloat() * Player.width;
 
-                Dust chust = Dust.NewDustPerfect(dustPos, 274, -Vector2.UnitY * Main.rand.NextFloat(1.4f, 7f) + Player.velocity , Alpha: 100, Scale: Main.rand.NextFloat(1.2f, 1.8f));
+                Dust chust = Dust.NewDustPerfect(dustPos, 274, -Vector2.UnitY * Main.rand.NextFloat(1.4f, 7f) + Player.velocity, Alpha: 100, Scale: Main.rand.NextFloat(1.2f, 1.8f));
                 chust.noGravity = true;
                 chust.noLight = true;
             }

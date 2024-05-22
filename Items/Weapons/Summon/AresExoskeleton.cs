@@ -68,11 +68,11 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 36;
             Item.mana = 80;
             Item.damage = 625;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noUseGraphic = true;
-            Item.width = Item.height = 36;
             Item.useTime = Item.useAnimation = 9;
             Item.noMelee = true;
             Item.knockBack = 1f;
@@ -89,7 +89,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frameI, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/AresExoskeleton").Value;
-            if (ArmExists(Main.LocalPlayer))
+            if (!Main.gameMenu && ArmExists(Main.LocalPlayer))
             {
                 texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/AresExoskeletonRemote").Value;
                 position.X += scale * 6f;
@@ -113,13 +113,13 @@ namespace CalamityMod.Items.Weapons.Summon
             // If the player owns a panel, make it fade away.
             if (player.ownedProjectileCounts[panelID] >= 1)
             {
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type != panelID || Main.projectile[i].owner != player.whoAmI || !Main.projectile[i].active)
+                    if (p.type != panelID || p.owner != player.whoAmI)
                         continue;
 
-                    Main.projectile[i].ai[0] = 1f;
-                    Main.projectile[i].netUpdate = true;
+                    p.ai[0] = 1f;
+                    p.netUpdate = true;
                 }
             }
 

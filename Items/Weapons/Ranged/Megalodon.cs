@@ -1,8 +1,8 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -17,16 +17,16 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
-            Item.damage = 30;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 72;
             Item.height = 32;
+            Item.damage = 37;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 6;
             Item.useAnimation = 6;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.5f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;
@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             // Fire either the bullet or the water jet, depending on cadence.
             int projectileToFire = fireWater ? Item.shoot : type;
-            Projectile.NewProjectile(source, newPos, newVel, projectileToFire, damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, newPos, newVel, projectileToFire, (int)(damage * 0.8f), knockback, player.whoAmI);
 
             // Always fires a close range water blast.
             // It goes in the same direction as the main shot but has a minor velocity variation to be less monotonous.

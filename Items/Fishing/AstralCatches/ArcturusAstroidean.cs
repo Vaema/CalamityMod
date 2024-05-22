@@ -1,6 +1,6 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.AstralCatches
 {
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Fishing.AstralCatches
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Orange;
-            Item.bait = 40; 
+            Item.bait = 40;
         }
     }
 }

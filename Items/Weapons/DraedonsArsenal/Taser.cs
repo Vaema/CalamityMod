@@ -1,10 +1,10 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Sounds;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = CommonCalamitySounds.PlasmaBoltSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
 
             Item.shoot = ModContent.ProjectileType<TaserHook>();

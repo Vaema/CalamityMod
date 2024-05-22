@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.Yoyo[Item.type] = true;
+            ItemID.Sets.Yoyo[Item.type] = true;
             ItemID.Sets.GamepadExtraRange[Item.type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
         }
@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 14f;
 
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
         }
 
         public override void AddRecipes()

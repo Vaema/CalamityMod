@@ -1,15 +1,15 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Particles;
-using Terraria.Graphics.Shaders;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Dusts;
-using Microsoft.CodeAnalysis;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -87,10 +87,9 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 homingTarget = Projectile.Center;
                 bool foundTarget = false;
                 Vector2 targetVelocity = new Vector2(0f);
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC potentialTarget in Main.ActiveNPCs)
                 {
-                    NPC potentialTarget = Main.npc[i];
-                    if (potentialTarget.CanBeChasedBy(Projectile, false) && Projectile.WithinRange(Main.npc[i].Center, homingRange))
+                    if (potentialTarget.CanBeChasedBy(Projectile, false) && Projectile.WithinRange(potentialTarget.Center, homingRange))
                     {
                         if (!foundTarget)
                         {
@@ -178,23 +177,23 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 100;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            for (int num621 = 0; num621 < 5; num621++)
+            for (int i = 0; i < 5; i++)
             {
-                int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 2f);
-                Main.dust[num622].velocity *= 3f;
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 2f);
+                Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
-                    Main.dust[num622].scale = 0.5f;
-                    Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                    Main.dust[dust].scale = 0.5f;
+                    Main.dust[dust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                 }
             }
-            for (int num623 = 0; num623 < 8; num623++)
+            for (int j = 0; j < 8; j++)
             {
-                int num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 3f);
-                Main.dust[num624].noGravity = true;
-                Main.dust[num624].velocity *= 5f;
-                num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 2f);
-                Main.dust[num624].velocity *= 2f;
+                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 3f);
+                Main.dust[dust2].noGravity = true;
+                Main.dust[dust2].velocity *= 5f;
+                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 2f);
+                Main.dust[dust2].velocity *= 2f;
             }
         }
     }

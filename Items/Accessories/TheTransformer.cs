@@ -1,11 +1,11 @@
 ﻿using CalamityMod.CalPlayer;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 42;
             Item.height = 56;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }

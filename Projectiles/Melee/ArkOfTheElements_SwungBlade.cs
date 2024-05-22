@@ -1,17 +1,17 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
-using CalamityMod.Sounds;
-using CalamityMod.Buffs.DamageOverTime;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Melee
 
         #region Throw variables
         //Only used for the long range throw
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed && Owner.HeldItem.type == ItemType<ArkoftheElements>();
+        private bool OwnerCanShoot => !Owner.CantUseHoldout() && Owner.HeldItem.type == ItemType<ArkoftheElements>();
         public bool Thrown => Combo == 2 || Combo == 3;
         const float MaxThrowTime = 80;
         const float ThrowReachMax = 500;
@@ -64,8 +64,8 @@ namespace CalamityMod.Projectiles.Melee
         public float ThrowTimer => MaxThrowTime - Projectile.timeLeft;
         public float ThrowCompletion => ThrowTimer / MaxThrowTime;
 
-        const float SnapWindowStart = 0.4f;
-        const float SnapWindowEnd = 0.6f;
+        const float SnapWindowStart = 0.25f;
+        const float SnapWindowEnd = 0.75f;
         public float SnapEndTime => (MaxThrowTime - (MaxThrowTime * SnapWindowEnd));
         public float SnapEndCompletion => (SnapEndTime - Projectile.timeLeft) / SnapEndTime;
         public ref float ChanceMissed => ref Projectile.localAI[1];
@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (!initialized) //Initialization
             {
-                Projectile.timeLeft = Thrown ? (int) MaxThrowTime : (int)MaxSwingTime;
+                Projectile.timeLeft = Thrown ? (int)MaxThrowTime : (int)MaxSwingTime;
                 SoundStyle sound = (Charge > 0 || Thrown) ? CommonCalamitySounds.LouderPhantomPhoenix : SoundID.Item71;
                 SoundEngine.PlaySound(sound, Projectile.Center);
                 direction = Projectile.velocity;
@@ -209,7 +209,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Combo == 3f)
                 {
                     //Slow down the projectile's retraction
-                    float curveDownGently = MathHelper.Lerp(1f, 0.8f, 1f - (float)Math.Sqrt(1f - (float)Math.Pow(SnapEndCompletion , 2f)));
+                    float curveDownGently = MathHelper.Lerp(1f, 0.8f, 1f - (float)Math.Sqrt(1f - (float)Math.Pow(SnapEndCompletion, 2f)));
                     Projectile.Center = Owner.Center + direction * ThrowReach * curveDownGently;
                     Projectile.scale = 1.5f;
 
@@ -224,7 +224,7 @@ namespace CalamityMod.Projectiles.Melee
 
             //Make the owner look like theyre holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;
-            Owner.direction = Math.Sign(Projectile.velocity.X);
+            Owner.ChangeDir(Math.Sign(Projectile.velocity.X));
             Owner.itemRotation = Projectile.rotation;
             if (Owner.direction != 1)
             {
@@ -245,22 +245,13 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(ModContent.BuffType<ElementalMix>(), 60);
             for (int i = 0; i < 5; i++)
             {
-                Vector2 particleSpeed = Utils.SafeNormalize(target.Center - Projectile.Center , Vector2.One).RotatedByRandom(MathHelper.PiOver4 * 0.8f) * Main.rand.NextFloat(3.6f, 8f);
+                Vector2 particleSpeed = Utils.SafeNormalize(target.Center - Projectile.Center, Vector2.One).RotatedByRandom(MathHelper.PiOver4 * 0.8f) * Main.rand.NextFloat(3.6f, 8f);
                 Particle energyLeak = new SquishyLightParticle(target.Center, particleSpeed, Main.rand.NextFloat(0.3f, 0.6f), Color.OrangeRed, 60, 2, 2.5f, hueShift: 0.06f);
                 GeneralParticleHandler.SpawnParticle(energyLeak);
             }
 
             if (Combo == 3f)
-            {
                 SoundEngine.PlaySound(CommonCalamitySounds.ScissorGuillotineSnapSound with { Volume = CommonCalamitySounds.ScissorGuillotineSnapSound.Volume * 1.3f }, Projectile.Center);
-
-                if (Charge <= 1)
-                {
-                    ArkoftheElements sword = (Owner.HeldItem.ModItem as ArkoftheElements);
-                    if (sword != null)
-                        sword.Charge = 2f;
-                }
-            }
         }
 
         public override void OnKill(int timeLeft)
@@ -273,7 +264,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item84, Projectile.Center);
 
                 Vector2 sliceDirection = direction * 40;
-                Particle SliceLine = new LineVFX(Projectile.Center - sliceDirection, sliceDirection * 2f, 0.2f, Color.Orange * 0.7f, expansion : 250f)
+                Particle SliceLine = new LineVFX(Projectile.Center - sliceDirection, sliceDirection * 2f, 0.2f, Color.Orange * 0.7f, expansion: 250f)
                 {
                     Lifetime = 10
                 };

@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Armor.Sulphurous
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.defense = 5;
         }
@@ -31,9 +31,9 @@ namespace CalamityMod.Items.Armor.Sulphurous
         {
             player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
-            modPlayer.sulfurSet = true;
+            modPlayer.sulphurSet = true;
             player.GetJumpState<SulphurJump>().Enable();
-            modPlayer.rogueStealthMax += 0.7f;
+            modPlayer.rogueStealthMax += 0.65f;
             modPlayer.wearingRogueArmor = true;
             player.ignoreWater = true;
         }
@@ -42,7 +42,8 @@ namespace CalamityMod.Items.Armor.Sulphurous
         {
             player.GetDamage<ThrowingDamageClass>() += 0.04f;
             player.GetCritChance<ThrowingDamageClass>() += 2;
-            player.gills = true;
+            if (player.IsUnderwater())
+                player.gills = true;
         }
 
         public override void AddRecipes()

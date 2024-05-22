@@ -1,12 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
-using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -17,10 +17,11 @@ namespace CalamityMod.NPCs.SulphurousSea
     public class AnthozoanCrab : ModNPC
     {
         public int boulderIndex;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 16;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
             };
@@ -49,11 +50,15 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SulphurousSeaBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AnthozoanCrab")
             });
@@ -63,12 +68,17 @@ namespace CalamityMod.NPCs.SulphurousSea
         {
             writer.Write(boulderIndex);
         }
+
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             boulderIndex = reader.ReadInt32();
         }
+
         public override void AI()
         {
+            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
+            NPC.damage = 0;
+
             if (NPC.ai[1]++ % 360f < 280f)
             {
                 if (NPC.ai[2] > 1f)
@@ -163,9 +173,10 @@ namespace CalamityMod.NPCs.SulphurousSea
                 {
                     NPC.velocity.X = 0f;
                     Vector2 rockSpawnPosition = new Vector2(16f * -NPC.spriteDirection + NPC.Center.X, NPC.Bottom.Y - 6f);
+                    int damage = Main.masterMode ? 18 : Main.expertMode ? 21 : 29;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        boulderIndex = Projectile.NewProjectile(NPC.GetSource_FromAI(), rockSpawnPosition, Vector2.Zero, ModContent.ProjectileType<CrabBoulder>(), 29, 6f);
+                        boulderIndex = Projectile.NewProjectile(NPC.GetSource_FromAI(), rockSpawnPosition, Vector2.Zero, ModContent.ProjectileType<CrabBoulder>(), damage, 6f);
                         NPC.netUpdate = true;
                     }
                 }
@@ -226,7 +237,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

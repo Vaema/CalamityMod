@@ -12,28 +12,13 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
     [LegacyName("WulfrumWorkbench")]
     public class WulfrumWorkBenchTile : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            Main.tileSolidTop[Type] = true;
-            Main.tileFrameImportant[Type] = true;
-            Main.tileNoAttach[Type] = true;
-            Main.tileTable[Type] = true;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style2x1);
-            TileObjectData.newTile.Width = 3;
-            TileObjectData.newTile.CoordinateHeights = new int[] { 18 };
-            TileObjectData.addTile(Type);
-
-            AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTable);
-            AddMapEntry(new Color(191, 142, 111), Language.GetText("ItemName.WorkBench"));
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.WorkBenches };
-        }
+        public override void SetStaticDefaults() => this.SetUpWorkBench(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumWorkBench>(), true);
 
         public override bool CanExplode(int i, int j) => false;
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 107, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TerraBlade, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 

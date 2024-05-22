@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 66;
+            Item.height = 66;
             Item.damage = 315;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.noMelee = true;
@@ -27,8 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8.75f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 66;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<GildedProboscisProj>();
             Item.shootSpeed = 13f;

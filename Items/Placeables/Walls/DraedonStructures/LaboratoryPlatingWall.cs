@@ -1,7 +1,7 @@
+﻿using Terraria.ID;
 using Terraria.ModLoader;
-using WallTiles = CalamityMod.Walls.DraedonStructures;
 using TileItems = CalamityMod.Items.Placeables.DraedonStructures;
-using Terraria.ID;
+using WallTiles = CalamityMod.Walls.DraedonStructures;
 
 namespace CalamityMod.Items.Placeables.Walls.DraedonStructures
 {

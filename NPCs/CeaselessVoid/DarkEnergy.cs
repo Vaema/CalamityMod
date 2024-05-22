@@ -1,10 +1,11 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -27,11 +28,17 @@ namespace CalamityMod.NPCs.CeaselessVoid
         public const int HitboxSize = 64;
         public const int FrameCount = 8;
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = FrameCount;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -50,10 +57,13 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPC.Opacity = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit53;
             NPC.DeathSound = SoundID.NPCDeath44;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -61,10 +71,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
             int associatedNPCType = ModContent.NPCType<CeaselessVoid>();
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
 
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheDungeon,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DarkEnergy")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DarkEnergy")
             });
         }
 
@@ -210,7 +220,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 Main.EntitySpriteDraw(mainTexture, drawPos, NPC.frame, Color.White, NPC.rotation, drawOrigin, scale, spriteEffects, 0);
                 return false;
             }
-            
+
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
@@ -240,7 +250,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (NPC.dontTakeDamage)
                 return false;
 
-            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/CeaselessVoid/DarkEnergyGlow").Value;
+            Texture2D glowTexture = GlowTexture.Value;
             Color glowColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f) * NPC.Opacity;
 
             if (CalamityConfig.Instance.Afterimages)
@@ -282,18 +292,18 @@ namespace CalamityMod.NPCs.CeaselessVoid
         {
             Rectangle targetHitbox = target.Hitbox;
 
-            float dist1 = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
-            float dist2 = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
-            float dist3 = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
-            float dist4 = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
+            float hitboxTopLeft = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
+            float hitboxTopRight = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
+            float hitboxBotLeft = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
+            float hitboxBotRight = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
 
-            float minDist = dist1;
-            if (dist2 < minDist)
-                minDist = dist2;
-            if (dist3 < minDist)
-                minDist = dist3;
-            if (dist4 < minDist)
-                minDist = dist4;
+            float minDist = hitboxTopLeft;
+            if (hitboxTopRight < minDist)
+                minDist = hitboxTopRight;
+            if (hitboxBotLeft < minDist)
+                minDist = hitboxBotLeft;
+            if (hitboxBotRight < minDist)
+                minDist = hitboxBotRight;
 
             return minDist <= 35f * NPC.scale;
         }

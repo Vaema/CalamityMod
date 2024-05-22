@@ -1,12 +1,12 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -15,11 +15,11 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
 
         public override string Texture => "CalamityMod/Items/Weapons/Melee/StellarContempt";
-        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/PwnagehammerSound") { Volume = 0.35f};
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/PwnagehammerSound") { Volume = 0.35f };
         public static readonly SoundStyle RedHamSound = new("CalamityMod/Sounds/Item/StellarContemptClone") { Volume = 0.6f };
-        public static readonly SoundStyle UseSoundFunny = new("CalamityMod/Sounds/Item/CalamityBell") { Volume = 1.5f};
+        public static readonly SoundStyle UseSoundFunny = new("CalamityMod/Sounds/Item/CalamityBell") { Volume = 1.5f };
 
-        public ref int EmpoweredHammer => ref Main.player[Projectile.owner].Calamity().StellarHammer; 
+        public ref int EmpoweredHammer => ref Main.player[Projectile.owner].Calamity().StellarHammer;
         public int returnhammer = 0;
         public int DustOnce = 1;
         public float rotatehammer = 8f;
@@ -269,7 +269,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            Projectile.damage = (int)(Projectile.damage * 0.9f);
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.9f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }
@@ -318,7 +319,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
         }
-      
+
         public override bool PreDraw(ref Color lightColor)
         {
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 3);
@@ -326,4 +327,4 @@ namespace CalamityMod.Projectiles.Melee
         }
     }
 }
-        
+

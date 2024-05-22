@@ -1,5 +1,5 @@
-﻿using CalamityMod.Items.Placeables;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -19,17 +19,17 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = 38;
+            Item.height = 38;
             Item.damage = 17;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 3;
-            Item.width = 38;
-            Item.height = 38;
             Item.useTime = 22;
             Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.5f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item43;
             Item.autoReuse = true;

@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,28 +9,27 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Glaive : RogueWeapon
     {
-        public static int BaseDamage = 45;
-        public static float Knockback = 3f;
+        //These 2 are used on the Projectile AI and thus remain here
         public static float Speed = 10f;
         public static float StealthSpeedMult = 1.8f;
 
         public override void SetDefaults()
         {
-            Item.damage = BaseDamage;
+            Item.width = 34;
+            Item.height = 32;
+            Item.damage = 45;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.width = 34;
-            Item.height = 32;
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = Knockback;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.knockBack = 3;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item1;
 
-            Item.shootSpeed = Speed;
+            Item.shootSpeed = 10;
             Item.shoot = ModContent.ProjectileType<GlaiveProj>();
         }
 

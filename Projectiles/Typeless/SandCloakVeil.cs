@@ -1,9 +1,12 @@
 ﻿using CalamityMod.DataStructures;
+using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Typeless
 {
     public class SandCloakVeil : ModProjectile, ILocalizedModType
@@ -23,7 +26,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.timeLeft = duration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
-			Projectile.scale = 1.2f;
+            Projectile.scale = 1.2f;
         }
 
         public override void AI()
@@ -42,7 +45,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool PreDraw(ref Color lightColor)
         {
             // Sprite Circle
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float scaleStep = 0.03f;
             float rotationOffset = 0.03f;
             Color drawCol = Projectile.GetAlpha(lightColor);
@@ -69,7 +72,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Vector2 dustPos = dustCircle.RandomPointInCircle();
                 if ((dustPos - Projectile.Center).Length() > 48)
                 {
-                    int dustIndex = Dust.NewDust(dustPos, 1, 1, 32);
+                    int dustIndex = Dust.NewDust(dustPos, 1, 1, DustID.Sand);
                     Main.dust[dustIndex].noGravity = true;
                     Main.dust[dustIndex].fadeIn = 1f;
                     Vector2 dustVelocity = Projectile.Center - Main.dust[dustIndex].position;
@@ -94,7 +97,7 @@ namespace CalamityMod.Projectiles.Typeless
             // 12AUG2023: Ozzatron: TML was giving NaN knockback, probably due to 0 base knockback. Do not use hit.Knockback
             if (CalamityGlobalNPC.ShouldAffectNPC(target))
             {
-                float knockbackMultiplier = MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
+                float knockbackMultiplier = SandCloak.KnockbackStrength * MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
                 Vector2 trueKnockback = target.Center - Projectile.Center;
                 trueKnockback.Normalize();
                 target.velocity = trueKnockback * knockbackMultiplier;

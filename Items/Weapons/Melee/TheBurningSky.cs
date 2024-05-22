@@ -3,10 +3,10 @@ using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<BurningMeteor>();
             Item.shootSpeed = 14f;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
         }
 

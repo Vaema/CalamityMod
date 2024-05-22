@@ -1,5 +1,7 @@
-using Terraria;
+﻿using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class LightBeadSplit : ModProjectile, ILocalizedModType
@@ -30,7 +32,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 212, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BubbleBurst_White, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
     }

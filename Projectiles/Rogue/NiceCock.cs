@@ -1,10 +1,10 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.IO;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
     // The file name is a specific request from the patron
@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             // Decrement the timer. This should last a second as stealth strikes will initialize this at 61.
             if (Timer > 1)
-                Timer --;
+                Timer--;
             if (Timer == 1)
                 homing = true;
 
@@ -131,7 +131,7 @@ namespace CalamityMod.Projectiles.Rogue
             // Create into some rainbow-colored dust when dead
             for (int d = 0; d < 5; d++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 267, 0f, 0f, 150, Main.rand.Next(colors), 2f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowMk2, 0f, 0f, 150, Main.rand.Next(colors), 2f);
                 Main.dust[idx].velocity *= 3f;
                 Main.dust[idx].noGravity = true;
                 if (Main.rand.NextBool())
@@ -142,10 +142,10 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int d = 0; d < 8; d++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 267, 0f, 0f, 150, Main.rand.Next(colors), 3f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowMk2, 0f, 0f, 150, Main.rand.Next(colors), 3f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 5f;
-                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 267, 0f, 0f, 150, Main.rand.Next(colors), 2f);
+                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowMk2, 0f, 0f, 150, Main.rand.Next(colors), 2f);
                 Main.dust[idx].velocity *= 2f;
                 Main.dust[idx].noGravity = true;
             }

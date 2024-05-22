@@ -19,6 +19,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 52;
             Item.damage = 12;
             Item.knockBack = 3f;
             Item.mana = 10;
@@ -28,15 +29,14 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<WaterLeechProj>();
 
-            Item.width = Item.height = 52;
             Item.UseSound = SoundID.Item46;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
         }
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float speed = Item.shootSpeed;
@@ -72,7 +72,7 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             if (Main.rand.NextBool(5))
             {
-                leechAmt ++;
+                leechAmt++;
             }
             for (int i = 0; i < leechAmt; i++)
             {

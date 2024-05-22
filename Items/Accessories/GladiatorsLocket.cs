@@ -3,8 +3,8 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 42;
             Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.defense = 5;
             Item.accessory = true;

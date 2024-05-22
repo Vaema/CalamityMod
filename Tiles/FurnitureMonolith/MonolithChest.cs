@@ -53,7 +53,7 @@ namespace CalamityMod.Tiles.FurnitureMonolith
                 {
                     if (player.chest < 0)
                     {
-                        SoundEngine.PlaySound(SoundID.NPCDeath22 with { Volume = SoundID.NPCDeath22.Volume * 0.5f});
+                        SoundEngine.PlaySound(SoundID.NPCDeath22 with { Volume = SoundID.NPCDeath22.Volume * 0.5f });
                     }
                 }
             }

@@ -16,6 +16,8 @@ namespace CalamityMod.Items.Materials
 
         public override void SetDefaults()
         {
+            Item.width = 26;
+            Item.height = 26;
             Item.createTile = ModContent.TileType<LumenylCrystals>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
@@ -23,8 +25,6 @@ namespace CalamityMod.Items.Materials
             Item.useTime = 10;
             Item.autoReuse = true;
             Item.consumable = true;
-            Item.width = 26;
-            Item.height = 26;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 80);
             Item.rare = ItemRarityID.Lime;

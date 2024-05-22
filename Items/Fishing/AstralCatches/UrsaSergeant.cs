@@ -11,10 +11,10 @@ namespace CalamityMod.Items.Fishing.AstralCatches
         public new string LocalizationCategory => "Items.Fishing";
         public override void SetDefaults()
         {
-            Item.defense = 20;
             Item.width = 36;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.defense = 20;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }

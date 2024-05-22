@@ -1,4 +1,4 @@
-using CalamityMod.Items.Placeables.Ores;
+﻿using CalamityMod.Items.Placeables.Ores;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
@@ -9,7 +9,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         public override void SetDefaults()
         {
             Item.width = 26;
-            Item.height = 26;
+            Item.height = 28;
             Item.maxStack = 9999;
             Item.useTurn = true;
             Item.autoReuse = true;
@@ -22,10 +22,10 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
             Item.createTile = ModContent.TileType<Tiles.Furniture.CraftingStations.AncientAltar>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
+        }
 
         public override void AddRecipes()
         {

@@ -23,7 +23,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 30;
             NPC.defense = 8;
             NPC.lifeMax = 120;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.6f;
             AnimationType = NPCID.CorruptSlime;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.alpha = 50;
@@ -38,14 +38,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundSnow,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CryoSlime")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CryoSlime")
             });
         }
 

@@ -3,9 +3,9 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 offset = new Vector2(7, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(3, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.position.X, Projectile.position.Y) + offset, DustID.RedTorch, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
+                Dust dust = Dust.NewDustPerfect(Projectile.position + offset, DustID.RedTorch, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
                 dust.noGravity = true;
             }
 
@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 offset = new Vector2(7, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(3, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.position.X, Projectile.position.Y) + offset, DustID.RedTorch, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
+                Dust dust = Dust.NewDustPerfect(Projectile.position + offset, DustID.RedTorch, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
                 dust.noGravity = true;
             }
         }
@@ -121,7 +121,7 @@ namespace CalamityMod.Projectiles.Melee
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle sourceRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
             Vector2 origin = sourceRectangle.Size() / 2f;
 

@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
-        
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             //Audio feedback for hitting the ring
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 ringScale = Projectile.Size / tex.Size() * Projectile.scale;
             Color ringColor = Color.Lerp(Color.DodgerBlue, Color.Blue, Projectile.Opacity) * Projectile.Opacity * 1.2f;
 

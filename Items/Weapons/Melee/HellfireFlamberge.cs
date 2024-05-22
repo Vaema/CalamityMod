@@ -1,11 +1,11 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 58;
+            Item.height = 60;
             Item.damage = 90;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 20;
@@ -24,8 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.75f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 60;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<VolcanicFireball>();
             Item.shootSpeed = 20f;

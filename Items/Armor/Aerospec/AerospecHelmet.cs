@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
@@ -16,7 +17,7 @@ namespace CalamityMod.Items.Armor.Aerospec
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.defense = 2; //13
         }
@@ -47,10 +48,13 @@ namespace CalamityMod.Items.Armor.Aerospec
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<Valkyrie>()] < 1)
                 {
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(20);
+                    // 08DEC2023: Ozzatron: Aerospec Valkyries spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(20);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+
                     var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<Valkyrie>(), damage, 0f, Main.myPlayer, 0f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 20;
+                        Main.projectile[p].originalDamage = baseDamage;
                 }
             }
             player.GetDamage<SummonDamageClass>() += 0.11f;
@@ -60,7 +64,7 @@ namespace CalamityMod.Items.Armor.Aerospec
         public override void UpdateEquip(Player player)
         {
             player.moveSpeed += 0.05f;
-            player.GetDamage<SummonDamageClass>() += 0.05f;
+            player.GetDamage<SummonDamageClass>() += 0.1f;
         }
 
         public override void AddRecipes()

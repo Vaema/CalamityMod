@@ -1,7 +1,7 @@
+﻿using System;
 using CalamityMod.Gores.Trees;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -17,14 +17,14 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
         private enum Tree
         {
             Astral,
-			Corruption,
-			Crimson,
-			Forest,
-			Hallow,
-			Jungle,
-			Ocean,
-			Snow,
-			SulphurousSea
+            Corruption,
+            Crimson,
+            Forest,
+            Hallow,
+            Jungle,
+            Ocean,
+            Snow,
+            SulphurousSea
         }
         public static readonly SoundStyle TreeCrashSound = new("CalamityMod/Sounds/Custom/TreeFalling");
 
@@ -51,121 +51,121 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
             {
                 Projectile.velocity.Y = 16f;
             }
-			if (Projectile.ai[1] == 0f)
-			{
-				Array values = Enum.GetValues(typeof(Tree));
-				Random random = new Random();
-				TreeType = (Tree)values.GetValue(random.Next(values.Length));
-				Projectile.ai[1]++;
-			}
+            if (Projectile.ai[1] == 0f)
+            {
+                Array values = Enum.GetValues(typeof(Tree));
+                Random random = new Random();
+                TreeType = (Tree)values.GetValue(random.Next(values.Length));
+                Projectile.ai[1]++;
+            }
         }
 
         public override void OnKill(int timeLeft)
         {
-			SoundEngine.PlaySound(TreeCrashSound with { Volume = 0.5f }, Projectile.Center);
+            SoundEngine.PlaySound(TreeCrashSound with { Volume = 0.5f }, Projectile.Center);
 
             int creatureAmt = 3;
             for (int t = 0; t < creatureAmt; t++)
             {
-				int projType = Utils.SelectRandom(Main.rand, new int[]
-				{
-					ModContent.ProjectileType<MagicBunny>(),
-					ModContent.ProjectileType<MagicBird>()
-				});
-				Vector2 velocity = Vector2.Zero;
-				if (Main.projectile.IndexInRange((int)Projectile.ai[0]))
-				{
-					velocity = CalamityUtils.GetProjectilePhysicsFiringVelocity(Projectile.Center, Main.npc[(int)Projectile.ai[0]].Center, 0.28f, 12f);
-					velocity.X += Main.rand.NextFloat(-3f, 3f);
-				}
-				else
-				{
-					velocity.X = Main.rand.NextFloat(-10f, 10f);
-					velocity.Y = Main.rand.NextFloat(-15f, -8f);
-				}
+                int projType = Utils.SelectRandom(Main.rand, new int[]
+                {
+                    ModContent.ProjectileType<MagicBunny>(),
+                    ModContent.ProjectileType<MagicBird>()
+                });
+                Vector2 velocity = Vector2.Zero;
+                if (Main.projectile.IndexInRange((int)Projectile.ai[0]))
+                {
+                    velocity = CalamityUtils.GetProjectilePhysicsFiringVelocity(Projectile.Center, Main.npc[(int)Projectile.ai[0]].Center, 0.28f, 12f);
+                    velocity.X += Main.rand.NextFloat(-3f, 3f);
+                }
+                else
+                {
+                    velocity.X = Main.rand.NextFloat(-10f, 10f);
+                    velocity.Y = Main.rand.NextFloat(-15f, -8f);
+                }
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, projType, (int)(Projectile.damage * 0.05f), 0f, Projectile.owner);
             }
 
-			int treeGore = GoreID.TreeLeaf_Normal;
-			string TreeTop = "TreeForestTop";
-			string TreeBottom = "TreeForestBottom";
+            int treeGore = GoreID.TreeLeaf_Normal;
+            string TreeTop = "TreeForestTop";
+            string TreeBottom = "TreeForestBottom";
             switch (TreeType)
             {
                 case Tree.Astral:
                     treeGore = ModContent.GoreType<AstralLeaf>();
-					TreeTop = "TreeAstralTop";
-					TreeBottom = "TreeAstralBottom";
+                    TreeTop = "TreeAstralTop";
+                    TreeBottom = "TreeAstralBottom";
                     break;
                 case Tree.Corruption:
                     treeGore = GoreID.TreeLeaf_Corruption;
-					TreeTop = "TreeCorruptionTop";
-					TreeBottom = "TreeCorruptionBottom";
+                    TreeTop = "TreeCorruptionTop";
+                    TreeBottom = "TreeCorruptionBottom";
                     break;
                 case Tree.Crimson:
                     treeGore = GoreID.TreeLeaf_Crimson;
-					TreeTop = "TreeCrimsonTop";
-					TreeBottom = "TreeCrimsonBottom";
+                    TreeTop = "TreeCrimsonTop";
+                    TreeBottom = "TreeCrimsonBottom";
                     break;
                 case Tree.Forest:
                     treeGore = GoreID.TreeLeaf_Normal;
-					TreeTop = "TreeForestTop";
-					TreeBottom = "TreeForestBottom";
+                    TreeTop = "TreeForestTop";
+                    TreeBottom = "TreeForestBottom";
                     break;
                 case Tree.Hallow:
                     treeGore = GoreID.TreeLeaf_Hallow;
-					TreeTop = "TreeHallowTop";
-					TreeBottom = "TreeHallowBottom";
+                    TreeTop = "TreeHallowTop";
+                    TreeBottom = "TreeHallowBottom";
                     break;
                 case Tree.Jungle:
                     treeGore = GoreID.TreeLeaf_Jungle;
-					TreeTop = "TreeJungleTop";
-					TreeBottom = "TreeJungleBottom";
+                    TreeTop = "TreeJungleTop";
+                    TreeBottom = "TreeJungleBottom";
                     break;
                 case Tree.Ocean:
                     treeGore = GoreID.TreeLeaf_Palm;
-					TreeTop = "TreeOceanTop";
-					TreeBottom = "TreeOceanBottom";
+                    TreeTop = "TreeOceanTop";
+                    TreeBottom = "TreeOceanBottom";
                     break;
                 case Tree.Snow:
                     treeGore = GoreID.TreeLeaf_Boreal;
-					TreeTop = "TreeSnowTop";
-					TreeBottom = "TreeSnowBottom";
+                    TreeTop = "TreeSnowTop";
+                    TreeBottom = "TreeSnowBottom";
                     break;
                 case Tree.SulphurousSea:
                     treeGore = ModContent.GoreType<SulphurLeaf>();
-					TreeTop = "TreeSulphurousSeaTop";
-					TreeBottom = "TreeSulphurousSeaBottom";
+                    TreeTop = "TreeSulphurousSeaTop";
+                    TreeBottom = "TreeSulphurousSeaBottom";
                     break;
                 default:
                     break;
             }
 
-			if (Main.netMode != NetmodeID.Server)
-			{
-				for (int i = 0; i < 20; i++)
-				{
-					Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-					Vector2 spawnSource = Projectile.Center;
-					spawnSource.X += Main.rand.Next(-Projectile.width / 2, Projectile.width / 2 + 1);
-					spawnSource.Y += Main.rand.Next(-Projectile.height / 2, Projectile.height / 2 + 1);
-					int idx = Gore.NewGore(Projectile.GetSource_FromThis(), spawnSource, velocity, treeGore, 1f);
-					Main.gore[idx].velocity.X *= Main.rand.NextFloat(0.5f, 5f);
-					Main.gore[idx].velocity.Y *= Main.rand.NextFloat(0.5f, 5f);
-					Main.gore[idx].velocity.X += Main.rand.NextFloat(-5f, 5f);
-					Main.gore[idx].velocity.Y += Main.rand.NextFloat(-5f, 5f);
-					Main.gore[idx].scale *= Main.rand.NextFloat(0.8f, 1.2f);
-				}
-				Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, CalamityUtils.RandomVelocity(100f, 70f, 100f) * Main.rand.NextFloat(), Mod.Find<ModGore>(TreeTop).Type, Projectile.scale);
-				Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, CalamityUtils.RandomVelocity(100f, 70f, 100f) * Main.rand.NextFloat(), Mod.Find<ModGore>(TreeBottom).Type, Projectile.scale);
+            if (Main.netMode != NetmodeID.Server)
+            {
+                for (int i = 0; i < 20; i++)
+                {
+                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+                    Vector2 spawnSource = Projectile.Center;
+                    spawnSource.X += Main.rand.Next(-Projectile.width / 2, Projectile.width / 2 + 1);
+                    spawnSource.Y += Main.rand.Next(-Projectile.height / 2, Projectile.height / 2 + 1);
+                    int idx = Gore.NewGore(Projectile.GetSource_FromThis(), spawnSource, velocity, treeGore, 1f);
+                    Main.gore[idx].velocity.X *= Main.rand.NextFloat(0.5f, 5f);
+                    Main.gore[idx].velocity.Y *= Main.rand.NextFloat(0.5f, 5f);
+                    Main.gore[idx].velocity.X += Main.rand.NextFloat(-5f, 5f);
+                    Main.gore[idx].velocity.Y += Main.rand.NextFloat(-5f, 5f);
+                    Main.gore[idx].scale *= Main.rand.NextFloat(0.8f, 1.2f);
+                }
+                Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, CalamityUtils.RandomVelocity(100f, 70f, 100f) * Main.rand.NextFloat(), Mod.Find<ModGore>(TreeTop).Type, Projectile.scale);
+                Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, CalamityUtils.RandomVelocity(100f, 70f, 100f) * Main.rand.NextFloat(), Mod.Find<ModGore>(TreeBottom).Type, Projectile.scale);
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-			if (Projectile.ai[1] == 0f)
-				return false;
+            if (Projectile.ai[1] == 0f)
+                return false;
 
-			Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             switch (TreeType)
             {
                 case Tree.Astral:
@@ -199,13 +199,13 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
                     break;
             }
 
-			Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
-			Vector2 origin = frame.Size() * 0.5f;
-			Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-			SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Vector2 origin = frame.Size() * 0.5f;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             // Draw the tree.
-			Main.spriteBatch.Draw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, direction, 0);
+            Main.spriteBatch.Draw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, direction, 0);
             return false;
         }
 

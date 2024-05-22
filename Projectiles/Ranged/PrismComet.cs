@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -62,11 +62,11 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.dedServ)
                 return;
 
-            Dust prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, 107, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
+            Dust prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, DustID.TerraBlade, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
             prismEnergy.velocity *= -0.25f;
             prismEnergy.velocity -= Projectile.velocity * 0.3f;
 
-            prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, 107, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
+            prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, DustID.TerraBlade, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
             prismEnergy.velocity *= -0.25f;
             prismEnergy.position -= Projectile.velocity * 0.5f;
             prismEnergy.velocity -= Projectile.velocity * 0.3f;

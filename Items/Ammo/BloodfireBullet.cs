@@ -17,17 +17,17 @@ namespace CalamityMod.Items.Ammo
 
         public override void SetDefaults()
         {
-            Item.damage = 26;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 14;
             Item.height = 30;
+            Item.damage = 27;
+            Item.DamageType = DamageClass.Ranged;
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 4.5f;
             Item.value = Item.sellPrice(copper: 24);
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<BloodfireBulletProj>();
-            Item.shootSpeed = 4.8f;
+            Item.shootSpeed = 0.1f;
             Item.ammo = ItemID.MusketBall;
         }
 

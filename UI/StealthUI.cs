@@ -37,7 +37,7 @@ namespace CalamityMod.UI
         }
 
         private static void Reset() => dragOffset = null;
-        
+
         public static void Draw(SpriteBatch spriteBatch, Player player)
         {
             // Sanity check the planned position before drawing
@@ -58,10 +58,10 @@ namespace CalamityMod.UI
 
             // If not drawing the stealth meter, save its latest position to config and leave.
             if (modPlayer.stealthUIAlpha > 0f && CalamityConfig.Instance.StealthMeter && modPlayer.rogueStealthMax > 0f && modPlayer.wearingRogueArmor)
-			{
-				DrawStealthBar(spriteBatch, modPlayer, screenPos);
-			}
-			else
+            {
+                DrawStealthBar(spriteBatch, modPlayer, screenPos);
+            }
+            else
             {
                 bool changed = false;
                 if (CalamityConfig.Instance.StealthMeterPosX != screenRatioPosition.X)
@@ -82,70 +82,70 @@ namespace CalamityMod.UI
             Rectangle mouseHitbox = new Rectangle((int)Main.MouseScreen.X, (int)Main.MouseScreen.Y, 8, 8);
             Rectangle stealthBar = Utils.CenteredRectangle(screenPos, edgeTexture.Size() * uiScale);
 
-			MouseState ms = Mouse.GetState();
-			Vector2 mousePos = Main.MouseScreen;
+            MouseState ms = Mouse.GetState();
+            Vector2 mousePos = Main.MouseScreen;
 
             // Handle mouse dragging
-			if (stealthBar.Intersects(mouseHitbox))
-			{
-				if (!CalamityConfig.Instance.MeterPosLock)
-					Main.LocalPlayer.mouseInterface = true;
+            if (stealthBar.Intersects(mouseHitbox))
+            {
+                if (!CalamityConfig.Instance.MeterPosLock)
+                    Main.LocalPlayer.mouseInterface = true;
 
-				// If the mouse is on top of the meter, show the player's exact numeric stealth.
-				if (modPlayer.rogueStealthMax > 0f && modPlayer.stealthUIAlpha >= 0.5f)
-				{
-					string stealthStr = (100f * modPlayer.rogueStealth).ToString("n2");
-					string maxStealthStr = (100f * modPlayer.rogueStealthMax).ToString("n2");
-					string textToDisplay = $"{CalamityUtils.GetTextValue("UI.Stealth")}: {stealthStr}/{maxStealthStr}\n";
+                // If the mouse is on top of the meter, show the player's exact numeric stealth.
+                if (modPlayer.rogueStealthMax > 0f && modPlayer.stealthUIAlpha >= 0.5f)
+                {
+                    string stealthStr = (100f * modPlayer.rogueStealth).ToString("n2");
+                    string maxStealthStr = (100f * modPlayer.rogueStealthMax).ToString("n2");
+                    string textToDisplay = $"{CalamityUtils.GetTextValue("UI.Stealth")}: {stealthStr}/{maxStealthStr}\n";
 
                     if (!Main.keyState.IsKeyDown(LeftShift))
                     {
-						textToDisplay += CalamityUtils.GetTextValue("UI.StealthShiftText");
-					}
-					else
-					{
-						textToDisplay += CalamityUtils.GetTextValue("UI.StealthInfoText");
-					}
+                        textToDisplay += CalamityUtils.GetTextValue("UI.StealthShiftText");
+                    }
+                    else
+                    {
+                        textToDisplay += CalamityUtils.GetTextValue("UI.StealthInfoText");
+                    }
 
-					Main.instance.MouseText(textToDisplay, 0, 0, -1, -1, -1, -1);
-					modPlayer.stealthUIAlpha = MathHelper.Lerp(modPlayer.stealthUIAlpha, 0.25f, 0.035f);
-				}
+                    Main.instance.MouseText(textToDisplay, 0, 0, -1, -1, -1, -1);
+                    modPlayer.stealthUIAlpha = MathHelper.Lerp(modPlayer.stealthUIAlpha, 0.25f, 0.035f);
+                }
 
                 Vector2 newScreenRatioPosition = screenRatioPosition;
-				// As long as the mouse button is held down, drag the meter along with an offset.
+                // As long as the mouse button is held down, drag the meter along with an offset.
                 if (!CalamityConfig.Instance.MeterPosLock && ms.LeftButton == ButtonState.Pressed)
                 {
-					// If the drag offset doesn't exist yet, create it.
-					if (!dragOffset.HasValue)
-						dragOffset = mousePos - screenPos;
+                    // If the drag offset doesn't exist yet, create it.
+                    if (!dragOffset.HasValue)
+                        dragOffset = mousePos - screenPos;
 
-					// Given the mouse's absolute current position, compute where the corner of the stealth bar should be based on the original drag offset.
-					Vector2 newCorner = mousePos - dragOffset.GetValueOrDefault(Vector2.Zero);
+                    // Given the mouse's absolute current position, compute where the corner of the stealth bar should be based on the original drag offset.
+                    Vector2 newCorner = mousePos - dragOffset.GetValueOrDefault(Vector2.Zero);
 
-					// Convert the new corner position into a screen ratio position.
-					newScreenRatioPosition.X = (100f * newCorner.X) / Main.screenWidth;
-					newScreenRatioPosition.Y = (100f * newCorner.Y) / Main.screenHeight;
-				}
+                    // Convert the new corner position into a screen ratio position.
+                    newScreenRatioPosition.X = (100f * newCorner.X) / Main.screenWidth;
+                    newScreenRatioPosition.Y = (100f * newCorner.Y) / Main.screenHeight;
+                }
 
-				// Compute the change in position. If it is large enough, actually move the meter
-				Vector2 delta = newScreenRatioPosition - screenRatioPosition;
-				if (Math.Abs(delta.X) >= MouseDragEpsilon || Math.Abs(delta.Y) >= MouseDragEpsilon)
-				{
-					CalamityConfig.Instance.StealthMeterPosX = newScreenRatioPosition.X;
-					CalamityConfig.Instance.StealthMeterPosY = newScreenRatioPosition.Y;
-				}
+                // Compute the change in position. If it is large enough, actually move the meter
+                Vector2 delta = newScreenRatioPosition - screenRatioPosition;
+                if (Math.Abs(delta.X) >= MouseDragEpsilon || Math.Abs(delta.Y) >= MouseDragEpsilon)
+                {
+                    CalamityConfig.Instance.StealthMeterPosX = newScreenRatioPosition.X;
+                    CalamityConfig.Instance.StealthMeterPosY = newScreenRatioPosition.Y;
+                }
 
-				// When the mouse is released, save the config and destroy the drag offset.
-				if (ms.LeftButton == ButtonState.Released)
-				{
-					dragOffset = null;
-					CalamityMod.SaveConfig(CalamityConfig.Instance);
-				}
+                // When the mouse is released, save the config and destroy the drag offset.
+                if (ms.LeftButton == ButtonState.Released)
+                {
+                    dragOffset = null;
+                    CalamityMod.SaveConfig(CalamityConfig.Instance);
+                }
             }
-		}
+        }
 
         private static void DrawStealthBar(SpriteBatch spriteBatch, CalamityPlayer modPlayer, Vector2 screenPos)
-		{
+        {
             float uiScale = Main.UIScale;
             float offset = (edgeTexture.Width - barTexture.Width) * 0.5f;
             spriteBatch.Draw(edgeTexture, screenPos, null, Color.White * modPlayer.stealthUIAlpha, 0f, edgeTexture.Size() * 0.5f, uiScale, SpriteEffects.None, 0);

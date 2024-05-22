@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,13 +31,13 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            if (Main.rand.Next(5) == 0)
+            if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 85, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.UnusedBrown, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
-            if (Main.rand.Next(10) == 0)
+            if (Main.rand.NextBool(10))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 111, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Clentaminator_Cyan, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             Projectile.ai[0]++;
             if (Projectile.ai[0] > 2f)
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i <= 10; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 85, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.UnusedBrown, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
 

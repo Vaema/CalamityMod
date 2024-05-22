@@ -1,6 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.timeLeft < 510)
                 Projectile.tileCollide = true;
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + MathHelper.PiOver4;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
 
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] <= 20f)

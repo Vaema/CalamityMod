@@ -1,7 +1,9 @@
+﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatDebuffs;
+
 namespace CalamityMod.Projectiles.Typeless
 {
     public class PendantProjectile3 : ModProjectile, ILocalizedModType
@@ -24,12 +26,12 @@ namespace CalamityMod.Projectiles.Typeless
 
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.2f / 255f, (255 - Projectile.alpha) * 0.2f / 255f);
             Projectile.rotation += Projectile.velocity.X * 1.25f;
-            for (int num457 = 0; num457 < 5; num457++)
+            for (int i = 0; i < 5; i++)
             {
-                int num458 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 187, 0f, 0f, 100, default, 0.6f);
-                Main.dust[num458].noGravity = true;
-                Main.dust[num458].velocity *= 0.5f;
-                Main.dust[num458].velocity += Projectile.velocity * 0.1f;
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, default, 0.6f);
+                Main.dust[dust].noGravity = true;
+                Main.dust[dust].velocity *= 0.5f;
+                Main.dust[dust].velocity += Projectile.velocity * 0.1f;
             }
         }
 

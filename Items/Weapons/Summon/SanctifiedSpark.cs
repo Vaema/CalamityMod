@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
+using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
@@ -18,17 +18,17 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = 66;
+            Item.height = 68;
             Item.damage = 128;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
             Item.mana = 10;
-            Item.width = 66;
-            Item.height = 68;
             Item.useTime = Item.useAnimation = 14;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ProfanedEnergy>();

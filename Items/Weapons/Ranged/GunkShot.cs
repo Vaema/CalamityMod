@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,16 +13,16 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 23;
+            Item.width = 76;
+            Item.height = 28;
+            Item.damage = 22;
             Item.DamageType = DamageClass.Ranged;
-            Item.width = 44;
-            Item.height = 30;
-            Item.useTime = 32;
-            Item.useAnimation = 32;
+            Item.useTime = 35;
+            Item.useAnimation = 35;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item36;
             Item.autoReuse = true;
@@ -39,8 +39,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int num6 = Main.rand.Next(3, 5);
-            for (int index = 0; index < num6; ++index)
+            int bulletAmt = Main.rand.Next(3, 5);
+            for (int index = 0; index < bulletAmt; ++index)
             {
                 float SpeedX = velocity.X + (float)Main.rand.Next(-25, 26) * 0.05f;
                 float SpeedY = velocity.Y + (float)Main.rand.Next(-25, 26) * 0.05f;

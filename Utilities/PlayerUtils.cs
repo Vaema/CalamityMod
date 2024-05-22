@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using CalamityMod.Balancing;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
+using CalamityMod.Events;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static Terraria.Player;
 
 namespace CalamityMod
@@ -21,6 +23,30 @@ namespace CalamityMod
         {
             CalamityPlayer mp = player.Calamity();
             return player.statDefense + (accountForDefenseDamage ? 0 : mp.CurrentDefenseDamage);
+        }
+
+        public static int GetDefenseDamageFloor()
+        {
+            if (BossRushEvent.BossRushActive)
+                return BalancingConstants.DefenseDamageFloor_BossRush;
+            else if (NPC.downedMoonlord)
+            {
+                return CalamityWorld.death ? BalancingConstants.DefenseDamageFloor_DeathPML
+                    : CalamityWorld.revenge ? BalancingConstants.DefenseDamageFloor_RevPML
+                    : BalancingConstants.DefenseDamageFloor_NormalPML;
+            }
+            else if (Main.hardMode)
+            {
+                return CalamityWorld.death ? BalancingConstants.DefenseDamageFloor_DeathHM
+                    : CalamityWorld.revenge ? BalancingConstants.DefenseDamageFloor_RevHM
+                    : BalancingConstants.DefenseDamageFloor_NormalHM;
+            }
+            else
+            {
+                return CalamityWorld.death ? BalancingConstants.DefenseDamageFloor_DeathPHM
+                    : CalamityWorld.revenge ? BalancingConstants.DefenseDamageFloor_RevPHM
+                    : BalancingConstants.DefenseDamageFloor_NormalPHM;
+            }
         }
 
         public static float CalcDamage<T>(this Player player, float baseDamage) where T : DamageClass => player.GetTotalDamage<T>().ApplyTo(baseDamage);
@@ -101,6 +127,20 @@ namespace CalamityMod
             // Add the best typical damage stat, then return the full modifier.
             ret += best - 1f;
             return ret;
+        }
+
+        /// <summary>
+        /// Extension method which calculates the player's current multiplicative boost to armor set bonus and accessory damage.<br />
+        /// This is currently only used by the Old Fashioned drink.
+        /// </summary>
+        /// <param name="player">The player whose armor / accessory damage bonus should be applied.</param>
+        /// <param name="damage">The damage to apply the bonus to.</param>
+        /// <returns>Boosted damage. If no boosts are applicable, returns the damage parameter that was passed in.</returns>
+        public static int ApplyArmorAccDamageBonusesTo(this Player player, float damage)
+        {
+            if (!player.Calamity().oldFashioned)
+                return (int)damage;
+            return (int)(damage * OldFashioned.AccessoryAndSetBonusDamageMultiplier);
         }
 
         public static float GetRangedAmmoCostReduction(this Player player)
@@ -244,7 +284,7 @@ namespace CalamityMod
                 return false;
             return true;
         }
-        
+
         // See also: Player.IsStandingStillForSpecialEffects (Vanilla shiny stone + standing still mana regen)
         // That is more or less equivalent to this with the default value of 0.05
         public static bool StandingStill(this Player player, float velocity = 0.05f) => player.velocity.Length() < velocity;
@@ -375,13 +415,163 @@ namespace CalamityMod
 
         #region Immunity Frames
         /// <summary>
-        /// Gives the player the specified number of immunity frames (or "iframes" for short).<br />If the player already has more iframes than you want to give them, this function does nothing.
+        /// Computes the appropriate amount of immunity frames to grant a player when they are struck by an attack.<br />
+        /// Accounts for all Calamity effects, but not effects from other mods.
+        /// </summary>
+        /// <param name="player">The player whose immunity frames are being computed.</param>
+        /// <returns>The amount of immunity frames the player should receive if struck.</returns>
+        public static int ComputeHitIFrames(this Player player, HurtInfo hurtInfo)
+        {
+            // Start with vanilla immunity frames.
+            int iframes = BalancingConstants.VanillaDefaultIFrames + (player.longInvince ? BalancingConstants.CrossNecklaceIFrameBoost : 0);
+
+            // Add on all Calamity effects.
+            int calBonusIFrames = player.GetExtraHitIFrames(hurtInfo);
+
+            return iframes + calBonusIFrames;
+        }
+
+        /// <summary>
+        /// Gets the total amount of extra immunity frames from a hit granted by various Calamity effects.
+        /// </summary>
+        /// <param name="player">The player whose extra immunity frames are being computed.</param>
+        /// <returns>The amount of extra immunity frames to grant.</returns>
+        public static int GetExtraHitIFrames(this Player player, HurtInfo hurtInfo)
+        {
+            CalamityPlayer modPlayer = player.Calamity();
+            
+            int extraIFrames = 0;
+            if (modPlayer.godSlayerThrowing && hurtInfo.Damage > 80)
+                extraIFrames += 30;
+            if (modPlayer.statigelSet && hurtInfo.Damage > 100)
+                extraIFrames += 30;
+
+            // Deific Amulet provides 10 to 40 bonus immunity frames when you get hit which scale with your missing health.
+            // If you only take 1 damage, you get 5 iframes.
+            // This effect is inherited by Rampart of Deities.
+            if (modPlayer.dAmulet)
+            {
+                if (hurtInfo.Damage > 1)
+                {
+                    float lifeRatio = (float)player.statLife / player.statLifeMax2;
+                    float iframeEffectivenessRatio = Utils.GetLerpValue(1.0f, 0.25f, lifeRatio, true);
+
+                    extraIFrames += (int)(iframeEffectivenessRatio * DeificAmulet.MaxBonusIFrames);
+                }
+                else
+                    extraIFrames += 5;
+            }
+
+            // Ozzatron 20FEB2024: Moved extra iframes from Seraph Tracers to Rampart of Deities to counteract its loss of Charm of Myths
+            // This stacks with the above Deific Amulet effect
+            if (modPlayer.rampartOfDeities && hurtInfo.Damage > 200)
+                extraIFrames += 30;
+
+            if (modPlayer.fabsolVodka)
+            {
+                if (hurtInfo.Damage == 1)
+                    extraIFrames += 5;
+                else
+                    extraIFrames += 10;
+            }
+
+            return extraIFrames;
+        }
+
+        /// <summary>
+        /// Computes the appropriate amount of immunity frames to grant a player when they activate a dodge.<br />
+        /// Accounts for all Calamity effects, but not effects from other mods.
+        /// </summary>
+        /// <param name="player">The player whose immunity frames are being computed.</param>
+        /// <returns>The amount of immunity frames the player should receive upon dodging.</returns>
+        public static int ComputeDodgeIFrames(this Player player)
+        {
+            int iframes = BalancingConstants.VanillaDodgeIFrames + (player.longInvince ? BalancingConstants.CrossNecklaceIFrameBoost : 0);
+            return iframes;
+        }
+
+        /// <summary>
+        /// Computes the appropriate amount of immunity frames to grant a player when they activate a parry.<br />
+        /// Accounts for all Calamity effects, but not effects from other mods.
+        /// </summary>
+        /// <param name="player">The player whose immunity frames are being computed.</param>
+        /// <returns>The amount of immunity frames the player should receive upon parrying.</returns>
+        public static int ComputeParryIFrames(this Player player)
+        {
+            int iframes = BalancingConstants.VanillaParryIFrames + (player.longInvince ? BalancingConstants.CrossNecklaceIFrameBoost_Parry : 0);
+            return iframes;
+        }
+
+        // Currently, reflects are functionally equivalent to dodges.
+        /// <summary>
+        /// Computes the appropriate amount of immunity frames to grant a player when they activate a reflect.<br />
+        /// Accounts for all Calamity effects, but not effects from other mods.
+        /// </summary>
+        /// <param name="player">The player whose immunity frames are being computed.</param>
+        /// <returns>The amount of immunity frames the player should receive upon reflecting an attack.</returns>
+        public static int ComputeReflectIFrames(this Player player) => player.ComputeDodgeIFrames();
+
+        /// <summary>
+        /// Checks whether the player has any kind of immunity frames (or "iframes" for short) available.
+        /// </summary>
+        /// <param name="player">The player whose immunity frames should be checked.</param>
+        /// <returns>Whether or not they are currently in any immunity frames.</returns>
+        public static bool HasIFrames(this Player player)
+        {
+            // Check old school iframes first (aka "cooldown timer -1". Regular hits, falling damage, etc.)
+            if (player.immune || player.immuneTime > 0)
+                return true;
+
+            // Check more particular iframes. This primarily comes from traps, lava, and bosses.
+            for (int i = 0; i < player.hurtCooldowns.Length; i++)
+                if (player.hurtCooldowns[i] > 0)
+                    return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Gives the player the specified number of immunity frames (or "iframes" for short) to a specific cooldown slot.<br />
+        /// If the player already has more iframes than you want to give them, this function does nothing.<br />
+        /// <br />
+        /// <b>This should be used for effects that need to mock or mimic the iframes that would be granted by getting hit.</b>
+        /// </summary>
+        /// <param name="player">The player who should be given immunity frames.</param>
+        /// <param name="cooldownSlot">The immunity cooldown slot to use. See TML documentation for which is which.</param>
+        /// <param name="frames">The number of immunity frames to give.</param>
+        /// <param name="blink">Whether or not the player should be blinking during this time.</param>
+        /// <returns>Whether or not any immunity frames were given.</returns>
+        public static bool GiveIFrames(this Player player, int cooldownSlot, int frames, bool blink = false)
+        {
+            // Check to see if there is any way for the player to get iframes from this operation.
+            bool anyIFramesWouldBeGiven = (cooldownSlot < 0) ? player.immuneTime < frames : player.hurtCooldowns[cooldownSlot] < frames;
+
+            // If they would get nothing, don't do it.
+            if (!anyIFramesWouldBeGiven)
+                return false;
+
+            // Apply iframes thoroughly. Player.AddImmuneTime is not used because iframes should not exceed the intended amount.
+            player.immune = true;
+            player.immuneNoBlink = !blink;
+            if (cooldownSlot < 0)
+                player.immuneTime = frames;
+            else
+                player.hurtCooldowns[cooldownSlot] = frames;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Gives the player the specified number of immunity frames (or "iframes" for short) to all cooldown slots.<br />
+        /// If the player already has more iframes than you want to give them, this function does nothing.<br />
+        /// <br />
+        /// <b>This should be used for effects like dodges or true invulnerability that should prevent the player from being hit for a predetermined time.</b>
         /// </summary>
         /// <param name="player">The player who should be given immunity frames.</param>
         /// <param name="frames">The number of immunity frames to give.</param>
         /// <param name="blink">Whether or not the player should be blinking during this time.</param>
         /// <returns>Whether or not any immunity frames were given.</returns>
-        public static bool GiveIFrames(this Player player, int frames, bool blink = false)
+        public static bool GiveUniversalIFrames(this Player player, int frames, bool blink = false)
         {
             // Check to see if there is any way for the player to get iframes from this operation.
             bool anyIFramesWouldBeGiven = false;
@@ -393,7 +583,7 @@ namespace CalamityMod
             if (!anyIFramesWouldBeGiven)
                 return false;
 
-            // Apply iframes thoroughly.
+            // Apply iframes thoroughly. Player.AddImmuneTime is not used because iframes should not exceed the intended amount.
             player.immune = true;
             player.immuneNoBlink = !blink;
             player.immuneTime = frames;
@@ -415,6 +605,20 @@ namespace CalamityMod
             player.immuneTime = 0;
             for (int i = 0; i < player.hurtCooldowns.Length; ++i)
                 player.hurtCooldowns[i] = 0;
+        }
+
+        private static readonly FieldInfo hurtInfoDamageField = typeof(HurtInfo).GetField("_damage", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        /// <summary>
+        /// Lifted from Fargo's. Sets the damage and knockback of an incoming hit to zero, making it not affect the player.
+        /// </summary>
+        /// <param name="hurtInfo">The HurtInfo instance to nullify.</param>
+        public static void NullifyHit(ref this HurtInfo hurtInfo)
+        {
+            object unboxedHurtInfo = hurtInfo;
+            hurtInfoDamageField.SetValue(unboxedHurtInfo, 0);
+            hurtInfo = (Player.HurtInfo)unboxedHurtInfo;
+            hurtInfo.Knockback = 0;
         }
         #endregion
 
@@ -462,15 +666,12 @@ namespace CalamityMod
         /// <param name="damageMult">A reference to the current in-use damage multiplier. This will be increased in-place.</param>
         public static void ApplyRippersToDamage(CalamityPlayer mp, bool trueMelee, ref float damageMult)
         {
-            // Reduce how much true melee benefits from Rage and Adrenaline.
-            float rageAndAdrenalineTrueMeleeDamageMult = 0.5f;
-
             // Rage and Adrenaline now stack additively with no special cases.
             if (mp.rageModeActive)
-                damageMult += trueMelee ? mp.RageDamageBoost * rageAndAdrenalineTrueMeleeDamageMult : mp.RageDamageBoost;
+                damageMult += trueMelee ? mp.RageDamageBoost * BalancingConstants.TrueMeleeRipperReductionFactor : mp.RageDamageBoost;
             // Draedon's Heart disables Adrenaline damage.
             if (mp.adrenalineModeActive && !mp.draedonsHeart)
-                damageMult += trueMelee ? mp.GetAdrenalineDamage() * rageAndAdrenalineTrueMeleeDamageMult : mp.GetAdrenalineDamage();
+                damageMult += trueMelee ? mp.GetAdrenalineDamage() * BalancingConstants.TrueMeleeRipperReductionFactor : mp.GetAdrenalineDamage();
         }
         #endregion
 
@@ -650,12 +851,12 @@ namespace CalamityMod
                 }
             }
 
-            player.itemLocation = finalPosition;
+            player.itemLocation = finalPosition + new Vector2(spriteSize.X * 0.5f, 0);
         }
         #endregion
 
-        #region visual layers
-        public static void HideAccessories(this Player player, bool hideHeadAccs = true, bool hideBodyAccs = true, bool hideLegAccs = true,  bool hideShield = true)
+        #region Visual Layers
+        public static void HideAccessories(this Player player, bool hideHeadAccs = true, bool hideBodyAccs = true, bool hideLegAccs = true, bool hideShield = true)
         {
             if (hideHeadAccs)
                 player.face = -1;
@@ -664,7 +865,7 @@ namespace CalamityMod
             {
                 player.handon = -1;
                 player.handoff = -1;
-                
+
                 player.back = -1;
                 player.front = -1;
                 player.neck = -1;
@@ -680,6 +881,13 @@ namespace CalamityMod
                 player.shield = -1;
         }
         #endregion
+
+        /// <summary>
+        /// A shorthand bool to check if the player can continue using the holdout or not.
+        /// </summary>
+        /// <param name="player">The player using the holdout.</param>
+        /// <returns>Returns <see langword="true"/> if the player CAN'T use the item.</returns>
+        public static bool CantUseHoldout(this Player player, bool needsToHold = true) => player == null || !player.active || player.dead || (!player.channel && needsToHold) || player.CCed || player.noItems;
 
         /// <summary>
         /// Makes the given player send the given packet to all appropriate receivers.<br />

@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
-using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.AstrumDeus;
@@ -17,6 +16,7 @@ using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlaguebringerGoliath;
+using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.Ravager;

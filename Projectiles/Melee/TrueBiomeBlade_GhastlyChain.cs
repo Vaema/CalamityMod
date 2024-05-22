@@ -1,8 +1,8 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;

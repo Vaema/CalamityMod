@@ -15,16 +15,16 @@ namespace CalamityMod.Items.Ammo
 
         public override void SetDefaults()
         {
-            Item.damage = 15;
-            Item.DamageType = DamageClass.Ranged;
-            Item.consumable = true;
             Item.width = 18;
             Item.height = 50;
+            Item.damage = 6;
+            Item.DamageType = DamageClass.Ranged;
+            Item.consumable = true;
             Item.knockBack = 2.5f;
             Item.value = Item.buyPrice(0, 0, 0, 80);
-            Item.rare = ItemRarityID.LightPurple;
+            Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<IcicleArrowProj>();
-            Item.shootSpeed = 1.0f;
+            Item.shootSpeed = 0.2f;
             Item.ammo = AmmoID.Arrow;
             Item.maxStack = 9999;
         }

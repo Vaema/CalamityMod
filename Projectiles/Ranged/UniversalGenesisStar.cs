@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Main.rand.NextBool(10))
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
             }
             if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
             {
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.position -= Projectile.Size;
             for (int i = 0; i < 5; i++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 16, 0f, 0f, 100, default, 1.2f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Cloud, 0f, 0f, 100, default, 1.2f);
                 Main.dust[idx].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {

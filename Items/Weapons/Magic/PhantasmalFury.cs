@@ -18,17 +18,17 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = 62;
+            Item.height = 60;
             Item.damage = 260;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 20;
-            Item.width = 62;
-            Item.height = 60;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 7.5f;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.UseSound = SoundID.Item43;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<PhantasmalFuryProj>();
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-        
+
         public override void AddRecipes()
         {
             CreateRecipe().

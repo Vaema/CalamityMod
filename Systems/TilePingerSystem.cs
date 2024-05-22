@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Items.Tools;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Graphics.Effects;
-using Terraria.ID;
-using Terraria.Audio;
-using Terraria.ModLoader;
-using CalamityMod.Items.Tools;
 using Terraria.Graphics.Light;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
 {
@@ -205,7 +205,7 @@ namespace CalamityMod.Systems
     {
         public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
         {
-            foreach(IPingedTileEffect effect in TilePingerSystem.tileEffects.Values)
+            foreach (IPingedTileEffect effect in TilePingerSystem.tileEffects.Values)
             {
                 if (effect.Active && effect.ShouldRegisterTile(i, j))
                 {

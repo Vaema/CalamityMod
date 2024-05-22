@@ -1,11 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -20,18 +20,17 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.damage = 16;
-            Item.DamageType = RogueDamageClass.Instance;
-
             Item.width = 30;
             Item.height = 34;
-            Item.useTime = 45;
-            Item.useAnimation = 45;
+            Item.damage = 16;
+            Item.DamageType = RogueDamageClass.Instance;
+            Item.useTime = 40;
+            Item.useAnimation = 40;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = false;
             Item.knockBack = 3f;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
 
             Item.noUseGraphic = true;
@@ -40,11 +39,11 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.autoReuse = true;
 
             Item.shoot = ModContent.ProjectileType<TrackingDiskProjectile>();
-            Item.shootSpeed = 10f;
+            Item.shootSpeed = 8f;
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 50f;
-            modItem.ChargePerUse = 0.08f;
+            modItem.ChargePerUse = 0.07f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

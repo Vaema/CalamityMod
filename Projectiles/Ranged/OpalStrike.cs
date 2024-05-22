@@ -28,10 +28,14 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 50;
+            Projectile.tileCollide = false; // Custom tile collision since the hitbox is large
         }
 
         public override void AI()
         {
+            if (Collision.SolidCollision(Projectile.Center, 5, 5))
+                Projectile.Kill();
+
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Dust.NewDustPerfect(Projectile.Center, 162);
         }

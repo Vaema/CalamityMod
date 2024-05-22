@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,15 +12,15 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.damage = 20;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 38;
             Item.height = 68;
+            Item.damage = 20;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
             Item.useAnimation = 16;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 10f;
             Item.useAmmo = AmmoID.Arrow;
 
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.Calamity().canFirePointBlankShots = true;
         }

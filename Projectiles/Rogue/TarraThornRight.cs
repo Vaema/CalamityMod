@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     for (int i = 0; i < 8; i++)
                     {
-                        Dust thorn = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 7, Projectile.velocity.X * 0.025f, Projectile.velocity.Y * 0.025f, 200, default, 1.3f);
+                        Dust thorn = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.WoodFurniture, Projectile.velocity.X * 0.025f, Projectile.velocity.Y * 0.025f, 200, default, 1.3f);
                         thorn.noGravity = true;
                         thorn.velocity *= 0.5f;
                     }
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Rogue
         // Draw the tip for the final thorn
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (Projectile.ai[0] == TotalSegments)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/NettleTip").Value;
 

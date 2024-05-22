@@ -11,10 +11,10 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.defense = 7;
             Item.width = 26;
             Item.height = 42;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.defense = 7;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.bloodyWormTooth = true;
-            player.endurance += 0.07f;
+            player.endurance += 0.1f;
         }
 
         public override void AddRecipes()

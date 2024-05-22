@@ -1,4 +1,6 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
@@ -15,11 +17,10 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -59,58 +60,62 @@ namespace CalamityMod.NPCs
 
         public static int TaxesToCollectLimit => (int)(Item.buyPrice(0, 50, 0, 0) * TaxYieldFactor);
 
-        // TODO -- Update all Discord tags here to new Discord usernames.
         #region Town NPC Patreon Name Sets
         private static readonly string[] AnglerNames =
         {
             "Dazren",
             "Johnny Test", // <@!589966747977777197> (konorango)
+            "Bling Bling Boy", // <@!522970788203069442> (phallguy)
         };
         private static readonly string[] ArmsDealerNames =
         {
             "Drifter",
             "Finchi",
-            "Heniek", // <@!363404700445442050> (Kazurgundu#3791)
-            "Fire", // <@!354362326947856384> (fire#0692)
-            "Barney Calhoun", // <@!634462901431697410> (Potato Power#6578)
-            "XiaoEn0426", // <@!440448864772816896> (XiaoEn0426#9157)
-            "Jeffred", // <@!295362230038560768> (Knight Solaire#0873)
-            "The Cooler Arthur", // <@!568263512523014154> (better artilery#0001)
-            "Markie", // <@!291141964039061504> (Markie#6969)
+            "Heniek", // <@!363404700445442050> (kazurgundu)
+            "Fire", // <@!354362326947856384> (ultimatefirewaster)
+            "Barney Calhoun", // <@!634462901431697410> (potatostego)
+            "XiaoEn0426", // <@!440448864772816896> (xiaoen0426)
+            "Jeffred", // <@!295362230038560768> (paladinsamuel)
+            "The Cooler Arthur", // <@!568263512523014154> (gokuartillery)
+            "Markie", // <@!291141964039061504> (markie_)
+            "Shark", // <@!874464051697172492> (congratsistrash)
+            "Sagi", // <@!508233115781693441> (sagittariod)
         };
         private static readonly string[] ClothierNames =
         {
             "Joeseph Jostar",
-            "Storm Havik", //<@!1013452363178197072> (fishnotduck)
+            "Storm Havik", // <@!1013452363178197072> (fishnotduck)
         };
         private static readonly string[] CyborgNames =
         {
-            "Sylux", // <@!331812782183809025> (Gonk#2451)
+            "Sylux", // <@!331812782183809025> (gonkachino)
         };
         private static readonly string[] DemolitionistNames =
         {
-            "Tavish DeGroot", // <@!442447226992721930> (Magicoal#2655)
+            "Tavish DeGroot", // <@!442447226992721930> (magicoal)
+            "Fimmy", // <@!407348617079160832> (darkmega5)
         };
         private static readonly string[] DryadNames =
         {
             "Rythmi",
             "Izuna",
-            "Jasmine", // <@!430532867479699456> (phantasmagoria#6777)
+            "Jasmine", // <@!430532867479699456> (phantasmagoria.)
             "Cybil", // <@!486507232666845185> (Captain Doofus#????)
-            "Ruth", // <@!1001307586068492388> (Briny_Coffee#4393)
+            "Ruth", // <@!1001307586068492388> (briny_coffee)
         };
         private static readonly string[] DyeTraderNames = null;
         private static readonly string[] GoblinTinkererNames =
         {
             "Verth",
-            "Gormer", // <@!287651204924833795> (Picasso's Bean#2819 -- RIP)
-            "TingFlarg", // <@!185605031716847616> (Smug#7160)
-            "Driser", // <@!121996994406252544> (Driser#8630)
-            "Eddie Spaghetti", // <@!466397267407011841> (Eddie Spaghetti#0002)
-            "G'tok", // <@!335192200956608535> (gtoktas#7589)
-            "Katto", // <@!175972165504466944> (Katto#2858)
-            "Him", // <@!931019614958256139> (@himtheguy1)
+            "Gormer", // <@!287651204924833795> (picassosbean2819 -- RIP)
+            "TingFlarg", // <@!185605031716847616> (smugggo)
+            "Driser", // <@!121996994406252544> (driser)
+            "Eddie Spaghetti", // <@!466397267407011841> (nathansfriend)
+            "G'tok", // <@!335192200956608535> (gtoktas)
+            "Katto", // <@!175972165504466944> (katto_kat)
+            "Him", // <@!931019614958256139> (himtheguy1)
             "Tooshiboots", // <@!333532730593771522> (ulmod)
+            "Neesh", // <@!175803493464932352> (xjetty)
         };
         private static readonly string[] GolferNames = null;
         private static readonly string[] GuideNames =
@@ -120,79 +125,88 @@ namespace CalamityMod.NPCs
             "Streakist", // used to be "StreakistYT". couldn't find the youtube channel, and decided to remove the ad.
             "Necroplasmic",
             "Devin",
-            "Woffle", // <@!185980979427540992> (Chipbeam#2268)
-            "Cameron", // <@!340401981711712258> (CammyWammy#8634)
-            "Wilbur", // <@!295171926324805634> (ChaosChaos#5979)
-            "Good Game Design", // <@!564267767042277385> (Dominic Karma#7777)
-            "Danmaku", // <@!756259562268524555> (Danmaku#2659)
-            "Grylken", // <@!299970404435361802> (Grylken#1569)
-            "Outlaw", // <@!918311619480657922> (TheChosenOutlaw#8746)
-            "Alfred Rend", // <@!606301806481375255> (Deadsqurp300#0907)
-            "Leeman", // <@!281999243168841728> (Tweee#5831)
+            "Woffle", // <@!185980979427540992> (chipbeam)
+            "Cameron", // <@!340401981711712258> (cammywammy.)
+            "Wilbur", // <@!295171926324805634> (all_imperfect_chaos)
+            "Good Game Design", // <@!564267767042277385> (dominickarma)
+            "Danmaku", // <@!756259562268524555> (danmaku0)
+            "Grylken", // <@!299970404435361802> (grylken)
+            "Outlaw", // <@!918311619480657922> (thechosenoutlaw)
+            "Alfred Rend", // <@!606301806481375255> (deadsqurp300)
+            "Leeman", // <@!281999243168841728> (tweee)
             "Mihai", // <@!373941893467209730> (cmihaii.)
-            "Aka Retribution", // <@!302318734633205761> (azurr_nihilo)
+            "Cooler Kevin", // <@!614126424751603714> (exellent.)
         };
         private static readonly string[] MechanicNames =
         {
             "Lilly",
-            "Daawn", // <@!206162323541458944> (Daawnily#3859)
-            "Robin", // <@!654737510030639112> (Altzeus#8687)
-            "Curly", // <@!673092101780668416> (Curly~Brace#4830)
+            "Daawn", // <@!206162323541458944> (daawnily)
+            "Robin", // <@!654737510030639112> (altzeus)
+            "Curly", // <@!673092101780668416> (curly4830)
+			"Cobalt", // <@!132962828922388481> (cobalt_44)
         };
         private static readonly string[] MerchantNames =
         {
-            "Morshu", // <@!194931581826236416> (Uberransy#6969)
+            "Morshu", // <@!194931581826236416> (uberransy)
         };
         private static readonly string[] NurseNames =
         {
             "Farsni",
-            "Fanny", // <@!799749125720637460> (zombiewolf511#4581)
-            "Mausi", // <@!194156349347594241> (Sadouken | Daniel#3996)
+            "Fanny", // <@!799749125720637460> (zombiewolf511)
+            "Mausi", // <@!194156349347594241> (sadouken)
         };
         private static readonly string[] PainterNames =
         {
-            "Picasso", // <@!353316526306361347> (SCONICBOOM#2164 -- for the late Picasso's Bean#2819)
+            "Picasso", // <@!353316526306361347> (sconicboom -- for the late picassosbean2819)
         };
         private static readonly string[] PartyGirlNames =
         {
-            "Arin", // <@!268169458302976012> (Kiyotu#0006)
+            "Arin", // <@!268169458302976012> (kiyotu)
         };
         private static readonly string[] PirateNames =
         {
             "Tyler Van Hook",
-            "Cap'n Deek", // "Alex N" on Patreon
-            "Captain Billy Bones", // <@!699589229507772416> (DjackV#2882)
-            "Captain J. Crackers", // <@!233232602994049024> (Qyuuno#3031)
+            "Cap'n Deek", // "Alex N" on Patreon (No discord account)
+            "Captain Billy Bones", // <@!699589229507772416> (djackv)
+            "Captain J. Crackers", // <@!233232602994049024> (qyuuno)
         };
         private static readonly string[] PrincessNames =
         {
-            "Catalyst", // <@!156672312425316352> (xAqult#1122)
-            "Nyapano", // <@!120976656826368003> (Emi - Nyapano She/Her#4040)
-            "Jade", // <@!187395834625785869> (VeryMasterNinja#7728)
-            "Nyavi Aceso", // <@!270260920888852480> (Navigator#8739)
+            "Catalyst", // <@!156672312425316352> (xaqult)
+            "Nyapano", // <@!120976656826368003> (nyapano)
+            "Jade", // <@!187395834625785869> (verymasterninja)
+            "Nyavi Aceso", // <@!270260920888852480> (navigator.)
+            "everquartz", // <@!451343554451865611> (everquartz)
+            "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
+        };
+        private static readonly string[] SantaClausNames =
+        {
+            "Jank", // <@!339950757472239616> (jankle_)
         };
         private static readonly string[] SkeletonMerchantNames =
         {
-            "Sans Undertale", // <@!145379091648872450> (Shayy#5257)
-            "Papyrus Undertale", // <@!262663471189983242> (Nycro#0001)
+            "Sans Undertale", // <@!145379091648872450> (shayy)
+            "Papyrus Undertale", // <@!262663471189983242> (nycro)
+            "Mr. Bones", // <@!359215912856977408> (jaybones.)
         };
         private static readonly string[] SteampunkerNames =
         {
             "Vorbis",
             "Angel",
+            "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
         };
         private static readonly string[] StylistNames =
         {
-            "Amber", // <@!114677116473180169> (Mishiro Usui#1295)
-            "Faith", // <@!509050283871961123> (Toasty#1007)
-            "Xsiana", // <@!625780237489143839> (xiana.#0015)
+            "Amber", // <@!114677116473180169> (mishirousui)
+            "Faith", // <@!509050283871961123> (toasty1007)
+            "Xsiana", // <@!625780237489143839> (lokistic)
         };
         private static readonly string[] TavernkeepNames =
         {
-            "Tim Lockwood", // <@!605839945483026434> (Deimelo#0001)
-            "Sir Samuel Winchester Jenkins Kester II", // <@!107659695749070848> (Ryaegos#1661)
-            "Brutus", // <@!591889650692521984> (Brutus#4337)
-            "Sloth", // <@!486265327387279391> (BossyPunch#4983)
+            "Tim Lockwood", // <@!605839945483026434> (pomvoid)
+            "Sir Samuel Winchester Jenkins Kester II", // <@!107659695749070848> (ryaegos)
+            "Brutus", // <@!591889650692521984> (.brutus._)
+            "Sloth", // <@!486265327387279391> (bossypunch)
         };
         private static readonly string[] TaxCollectorNames =
         {
@@ -201,7 +215,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TravelingMerchantNames =
         {
             "Stan Pines",
-            "Slap Battles", // <@!923504188615450654> (Conquestor#9009)
+            "Slap Battles", // <@!923504188615450654> (gravityglider.)
         };
         private static readonly string[] TruffleNames =
         {
@@ -211,27 +225,28 @@ namespace CalamityMod.NPCs
         {
             "Sok'ar",
             "Toxin", // <@!348174404984766465> (Toxin#9598),
-            "Mixcoatl", // <@!284775927294984203> (SharZz#7777)
-            "Khatunz", // <@!303022375191183360> (jackshiz#7839)
-            "Amnesia Wapers", // <@!326821498323075073> (Retarded Advice from a Retard#6969)
+            "Mixcoatl", // <@!284775927294984203> (.sharzz)
+            "Khatunz", // <@!303022375191183360> (jackshiz)
+            "Amnesia Wapers", // <@!326821498323075073> (retardedadvicefromaretard)
         };
         private static readonly string[] WizardNames =
         {
-            "Mage One-Trick", // <@!340996105460514816> (pixlgray) - going of off memory on this one
+            "Mage One-Trick", // <@!340996105460514816> (pixlgray)
             "Inorim, son of Ivukey",
             "Jensen",
-            "Merasmus", // <@!288066987819663360> (Spider pee pee#3328)
-            "Habolo", // <@!163028025494077441> (ChristmasGoat#7810)
-            "Ortho", // <@!264984390910738432> (Worcuus#5225)
-            "Chris Tallballs", // <@!770211589076418571> (Bewearium#1111)
-            "Syethas", // <@!325413275066171393> (CosmicStarIight#4430)
-            "Nextdoor Psycho", // <@!173261518572486656> (⋈-NextdoorPsycho-⋈#0001)
+            "Merasmus", // <@!288066987819663360> (spiderprovidence)
+            "Habolo", // <@!163028025494077441> (hellgoat2)
+            "Ortho", // <@!264984390910738432> (worcuus)
+            "Chris Tallballs", // <@!770211589076418571> (bewearium)
+            "Syethas", // <@!325413275066171393> (cosmicstariight)
+            "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
         };
         private static readonly string[] ZoologistNames =
         {
-            "Kiriku", // <@!395312478160027668> (rulosss#6814)
-            "Lacuna", // <@!790746689211203604> (Lacuna#8629)
+            "Kiriku", // <@!395312478160027668> (rulosss)
+            "Lacuna", // <@!790746689211203604> (_lacuna_)
             "Mae Borowski", //<@!219158690433990656> (justakkolite)
+            "Fera", // <@!195850711567826945> (juneark_)
         };
 
         // The following sets are for the 1.4 Town Pets: Town Dogs, Cats and Bunnies.
@@ -246,25 +261,25 @@ namespace CalamityMod.NPCs
         private const int TownDogHuskyVanillaNames = 16;
         private static readonly string[] TownDogNames =
         {
-            "Ozymandias", // <@!146333264871686145> (Ozzatron#0001)
+            "Ozymandias", // <@!146333264871686145> (ozzatron)
         };
         private static readonly string[] TownDogLabradorNames =
         {
-            "Riley", // <@!260875558592708619> (potion pal#9979)
+            "Riley", // <@!260875558592708619> (potionpal)
         };
         private static readonly string[] TownDogPitBullNames =
         {
-            "Splinter", // <@!320320801213775873> (Kaimonick#1738)
+            "Splinter", // <@!320320801213775873> (kaimonick)
         };
         private static readonly string[] TownDogBeagleNames =
         {
-            "Kendra", // <@!237247188005158912> (LordMetarex#6407)
+            "Kendra", // <@!237247188005158912> (lordmetarex)
         };
         private static readonly string[] TownDogCorgiNames = null;
         private static readonly string[] TownDogDalmatianNames = null;
         private static readonly string[] TownDogHuskyNames =
         {
-            "Yoshi", // <@!541127291426832384> (GregTheSpinarak#6643)
+            "Yoshi", // <@!541127291426832384> (gregthespinarak)
         };
 
         private const int TownCatSiameseVanillaNames = 12;
@@ -275,21 +290,22 @@ namespace CalamityMod.NPCs
         private const int TownCatWhiteVanillaNames = 15;
         private static readonly string[] TownCatNames =
         {
-            "Smoogle", // <@!709968379334623274> (smoogle#5672)
-            "The Meowurer of Gods", // <@!385949114271268864> (GP#7876)
-            "Katsafaros", // <@!190595401328492544> (NavyGuy#2650)
+            "Smoogle", // <@!709968379334623274> (smooglin)
+            "The Meowurer of Gods", // <@!385949114271268864> (thatgp)
+            "Katsafaros", // <@!190595401328492544> (gr_mm)
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
-			"Octo", // <@!796112889353994281> (OctolingGrimm#8888)
+            "Octo", // <@!796112889353994281> (octolinggrimm)
         };
         private static readonly string[] TownCatSiameseNames = null;
         private static readonly string[] TownCatBlackNames =
         {
-            "Bear", // <@!183424826407518208> (Lilac Vrt Olligoci#5585)
+            "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
         };
         private static readonly string[] TownCatOrangeTabbyNames =
         {
-            "Felix" // <@!183424826407518208> (Lilac Vrt Olligoci#5585)
+            "Felix", // <@!183424826407518208> (lilac_vrt_olligoci)
+            "Tardo", // <@!739343546867384391> (midnight295)
         };
         private static readonly string[] TownCatRussianBlueNames = null;
         private static readonly string[] TownCatSilverNames = null;
@@ -504,6 +520,9 @@ namespace CalamityMod.NPCs
                     break;
                 case NPCID.Princess:
                     AddNewNames(nameList, PrincessNames);
+                    break;
+                case NPCID.SantaClaus:
+                    AddNewNames(nameList, SantaClausNames);
                     break;
                 case NPCID.SkeletonMerchant:
                     AddNewNames(nameList, SkeletonMerchantNames);
@@ -1046,29 +1065,37 @@ namespace CalamityMod.NPCs
                 defense += 20;
             }
         }
+
+        public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
+        {
+            //Not an axe but close enough
+            if (npc.type == NPCID.TaxCollector && projectile.type == ModContent.ProjectileType<SlickCaneProjectile>())
+                return true;
+            return base.CanBeHitByProjectile(npc, projectile);
+        }
         #endregion
 
         #region Shop Stuff
-         public override void ModifyShop(NPCShop shop)
+        public override void ModifyShop(NPCShop shop)
         {
             int type = shop.NpcType;
             int goldCost = NPC.downedMoonlord ? 16 : Main.hardMode ? 8 : 4;
 
             bool happy = Main.LocalPlayer.currentShoppingSettings.PriceAdjustment <= 0.9;
 
-            Condition potionSells = new(CalamityUtils.GetText("Condition.PotionConfig"), () => CalamityConfig.Instance.PotionSelling);
+            Condition potionSells = CalamityConditions.PotionSellingConfig;
             Condition hasFlareGunUpgrade = new(CalamityUtils.GetText("Condition.HasFlareGun"), () => (Main.LocalPlayer.HasItem(ItemType<FirestormCannon>()) || Main.LocalPlayer.HasItem(ItemType<SpectralstormCannon>())) && !Main.LocalPlayer.HasItem(ItemID.FlareGun));
-            Condition roguePlayer = new(CalamityUtils.GetText("Condition.HasRogueArmor"), () => Main.LocalPlayer.Calamity().rogueStealthMax > 0f && Main.LocalPlayer.Calamity().wearingRogueArmor);
-            Condition wingedPlayer = new(CalamityUtils.GetText("Condition.HasWings"), () => Main.LocalPlayer.wingTimeMax > 0);
-            Condition revengeance = new(CalamityUtils.GetText("Condition.InRev"), () => CalamityWorld.revenge);
-            Condition drunk = new(CalamityUtils.GetText("Condition.AlcoholPoison"), () => Main.LocalPlayer.Calamity().alcoholPoisoning);
-            Condition downedPolterghast = new(CalamityUtils.GetText("Condition.PostPolter"), () => DownedBossSystem.downedPolterghast);
-            Condition downedDoG = new(CalamityUtils.GetText("Condition.PostDoG"), () => DownedBossSystem.downedDoG);
+            Condition roguePlayer = CalamityConditions.PlayerHasRogueArmor;
+            Condition wingedPlayer = CalamityConditions.PlayerHasWings;
+            Condition revengeance = CalamityConditions.InRevengeanceMode;
+            Condition drunk = CalamityConditions.PlayerAlcoholPoisoned;
+            Condition downedPolterghast = CalamityConditions.DownedPolterghast;
+            Condition downedDoG = CalamityConditions.DownedDevourerOfGods;
 
             if (type == NPCID.Merchant)
             {
                 shop.AddWithCustomValue(ItemID.Bottle, Item.buyPrice(copper: 20), potionSells, Condition.HappyEnough)
-                .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(copper: 25), potionSells, Condition.HappyEnough);
+                .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(silver: 5), potionSells, Condition.HappyEnough);
                 shop.Add(ItemID.HealingPotion, potionSells, Condition.HappyEnough, Condition.DownedEowOrBoc)
                 .Add(ItemID.ManaPotion, potionSells, Condition.HappyEnough, Condition.DownedEowOrBoc)
                 .Add(ItemID.Flare, hasFlareGunUpgrade)
@@ -1124,7 +1151,9 @@ namespace CalamityMod.NPCs
                 shop.AddWithCustomValue(ItemID.JungleRose, Item.buyPrice(gold: 2))
                 .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 10))
                 .Add(ItemType<RomajedaOrchid>())
-                .AddWithCustomValue(ItemID.Grapes, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnough, Condition.DownedSkeletron);
+                .AddWithCustomValue(ItemID.Grapes, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnough, Condition.DownedSkeletron)
+                .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard)
+                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard);
             }
 
             if (type == NPCID.GoblinTinkerer)
@@ -1165,9 +1194,9 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Wizard)
             {
-                shop.Add(ItemType<HowlsHeart>())
+                shop.AddWithCustomValue(ItemType<HowlsHeart>(), CalamityGlobalItem.RarityLightRedBuyPrice * 3)
                 .AddWithCustomValue(ItemID.MagicMissile, Item.buyPrice(gold: 5))
-                .AddWithCustomValue(ItemID.RodofDiscord, Item.buyPrice(gold: 10), Condition.Hardmode, Condition.InHallow)
+                .AddWithCustomValue(ItemID.RodofDiscord, Item.buyPrice(gold: 50), Condition.Hardmode, Condition.InHallow)
                 .AddWithCustomValue(ItemID.SpectreStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.InfernoFork, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.ShadowbeamStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
@@ -1178,8 +1207,9 @@ namespace CalamityMod.NPCs
             {
                 shop.Add(ItemType<SunkenSeaFountain>())
                 .Add(ItemType<SulphurousFountainItem>())
-                .Add(ItemType<AbyssFountainItem>(), Condition.Hardmode)
-                .Add(ItemType<AstralFountainItem>(), Condition.Hardmode)
+                .Add(ItemType<AbyssFountainItem>())
+                .Add(ItemType<AstralFountainItem>())
+                .Add(ItemType<BrimstoneLavaFountainItem>())
                 .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 10), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.FriedEgg, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnough);
             }
@@ -1220,15 +1250,6 @@ namespace CalamityMod.NPCs
             if (type == NPCID.BestiaryGirl)
             {
                 shop.AddWithCustomValue(ItemID.Steak, Item.buyPrice(gold: 5), Condition.HappyEnough, Condition.Hardmode);
-            }
-        }
-
-        public override void SetupTravelShop(int[] shop, ref int nextSlot)
-        {
-            if (Main.moonPhase == 0)
-            {
-                shop[nextSlot] = ItemType<FrostBarrier>();
-                nextSlot++;
             }
         }
         #endregion

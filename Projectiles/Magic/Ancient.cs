@@ -1,8 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.DataStructures;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 dustPos = dustCircle.RandomPointInCircle();
                 if ((dustPos - Projectile.Center).Length() > 48)
                 {
-                    int dustIndex = Dust.NewDust(dustPos, 1, 1, 22);
+                    int dustIndex = Dust.NewDust(dustPos, 1, 1, DustID.Pot);
                     Main.dust[dustIndex].noGravity = true;
                     Main.dust[dustIndex].fadeIn = 1f;
                     Vector2 dustVelocity = Projectile.Center - Main.dust[dustIndex].position;

@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.timeLeft < 85 && Main.rand.NextBool(3))
             {
-                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, 171);
+                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.Venom);
                 dust.velocity = Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(5f)) * -0.5f;
                 dust.scale = Main.rand.NextFloat(0.3f, 1.6f);
                 dust.noGravity = true;
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int i = 0; i < 14; i++)
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position, 14, 14, 171);
+                Dust dust = Dust.NewDustDirect(Projectile.position, 14, 14, DustID.Venom);
                 dust.scale = Main.rand.NextFloat(0.3f, 1.6f);
                 dust.noGravity = true;
             }

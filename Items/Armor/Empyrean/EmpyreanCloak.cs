@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Armor.Empyrean
 
         public override void SetStaticDefaults()
         {
-           
+
             if (Main.netMode != NetmodeID.Server)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Armor.Empyrean
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.defense = 27;
         }

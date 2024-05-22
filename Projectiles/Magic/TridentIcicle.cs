@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -22,12 +22,14 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = 2;
             Projectile.ignoreWater = true;
             Projectile.coldDamage = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
         {
             //make pretty dust
-            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 88);
+            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemSapphire);
             Main.dust[index2].noGravity = true;
         }
 
@@ -43,10 +45,10 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
             for (int i = 0; i < 10; i++)
             {
-                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 88);
+                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemSapphire);
                 Main.dust[index2].noGravity = true;
                 Main.dust[index2].velocity *= 2f;
             }

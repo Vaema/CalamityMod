@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,12 +12,13 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-                       Item.ResearchUnlockCount = 99;
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
         {
             Item.width = 14;
+            Item.height = 30;
             Item.damage = 108;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -26,7 +27,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 1f;
             Item.autoReuse = true;
-            Item.height = 30;
             Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 1, 0, 0);
             Item.rare = ItemRarityID.Yellow;

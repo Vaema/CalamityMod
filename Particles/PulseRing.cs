@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using static CalamityMod.CalamityUtils;
 using Terraria;
 using Terraria.ModLoader;
+using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Particles
 {
@@ -32,7 +32,7 @@ namespace CalamityMod.Particles
 
         public override void Update()
         {
-            float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new CurveSegment(EasingType.PolyOut, 0f, 0f, 1f, 4)});
+            float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new CurveSegment(EasingType.PolyOut, 0f, 0f, 1f, 4) });
             Scale = MathHelper.Lerp(OriginalScale, FinalScale, pulseProgress);
 
             opacity = (float)Math.Sin(MathHelper.PiOver2 + LifetimeCompletion * MathHelper.PiOver2);

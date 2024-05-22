@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Armor.Auric
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.defense = 12; //132
             Item.rare = ModContent.RarityType<Violet>();
         }
@@ -62,10 +62,10 @@ namespace CalamityMod.Items.Armor.Auric
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<SilvaCrystal>()] < 1)
                 {
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(1200);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(750);
                     var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 1200;
+                        Main.projectile[p].originalDamage = 750;
                 }
             }
         }

@@ -3,8 +3,8 @@ using CalamityMod.Dusts.Furniture;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureProfaned
 {
@@ -28,7 +28,7 @@ namespace CalamityMod.Tiles.FurnitureProfaned
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 246, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.GoldCoin, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, ModContent.DustType<ProfanedTileRock>(), 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
@@ -54,7 +54,6 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
             Color drawColour = GetDrawColour(i, j, new Color(128, 128, 128, 128));
             Tile trackTile = Main.tile[i, j];
-            double num6 = Main.time * 0.08;
 
             TileFraming.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }

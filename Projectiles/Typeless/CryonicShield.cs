@@ -1,7 +1,7 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.CalPlayer;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
-using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

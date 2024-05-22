@@ -86,7 +86,7 @@ namespace CalamityMod.NPCs.Other
             // Create some fade dust.
             for (int i = 0; i < 3; i++)
             {
-                Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 223);
+                Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.FireworkFountain_Pink);
                 magic.velocity = -Vector2.UnitY * Main.rand.NextFloat(2.8f, 3.5f);
                 magic.scale = Main.rand.NextFloat(1f, 1.125f);
                 magic.fadeIn = 0.4f;
@@ -102,7 +102,7 @@ namespace CalamityMod.NPCs.Other
             {
                 for (int i = 0; i < 50; i++)
                 {
-                    Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 223);
+                    Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.FireworkFountain_Pink);
                     magic.velocity = -Vector2.UnitY * Main.rand.NextFloat(2.8f, 3.5f);
                     magic.scale = Main.rand.NextFloat(1f, 1.125f);
                     magic.fadeIn = 0.7f;

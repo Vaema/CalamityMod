@@ -17,15 +17,15 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetDefaults()
         {
+            Item.width = 36;
+            Item.height = 38;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.damage = 30;
             Item.knockBack = 9f;
-            Item.width = 36;
-            Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
-            Item.defense = 12;
+            Item.defense = 6;
             Item.accessory = true;
         }
 

@@ -1,7 +1,7 @@
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Dusts;
-using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i < 8; i++)
             {
-                Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid);
             }
         }
     }

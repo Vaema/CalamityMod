@@ -1,10 +1,10 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -13,6 +13,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = 32;
+            Item.height = 42;
             Item.damage = 50;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -22,15 +23,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item106;
             Item.autoReuse = true;
-            Item.height = 42;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<TotalityFlask>();
             Item.shootSpeed = 12f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 1.3f;
+        public override float StealthDamageMultiplier => 1.3f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-				AddIngredient(ItemID.MolotovCocktail, 50).
+                AddIngredient(ItemID.MolotovCocktail, 50).
                 AddIngredient<SolarVeil>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = SoundInterval;
                 // Don't play the continuous beam sound the first time around
                 if (Projectile.ai[0] > 1f)
-                    SoundEngine.PlaySound(SoundID.Item15, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item15, Projectile.Center);
             }
 
             // Once the crystal reaches a certain charge, start producing dust. More charge = more dust.
@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 // CheckMana returns true if the mana cost can be paid. If mana isn't consumed this frame, the CheckMana short-circuits out of being evaluated.
                 bool allowContinuedUse = !ShouldConsumeMana() || player.CheckMana(player.ActiveItem(), -1, true, false);
-                bool crystalStillInUse = player.channel && allowContinuedUse && !player.noItems && !player.CCed;
+                bool crystalStillInUse = !player.CantUseHoldout() && allowContinuedUse;
 
                 // The beams are only projected once (on frame 1).
                 if (crystalStillInUse && Projectile.ai[0] == 1f)
@@ -116,7 +116,7 @@ namespace CalamityMod.Projectiles.Magic
                 return true;
             }
             bool consume = Projectile.ai[0] == Projectile.ai[1];
-            if(consume)
+            if (consume)
             {
                 Projectile.localAI[0] = MathHelper.Clamp(Projectile.localAI[0] - 1f, MinManaConsumptionDelay, MaxManaConsumptionDelay);
                 Projectile.ai[1] += Projectile.localAI[0];
@@ -176,8 +176,8 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects eff = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
-            int frameHeight = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int frameHeight = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int texYOffset = frameHeight * Projectile.frame;
             Vector2 sheetInsertVec = (Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition).Floor();
             Main.spriteBatch.Draw(tex, sheetInsertVec, new Rectangle?(new Rectangle(0, texYOffset, tex.Width, frameHeight)), Color.White, Projectile.rotation, new Vector2(tex.Width / 2f, frameHeight / 2f), Projectile.scale, eff, 0f);

@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -17,6 +17,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
+            Item.width = 158;
+            Item.height = 60;
             Item.damage = 192;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 26;
@@ -27,12 +29,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.Calamity().canFirePointBlankShots = true;
 
-            Item.width = 158;
-            Item.height = 60;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item38;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;

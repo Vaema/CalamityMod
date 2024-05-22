@@ -1,11 +1,11 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs.StormWeaver;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.NPCs.StormWeaver;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -165,13 +165,13 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 velocity = -pos * 0.02f;
                 pos += Projectile.Center;
 
-                int dust = Dust.NewDust(pos, 1, 1, 89, 0f, 0f, 100, default, 1f);
+                int dust = Dust.NewDust(pos, 1, 1, DustID.GemEmerald, 0f, 0f, 100, default, 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity = velocity + Projectile.velocity;
             }
 
             // Main sprite
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -206,7 +206,7 @@ namespace CalamityMod.Projectiles.Rogue
                 velocity = velocity.RotatedByRandom(MathHelper.TwoPi);
                 velocity *= 0.1f;
 
-                int dust = Dust.NewDust(Projectile.Center, 1, 1, 89, 0f, 0f, 100, default, 1f);
+                int dust = Dust.NewDust(Projectile.Center, 1, 1, DustID.GemEmerald, 0f, 0f, 100, default, 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity = velocity + Projectile.velocity;
             }

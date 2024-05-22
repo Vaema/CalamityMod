@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Plates;
 using CalamityMod.Items.Placeables.Ores;
+using CalamityMod.Items.Placeables.Plates;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 64;
             Item.height = 58;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
         }
 
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<ExodiumCluster>(25).
                 AddIngredient<Navyplate>(25).
-                AddIngredient<Polterplasm>(5).
+                AddIngredient<Necroplasm>(5).
                 AddTile(TileID.DemonAltar).
                 Register();
         }

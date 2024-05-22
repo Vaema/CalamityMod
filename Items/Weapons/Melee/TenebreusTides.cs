@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
+            Item.width = Item.height = 68;
             Item.damage = 120;
             Item.knockBack = 4.5f;
             Item.DamageType = DamageClass.Melee;
@@ -26,11 +27,10 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<TenebreusTidesProjectile>();
             Item.shootSpeed = 12f;
 
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
-            Item.rare = ItemRarityID.Cyan;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.rare = ItemRarityID.Red;
             Item.Calamity().donorItem = true;
 
-            Item.width = Item.height = 68;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item1;
             Item.noMelee = true;

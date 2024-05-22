@@ -38,12 +38,14 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 1;
         }
-        
+
 
         public override void AI()
         {
             // Dynamically update stats here, originalDamage can be found in MiscEffects
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
+            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
+
             // Despawn properly
             if (Owner.Calamity().pSoulGuardians && Projectile.ai[0] == 0f)
                 Projectile.timeLeft = 4;
@@ -53,11 +55,10 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.active = false;
                 return;
             }
-            
+
             if (Projectile.ai[0] == 0f) //regular expected behaviour of floaty rocks
             {
                 // Rotation velocity
-                float minRotationVelocity = 0.5f;
                 float rotationVelocityIncrease = 0.2f;
                 rotationVelocityIncrease += rotationVelocityIncrease * (Projectile.ai[1] * 0.5f);
 
@@ -96,23 +97,31 @@ namespace CalamityMod.Projectiles.Summon
                     if (i == 0 || Projectile.timeLeft > 285)
                         Dust.NewDust(Projectile.position, Projectile.width / 2, Projectile.height / 2, (int)CalamityDusts.ProfanedFire, 0f, -1f, 0, default, 1f);
                 }
-                    
+
             }
         }
-        
+
         public override bool? CanDamage() => Projectile.ai[0] >= 1f ? null : false;
 
         public override bool PreDraw(ref Color lightColor)
         {
             bool psc = Owner.Calamity().profanedCrystalBuffs;
-            int rockType = (int)MathHelper.Clamp(Projectile.ai[2], 1f, 6f);;
+            int rockType = (int)MathHelper.Clamp(Projectile.ai[2], 1f, 6f); ;
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedRocks" + rockType.ToString()).Value;
-            
+
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
             drawPos -= new Vector2(texture.Width, texture.Height) * Projectile.scale / 2f;
             drawPos += drawOrigin * Projectile.scale + new Vector2(0f, Projectile.gfxOffY);
             Rectangle frame = new Rectangle(0, 0, texture.Width, texture.Height);
+            float ownerDist = Projectile.Center.Distance(Owner.Center);
+            float lerpVal = Utils.GetLerpValue(psc ? 72 : 42, psc ? 87 : 57, ownerDist, true);
+            float mult = MathHelper.Lerp(0.35f, 0.42f, lerpVal);
+            if ((psc && ownerDist > 87f) || (!psc && ownerDist > 57f))
+            {
+                lerpVal = Utils.GetLerpValue(psc ? 87 : 57, psc ? 150 : 120, ownerDist, true);
+                mult = MathHelper.Lerp(0.42f, 1f, lerpVal);
+            }
             if (CalamityConfig.Instance.Afterimages && Projectile.ai[0] >= 1f)  //handle afterimages manually since the utility broke it and didn't render correctly
             {
                 for (int i = 0; i < Projectile.oldPos.Length; ++i)
@@ -120,12 +129,12 @@ namespace CalamityMod.Projectiles.Summon
                     drawPos = Projectile.oldPos[i] + (Projectile.Size / 2f) - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
                     // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
                     Color color = Projectile.GetAlpha(lightColor) * ((float)(Projectile.oldPos.Length - i) / (float)Projectile.oldPos.Length);
-                    Main.spriteBatch.Draw(texture, drawPos, frame, color, Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0f);
+                    Main.spriteBatch.Draw(texture, drawPos, frame, color * mult, Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0f);
                 }
             }
             else
             {
-                Main.spriteBatch.Draw(texture, drawPos, frame, Color.White, Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, drawPos, frame, Color.White * mult, Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0f);
             }
 
             return false;

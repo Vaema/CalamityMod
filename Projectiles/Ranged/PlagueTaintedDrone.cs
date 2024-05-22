@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Dusts;
-using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
@@ -120,7 +120,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (target.Calamity().pFlames > 0) {
+            if (target.Calamity().pFlames > 0)
+            {
                 if (Projectile.ai[1] == 1)
                     return;
                 else if (Main.rand.Next(4) < 3)
@@ -138,23 +139,23 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.damage = (int)(Projectile.damage * 0.4f);
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            for (int num621 = 0; num621 < 20; num621++)
+            for (int i = 0; i < 20; i++)
             {
-                int num622 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 100, default, 2f);
-                Main.dust[num622].velocity *= 3f;
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
+                Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
-                    Main.dust[num622].scale = 0.5f;
-                    Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                    Main.dust[dust].scale = 0.5f;
+                    Main.dust[dust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                 }
             }
-            for (int num623 = 0; num623 < 40; num623++)
+            for (int j = 0; j < 40; j++)
             {
-                int num624 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 3f);
-                Main.dust[num624].noGravity = true;
-                Main.dust[num624].velocity *= 5f;
-                num624 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 2f);
-                Main.dust[num624].velocity *= 2f;
+                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
+                Main.dust[dust2].noGravity = true;
+                Main.dust[dust2].velocity *= 5f;
+                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
+                Main.dust[dust2].velocity *= 2f;
             }
 
             if (Main.netMode != NetmodeID.Server)

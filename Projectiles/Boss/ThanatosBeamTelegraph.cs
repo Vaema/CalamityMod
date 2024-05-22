@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.IO;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 scaleInner = new Vector2(TelegraphWidth / laserTelegraph.Width, verticalScale);
             Vector2 scaleOuter = scaleInner * new Vector2(1f, 2.2f);
 
-            Color colorOuter = Color.Lerp(Color.Red, Color.Crimson, Time / Lifetime * 2f % 1f); // Iterate through crimson and red twice and then flash.
+            Color colorOuter = Color.Lerp(Color.Red, Color.CornflowerBlue, Time / Lifetime); // Smoothly scale from red to blue, as if heating up.
             colorOuter = Color.Lerp(colorOuter, Color.White, Utils.GetLerpValue(40f, 0f, Projectile.timeLeft, true) * 0.8f);
             Color colorInner = Color.Lerp(colorOuter, Color.White, 0.5f);
 

@@ -1,6 +1,6 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 68; // Sturdy Fossil
+            ItemID.Sets.SortingPriorityMaterials[Type] = 68; // Sturdy Fossil
         }
 
         public override void SetDefaults()
@@ -20,5 +20,6 @@ namespace CalamityMod.Items.Materials
             Item.maxStack = 9999;
             Item.value = Item.buyPrice(0, 0, 50, 0);
             Item.rare = ItemRarityID.Orange;
-        }    }
+        }
+    }
 }

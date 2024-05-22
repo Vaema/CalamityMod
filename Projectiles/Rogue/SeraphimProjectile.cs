@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 baseDrawPosition = Projectile.Center - Main.screenPosition;
 

@@ -1,6 +1,7 @@
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -23,7 +24,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1f);
+            int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
             Main.dust[idx].noGravity = true;
             Main.dust[idx].velocity *= 0f;
         }

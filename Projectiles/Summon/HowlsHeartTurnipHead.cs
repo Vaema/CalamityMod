@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override void AI()
-        {            
+        {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
 

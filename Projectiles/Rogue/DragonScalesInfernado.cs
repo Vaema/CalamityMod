@@ -1,10 +1,12 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Rogue
 {
     public class DragonScalesInfernado : ModProjectile, ILocalizedModType
@@ -46,7 +48,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Main.rand.NextBool(25))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 244, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.CopperCoin, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             if (Projectile.velocity.X != 0f)
             {
@@ -100,8 +102,8 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.netUpdate = true;
                 Vector2 center = Projectile.Center;
                 center.Y -= baseHeight * Projectile.scale / 2f;
-                float num618 = (scaleBase - Projectile.ai[1] + 1f) * scaleMult / scaleBase;
-                center.Y -= baseHeight * num618 / 2f;
+                float baseChanger = (scaleBase - Projectile.ai[1] + 1f) * scaleMult / scaleBase;
+                center.Y -= baseHeight * baseChanger / 2f;
                 center.Y += 2f;
                 Projectile segment = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), center, Projectile.velocity, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 10f, Projectile.ai[1] - 1f);
 
@@ -116,14 +118,14 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (Projectile.ai[0] <= 0f)
             {
-                float num622 = 0.104719758f;
-                float num623 = (float)Projectile.width / 5f;
-                num623 *= 2f;
-                float num624 = (float)(Math.Cos((double)(num622 * -(double)Projectile.ai[0])) - 0.5) * num623;
-                Projectile.position.X -= num624 * -Projectile.direction;
+                float constant = MathHelper.Pi / 30f;
+                float smallWidth = (float)Projectile.width / 5f;
+                smallWidth *= 2f;
+                float xFluctuation = (float)(Math.Cos((double)(constant * -(double)Projectile.ai[0])) - 0.5) * smallWidth;
+                Projectile.position.X -= xFluctuation * -Projectile.direction;
                 Projectile.ai[0] -= 1f;
-                num624 = (float)(Math.Cos((double)(num622 * -(double)Projectile.ai[0])) - 0.5) * num623;
-                Projectile.position.X += num624 * -Projectile.direction;
+                xFluctuation = (float)(Math.Cos((double)(constant * -(double)Projectile.ai[0])) - 0.5) * smallWidth;
+                Projectile.position.X += xFluctuation * -Projectile.direction;
                 return;
             }
         }
@@ -144,10 +146,10 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int num214 = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
-            int y6 = num214 * Projectile.frame;
-            Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, num214)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)num214 / 2f), Projectile.scale, SpriteEffects.None, 0);
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int frameDraw = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            int y6 = frameDraw * Projectile.frame;
+            Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, frameDraw)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)frameDraw / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
     }

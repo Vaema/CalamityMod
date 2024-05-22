@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,21 +12,19 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
+            Item.width = 50;
+            Item.height = 56;
             Item.damage = 16;
             Item.knockBack = 2f;
             Item.mana = 10;
-
             Item.shoot = ModContent.ProjectileType<CinderBlossom>();
-
-            Item.width = 50;
-            Item.height = 56;
             Item.useTime = Item.useAnimation = 30;
 
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item34;
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.noMelee = true;
         }
 

@@ -54,6 +54,7 @@ namespace CalamityMod
             Abyss.AbyssChasmBottom = 0;
             SulphurousSea.YStart = 0;
             Abyss.AtLeftSideOfWorld = false;
+            //Abyss.AbleToUnlockChests = false; //Yet another fucking failsave for abyss chests
 
             spawnedBandit = false;
             spawnedCirrus = false;
@@ -63,13 +64,14 @@ namespace CalamityMod
             dogName = false;
             bunnyName = false;
 
-            onionMode = false;
             revenge = false;
             TalkedToDraedon = false;
             death = false;
             armageddon = false;
             AcidRainEvent.AcidRainEventIsOngoing = false;
             AcidRainEvent.CountdownUntilForcedAcidRain = 0;
+
+            HasGeneratedLuminitePlanetoids = false; //Allow generating planetoids in other worlds
         }
         #endregion
 
@@ -77,8 +79,6 @@ namespace CalamityMod
         public override void SaveWorldData(TagCompound tag)
         {
             var downed = new List<string>();
-            if (onionMode)
-                downed.Add("onionMode");
             if (TalkedToDraedon)
                 downed.Add("TalkedToDraedon");
             if (revenge)
@@ -105,7 +105,7 @@ namespace CalamityMod
                 downed.Add("dogName");
             if (bunnyName)
                 downed.Add("bunnyName");
-			#endregion
+            #endregion
 
             if (AcidRainEvent.HasTriedToSummonOldDuke)
                 downed.Add("spawnedBoomer");
@@ -145,7 +145,6 @@ namespace CalamityMod
         public override void LoadWorldData(TagCompound tag)
         {
             var downed = tag.GetList<string>("downed");
-            onionMode = downed.Contains("onionMode");
             TalkedToDraedon = downed.Contains("TalkedToDraedon");
             revenge = downed.Contains("revenge");
             death = downed.Contains("death");
@@ -160,7 +159,7 @@ namespace CalamityMod
             catName = downed.Contains("catName");
             dogName = downed.Contains("dogName");
             bunnyName = downed.Contains("bunnyName");
-			#endregion
+            #endregion
 
             AcidRainEvent.HasTriedToSummonOldDuke = downed.Contains("spawnedBoomer");
             AcidRainEvent.HasStartedAcidicDownpour = downed.Contains("startDownpour");
@@ -233,7 +232,7 @@ namespace CalamityMod
             flags4[3] = false;
             flags4[4] = false;
             flags4[5] = false;
-            flags4[6] = onionMode;
+            flags4[6] = false;
             flags4[7] = revenge;
 
             BitsByte flags5 = new BitsByte();
@@ -387,7 +386,7 @@ namespace CalamityMod
             _ = flags4[3];
             _ = flags4[4];
             _ = flags4[5];
-            onionMode = flags4[6];
+            _ = flags4[6];
             revenge = flags4[7];
 
             BitsByte flags5 = reader.ReadByte();

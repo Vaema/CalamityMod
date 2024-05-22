@@ -16,7 +16,7 @@ namespace CalamityMod.Cooldowns
 {
     public class ProfanedSoulShield : CooldownHandler
     {
-        
+
         private CalamityPlayer CalPlayer => instance.player.Calamity();
         private int CorrectMaxDurability => CalPlayer.profanedCrystalBuffs
             ? ProfanedSoulCrystal.ShieldDurabilityMax
@@ -36,7 +36,7 @@ namespace CalamityMod.Cooldowns
             }
             return result;
         }
-        
+
         private float AdjustedCompletion => instance.timeLeft / (float)CorrectMaxDurability;
 
         public static new string ID => "ProfanedSoulShieldDurability";
@@ -108,7 +108,7 @@ namespace CalamityMod.Cooldowns
         public override Color OutlineColor => new Color(57, 195, 237);
         public override Color CooldownStartColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
         public override Color CooldownEndColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
-        
+
         public override void Tick() => instance.player.Calamity().playedProfanedSoulShieldSound = false;
 
         public override SoundStyle? EndSound => Providence.BurnStartSound;

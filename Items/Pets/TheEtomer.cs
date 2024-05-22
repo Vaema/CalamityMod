@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Buffs.Pets;
-using CalamityMod.Projectiles.Pets;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
+using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -16,13 +16,13 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
+            Item.width = 30;
+            Item.height = 34;
             Item.damage = 0;
             Item.useTime = Item.useAnimation = 20;
             Item.shoot = ModContent.ProjectileType<RotomPet>();
             Item.buffType = ModContent.BuffType<ElectricTroublemaker>();
 
-            Item.width = 30;
-            Item.height = 34;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item113;

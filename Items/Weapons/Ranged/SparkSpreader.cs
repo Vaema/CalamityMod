@@ -11,28 +11,27 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 7;
+            Item.width = 56;
+            Item.height = 26;
+            Item.damage = 10;
             Item.knockBack = 1f;
             Item.DamageType = DamageClass.Ranged;
             Item.autoReuse = true;
-            Item.useTime = 10;
-            Item.useAnimation = 30;
+            Item.useTime = 12;
+            Item.useAnimation = 36;
             Item.useAmmo = AmmoID.Gel;
-            Item.shootSpeed = 5f;
+            Item.consumeAmmoOnFirstShotOnly = true;
+            Item.shootSpeed = 6f;
             Item.shoot = ModContent.ProjectileType<SparkSpreaderFire>();
 
-            Item.width = 52;
-            Item.height = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item34;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-4, 0);
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= 70;
 
         public override void AddRecipes()
         {

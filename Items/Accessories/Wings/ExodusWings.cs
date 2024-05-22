@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             Item.width = 22;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.accessory = true;
         }
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Accessories.Wings
                 {
                     xOffset = -40f;
                 }
-                int index = Dust.NewDust(new Vector2(player.Center.X + xOffset, player.Center.Y - 15f), 30, 30, 62, 0f, 0f, 100, default, 2.4f);
+                int index = Dust.NewDust(new Vector2(player.Center.X + xOffset, player.Center.Y - 15f), 30, 30, DustID.PurpleTorch, 0f, 0f, 100, default, 2.4f);
                 Main.dust[index].noGravity = true;
                 Main.dust[index].velocity *= 0.3f;
                 if (Main.rand.NextBool(10))
@@ -69,7 +69,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CreateRecipe().
                 AddIngredient(ItemID.SoulofFlight, 20).
-				AddIngredient<MeldConstruct>(14).
+                AddIngredient<MeldConstruct>(14).
                 AddIngredient(ItemID.LunarBar, 10).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

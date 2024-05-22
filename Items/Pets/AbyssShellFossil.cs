@@ -13,16 +13,16 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.damage = 0;
             Item.width = 42;
             Item.height = 30;
+            Item.damage = 0;
             Item.useAnimation = 20;
             Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
 
             Item.value = Item.sellPrice(platinum: 1);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ItemRarityID.Cyan;
             Item.Calamity().devItem = true;
 
             Item.shoot = ModContent.ProjectileType<EidolonSnail>();

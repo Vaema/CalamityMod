@@ -26,12 +26,12 @@ namespace CalamityMod.NPCs.Astral
             AIType = NPCID.LightningBug;
             AnimationType = NPCID.LightningBug;
             NPC.catchItem = (short)ModContent.ItemType<TwinklerItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Twinkler")
             });

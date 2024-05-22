@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = 10;
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             }
-            int sand = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 2f);
+            int sand = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 2f);
             Dust dust = Main.dust[sand];
             dust.velocity *= 0.3f;
             dust.position.X = Projectile.Center.X + 4f + (float)Main.rand.Next(-4, 5);
@@ -154,7 +154,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 dustPos = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 dustPos = dustPos.RotatedBy((double)((float)(index - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
                 Vector2 dustVel = dustPos - Projectile.Center;
-                int sand = Dust.NewDust(dustPos + dustVel, 0, 0, 85, dustVel.X * 1.5f, dustVel.Y * 1.5f, 100, default, 1.2f);
+                int sand = Dust.NewDust(dustPos + dustVel, 0, 0, DustID.UnusedBrown, dustVel.X * 1.5f, dustVel.Y * 1.5f, 100, default, 1.2f);
                 Main.dust[sand].noGravity = true;
                 Main.dust[sand].noLight = true;
                 Main.dust[sand].velocity = dustVel;

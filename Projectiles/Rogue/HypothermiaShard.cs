@@ -31,9 +31,9 @@ namespace CalamityMod.Projectiles.Rogue
             counter += 0.25f;
             if (Main.rand.NextBool(10))
             {
-                int num300 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 318, 0f, 0f, 0, default, 0.8f);
-                Main.dust[num300].noGravity = true;
-                Main.dust[num300].velocity *= 0.2f;
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 318, 0f, 0f, 0, default, 0.8f);
+                Main.dust[dust].noGravity = true;
+                Main.dust[dust].velocity *= 0.2f;
             }
             Projectile.velocity *= 0.996f;
             if (counter > 100f)
@@ -72,12 +72,12 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn2, 120);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Frostburn2, 120);        
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Frostburn2, 120);
 
         public override bool PreDraw(ref Color lightColor)
         {
             //Changes the texture of the projectile
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (Projectile.ai[0] == 1f)
             {
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard2").Value;

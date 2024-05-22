@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -46,7 +46,7 @@ namespace CalamityMod.Particles
             Vector2 expandedLine = LineVector + Utils.SafeNormalize(LineVector, Vector2.Zero) * (float)Math.Sqrt(1f - (float)Math.Pow(LifetimeCompletion - 1f, 2)) * Expansion;
 
             float rot = LineVector.ToRotation() + MathHelper.PiOver2;
-            Vector2 origin = new Vector2(tex.Width/2f, tex.Height);
+            Vector2 origin = new Vector2(tex.Width / 2f, tex.Height);
             Vector2 scale = new Vector2(Scale, expandedLine.Length() / tex.Height);
 
             spriteBatch.Draw(tex, drawPosition - Main.screenPosition, null, Color, rot, origin, scale, SpriteEffects.None, 0);

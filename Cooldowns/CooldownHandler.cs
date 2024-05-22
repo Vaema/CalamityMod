@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.Localization;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Cooldowns

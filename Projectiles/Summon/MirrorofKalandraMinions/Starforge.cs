@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
                     Main.rand.NextFloat(140f, 150f));
                 GeneralParticleHandler.SpawnParticle(mist);
 
-                int flavorDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 272, 0, 0, 0, default, .6f);
+                int flavorDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.WitherLightning, 0, 0, 0, default, .6f);
                 Main.dust[flavorDust].noGravity = true;
             }
 
@@ -131,7 +131,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

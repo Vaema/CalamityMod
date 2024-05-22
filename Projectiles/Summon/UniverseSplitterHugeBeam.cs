@@ -1,15 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using Terraria;
-using Terraria.ID;
-using Terraria.Enums;
-using Terraria.ModLoader;
+﻿using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
-using Terraria.GameContent.Events;
-using Terraria.Audio;
-using ReLogic.Content;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using Terraria;
+using Terraria.Audio;
+using Terraria.Enums;
+using Terraria.GameContent.Events;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {

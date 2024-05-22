@@ -1,15 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.Summon;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Summon;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Buffs.Summon;
-using System.IO;
-using Terraria.GameContent.Drawing;
-using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -239,7 +239,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;

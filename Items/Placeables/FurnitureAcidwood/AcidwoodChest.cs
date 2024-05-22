@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Tiles.FurnitureAcidwood;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureAcidwood
 {
     public class AcidwoodChest : ModItem, ILocalizedModType

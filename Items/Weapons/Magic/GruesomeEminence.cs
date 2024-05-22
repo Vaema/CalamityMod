@@ -13,13 +13,13 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = 42;
+            Item.height = 74;
             Item.damage = 666;
             Item.DamageType = DamageClass.Magic;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.mana = 8;
-            Item.width = 42;
-            Item.height = 74;
+            Item.mana = 400;
             Item.useTime = 27;
             Item.useAnimation = 27;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -28,10 +28,10 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<GruesomeEminenceHoldout>();
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
         }
-        
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<GhastlyVisage>();

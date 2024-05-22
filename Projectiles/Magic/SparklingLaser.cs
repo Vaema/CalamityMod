@@ -1,9 +1,9 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Enums;
@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 spawnPos = Projectile.Center;
                 for (int k = 0; k < dustCount + 1; k++)
                 {
-                    Dust dust = Dust.NewDustDirect(spawnPos, 1, 1, 226, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f);
+                    Dust dust = Dust.NewDustDirect(spawnPos, 1, 1, DustID.Electric, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f);
                     dust.position += Main.rand.NextVector2Square(-10f, 10f);
                     dust.velocity = Main.rand.NextVector2Unit() * (10f - dustCount * 2f) / 10f;
                     dust.scale = Main.rand.NextFloat(0.5f, 1f);
@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Magic
             // Play a cool sound when fully charged.
             if (!playedSound)
             {
-                SoundEngine.PlaySound(SoundID.Item68, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item68, Projectile.Center);
                 playedSound = true;
             }
             return true;

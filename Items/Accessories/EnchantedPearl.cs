@@ -1,8 +1,8 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.accessory = true;
         }

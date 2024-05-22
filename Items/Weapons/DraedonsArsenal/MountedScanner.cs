@@ -1,9 +1,9 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 26;
             Item.height = 26;
             Item.DamageType = DamageClass.Summon;
-            Item.damage = 41;
+            Item.damage = 24;
             Item.knockBack = 2f;
             Item.mana = 10;
             Item.useTime = Item.useAnimation = 24;
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = SoundID.Item15;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
 
             Item.shoot = ModContent.ProjectileType<MountedScannerSummon>();

@@ -35,13 +35,17 @@ namespace CalamityMod
         [DefaultValue(true)]
         public bool Afterimages { get; set; }
 
-        private const int MinParticleLimit = 100;
-        private const float MaxParticleLimit = 1000;
-        
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool NewVanillaTextures { get; set; }
+
+        private const int MinParticleLimit = 500;
+        private const int MaxParticleLimit = 10000;
+
         [BackgroundColor(192, 54, 64, 192)]
         [SliderColor(224, 165, 56, 128)]
         [Range(MinParticleLimit, MaxParticleLimit)]
-        [DefaultValue(500)]
+        [DefaultValue(5000)]
         public int ParticleLimit { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
@@ -49,8 +53,10 @@ namespace CalamityMod
         public bool BossesStopWeather { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool Screenshake { get; set; }
+        [SliderColor(224, 165, 56, 128)]
+        [Range(0f, 10f)]
+        [DefaultValue(1f)]
+        public float ScreenshakePower { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -59,10 +65,6 @@ namespace CalamityMod
 
         #region UI Changes
         [Header("UI")]
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool MusicModReminderMessage { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -155,7 +157,7 @@ namespace CalamityMod
         [Range(0f, 100f)]
         [DefaultValue(SpeedrunTimerUI.DefaultTimerPosY)]
         public float SpeedrunTimerPosY { get; set; }
-        
+
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool FlightBar { get; set; }
@@ -210,6 +212,16 @@ namespace CalamityMod
         [DefaultValue(MinTownNPCSpawnMultiplier)]
         public int TownNPCSpawnRateMultiplier { get; set; }
 
+        private const int MinPlayerRespawnTime_BossAlive = 15;
+        private const int MaxPlayerRespawnTime_BossAlive = 60;
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [Range(MinPlayerRespawnTime_BossAlive, MaxPlayerRespawnTime_BossAlive)]
+        [Increment(1)]
+        [DrawTicks]
+        [DefaultValue(MinPlayerRespawnTime_BossAlive)]
+        public int PlayerRespawnTime_BossAlive { get; set; }
+
         private const float MinBossHealthBoost = 0f;
         private const float MaxBossHealthBoost = 900f;
 
@@ -256,6 +268,10 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool ChilledWaterRework { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool RemoveLavaDropsFromLavaSlimes { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(false)]

@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.velocity = Main.MouseWorld - player.Center;
                 Projectile.velocity.Normalize();
             }
-            player.direction = Projectile.direction;
+            player.ChangeDir(Projectile.direction);
             player.heldProj = Projectile.whoAmI;
             Projectile.Center = player.Center;
             Projectile.position.Y -= 44;
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Main.myPlayer == Projectile.owner)
             {
-                if (!player.channel || player.noItems || player.CCed)
+                if (player.CantUseHoldout())
                 {
                     AttemptExecuteAttacks(player);
                     Projectile.Kill();
@@ -107,8 +107,9 @@ namespace CalamityMod.Projectiles.Rogue
                                                  Projectile.owner);
                         Main.projectile[stealth].Calamity().stealthStrike = true;
                         player.Calamity().ConsumeStealthByAttacking();
-                        Main.player[Projectile.owner].immuneNoBlink = true;
-                        Main.player[Projectile.owner].immuneTime += 20; //Adding iframes in case they get hit before the dash so those iframes are not wasted
+                        //This seems to have stopped working while testing somehow, even without changing Main[projectileOwner] to player
+                        player.immuneNoBlink = true;
+                        player.immuneTime += 20; //Adding iframes in case they get hit before the dash so those iframes are not wasted
                     }
                     else
                     {
@@ -155,9 +156,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnProjectile_Glow").Value;
-            int height = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            int height = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int yStart = height * Projectile.frame;
             Main.spriteBatch.Draw(scytheTexture,
                                   Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,

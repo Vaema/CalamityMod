@@ -15,8 +15,8 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.width = 42;
-            Item.height = 48;
+            Item.width = 38;
+            Item.height = 50;
             Item.useTurn = true;
             Item.maxStack = 9999;
             Item.useAnimation = 17;
@@ -28,6 +28,12 @@ namespace CalamityMod.Items.Potions.Alcohol
             Item.buffType = ModContent.BuffType<Trippy>();
             Item.buffTime = CalamityUtils.SecondsToFrames(3600f);
             Item.value = Item.buyPrice(0, 50, 0, 0);
+        }
+
+        public override void OnConsumeItem(Player player)
+        {
+            if (player.Calamity().trippyLevel < 3)
+                player.Calamity().trippyLevel++;
         }
     }
 }

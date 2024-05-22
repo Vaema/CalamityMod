@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Armor.Tarragon
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.defense = 3; //98
             Item.rare = ModContent.RarityType<Turquoise>();
         }
@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Armor.Tarragon
 
         public override void UpdateEquip(Player player)
         {
-            player.endurance += 0.05f;
+            player.endurance += 0.1f;
             player.GetDamage<SummonDamageClass>() += 0.05f;
         }
 

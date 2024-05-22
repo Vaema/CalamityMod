@@ -15,19 +15,19 @@ namespace CalamityMod.Items.Weapons.Magic
         public const int FlameSplitCount = 6;
         public override void SetStaticDefaults()
         {
-                       Item.staff[Item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
+            Item.width = 102;
+            Item.height = 112;
             Item.damage = 166;
             Item.knockBack = 4.25f;
             Item.shootSpeed = 23.5f;
             Item.DamageType = DamageClass.Magic;
             Item.noMelee = true;
             Item.mana = 12;
-            Item.width = 102;
-            Item.height = 112;
             Item.useTime = Item.useAnimation = 21;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;

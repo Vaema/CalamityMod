@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i < 20; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 49, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.75f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Mythril, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.75f);
             }
         }
 

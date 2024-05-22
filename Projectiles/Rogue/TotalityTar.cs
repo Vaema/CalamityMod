@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -80,20 +80,20 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
             Vector2 vector2 = new Vector2(20f, 20f);
             for (int index = 0; index < 3; ++index)
-                Dust.NewDust(Projectile.Center - vector2 / 2f, (int) vector2.X, (int) vector2.Y, 191, 0.0f, 0.0f, 0, Color.Red, 1f);
+                Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.SpookyWood, 0.0f, 0.0f, 0, Color.Red, 1f);
             for (int index1 = 0; index1 < 5; ++index1)
             {
-                int index2 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int) vector2.X, (int) vector2.Y, 31, 0.0f, 0.0f, 100, new Color(), 1.5f);
+                int index2 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Smoke, 0.0f, 0.0f, 100, new Color(), 1.5f);
                 Dust dust = Main.dust[index2];
                 dust.velocity *= 1.4f;
             }
             for (int index1 = 0; index1 < 10; ++index1)
             {
-                int index2 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int) vector2.X, (int) vector2.Y, 6, 0.0f, 0.0f, 100, new Color(), 2.5f);
+                int index2 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 2.5f);
                 Dust dust1 = Main.dust[index2];
                 dust1.noGravity = true;
                 dust1.velocity *= 5f;
-                int index3 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int) vector2.X, (int) vector2.Y, 6, 0.0f, 0.0f, 100, new Color(), 1.5f);
+                int index3 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 1.5f);
                 Dust dust2 = Main.dust[index3];
                 dust2.velocity *= 3f;
             }

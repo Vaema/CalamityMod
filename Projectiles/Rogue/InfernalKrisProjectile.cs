@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -39,12 +39,12 @@ namespace CalamityMod.Projectiles.Rogue
 
                 float minScale = 1.9f;
                 float maxScale = 2.5f;
-                int dust = Dust.NewDust(Projectile.position - new Vector2(10, 10), 30, 30, 6, Projectile.velocity.X, Projectile.velocity.Y, 0, default, Main.rand.NextFloat(minScale, maxScale));
+                int dust = Dust.NewDust(Projectile.position - new Vector2(10, 10), 30, 30, DustID.Torch, Projectile.velocity.X, Projectile.velocity.Y, 0, default, Main.rand.NextFloat(minScale, maxScale));
                 Main.dust[dust].noGravity = true;
             }
             else
             {
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 0.785f;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             }
 
             Projectile.velocity.Y += 0.01f;
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int debuffTime = 60 * (Projectile.Calamity().stealthStrike ? Main.rand.Next(4,8) : Main.rand.Next(3,6));
+            int debuffTime = 60 * (Projectile.Calamity().stealthStrike ? Main.rand.Next(4, 8) : Main.rand.Next(3, 6));
             target.AddBuff(BuffID.OnFire, debuffTime);
 
             if (Projectile.Calamity().stealthStrike)
@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            int debuffTime = 60 * (Projectile.Calamity().stealthStrike ? Main.rand.Next(4,8) : Main.rand.Next(3,6));
+            int debuffTime = 60 * (Projectile.Calamity().stealthStrike ? Main.rand.Next(4, 8) : Main.rand.Next(3, 6));
             target.AddBuff(BuffID.OnFire, debuffTime);
 
             if (Projectile.Calamity().stealthStrike)
@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                 float minScale = 1.9f;
                 float maxScale = 2.5f;
-                int dust = Dust.NewDust(Projectile.position, 10, 10, 6, Projectile.velocity.X, Projectile.velocity.Y, 0, default, Main.rand.NextFloat(minScale, maxScale));
+                int dust = Dust.NewDust(Projectile.position, 10, 10, DustID.Torch, Projectile.velocity.X, Projectile.velocity.Y, 0, default, Main.rand.NextFloat(minScale, maxScale));
                 Main.dust[dust].noGravity = true;
             }
             else

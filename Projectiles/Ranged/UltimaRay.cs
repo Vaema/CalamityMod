@@ -1,8 +1,9 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
@@ -49,6 +50,10 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 240);
+        }
         public override bool ShouldUpdatePosition() => false;
     }
 }

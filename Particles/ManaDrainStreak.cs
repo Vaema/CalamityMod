@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Particles
 {
@@ -44,7 +44,7 @@ namespace CalamityMod.Particles
 
             Vector2 setPosition = OverridePosition != default ? OverridePosition : Owner.MountedCenter;
             Position = setPosition + Rotation.ToRotationVector2() * MathHelper.Lerp(StartDistanceFromPlayer, FinalDistanceFromPlayer, (float)Math.Pow(LifetimeCompletion, 2));
-            Color = Color.Lerp(StartColor, FadeOut ? EndColor with {A = 0} : EndColor, LifetimeCompletion);
+            Color = Color.Lerp(StartColor, FadeOut ? EndColor with { A = 0 } : EndColor, LifetimeCompletion);
             Lighting.AddLight(Position, Color.ToVector3() * 0.2f);
         }
 

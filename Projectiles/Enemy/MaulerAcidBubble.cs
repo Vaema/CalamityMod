@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item54, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item54, Projectile.Center);
         }
     }
 }

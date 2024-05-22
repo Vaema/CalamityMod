@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Dusts;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -24,18 +24,18 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            int num154 = 14;
+            int constant = 14;
             int coolDust;
             Projectile.ai[0] += 1;
             if (Projectile.ai[0] % 2 == 0)
             {
                 if (Projectile.ai[0] % 4 == 0)
                 {
-                    coolDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width - num154 * 2, Projectile.height - num154 * 2, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
+                    coolDust = Dust.NewDust(Projectile.position, Projectile.width - constant * 2, Projectile.height - constant * 2, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
                 }
                 else
                 {
-                    coolDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width - num154 * 2, Projectile.height - num154 * 2, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
+                    coolDust = Dust.NewDust(Projectile.position, Projectile.width - constant * 2, Projectile.height - constant * 2, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
                 }
                 Main.dust[coolDust].noGravity = true;
                 Main.dust[coolDust].velocity *= 0.1f;
@@ -54,15 +54,15 @@ namespace CalamityMod.Projectiles.Rogue
                 float maxDistance = 500f;
                 bool homeIn = false;
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].CanBeChasedBy(Projectile, false))
+                    if (n.CanBeChasedBy(Projectile, false))
                     {
-                        float extraDistance = (float)(Main.npc[i].width / 2) + (float)(Main.npc[i].height / 2);
+                        float extraDistance = (float)(n.width / 2) + (float)(n.height / 2);
 
-                        if (Vector2.Distance(Main.npc[i].Center, Projectile.Center) < (maxDistance + extraDistance) && Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1))
+                        if (Vector2.Distance(n.Center, Projectile.Center) < (maxDistance + extraDistance) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
                         {
-                            center = Main.npc[i].Center;
+                            center = n.Center;
                             homeIn = true;
                             break;
                         }
@@ -92,14 +92,14 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.width = Projectile.height = 24;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            int num226 = 36;
-            for (int num227 = 0; num227 < num226; num227++)
+            int otherConstant = 36;
+            for (int j = 0; j < otherConstant; j++)
             {
-                Vector2 vector6 = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                vector6 = vector6.RotatedBy((double)((float)(num227 - (num226 / 2 - 1)) * 6.28318548f / (float)num226), default) + Projectile.Center;
-                Vector2 vector7 = vector6 - Projectile.Center;
-                int num228 = Dust.NewDust(vector6 + vector7, 0, 0, ModContent.DustType<AstralOrange>(), vector7.X * 0.5f, vector7.Y * 0.5f, 100, default, 0.75f);
-                Main.dust[num228].noGravity = true;
+                Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
+                rotate = rotate.RotatedBy((double)((float)(j - (otherConstant / 2 - 1)) * 6.28318548f / (float)otherConstant), default) + Projectile.Center;
+                Vector2 facingDirection = rotate - Projectile.Center;
+                int dusty = Dust.NewDust(rotate + facingDirection, 0, 0, ModContent.DustType<AstralOrange>(), facingDirection.X * 0.5f, facingDirection.Y * 0.5f, 100, default, 0.75f);
+                Main.dust[dusty].noGravity = true;
             }
         }
 

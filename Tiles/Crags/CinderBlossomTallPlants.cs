@@ -20,9 +20,9 @@ namespace CalamityMod.Tiles.Crags
             Main.tileLavaDeath[Type] = true;
             Main.tileWaterDeath[Type] = true;
             Main.tileFrameImportant[Type] = true;
-			TileID.Sets.ReplaceTileBreakUp[Type] = true;
-			TileID.Sets.SwaysInWindBasic[Type] = true;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+            TileID.Sets.ReplaceTileBreakUp[Type] = true;
+            TileID.Sets.SwaysInWindBasic[Type] = true;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
             TileObjectData.addTile(Type);
@@ -40,9 +40,9 @@ namespace CalamityMod.Tiles.Crags
             height = 48;
         }
 
-        public override void KillMultiTile(int i, int j, int frameX, int frameY) 
+        public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            if (Main.rand.Next(20) == 0)
+            if (Main.rand.NextBool(20))
             {
                 Item.NewItem(new EntitySource_TileBreak(i, j), new Vector2(i, j) * 16f, ModContent.ItemType<Items.Placeables.CinderBlossomSeeds>());
             }

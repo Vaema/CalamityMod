@@ -20,10 +20,10 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
-            Item.damage = 2130;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 130;
             Item.height = 42;
+            Item.damage = 2130;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.channel = true;
@@ -44,10 +44,15 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void HoldItem(Player player)
         {
-            if (Main.myPlayer == player.whoAmI)
-                player.Calamity().rightClickListener = true;
+            var calPlayer = player.Calamity();
 
-            if (player.Calamity().mouseRight && player.ownedProjectileCounts[ModContent.ProjectileType<CondemnationHoldout>()] <= 0)
+            if (Main.myPlayer == player.whoAmI)
+            {
+                calPlayer.rightClickListener = true;
+                calPlayer.mouseRotationListener = true;
+            }
+
+            if (calPlayer.mouseRight && player.ownedProjectileCounts[ModContent.ProjectileType<CondemnationHoldout>()] <= 0)
             {
                 Item.noUseGraphic = false;
             }

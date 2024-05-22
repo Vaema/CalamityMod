@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Summon
             SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
             for (int index1 = 0; index1 < 3; ++index1)
             {
-                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 76);
+                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Snow);
                 Main.dust[index2].noGravity = true;
                 Main.dust[index2].noLight = true;
                 Main.dust[index2].scale = 0.7f;

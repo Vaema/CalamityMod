@@ -1,8 +1,9 @@
-using Microsoft.Xna.Framework;
-using System.IO;
-using Terraria;
-using Terraria.ModLoader;
+﻿using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -54,7 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < (Projectile.ai[0] == 1f ? 3 : 1); i++)
                 {
-                    Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, 27);
+                    Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, DustID.Shadowflame);
                     dust.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi);
                     dust.noGravity = true;
                 }

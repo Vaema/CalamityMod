@@ -58,6 +58,11 @@ MoscowMuleBuff: {
 	Description: Damage, critical strike chance, and knockback increased, life regen reduced
 }
 
+OldFashionedBuff: {
+	DisplayName: Old Fashioned
+	Description: Accessory and set bonus damage multiplied, damage reduced
+}
+
 RedWineBuff: {
 	DisplayName: Red Wine
 	Description: Life regen reduced
@@ -629,7 +634,7 @@ AbyssalMadness: {
 
 AdrenalineMode: {
 	DisplayName: Adrenaline Mode
-	Description: Total damage multiplied by 3x. Can be boosted by other items up to 3.45x
+	Description: Total damage multiplied by 2.5x. Can be boosted by other items up to 3.1x
 }
 
 Afflicted: {
@@ -667,15 +672,6 @@ BloodflareBloodFrenzy: {
 	Description: Contact damage is reduced and melee stats are greatly increased
 }
 
-BloodyBoost: {
-	DisplayName: Bloody Boost
-	Description:
-		'''
-		Increased offensive and defensive stats
-		Healing potions grant more health
-		'''
-}
-
 BossEffects: {
 	DisplayName: Boss Effects
 	Description:
@@ -690,6 +686,11 @@ BossEffects: {
 BrimflameFrenzyBuff: {
 	DisplayName: Brimflame Frenzy
 	Description: Dark magic empowers your attacks at the cost of your life
+}
+
+BrutalCarnage: {
+	DisplayName: Brutal Carnage
+	Description: 20% increased melee damage
 }
 
 ChiBuff: {
@@ -752,6 +753,11 @@ HallowedRuneRegeneration: {
 	Description: Regenerating life
 }
 
+Haste: {
+	DisplayName: Haste
+	Description: Increased movement speed and acceleration
+}
+
 IceShieldBuff: {
 	DisplayName: Ice Shield
 	Description: Absorbs 20% damage from the next hit you take, then shatters
@@ -784,11 +790,6 @@ PhantomicShield: {
 		Defense increased by 10 and damage reduction increased by 5%
 		An ephemeral bulwark protects you
 		'''
-}
-
-PolarisBuff: {
-	DisplayName: Polaris Boost
-	Description: The Northern Star empowers your life regeneration
 }
 
 ProfanedCrystalBuff: {
@@ -866,11 +867,6 @@ TarragonImmunity: {
 TarraLifeRegen: {
 	DisplayName: Tarra Life
 	Description: Rapid healing
-}
-
-TyrantsFury: {
-	DisplayName: Tyrant's Fury
-	Description: 30% increased melee damage and 10% increased melee crit chance
 }
 
 AndromedaCripple: {
@@ -1048,11 +1044,6 @@ BelladonnaSpiritBuff: {
 BlackHawkBuff: {
 	DisplayName: Black Hawk
 	Description: The fighter jet will protect you
-}
-
-BloodClot: {
-	DisplayName: Blood Clot
-	Description: The blood clot will protect you
 }
 
 BrimseekerBuff: {
@@ -1521,6 +1512,11 @@ AbsorberAffliction: {
 }
 
 YoungDukeBuff: {
-	DisplayName: Young Duke Buff
-	Description: Mods.CalamityMod.Buffs.YoungDukeBuff.Description
+	DisplayName: Baby Boomer
+	Description: The mutated fishron will intoxicate your foes
+}
+
+LiliesOfFinalityBuff: {
+	DisplayName: Finality
+	Description: Remember our promise
 }

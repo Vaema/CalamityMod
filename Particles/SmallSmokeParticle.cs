@@ -45,7 +45,7 @@ namespace CalamityMod.Particles
             if (Opacity < 0)
                 Kill();
 
-            Color = Color.Lerp(ColorFire, ColorFade, MathHelper.Clamp((float)((255 -Opacity) - 100) / 80, 0f, 1f)) * (Opacity / 255f);
+            Color = Color.Lerp(ColorFire, ColorFade, MathHelper.Clamp((float)((255 - Opacity) - 100) / 80, 0f, 1f)) * (Opacity / 255f);
 
         }
     }

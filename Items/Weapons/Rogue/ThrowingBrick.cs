@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,15 +11,15 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-                       Item.ResearchUnlockCount = 99;
+            Item.ResearchUnlockCount = 99;
         }
         public override void SetDefaults()
         {
+            Item.width = 28;
+            Item.height = 20;
             Item.damage = 17;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<Brick>();
-            Item.width = 28;
-            Item.height = 20;
             Item.useTime = Item.useAnimation = 35;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5f;

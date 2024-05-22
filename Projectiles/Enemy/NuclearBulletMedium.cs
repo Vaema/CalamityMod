@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
-using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Enemy
@@ -57,10 +57,10 @@ namespace CalamityMod.Projectiles.Enemy
         {
             for (int i = 0; i <= 2; i++)
             {
-                int idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 0.75f);
+                int idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 0.75f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 3f;
-                idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 0.75f);
+                idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 0.75f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 3f;
             }

@@ -24,15 +24,7 @@ namespace CalamityMod.Skies
             {
                 return;
             }
-            SCalIndex = -1;
-            for (int i = 0; i < Main.npc.Length; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == SCalType)
-                {
-                    SCalIndex = i;
-                    break;
-                }
-            }
+            SCalIndex = NPC.FindFirstNPC(SCalType);
         }
 
         public override void Update(GameTime gameTime)
@@ -54,8 +46,6 @@ namespace CalamityMod.Skies
 
                 if (Main.npc[SCalIndex].ModNPC<SupremeCalamitas>().cirrus)
                     Filters.Scene["CalamityMod:SupremeCalamitas"].GetShader().UseColor(0.9f, 0.3f, 0.9f);
-                else
-                    Filters.Scene["CalamityMod:SupremeCalamitas"].GetShader().UseColor(1.1f, 0.3f, 0.3f);
             }
             base.Apply();
         }

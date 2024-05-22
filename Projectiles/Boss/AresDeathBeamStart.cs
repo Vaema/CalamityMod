@@ -1,4 +1,7 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.Other;
@@ -7,9 +10,6 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

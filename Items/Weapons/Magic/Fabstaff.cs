@@ -19,18 +19,18 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = 84;
+            Item.height = 84;
             Item.damage = 125;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 50;
-            Item.width = 84;
-            Item.height = 84;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
 
@@ -40,12 +40,12 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 13.5f;
         }
 
-        
+
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.RainbowRod).
-                AddIngredient<Polterplasm>(10).
+                AddIngredient<Necroplasm>(10).
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();

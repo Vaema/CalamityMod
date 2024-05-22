@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public Player Owner => Main.player[Projectile.owner];
         private static float ExplosionRadius = 85f;
-        public static readonly SoundStyle Slap = new("CalamityMod/Sounds/Custom/WetSlap", 4) { Volume = 0.8f, PitchVariance = 0.3f};
+        public static readonly SoundStyle Slap = new("CalamityMod/Sounds/Custom/WetSlap", 4) { Volume = 0.8f, PitchVariance = 0.3f };
 
         public override void SetDefaults()
         {
@@ -40,8 +40,8 @@ namespace CalamityMod.Projectiles.Typeless
                 target.velocity.X += 4.2f * Owner.direction;
             }
             target.AddBuff(BuffID.Wet, 300);
-            target.AddBuff(ModContent.BuffType<Buffs.DamageOverTime.RiptideDebuff>(), 60);
-            SoundEngine.PlaySound(SoundID.Item85 with { Volume = 0.6f, PitchVariance = 0.4f }, Projectile.Center);
+            target.AddBuff(ModContent.BuffType<Buffs.DamageOverTime.RiptideDebuff>(), 180);
+            SoundEngine.PlaySound(SoundID.Item85 with { Volume = 0.4f, PitchVariance = 0.4f }, Projectile.Center);
             for (int i = 0; i < 3; ++i)
             {
                 int bloodLifetime = Main.rand.Next(20, 26);

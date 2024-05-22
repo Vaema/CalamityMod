@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
@@ -7,8 +9,7 @@ using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -31,14 +32,32 @@ namespace CalamityMod.NPCs.DevourerofGods
             phase2IconIndex = ModContent.GetModBossHeadSlot(phase2IconPath);
         }
 
+        private const float LaserVelocityMultiplierMin = 0.5f;
+
+        private const float LaserVelocityDistanceMultiplier = LaserVelocityMultiplierMin * 0.05f;
+
         private int invinceTime = 360;
         private bool setOpacity = false;
         private bool phase2Started = false;
         public int SegmentIndex;
+
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> Phase2Texture;
+        public static Asset<Texture2D> Phase2Texture_Glow;
+        public static Asset<Texture2D> Phase2Texture_Glow2;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.DevourerofGodsHead.DisplayName");
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            if (!Main.dedServ)
+            {
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                Phase2Texture = ModContent.Request<Texture2D>(Texture + "S", AssetRequestMode.AsyncLoad);
+                Phase2Texture_Glow = ModContent.Request<Texture2D>(Texture + "SGlow", AssetRequestMode.AsyncLoad);
+                Phase2Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "SGlow2", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -55,7 +74,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 global.DR = 0.925f;
                 global.unbreakableDR = true;
                 NPC.chaseable = false;
-                NPC.canGhostHeal = false;
             }
             NPC.LifeMaxNERB(887500, 1065000, 1500000); // Phase 1 is 355000, Phase 2 is 532500
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
@@ -140,7 +158,10 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.life > Main.npc[(int)NPC.ai[1]].life)
                 NPC.life = Main.npc[(int)NPC.ai[1]].life;
 
-            bool phase2 = NPC.life / (float)NPC.lifeMax < 0.6f;
+            // Percent life remaining
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+
+            bool phase2 = lifeRatio < 0.6f;
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
@@ -185,15 +206,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             Player player = Main.player[NPC.target];
 
             // Check if other segments are still alive, if not, die
-            bool shouldDespawn = true;
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<DevourerofGodsHead>())
-                {
-                    shouldDespawn = false;
-                    break;
-                }
-            }
+            bool shouldDespawn = !NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>());
             if (!shouldDespawn)
             {
                 if (NPC.ai[1] <= 0f)
@@ -232,9 +245,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 {
                                     NPC.TargetClosest();
                                     SoundEngine.PlaySound(SoundID.Item12, player.Center);
-                                    float maxProjectileVelocity = bossRush ? 20f : death ? 16f : revenge ? 14.25f : expertMode ? 13.5f : 12f;
-                                    float minProjectileVelocity = maxProjectileVelocity * 0.25f;
-                                    float projectileVelocity = MathHelper.Clamp(Vector2.Distance(player.Center, NPC.Center) * 0.01f, minProjectileVelocity, maxProjectileVelocity);
+                                    float maxProjectileVelocity = bossRush ? 24f : death ? 20f : revenge ? 18.25f : expertMode ? 17.5f : 16f;
+                                    float minProjectileVelocity = maxProjectileVelocity * LaserVelocityMultiplierMin;
+                                    float projectileVelocity = MathHelper.Clamp(Vector2.Distance(player.Center, NPC.Center) * LaserVelocityDistanceMultiplier, minProjectileVelocity, maxProjectileVelocity);
                                     Vector2 velocityVector = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
                                     int type = ModContent.ProjectileType<DoGDeath>();
                                     int damage = NPC.GetProjectileDamage(type);
@@ -257,9 +270,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 NPC.TargetClosest();
                                 SoundEngine.PlaySound(SoundID.Item12, player.Center);
                                 NPC.localAI[0] = 0f;
-                                float maxProjectileVelocity = bossRush ? 18f : death ? 14f : revenge ? 12.25f : expertMode ? 11.5f : 10f;
-                                float minProjectileVelocity = maxProjectileVelocity * 0.25f;
-                                float projectileVelocity = MathHelper.Clamp(Vector2.Distance(player.Center, NPC.Center) * 0.01f, minProjectileVelocity, maxProjectileVelocity);
+                                float maxProjectileVelocity = bossRush ? 22f : death ? 18f : revenge ? 16.25f : expertMode ? 15.5f : 14f;
+                                float minProjectileVelocity = maxProjectileVelocity * LaserVelocityMultiplierMin;
+                                float projectileVelocity = MathHelper.Clamp(Vector2.Distance(player.Center, NPC.Center) * LaserVelocityDistanceMultiplier, minProjectileVelocity, maxProjectileVelocity);
                                 Vector2 velocityVector = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
                                 int type = ModContent.ProjectileType<DoGDeath>();
                                 int damage = NPC.GetProjectileDamage(type);
@@ -330,13 +343,34 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.rotation = directionToNextSegment.ToRotation() + MathHelper.PiOver2;
             NPC.Center = aheadSegment.Center - directionToNextSegment.SafeNormalize(Vector2.Zero) * NPC.scale * NPC.width;
             NPC.spriteDirection = (directionToNextSegment.X > 0).ToDirectionInt();
+
+            // Velocity variables
+            float segmentVelocity = bossRush ? 19f : death ? 17.5f : 16f;
+            if (expertMode)
+                segmentVelocity += 4f * (1f - lifeRatio);
+            if (Main.getGoodWorld)
+                segmentVelocity *= 1.1f;
+
+            // Calculate contact damage based on velocity
+            float minimalContactDamageVelocity = segmentVelocity * 0.25f;
+            float minimalDamageVelocity = segmentVelocity * 0.5f;
+            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            {
+                NPC.damage = 0;
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
+            }
         }
 
         private bool AnyTeleportRifts()
         {
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].type == ModContent.ProjectileType<DoGTeleportRift>())
+                if (p.type == ModContent.ProjectileType<DoGTeleportRift>())
                     return true;
             }
             return false;
@@ -364,28 +398,28 @@ namespace CalamityMod.NPCs.DevourerofGods
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             bool useOtherTextures = phase2Started && Main.npc[(int)NPC.ai[2]].localAI[2] <= 60f;
-            Texture2D texture2D15 = useOtherTextures ? ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsBodyS").Value : TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector11 = new Vector2(texture2D15.Width / 2, texture2D15.Height / 2);
+            Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[NPC.type].Value;
+            Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / 2);
 
-            Vector2 vector43 = NPC.Center - screenPos;
-            vector43 -= new Vector2(texture2D15.Width, texture2D15.Height) * NPC.scale / 2f;
-            vector43 += vector11 * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture2D15, vector43, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+            Vector2 drawLocation = NPC.Center - screenPos;
+            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height) * NPC.scale / 2f;
+            drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             if (!NPC.dontTakeDamage)
             {
                 if (useOtherTextures)
                 {
-                    texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsBodySGlow").Value;
-                    Color color36 = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
+                    texture2D15 = Phase2Texture_Glow.Value;
+                    Color glowmaskColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
 
-                    spriteBatch.Draw(texture2D15, vector43, NPC.frame, color36, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+                    spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
 
-                texture2D15 = useOtherTextures ? ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsBodySGlow2").Value : ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsBodyGlow").Value;
-                Color color37 = Color.Lerp(Color.White, Color.Cyan, 0.5f);
+                texture2D15 = useOtherTextures ? Phase2Texture_Glow2.Value : Texture_Glow.Value;
+                Color glowmaskColor2 = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
-                spriteBatch.Draw(texture2D15, vector43, NPC.frame, color37, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
+                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor2, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
 
             if (disintegrationFactor > 0f)
@@ -400,18 +434,18 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             Rectangle targetHitbox = target.Hitbox;
 
-            float dist1 = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
-            float dist2 = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
-            float dist3 = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
-            float dist4 = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
+            float hitboxTopLeft = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
+            float hitboxTopRight = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
+            float hitboxBotLeft = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
+            float hitboxBotRight = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
 
-            float minDist = dist1;
-            if (dist2 < minDist)
-                minDist = dist2;
-            if (dist3 < minDist)
-                minDist = dist3;
-            if (dist4 < minDist)
-                minDist = dist4;
+            float minDist = hitboxTopLeft;
+            if (hitboxTopRight < minDist)
+                minDist = hitboxTopRight;
+            if (hitboxBotLeft < minDist)
+                minDist = hitboxBotLeft;
+            if (hitboxBotRight < minDist)
+                minDist = hitboxBotRight;
 
             return minDist <= (phase2Started ? 55f : 40f) * NPC.scale && NPC.Opacity >= 1f && invinceTime <= 0;
         }
@@ -478,30 +512,30 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.height = (int)(100 * NPC.scale);
                 NPC.position.X = NPC.position.X - (NPC.width / 2);
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
-                for (int num621 = 0; num621 < 10; num621++)
+                for (int i = 0; i < 10; i++)
                 {
-                    int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
-                    Main.dust[num622].velocity *= 3f;
+                    int cosmiliteDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    Main.dust[cosmiliteDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
-                        Main.dust[num622].scale = 0.5f;
-                        Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                        Main.dust[cosmiliteDust].scale = 0.5f;
+                        Main.dust[cosmiliteDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                     }
                 }
-                for (int num623 = 0; num623 < 20; num623++)
+                for (int j = 0; j < 20; j++)
                 {
-                    int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
-                    Main.dust[num624].noGravity = true;
-                    Main.dust[num624].velocity *= 5f;
-                    num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
-                    Main.dust[num624].velocity *= 2f;
+                    int cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
+                    Main.dust[cosmiliteDust2].noGravity = true;
+                    Main.dust[cosmiliteDust2].velocity *= 5f;
+                    cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    Main.dust[cosmiliteDust2].velocity *= 2f;
                 }
             }
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 

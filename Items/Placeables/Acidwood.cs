@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureAcidwood;
+using CalamityMod.Items.Placeables.Walls;
 using CalamityMod.Tiles.Abyss;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Placeables.Walls;
 
 namespace CalamityMod.Items.Placeables
 {
@@ -29,10 +29,10 @@ namespace CalamityMod.Items.Placeables
             Item.createTile = ModContent.TileType<AcidwoodTile>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Wood;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Wood;
+        }
 
         public override void AddRecipes()
         {

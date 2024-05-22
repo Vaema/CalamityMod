@@ -1,7 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,18 +13,17 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 11;
-            Item.mana = 10;
             Item.width = 32;
             Item.height = 32;
+            Item.damage = 11;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 35;
-            Item.scale = 0.75f;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.UseSound = SoundID.NPCDeath34;
+            Item.UseSound = Stormlion.DeathSound;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<StormjawBaby>();
             Item.shootSpeed = 10f;

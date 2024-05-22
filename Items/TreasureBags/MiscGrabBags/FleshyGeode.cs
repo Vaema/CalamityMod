@@ -17,17 +17,17 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 
         public override void SetDefaults()
         {
-            Item.maxStack = 9999;
-            Item.consumable = true;
             Item.width = 24;
             Item.height = 24;
+            Item.maxStack = 9999;
+            Item.consumable = true;
             Item.rare = ItemRarityID.Yellow;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
+        }
 
         public override bool CanRightClick() => true;
 

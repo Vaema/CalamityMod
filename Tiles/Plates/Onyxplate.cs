@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ModLoader;
 using Terraria.ID;
-using ReLogic.Content;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Plates
 {

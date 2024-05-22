@@ -2,6 +2,7 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -24,7 +25,7 @@ namespace CalamityMod.Items.Armor.Silva
         {
             Item.width = 28;
             Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 13; //110
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
@@ -55,7 +56,10 @@ namespace CalamityMod.Items.Armor.Silva
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<SilvaCrystal>()] < 1)
                 {
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(600);
+                    // 08DEC2023: Ozzatron: Silva Crystals spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(600);
+                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+
                     var p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
                     if (Main.projectile.IndexInRange(p))
                         Main.projectile[p].originalDamage = 600;

@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Enums;
@@ -203,7 +203,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float beamLength = Projectile.ai[0];
             Vector2 centerFloored = Projectile.Center.Floor() + Projectile.velocity * Projectile.scale * BeamRenderTileOffset;
             Vector2 scaleVec = new Vector2(Projectile.scale);

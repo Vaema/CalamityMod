@@ -15,11 +15,11 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = 120;
+            Item.height = 124;
             Item.damage = 510;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 60;
-            Item.width = 120;
-            Item.height = 124;
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<NebulousCataclysm_Held>();

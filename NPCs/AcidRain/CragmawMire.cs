@@ -9,8 +9,10 @@ using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -51,11 +53,16 @@ namespace CalamityMod.NPCs.AcidRain
                 return NPC.life / (float)NPC.lifeMax < phase2CeilingRatio && DownedBossSystem.downedPolterghast;
             }
         }
+        public static Asset<Texture2D> Phase2Texture;
 
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 2;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
+            if (!Main.dedServ)
+            {
+                Phase2Texture = ModContent.Request<Texture2D>(Texture + "2", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -94,9 +101,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CragmawMire")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CragmawMire")
             });
         }
 
@@ -184,7 +191,7 @@ namespace CalamityMod.NPCs.AcidRain
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int damage = DownedBossSystem.downedPolterghast ? 52 : 33;
+                    int damage = DownedBossSystem.downedPolterghast ? (Main.masterMode ? 35 : Main.expertMode ? 42 : 52) : (Main.masterMode ? 22 : Main.expertMode ? 26 : 33);
                     float shootOffsetAngle = Main.rand.NextFloat(MathHelper.TwoPi);
                     for (int i = 0; i < spikesPerBurst; i++)
                     {
@@ -290,7 +297,7 @@ namespace CalamityMod.NPCs.AcidRain
                             SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, NPC.Center);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int nukeDamage = DownedBossSystem.downedPolterghast ? 72 : 38;
+                                int nukeDamage = DownedBossSystem.downedPolterghast ? (Main.masterMode ? 49 : Main.expertMode ? 58 : 72) : (Main.masterMode ? 25 : Main.expertMode ? 30 : 38);
                                 int dropletDamage = (int)(nukeDamage * 0.6f);
                                 int explosion = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<CragmawExplosion>(), nukeDamage, 0f);
                                 if (Main.projectile.IndexInRange(explosion))
@@ -416,7 +423,7 @@ namespace CalamityMod.NPCs.AcidRain
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int laserbeamDamage = DownedBossSystem.downedPolterghast ? 120 : 40;
+                            int laserbeamDamage = DownedBossSystem.downedPolterghast ? (Main.masterMode ? 81 : Main.expertMode ? 96 : 120) : (Main.masterMode ? 27 : Main.expertMode ? 32 : 40);
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, -Vector2.UnitY, ModContent.ProjectileType<CragmawBeam>(), laserbeamDamage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                         }
                     }
@@ -467,7 +474,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = InPhase2 ? ModContent.Request<Texture2D>("CalamityMod/NPCs/AcidRain/CragmawMire2").Value : ModContent.Request<Texture2D>("CalamityMod/NPCs/AcidRain/CragmawMire").Value;
+            Texture2D texture = InPhase2 ? Phase2Texture.Value : TextureAssets.Npc[Type].Value;
             Main.EntitySpriteDraw(texture, NPC.Center - screenPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, 0, 0);
             return false;
         }
@@ -484,7 +491,7 @@ namespace CalamityMod.NPCs.AcidRain
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
                 if (Main.netMode != NetmodeID.Server)
@@ -512,7 +519,7 @@ namespace CalamityMod.NPCs.AcidRain
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             // If post-Polter, the drop rates are 10%. Otherwise they're 100%.
-			// This is accomplished by adding rules if the CONDITION "Post-Polter" fails.
+            // This is accomplished by adding rules if the CONDITION "Post-Polter" fails.
             LeadingConditionRule postPolter = npcLoot.DefineConditionalDropSet(() => DownedBossSystem.downedPolterghast);
             postPolter.Add(ModContent.ItemType<NuclearFuelRod>(), 10, hideLootReport: !DownedBossSystem.downedPolterghast);
             postPolter.Add(ModContent.ItemType<SpentFuelContainer>(), 10, hideLootReport: !DownedBossSystem.downedPolterghast);

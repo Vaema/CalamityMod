@@ -1,7 +1,9 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Balancing;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -37,16 +39,16 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 int targetIdx = -1;
                 float npcRange = 150f;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].active && Main.npc[i].CanBeChasedBy(Projectile, false))
+                    if (n.CanBeChasedBy(Projectile, false))
                     {
-                        Vector2 npcPos = Main.npc[i].Center;
+                        Vector2 npcPos = n.Center;
                         float npcDist = Vector2.Distance(npcPos, Projectile.Center);
                         if (npcDist < npcRange && targetIdx == -1 && Collision.CanHitLine(Projectile.Center, 1, 1, npcPos, 1, 1))
                         {
                             npcRange = npcDist;
-                            targetIdx = i;
+                            targetIdx = n.whoAmI;
                         }
                     }
                 }
@@ -129,7 +131,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Main.rand.NextBool(12))
             {
                 Vector2 offset = -Vector2.UnitX.RotatedByRandom(0.2).RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 234, 0f, 0f, 100, default, 1f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BoneTorch, 0f, 0f, 100, default, 1f);
                 Main.dust[idx].velocity *= 0.1f;
                 Main.dust[idx].position = Projectile.Center + offset * (float)Projectile.width / 2f + Projectile.velocity * 2f;
                 Main.dust[idx].fadeIn = 0.9f;
@@ -137,7 +139,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Main.rand.NextBool(64))
             {
                 Vector2 offset = -Vector2.UnitX.RotatedByRandom(0.4).RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 234, 0f, 0f, 155, default, 0.8f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BoneTorch, 0f, 0f, 155, default, 0.8f);
                 Main.dust[idx].velocity *= 0.3f;
                 Main.dust[idx].position = Projectile.Center + offset * (float)Projectile.width / 2f;
                 if (Main.rand.NextBool())
@@ -174,7 +176,7 @@ namespace CalamityMod.Projectiles.Typeless
             for (int i = 0; i < 2; i++)
             {
                 int sizeFactor = 14;
-                int idx = Dust.NewDust(Projectile.position, Projectile.width - sizeFactor * 2, Projectile.height - sizeFactor * 2, 263, 0f, 0f, 100, default, 1.35f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width - sizeFactor * 2, Projectile.height - sizeFactor * 2, DustID.PortalBolt, 0f, 0f, 100, default, 1.35f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 0.1f;
                 Main.dust[idx].velocity += Projectile.velocity * 0.5f;
@@ -182,7 +184,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Main.rand.NextBool(8))
             {
                 int sizeFactor = 16;
-                int idx = Dust.NewDust(Projectile.position, Projectile.width - sizeFactor * 2, Projectile.height - sizeFactor * 2, 263, 0f, 0f, 100, default, 1f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width - sizeFactor * 2, Projectile.height - sizeFactor * 2, DustID.PortalBolt, 0f, 0f, 100, default, 1f);
                 Main.dust[idx].velocity *= 0.25f;
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity += Projectile.velocity * 0.5f;
@@ -191,7 +193,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -200,14 +202,18 @@ namespace CalamityMod.Projectiles.Typeless
         {
             target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 480);
 
-            if (!target.canGhostHeal || Main.player[Projectile.owner].moonLeech)
+            Player player = Main.player[Projectile.owner];
+            player.statMana += 25;
+            player.ManaEffect(25);
+
+            int heal = (int)Math.Round(hit.Damage * 0.1);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            Player player = Main.player[Projectile.owner];
-            player.statLife += 1;
-            player.statMana += 25;
-            player.HealEffect(1);
-            player.ManaEffect(25);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<RoyalHeal>(), BalancingConstants.LifeStealRange);
         }
 
         public override void OnKill(int timeLeft)
@@ -221,7 +227,7 @@ namespace CalamityMod.Projectiles.Typeless
             Vector2 value3 = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2();
             Vector2 velocity = value3 * Projectile.velocity.Length() * (float)Projectile.MaxUpdates;
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-			Projectile.ExpandHitboxBy(height);
+            Projectile.ExpandHitboxBy(height);
             Projectile.maxPenetrate = -1;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;

@@ -1,7 +1,7 @@
-﻿using CalamityMod.Rarities;
+﻿using System;
+using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Materials
 
             for (float i = 0; i < 1; i += 0.25f)
             {
-               spriteBatch.Draw(tex, position + (i * MathHelper.TwoPi).ToRotationVector2() * positionOffset, frame, outlineColor, 0f, origin, scale, 0f, 0f);
+                spriteBatch.Draw(tex, position + (i * MathHelper.TwoPi).ToRotationVector2() * positionOffset, frame, outlineColor, 0f, origin, scale, 0f, 0f);
             }
 
             spriteBatch.End();

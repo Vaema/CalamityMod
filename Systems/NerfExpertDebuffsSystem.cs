@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,7 +25,7 @@ namespace CalamityMod.Systems
                 Main.GameMode = Main.GameMode;
             }
             // If people want to suffer, let them suffer
-			else
+            else
             {
                 var copy = Main.RegisteredGameModes[GameModeID.Expert];
                 copy.DebuffTimeMultiplier = 2f;

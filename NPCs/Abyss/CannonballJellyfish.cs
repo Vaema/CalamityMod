@@ -1,10 +1,11 @@
 ﻿using System;
-using CalamityMod.BiomeManagers;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using System.Linq;
+using CalamityMod.BiomeManagers;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Placeables.Banners;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -23,7 +24,7 @@ namespace CalamityMod.NPCs.Abyss
         public bool shouldTarget = false;
         public int boomTimer = -1;
         public int currentFrame = 0;
-        
+
         public const int dyingDuration = 75;
 
         public override void SetStaticDefaults()
@@ -53,13 +54,17 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer1Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CannonballJellyfish")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CannonballJellyfish")
             });
         }
 
@@ -81,7 +86,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => !dying && base.CanHitPlayer(target, ref cooldownSlot);
 
-        private void DyingAI() 
+        private void DyingAI()
         {
             if (boomTimer == 0)
             {
@@ -98,51 +103,51 @@ namespace CalamityMod.NPCs.Abyss
                     Explode();
                     return;
                 }
-                    
+
             }
 
             if (boomTimer == 60 && !shouldTarget) //happens only once
             {
                 NPC.velocity.Y = 0.75f; //sink slowly
             }
-                
 
-            if (shouldTarget) 
+
+            if (shouldTarget)
             {
                 // Get a target
                 if (NPC.target < 0 || !NPC.target.WithinBounds(Main.maxPlayers) || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                     NPC.TargetClosest();
-                
+
                 if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
                     NPC.TargetClosest();
-                
+
                 Player player = Main.player[NPC.target];
-                
+
                 if (boomTimer >= (dyingDuration - 20)) //home for the first 20 frames, not beyond that 
                 {
-                    float num543 = player.position.X + (float)(player.width / 2);
-                    float num544 = player.position.Y + (float)(player.height / 2);
-                    float num550 = 30f;
-                    Vector2 vector43 = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-                    float num551 = num543 - vector43.X;
-                    float num552 = num544 - vector43.Y;
-                    float num553 = (float)Math.Sqrt((double)(num551 * num551 + num552 * num552));
-                    if (num553 < 100f)
+                    float targetXDirection = player.position.X + (float)(player.width / 2);
+                    float targetYDirection = player.position.Y + (float)(player.height / 2);
+                    float homingSpeed = 30f;
+                    Vector2 npcPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
+                    float targetXDist = targetXDirection - npcPosition.X;
+                    float targetYDist = targetYDirection - npcPosition.Y;
+                    float targetDistance = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
+                    if (targetDistance < 100f)
                     {
-                        num550 = 10f; //5
+                        homingSpeed = 10f; //5
                     }
-                    num553 = num550 / num553;
-                    num551 *= num553;
-                    num552 *= num553;
-                    NPC.velocity.X = (NPC.velocity.X * 5f + num551) / 6f;
-                    NPC.velocity.Y = (NPC.velocity.Y * 5f + num552) / 6f;
+                    targetDistance = homingSpeed / targetDistance;
+                    targetXDist *= targetDistance;
+                    targetYDist *= targetDistance;
+                    NPC.velocity.X = (NPC.velocity.X * 5f + targetXDist) / 6f;
+                    NPC.velocity.Y = (NPC.velocity.Y * 5f + targetYDist) / 6f;
 
                     NPC.velocity *= 0.9f; //slow it down a bit to be fair
-                
+
                     NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + 1.57f;
 
                 }
-                
+
 
                 //apparently NPC.wet can return true even when out of water :skull:
                 if (!Collision.DrownCollision(NPC.position, NPC.width, NPC.height) || Collision.SolidCollision(NPC.Center, NPC.width, NPC.height) || NPC.Hitbox.Intersects(player.Hitbox)) //explode when in contact with a tile or target
@@ -155,7 +160,7 @@ namespace CalamityMod.NPCs.Abyss
 
             boomTimer--;
         }
-        
+
         public override void AI()
         {
             NPC.chaseable = !dying && hasBeenHit;
@@ -228,7 +233,7 @@ namespace CalamityMod.NPCs.Abyss
                 NPC.netUpdate = true; //update current frame variable
                 NPC.frameCounter = 0;
             }
-                
+
             NPC.frame.Y = currentFrame * frameHeight;
         }
 
@@ -250,14 +255,14 @@ namespace CalamityMod.NPCs.Abyss
             }
             Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
             var texture = TextureAssets.Npc[NPC.type];
-            Vector2 vector11 = new Vector2((float)(texture.Value.Width / 2), (float)(texture.Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 halfSizeTexture = new Vector2((float)(texture.Value.Width / 2), (float)(texture.Value.Height / Main.npcFrameCount[NPC.type] / 2));
             Vector2 vector = center - screenPos;
-            var glowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/CannonballJellyfishGlow");
+            var glowTexture = TextureAssets.Npc[NPC.type];
             vector -= new Vector2((float)glowTexture.Value.Width, (float)(glowTexture.Value.Height / Main.npcFrameCount[NPC.type])) * 1f / 2f;
-            vector += vector11 * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
+            vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
             Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(new Color(67, 218, 166));
-            Main.spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/CannonballJellyfishGlow").Value, vector,
-                new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, vector11, 1f, spriteEffects, 0f);
+            Main.spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, vector,
+                new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
         }
 
         private void Explode()
@@ -267,8 +272,14 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = NPC.height;
             NPC.position -= NPC.Size * 0.5f; //hitbox expansion + adjustments
             SoundEngine.PlaySound(SoundID.Item14, NPC.Center); //bomb sound
-            foreach (Player player in Main.player.Where(player => player.active && !player.dead && NPC.Hitbox.Intersects(player.Hitbox)))
-                player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage * 3, NPC.direction); //Due to how slow the jelly is, this might catch you unaware, but then you'll never get hit by it again
+            foreach (Player player in Main.ActivePlayers)
+            {
+                if (player.dead || !NPC.Hitbox.Intersects(player.Hitbox))
+                    continue;
+
+                //Due to how slow the jelly is, this might catch you unaware, but then you'll never get hit by it again
+                player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage * 3, NPC.direction);
+            }
             for (int k = 0; k < 25; k++)
             {
                 int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.MoonBoulder, 0f, -1f, 0, default, 2f);
@@ -280,7 +291,11 @@ namespace CalamityMod.NPCs.Abyss
             NPC.netUpdate = true;
         }
 
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => target.AddBuff(BuffID.Poisoned, 60 * (this.shouldTarget ? 10 : 5)); //10 sec for explosion, 5 sec for non explosion
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+        {
+            target.AddBuff(BuffID.Poisoned, 60 * (this.shouldTarget ? 4 : 2)); //4 sec for explosion, 2 sec for non explosion
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 60 * (this.shouldTarget ? 4 : 2)); //4 sec for explosion, 2 sec for non explosion
+        }
 
         public override bool CheckDead()
         {

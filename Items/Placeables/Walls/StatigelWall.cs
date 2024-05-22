@@ -1,4 +1,4 @@
-using CalamityMod.Items.Placeables.FurnitureStatigel;
+﻿using CalamityMod.Items.Placeables.FurnitureStatigel;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;

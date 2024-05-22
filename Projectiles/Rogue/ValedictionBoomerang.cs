@@ -2,9 +2,9 @@
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -146,13 +146,9 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     velocity.Normalize();
                     velocity *= (float)Main.rand.Next(70, 101) * 0.1f;
-                    Projectile typhoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<NuclearFuryProjectile>(), typhoonDamage, 0f, Projectile.owner);
+                    Projectile typhoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<NuclearFuryProjectile>(), typhoonDamage, 0f, Projectile.owner, 0f, 1f);
                     if (typhoon.whoAmI.WithinBounds(Main.maxProjectiles))
-                    {
                         typhoon.DamageType = RogueDamageClass.Instance;
-                        typhoon.usesLocalNPCImmunity = true;
-                        typhoon.localNPCHitCooldown = 10;
-                    }
                 }
             }
         }
@@ -165,7 +161,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.Center = Projectile.position;
             for (int d = 0; d < 5; d++)
             {
-                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
+                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                 Main.dust[water].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -175,10 +171,10 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int d = 0; d < 8; d++)
             {
-                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 3f);
+                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 3f);
                 Main.dust[water].noGravity = true;
                 Main.dust[water].velocity *= 5f;
-                water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
+                water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                 Main.dust[water].velocity *= 2f;
             }
         }

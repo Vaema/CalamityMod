@@ -1,8 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -14,31 +15,29 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class AngelicShotgun : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        private static int BaseDamage = 96;
         private static float BulletSpeed = 12f;
 
         public override void SetDefaults()
         {
-            Item.damage = BaseDamage;
+            Item.width = 86;
+            Item.height = 38;
+            Item.damage = 96;
             Item.knockBack = 3f;
             Item.DamageType = DamageClass.Ranged;
             Item.noMelee = true;
             Item.autoReuse = true;
-
-            Item.width = 86;
-            Item.height = 38;
 
             Item.useTime = 24;
             Item.useAnimation = 24;
             Item.UseSound = SoundID.Item38;
             Item.useStyle = ItemUseStyleID.Shoot;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
 
             Item.shootSpeed = BulletSpeed;
-            Item.shoot = ModContent.ProjectileType<IlluminatedBullet>();
+            Item.shoot = ModContent.ProjectileType<HallowPointRoundProj>();
             Item.useAmmo = AmmoID.Bullet;
             Item.Calamity().canFirePointBlankShots = true;
         }
@@ -53,6 +52,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             int NumBullets = Main.rand.Next(5, 8);
             Vector2 baseVelocity = velocity.SafeNormalize(Vector2.Zero) * BulletSpeed;
 
+            // If Musket Balls are used, damage is set to match Hallow-Point Rounds for both bullets and lasers
+            if (type == ProjectileID.Bullet)
+                damage += HallowPointRound.BaseDamage - 7;
+
             // Fire a shotgun spread of bullets.
             for (int i = 0; i < NumBullets; ++i)
             {
@@ -61,7 +64,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Vector2 randomVelocity = baseVelocity + new Vector2(dx, dy);
 
                 if (type == ProjectileID.Bullet)
-                    Projectile.NewProjectile(source, position, randomVelocity, ModContent.ProjectileType<IlluminatedBullet>(), damage, knockback, player.whoAmI);
+                    Projectile.NewProjectile(source, position, randomVelocity, Item.shoot, damage, knockback, player.whoAmI);
                 else
                     Projectile.NewProjectile(source, position, randomVelocity, type, damage, knockback, player.whoAmI);
             }

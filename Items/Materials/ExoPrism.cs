@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 121;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 121;
         }
 
         public override void SetDefaults()
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Materials
 
             if (Main.rand.NextBool(3))
             {
-                Dust exoShine = Dust.NewDustDirect(Item.position, (int)(Item.width * Item.scale), (int)(Item.height * Item.scale * 0.6f), 204);
+                Dust exoShine = Dust.NewDustDirect(Item.position, (int)(Item.width * Item.scale), (int)(Item.height * Item.scale * 0.6f), DustID.TreasureSparkle);
                 exoShine.velocity = Vector2.Lerp(Main.rand.NextVector2Unit(), -Vector2.UnitY, 0.5f) * Main.rand.NextFloat(1.2f, 1.8f);
                 exoShine.fadeIn = 0.7f;
                 exoShine.noGravity = true;

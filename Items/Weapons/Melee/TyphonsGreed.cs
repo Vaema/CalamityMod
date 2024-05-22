@@ -12,17 +12,17 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
-            Item.damage = 102;
-            Item.DamageType = DamageClass.Melee;
             Item.width = 16;
             Item.height = 16;
+            Item.damage = 62;
+            Item.DamageType = DamageClass.Melee;
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.DD2_SkyDragonsFurySwing;
             Item.autoReuse = true;

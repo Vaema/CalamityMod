@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D sparkleTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D sparkleTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Color sparkleColor = CalamityUtils.MulticolorLerp(ColorSpectrumHue, RainbowPartyCannon.ColorSet) * Projectile.Opacity * 0.5f;
             sparkleColor.A = 0;

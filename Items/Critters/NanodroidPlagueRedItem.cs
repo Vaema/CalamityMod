@@ -16,6 +16,8 @@ namespace CalamityMod.Items.Critters
 
         public override void SetDefaults()
         {
+            Item.width = 16;
+            Item.height = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.autoReuse = true;
             Item.useTurn = true;
@@ -25,8 +27,6 @@ namespace CalamityMod.Items.Critters
             Item.consumable = true;
             Item.noUseGraphic = true;
             Item.value = Item.buyPrice(0, 0, 30);
-            Item.width = 16;
-            Item.height = 10;
             Item.makeNPC = (short)ModContent.NPCType<NanodroidPlagueRed>();
             Item.rare = ModContent.RarityType<DarkOrange>();
         }

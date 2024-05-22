@@ -1,11 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -50,6 +51,8 @@ namespace CalamityMod.NPCs.DraedonLabThings
 
         public const float Gravity = 0.4f;
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 17;
@@ -57,10 +60,14 @@ namespace CalamityMod.NPCs.DraedonLabThings
             NPCID.Sets.CountsAsCritter[NPC.type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.NormalGoldCritterBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 12;
             value.PortraitPositionYOverride = 32f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glowmask", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -85,9 +92,9 @@ namespace CalamityMod.NPCs.DraedonLabThings
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.RepairUnitCritter")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.RepairUnitCritter")
             });
         }
 
@@ -131,12 +138,8 @@ namespace CalamityMod.NPCs.DraedonLabThings
             }
             Time++;
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active)
-                    continue;
-
                 if (NPC.Hitbox.Intersects(player.HitboxForBestiaryNearbyCheck))
                 {
                     Main.BestiaryTracker.Kills.RegisterKill(NPC);
@@ -330,7 +333,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int i = 0; i < 6; i++)
-                Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 226);
+                Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Electric);
             if (NPC.life <= 0)
             {
                 if (Main.netMode != NetmodeID.Server)
@@ -367,7 +370,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D critterTexture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/DraedonLabThings/RepairUnitCritterGlowmask").Value;
+            Texture2D glowmask = GlowTexture.Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             spriteBatch.Draw(critterTexture, drawPosition, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, direction, 0f);

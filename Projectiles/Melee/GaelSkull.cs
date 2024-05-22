@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 spawnPositionAdditive = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
                     spawnPositionAdditive += -Vector2.UnitY.RotatedBy((double)((float)l * MathHelper.TwoPi / 14f), default) * new Vector2(8f, 16f) * Projectile.scale;
                     spawnPositionAdditive = spawnPositionAdditive.RotatedBy((double)(Projectile.rotation), default);
-                    int dustIndex = Dust.NewDust(Projectile.Center, 0, 0, 218, 0f, 0f, 0, new Color(188, 126, 154), 1.5f);
+                    int dustIndex = Dust.NewDust(Projectile.Center, 0, 0, DustID.Rain_BloodMoon, 0f, 0f, 0, new Color(188, 126, 154), 1.5f);
                     Main.dust[dustIndex].noGravity = true;
                     Main.dust[dustIndex].position = Projectile.Center + spawnPositionAdditive;
                     Main.dust[dustIndex].velocity = Projectile.velocity * 0.1f;
@@ -105,8 +105,8 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.ai[1] == 1f)
             {
                 Projectile.penetrate = -1;
+                Projectile.velocity *= 1.05f;
                 Projectile.alpha += 1;
-                Projectile.damage = (int)Math.Ceiling(Projectile.damage * 0.992); //Exponentially decays to a factor of 0.12896 of the original damage
                 if (Projectile.alpha >= 255)
                 {
                     Projectile.Kill();
@@ -141,18 +141,18 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.NPCDeath52, Projectile.Center);
             for (int i = 0; i < 3; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 218, 0f, 0f, 100, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1.5f);
             }
             for (int i = 0; i < 30; i++)
             {
                 float angle = MathHelper.TwoPi * i / 30f;
-                int dustIndex = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 218, 0f, 0f, 0, default, 2.5f);
+                int dustIndex = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Rain_BloodMoon, 0f, 0f, 0, default, 2.5f);
                 Main.dust[dustIndex].noGravity = true;
                 Main.dust[dustIndex].velocity *= 3f;
-                dustIndex = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 218, 0f, 0f, 100, default, 1.5f);
+                dustIndex = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1.5f);
                 Main.dust[dustIndex].velocity *= 2f;
                 Main.dust[dustIndex].noGravity = true;
-                Dust.NewDust(Projectile.Center + angle.ToRotationVector2() * 160f, 0, 0, 218, 0f, 0f, 100, default, 1.5f);
+                Dust.NewDust(Projectile.Center + angle.ToRotationVector2() * 160f, 0, 0, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1.5f);
             }
         }
     }

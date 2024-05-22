@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
     public class DestroyerElectricLaser : ModProjectile, ILocalizedModType
@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.hostile = true;
             Projectile.penetrate = 1;
             Projectile.alpha = 255;
-            Projectile.scale = 1.2f;
+            Projectile.scale = 1.1f;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 2;
         }

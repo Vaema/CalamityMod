@@ -1,4 +1,4 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon.Umbrella;
 using Terraria;
 using Terraria.ModLoader;

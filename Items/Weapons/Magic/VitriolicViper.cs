@@ -18,11 +18,11 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
+            Item.width = 60;
+            Item.height = 62;
             Item.damage = 93;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 15;
-            Item.width = 60;
-            Item.height = 62;
             Item.useTime = Item.useAnimation = 16;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<VitriolicViperSpit>();
             Item.shootSpeed = 20f;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

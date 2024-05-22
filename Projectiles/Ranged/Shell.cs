@@ -1,8 +1,8 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class Shell : ModProjectile, ILocalizedModType
@@ -20,6 +20,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.arrow = true;
             Projectile.timeLeft = 600;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -36,11 +38,11 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.height = 18;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            for (int num621 = 0; num621 < 10; num621++)
+            for (int i = 0; i < 10; i++)
             {
-                int num195 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 14, Projectile.oldVelocity.X / 4, Projectile.oldVelocity.Y / 4, 0, new Color(0, 255, 255), 1.5f);
-                Main.dust[num195].noGravity = true;
-                Main.dust[num195].velocity *= 3f;
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, Projectile.oldVelocity.X / 4, Projectile.oldVelocity.Y / 4, 0, new Color(0, 255, 255), 1.5f);
+                Main.dust[dust].noGravity = true;
+                Main.dust[dust].velocity *= 3f;
             }
         }
     }

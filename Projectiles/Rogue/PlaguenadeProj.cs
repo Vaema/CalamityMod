@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
     public class PlaguenadeProj : ModProjectile, ILocalizedModType
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.Damage();
                 for (int i = 0; i < 10; i++)
                 {
-                    int smoke = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, 0f, 0f, 100, default, 2f);
+                    int smoke = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
                     Main.dust[smoke].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -104,10 +104,10 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 for (int j = 0; j < 15; j++)
                 {
-                    int plague = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 100, default, 3f);
+                    int plague = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 3f);
                     Main.dust[plague].noGravity = true;
                     Main.dust[plague].velocity *= 5f;
-                    int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 2f);
+                    int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                     Main.dust[fire].velocity *= 2f;
                 }
 

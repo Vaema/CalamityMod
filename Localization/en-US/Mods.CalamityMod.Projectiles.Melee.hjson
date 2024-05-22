@@ -1,3 +1,5 @@
+AbyssBladeProjectile.DisplayName: Abyss Blade
+AbyssBladeSplitProjectile.DisplayName: Abyss Blade Jet
 AegisBeam.DisplayName: Aegis Beam
 AegisBlast.DisplayName: Aegis Blast
 AegisBlast2.DisplayName: Aegis Blast
@@ -22,7 +24,7 @@ ArkoftheElementsParryHoldout.DisplayName: Ark of the Elements
 ArkoftheElementsSnapBlast.DisplayName: Rending Scissors
 ArkoftheElementsSwungBlade.DisplayName: Ark of the Elements
 AstralScytheProjectile.DisplayName: Astral Ring
-AtaraxiaHoming.DisplayName: Definitely Not Exoblade
+AtaraxiaBoom.DisplayName: Definitely Not Exoblade
 AtaraxiaMain.DisplayName: Not Exoblade
 AtaraxiaSide.DisplayName: Also Not Exoblade
 AtaraxiaSplit.DisplayName: Still Not Exoblade
@@ -41,6 +43,7 @@ BloodExplosion.DisplayName: Blood
 BloodScythe.DisplayName: Blood Scythe
 BonebreakerFragment1.DisplayName: Bone Crunching Shrapnel
 BonebreakerProjectile.DisplayName: Bonebreaker
+BotanicSpear.DisplayName: Botanic Spear
 Brimblast.DisplayName: Brimblast
 BrimlanceHellfireExplosion.DisplayName: Brimlance Explosion
 BrimlanceStandingFire.DisplayName: Brimlance Flame
@@ -55,6 +58,7 @@ BrinyTyphoonBubble.DisplayName: Bubble
 BrokenBiomeBladeHoldout.DisplayName: Broken Biome Blade
 BurningMeteor.DisplayName: Meteor
 CatastropheClaymoreSparkle.DisplayName: Catastrophe Sparkle
+CausticEdgeProjectile.DisplayName: Caustic Edge
 ChainedMeatHook.DisplayName: Enchanted Meat Hook
 ClamCrusherFlail.DisplayName: Clam Crusher
 CometQuasherMeteor.DisplayName: Comet Quasher Meteor
@@ -62,8 +66,10 @@ CosmicBolt.DisplayName: Cosmic Bolt
 CosmicDischargeFlail.DisplayName: Cosmic Discharge
 CosmicIceBurst.DisplayName: Cosmic Ice
 CosmicOrb.DisplayName: Cosmic Orb
+CosmicShivAura.DisplayName: Cosmic Shiv Aura
 CosmicShivBall.DisplayName: Cosmic Energy
 CosmicShivBlade.DisplayName: Cosmic Beam
+CosmicShivTrail.DisplayName: Cosmic Shiv Trail
 CosmicSpiritBomb1.DisplayName: Cosmic Bomb
 CosmicSpiritBomb2.DisplayName: Cosmic Bomb
 CosmicSpiritBomb3.DisplayName: Cosmic Bomb
@@ -73,10 +79,16 @@ CrystylCrusherRay.DisplayName: Crystyl Crusher Ray
 DarkBall.DisplayName: Dark Ball
 DarkBeam.DisplayName: Dark Beam
 DarkIceZero.DisplayName: Dark Ice
+DarklightGreatswordSlash.DisplayName: Darklight Greatsword Slash
+DarklightGreatswordSlashCreator.DisplayName: Darklight Greatsword Slash Creator
+DarkMasterBeam.DisplayName: Dark Master Beam
+DarkMasterClone.DisplayName: Dark Terrarian
 DeathsAscensionProjectile.DisplayName: Ascended Scythe
 DecaysRetort.DisplayName: Decay's Retort
 DecaysRetortDash.DisplayName: Evisceration Lunge
 DemonBlast.DisplayName: Devil Fork
+DepthCrusherProjectile.DisplayName: Depth Crusher
+DepthCrusherSplitProjectile.DisplayName: Depth Crusher Jet
 DepthOrb.DisplayName: Depth Trident
 DepthOrb2.DisplayName: Neptune's Trident
 DevilsSunriseCyclone.DisplayName: Devil's Sunrise
@@ -118,6 +130,7 @@ FallenPaladinsHammerEcho.DisplayName: Fallen Paladin's Hammer Echo
 FallenPaladinsHammerProj.DisplayName: Fallen Paladin's Hammer
 Feather.DisplayName: Feather
 Flarefrost.DisplayName: Flarefrost
+FloodtideShark.DisplayName: SHORK
 ForbiddenOathbladeProjectile.DisplayName: Oathblade
 GaelExplosion.DisplayName: Gael Explosion
 GaelSkull.DisplayName: No Longer Ark of the Cosmos' Superior Cousin
@@ -150,8 +163,10 @@ GrovetendersEntanglingVines.DisplayName: Entangling Growth
 GrovetendersTouch.DisplayName: Grovetender's Touch
 HeavensMight.DisplayName: Heaven's Might
 HellionSpike.DisplayName: Hellion Spike
+IridescentExcaliburSlash.DisplayName: Iridescent Excalibur Slash
+IridescentExcaliburSlash2.DisplayName: Iridescent Excalibur Slash
+IridescentExcaliburSlash3.DisplayName: Iridescent Excalibur Slash
 HolyColliderHolyFire.DisplayName: Holy Collider Fire
-HyperBlade.DisplayName: Hyper Blade
 IceBombFriendly.DisplayName: Ice Bomb
 IllustriousKnife.DisplayName: Illustrious Knife
 InsidiousHarpoon.DisplayName: Insidious Harpoon
@@ -174,6 +189,8 @@ Nebudust.DisplayName: Nebulash Dust
 NebulashFlail.DisplayName: Nebulash
 NebulaShot.DisplayName: Nebula Shot
 NeptuneOrb.DisplayName: Neptune's Trident
+NeptunesBountyProjectile.DisplayName: Neptune's Bounty
+NeptunesBountySplitProjectile.DisplayName: Neptune's Bounty Jet
 Oathblade.DisplayName: Oathblade
 OathswordFlame.DisplayName: Oathsword Flame
 Orbacle.DisplayName: Auric Orb
@@ -206,9 +223,9 @@ RedtideWhirlpool.DisplayName: Whirlpool
 RemsRevengeProj.DisplayName: Rem's Revenge
 RendingNeedle.DisplayName: Rending Needle
 Rox1.DisplayName: Rock
-RoxShockwave.DisplayName: Rox Shockwave
-RoxSlam.DisplayName: Rox Slam
+RoxcaliburProj.DisplayName: Roxcalibur
 RSSolarFlare.DisplayName: Flare
+SaharaSlicersBolt.DisplayName: Dagger Bolt
 SandBlade.DisplayName: Sand Blade
 SandFire.DisplayName: Fire
 SanguineFury.DisplayName: Sanguine Fury
@@ -240,7 +257,6 @@ StygianShieldAttack.DisplayName: Bull Rush
 StygianShieldThrown.DisplayName: Shield of Chaos
 SulphurousGrabberBubble.DisplayName: Grabber Bubble
 SulphurousGrabberBubble2.DisplayName: Grabber Bubble
-SunlightBlade.DisplayName: Sunlight Blade
 SwordsmithsPride.DisplayName: Swordsmith's Pride
 SwordsmithsPrideBeam.DisplayName: Swordsmith's Projection
 SwordsplosionBlue.DisplayName: Blue Sword
@@ -251,9 +267,8 @@ TaintedBladeSlasher.DisplayName: Tainted Blade
 TenebreusTidesWaterProjectile.DisplayName: Water Spear
 TenebreusTidesWaterSpear.DisplayName: Tenebreus Tides Water Spear
 TenebreusTidesWaterSword.DisplayName: Tenebreus Tides Water Sword
-TerraSpear.DisplayName: Terra Spear
-TerratomereBeam.DisplayName: Terra Slash Beam
-TerratomereBigSlash.DisplayName: Terratomere Slash
+TerratomereMeleeSlash.DisplayName: Terratomere Slash
+TerratomereSwordBeam.DisplayName: Terra Slash Beam
 TerratomereExplosion.DisplayName: Terratomere Explosion
 TerratomereHoldoutProj.DisplayName: Terratomere
 TerratomereSlash.DisplayName: Terratomere Slash
@@ -274,7 +289,6 @@ TrueArkoftheAncientsParryHoldout.DisplayName: Ark of the Ancients
 TrueArkoftheAncientsSwungBlade.DisplayName: Ark of the Ancients
 TrueBiomeBladeHoldout.DisplayName: True Biome Blade
 TrueBitingEmbrace.DisplayName: Biting Embrace
-TrueCausticEdgeProjectile.DisplayName: Caustic Edge
 TrueDecaysRetort.DisplayName: Decay's Retort
 TrueGrovetendersTouch.DisplayName: Grovetender's Touch
 TruePurityProjection.DisplayName: Purity Projection

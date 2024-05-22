@@ -13,20 +13,20 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 52;
+            Item.height = 50;
             Item.damage = 42;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 45;
+            Item.useAnimation = 41;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 45;
+            Item.useTime = 41;
             Item.useTurn = true;
             Item.knockBack = 4.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 50;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<BloodBall>();
-            Item.shootSpeed = 10f;
+            Item.shootSpeed = 13f;
         }
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {

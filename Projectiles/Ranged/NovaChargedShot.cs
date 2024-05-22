@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(Trail);
                 }
             }
-            
+
 
         }
         public override bool PreDraw(ref Color lightColor)

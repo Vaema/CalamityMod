@@ -1,7 +1,7 @@
-﻿using CalamityMod.Dusts;
+﻿using System.Collections.Generic;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Placeables.LivingFire;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles.LivingFire
             TileObjectData.newTile.CoordinateHeights = new int[] { 16 };
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
-            TileObjectData.newTile.HookCheckIfCanPlace = new PlacementHook(CanPlaceAlter, -1, 0, true );
+            TileObjectData.newTile.HookCheckIfCanPlace = new PlacementHook(CanPlaceAlter, -1, 0, true);
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(AfterPlacement, -1, 0, false);
 

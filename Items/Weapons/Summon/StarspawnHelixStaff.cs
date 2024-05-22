@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,21 +13,19 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 75;
+            Item.width = 54;
+            Item.height = 52;
+            Item.damage = 103;
             Item.knockBack = 1.25f;
             Item.mana = 10;
 
             Item.shoot = ModContent.ProjectileType<AstralProbeSummon>();
-
-            Item.width = 54;
-            Item.height = 52;
             Item.useTime = Item.useAnimation = 20;
-
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item44;
             Item.rare = ItemRarityID.Cyan;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.noMelee = true;
             Item.autoReuse = true;
         }
@@ -44,13 +42,13 @@ namespace CalamityMod.Items.Weapons.Summon
                 }
 
                 int bladeIndex = 0;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile pro in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type == type && Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI)
+                    if (pro.type == type && pro.owner == player.whoAmI)
                     {
-                        Main.projectile[i].ModProjectile<AstralProbeSummon>().ProbeIndex = bladeIndex++;
-                        Main.projectile[i].ModProjectile<AstralProbeSummon>().AITimer = 0f;
-                        Main.projectile[i].netUpdate = true;
+                        pro.ModProjectile<AstralProbeSummon>().ProbeIndex = bladeIndex++;
+                        pro.ModProjectile<AstralProbeSummon>().AITimer = 0f;
+                        pro.netUpdate = true;
                     }
                 }
             }

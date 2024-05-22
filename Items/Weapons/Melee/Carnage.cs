@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -13,6 +13,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 50;
+            Item.height = 54;
             Item.damage = 130;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 21;
@@ -22,9 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.useTurn = true;
-            Item.height = 54;
-            Item.scale = 1.25f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
         }
 

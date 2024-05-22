@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -12,16 +12,16 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 48;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 66;
             Item.height = 26;
+            Item.damage = 48;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
             Item.useAnimation = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;

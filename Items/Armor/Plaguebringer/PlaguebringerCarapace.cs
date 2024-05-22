@@ -13,7 +13,6 @@ namespace CalamityMod.Items.Armor.Plaguebringer
         public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetStaticDefaults()
         {
-           
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -28,7 +27,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
             Item.width = 18;
             Item.height = 18;
             Item.defense = 17;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
         }
@@ -36,7 +35,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
         public override void UpdateEquip(Player player)
         {
             player.Calamity().plaguebringerCarapace = true;
-            player.GetDamage<SummonDamageClass>() += 0.12f;
+            player.GetDamage<SummonDamageClass>() += 0.15f;
             player.buffImmune[ModContent.BuffType<Plague>()] = true;
         }
 

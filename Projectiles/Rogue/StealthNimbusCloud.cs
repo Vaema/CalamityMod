@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (Projectile.ai[0] == 1f)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/StealthNimbusCloud2").Value;
             int height = texture.Height / Main.projFrames[Projectile.type];

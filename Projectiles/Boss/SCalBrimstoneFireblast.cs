@@ -1,16 +1,18 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.NPCs;
+using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
-using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.NPCs;
+using Terraria.ID;
+using Terraria.ModLoader;
+using static Humanizer.In;
+using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -18,6 +20,8 @@ namespace CalamityMod.Projectiles.Boss
     {
         public new string LocalizationCategory => "Projectiles.Boss";
         public static readonly SoundStyle ImpactSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneFireblastImpact");
+        public bool withinRange = false;
+        public bool setLifetime = false;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 5;
@@ -33,6 +37,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = 1;
             Projectile.Opacity = 0f;
             Projectile.timeLeft = 150;
+            Projectile.tileCollide = false;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
@@ -51,10 +56,13 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0.9f * Projectile.Opacity, 0f, 0f);
 
-            if (Projectile.ai[1] == 1f)
-                Projectile.Opacity = MathHelper.Clamp(Projectile.timeLeft / 60f, 0f, 1f);
-            else
-                Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - 90) / 60f), 0f, 1f);
+            if (!withinRange)
+            {
+                if (Projectile.ai[2] == 1f)
+                    Projectile.Opacity = MathHelper.Clamp(Projectile.timeLeft / 60f, 0f, 1f);
+                else
+                    Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - 130) / 20f), 0f, 1f);
+            }
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
@@ -64,31 +72,94 @@ namespace CalamityMod.Projectiles.Boss
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             }
 
-            float inertia = revenge ? 80f : 100f;
-            float homeSpeed = revenge ? 20f : 15f;
-            float minDist = 40f;
             int target = (int)Projectile.ai[0];
-            if (target >= 0 && Main.player[target].active && !Main.player[target].dead)
+
+            if (!withinRange)
             {
-                if (Projectile.Distance(Main.player[target].Center) > minDist)
+                float inertia = revenge ? 80f : 100f;
+                float homeSpeed = revenge ? 13f : 9f;
+                float minDist = 40f;
+                if (target >= 0 && Main.player[target].active && !Main.player[target].dead)
                 {
-                    Vector2 moveDirection = Projectile.SafeDirectionTo(Main.player[target].Center, Vector2.UnitY);
-                    Projectile.velocity = (Projectile.velocity * (inertia - 1f) + moveDirection * homeSpeed) / inertia;
+                    if (Projectile.Distance(Main.player[target].Center) > minDist)
+                    {
+                        Vector2 moveDirection = Projectile.SafeDirectionTo(Main.player[target].Center, Vector2.UnitY);
+                        Projectile.velocity = (Projectile.velocity * (inertia - 1f) + moveDirection * homeSpeed) / inertia;
+                    }
+                }
+                else
+                {
+                    if (Projectile.ai[0] != -1f)
+                    {
+                        Projectile.ai[0] = -1f;
+                        Projectile.netUpdate = true;
+                    }
                 }
             }
+
+            float targetDist;
+            if (target != -1 && !Main.player[target].dead && Main.player[target].active && Main.player[target] != null)
+                targetDist = Vector2.Distance(Main.player[target].Center, Projectile.Center);
             else
+                targetDist = 1000;
+
+            if (Projectile.ai[1] == 2f && !withinRange && Main.rand.NextBool())
             {
-                if (Projectile.ai[0] != -1f)
+                SparkParticle orb = new SparkParticle(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(20, 20), -Projectile.velocity * Main.rand.NextFloat(0.1f, 1f), false, 14, Main.rand.NextFloat(0.35f, 0.6f), (Main.rand.NextBool() ? Color.Lerp(Color.Red, Color.Magenta, 0.5f) : Color.Red) * Projectile.Opacity);
+                GeneralParticleHandler.SpawnParticle(orb);
+            }
+            if ((Projectile.timeLeft == 1 && !withinRange) || (targetDist < 224 && Projectile.Opacity == 1f)) // When within 14 blocks of player or when it runs out of time
+            {
+                if (!setLifetime)
                 {
-                    Projectile.ai[0] = -1f;
-                    Projectile.netUpdate = true;
+                    Projectile.timeLeft = 60;
+                    setLifetime = true;
+                }
+                withinRange = true;
+            }
+            if (withinRange && Projectile.ai[2] == 0f)
+            {
+                Projectile.velocity *= 0.9f;
+                for (int i = 0; i < 2; i++)
+                {
+                    Dust failShotDust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 60 : 114);
+                    failShotDust.noGravity = true;
+                    failShotDust.velocity = new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.3f);
+                    failShotDust.scale = Main.rand.NextFloat(0.7f, 1.8f);
+                }
+                if (Projectile.timeLeft <= 40)
+                {
+                    if (Projectile.Opacity > 0)
+                        Projectile.Opacity -= 0.05f;
+                }
+                if (Projectile.timeLeft == 30)
+                {
+                    Projectile.Opacity = 0;
+                    Projectile.velocity *= 0;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Particle bloom = new BloomParticle(Projectile.Center, Vector2.Zero, new Color(121, 21, 77), 0.1f, 0.7f, 30, false);
+                        GeneralParticleHandler.SpawnParticle(bloom);
+                        if (Projectile.ai[2] == 1f)
+                            bloom.Lifetime = 0;
+                    }
+                }
+                if (Projectile.timeLeft == 15)
+                {
+                    Particle bloom = new BloomParticle(Projectile.Center, Vector2.Zero, Color.Red, 0.1f, 0.65f, 15, false);
+                    GeneralParticleHandler.SpawnParticle(bloom);
+                }
+                if (Projectile.timeLeft == 8)
+                {
+                    Particle bloom = new BloomParticle(Projectile.Center, Vector2.Zero, Color.White, 0.1f, 0.5f, 8, false);
+                    GeneralParticleHandler.SpawnParticle(bloom);
                 }
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int drawStart = frameHeight * Projectile.frame;
             lightColor.R = (byte)(255 * Projectile.Opacity);
@@ -113,7 +184,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || Projectile.Opacity != 1f)
                 return;
 
-            target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180, true);
+            target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 240, true);
         }
 
         public override void OnKill(int timeLeft)
@@ -126,42 +197,38 @@ namespace CalamityMod.Projectiles.Boss
             bool revenge = CalamityWorld.revenge || bossRush;
             bool expertMode = Main.expertMode || bossRush;
 
-            if (Projectile.ai[1] == 0f)
+            if (Projectile.ai[2] == 0f)
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
                     int totalProjectiles = bossRush ? 20 : death ? 16 : revenge ? 14 : expertMode ? 12 : 8;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    float velocity = 7f;
+                    float velocity = 8f;
                     Vector2 spinningPoint = new Vector2(0f, -velocity);
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner, 0f, 1f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner, 0f, Projectile.ai[1], velocity * 1.5f);
                     }
                 }
-            }
 
-            int dustType = (int)CalamityDusts.Brimstone;
-            if (CalamityGlobalNPC.SCal != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.SCal].active)
+                if (Projectile.ai[1] == 2f)
                 {
-                    if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().cirrus)
-                        dustType = (int)CalamityDusts.PurpleCosmilite;
+                    for (int i = 0; i < 18; i++)
+                    {
+                        Vector2 velocity = new Vector2(12, 12).RotatedByRandom(100);
+                        PointParticle spark2 = new PointParticle(Projectile.Center + velocity, velocity * Main.rand.NextFloat(0.3f, 1f), false, 15, 1.1f, (Main.rand.NextBool() ? Color.Lerp(Color.Red, Color.Magenta, 0.5f) : Color.Red) * 0.6f);
+                        GeneralParticleHandler.SpawnParticle(spark2);
+                    }
+                    for (int i = 0; i < 18; i++)
+                    {
+                        Dust failShotDust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 60 : 114);
+                        failShotDust.noGravity = true;
+                        failShotDust.velocity = new Vector2(16, 16).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.3f);
+                        failShotDust.scale = Main.rand.NextFloat(0.75f, 1.3f);
+                    }
                 }
-            }
-
-            Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 1f);
-            for (int j = 0; j < 10; j++)
-            {
-                int redFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 1.5f);
-                Main.dust[redFire].noGravity = true;
-                Main.dust[redFire].velocity *= 3f;
-                redFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 50, default, 1f);
-                Main.dust[redFire].velocity *= 2f;
-                Main.dust[redFire].noGravity = true;
             }
         }
     }

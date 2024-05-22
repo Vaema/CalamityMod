@@ -58,7 +58,8 @@ namespace CalamityMod.Projectiles.Rogue
             int spearAmt = Main.rand.Next(3, 4 + 1); // 3 or 4 spears
             var source = Projectile.GetSource_FromThis();
             for (int n = 0; n < spearAmt; n++)
-            {;
+            {
+                ;
                 CalamityUtils.ProjectileRain(source, targetPos, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<EclipsesSmol>(), (int)(Projectile.damage * RainDamageMult), Projectile.knockBack * RainDamageMult, Projectile.owner);
             }
         }

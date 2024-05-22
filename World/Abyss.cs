@@ -1,4 +1,9 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.Items.Weapons.Magic;
@@ -11,19 +16,14 @@ using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.FurnitureVoid;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
-using CalamityMod.DataStructures;
 using Microsoft.Xna.Framework;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.ModLoader;
-using Terraria.GameContent.Generation;
-using Terraria.DataStructures;
 using Terraria.WorldBuilding;
-using System.Diagnostics;
 
 namespace CalamityMod.World
 {
@@ -36,7 +36,11 @@ namespace CalamityMod.World
         public static bool AtLeftSideOfWorld = false;
         public static int AbyssChasmBottom = 0;
 
-        public static bool AbleToUnlockChests = false; //used for unlocking chests during skeletron's death and so that they cannot be opened beforehand
+        /// <summary>
+        /// Forces abyss chests to unlock even if <see cref="NPC.downedBoss3"/> is false. Used in <see cref="UnlockAllAbyssChests"/> as it is ran during Skeletron's death, not after.
+        /// </summary>
+        public static bool UnlockChests { get; set; }
+
         public static void PlaceAbyss()
         {
             int x = Main.maxTilesX;
@@ -533,8 +537,8 @@ namespace CalamityMod.World
                     Tile tileLeft = Main.tile[abyssIndex - 1, abyssIndex2];
                     Tile tileRight = Main.tile[abyssIndex + 1, abyssIndex2];
 
-                    if (tile.TileType == ModContent.TileType<AbyssGravel>() || tile.TileType == ModContent.TileType<PyreMantle>() || 
-                    tile.TileType == ModContent.TileType<Voidstone>() || tile.TileType == ModContent.TileType<PlantyMush>() || 
+                    if (tile.TileType == ModContent.TileType<AbyssGravel>() || tile.TileType == ModContent.TileType<PyreMantle>() ||
+                    tile.TileType == ModContent.TileType<Voidstone>() || tile.TileType == ModContent.TileType<PlantyMush>() ||
                     tile.TileType == ModContent.TileType<ScoriaOre>() || tile.TileType == ModContent.TileType<SulphurousShale>())
                     {
                         //slope tiles
@@ -565,7 +569,7 @@ namespace CalamityMod.World
             //ambient tiles and pots
             for (int abyssIndex = abyssMinX + 5; abyssIndex < abyssMaxX - 5; abyssIndex++)
             {
-                for (int abyssIndex2 = 0; abyssIndex2 < (Main.remixWorld ? rockLayer : Main.maxTilesY - 200); abyssIndex2++)
+                for (int abyssIndex2 = 0; abyssIndex2 < (Main.remixWorld ? rockLayer : Main.UnderworldLayer); abyssIndex2++)
                 {
                     Tile tileToGrowVineOn = Main.tile[abyssIndex, abyssIndex2];
 
@@ -574,7 +578,7 @@ namespace CalamityMod.World
                         Tile tile = Main.tile[abyssIndex, abyssIndex2 + 1];
 
                         //above the 4th layer
-                        if (abyssIndex2 < (Main.remixWorld ? rockLayer : Main.maxTilesY - 200) && WorldGen.SolidTile(abyssIndex, abyssIndex2 + 1))
+                        if (abyssIndex2 < (Main.remixWorld ? rockLayer : Main.UnderworldLayer) && WorldGen.SolidTile(abyssIndex, abyssIndex2 + 1))
                         {
                             //sulphur shale stuff 
                             if (tile.TileType == ModContent.TileType<SulphurousShale>())
@@ -616,7 +620,7 @@ namespace CalamityMod.World
                                 if (WorldGen.genRand.NextBool(12))
                                 {
                                     ushort[] Ribs = new ushort[] { (ushort)ModContent.TileType<SulphurousRib1>(),
-                                    (ushort)ModContent.TileType<SulphurousRib2>(), (ushort)ModContent.TileType<SulphurousRib3>(), 
+                                    (ushort)ModContent.TileType<SulphurousRib2>(), (ushort)ModContent.TileType<SulphurousRib3>(),
                                     (ushort)ModContent.TileType<SulphurousRib4>(), (ushort)ModContent.TileType<SulphurousRib5>() };
 
                                     WorldGen.PlaceObject(abyssIndex, abyssIndex2, WorldGen.genRand.Next(Ribs));
@@ -728,7 +732,7 @@ namespace CalamityMod.World
                         }
 
                         //pots
-                        if ((tile.TileType == ModContent.TileType<AbyssGravel>() || tile.TileType == ModContent.TileType<PyreMantle>() || 
+                        if ((tile.TileType == ModContent.TileType<AbyssGravel>() || tile.TileType == ModContent.TileType<PyreMantle>() ||
                         tile.TileType == ModContent.TileType<Voidstone>()) && abyssIndex2 > (Main.remixWorld ? rockLayer - (int)((y - 200) * 0.8f) : rockLayer))
                         {
                             if (WorldGen.genRand.NextBool(5))
@@ -739,7 +743,7 @@ namespace CalamityMod.World
                         }
 
                         //sulphur pots
-                        else if (tile.TileType == ModContent.TileType<SulphurousShale>() && abyssIndex2 < (Main.remixWorld ? Main.maxTilesY - 200 : (int)Main.worldSurface))
+                        else if (tile.TileType == ModContent.TileType<SulphurousShale>() && abyssIndex2 < (Main.remixWorld ? Main.UnderworldLayer : (int)Main.worldSurface))
                         {
                             if (WorldGen.genRand.NextBool(3))
                             {
@@ -752,7 +756,7 @@ namespace CalamityMod.World
                     //esentially what this does is grow one vine on the bottom of a tile, then use the util to keep placing the vine until it decides to stop
                     if (tileToGrowVineOn.TileType == ModContent.TileType<PlantyMush>() && !Main.tile[abyssIndex, abyssIndex2 + 1].HasTile)
                     {
-                        if (WorldGen.genRand.Next(2) == 0)
+                        if (WorldGen.genRand.NextBool(2))
                         {
                             WorldGen.PlaceTile(abyssIndex, abyssIndex2 + 1, (ushort)ModContent.TileType<ViperVines>());
                         }
@@ -765,7 +769,7 @@ namespace CalamityMod.World
                     //same as above but for sulphur vines
                     if (tileToGrowVineOn.TileType == ModContent.TileType<SulphurousShale>() && !Main.tile[abyssIndex, abyssIndex2 + 1].HasTile)
                     {
-                        if (WorldGen.genRand.Next(5) == 0)
+                        if (WorldGen.genRand.NextBool(5))
                         {
                             WorldGen.PlaceTile(abyssIndex, abyssIndex2 + 1, (ushort)ModContent.TileType<SulphurousVines>());
                         }
@@ -810,29 +814,29 @@ namespace CalamityMod.World
                 int islandTopY = Math.Clamp((int)(islandOrigin.Y - islandWidth * 0.5), 0, Main.maxTilesY);
                 int islandBottomY = Math.Clamp((int)(islandOrigin.Y + islandWidth * 0.5), 0, Main.maxTilesY);
 
-                double num11 = islandWidth * (double)WorldGen.genRand.Next(sizeMin, sizeMax) * 0.01; //80 120
-                float num12 = islandOrigin.Y + 1f;
+                double extraIslandWidth = islandWidth * (double)WorldGen.genRand.Next(sizeMin, sizeMax) * 0.01; //80 120
+                float islandYOffset = islandOrigin.Y + 1f;
                 for (int k = islandLeftX; k < islandRightX; k++)
                 {
                     if (WorldGen.genRand.NextBool(2))
                     {
-                        num12 += (float)WorldGen.genRand.Next(-1, 2);
+                        islandYOffset += (float)WorldGen.genRand.Next(-1, 2);
                     }
-                    if (num12 < islandOrigin.Y)
+                    if (islandYOffset < islandOrigin.Y)
                     {
-                        num12 = islandOrigin.Y;
+                        islandYOffset = islandOrigin.Y;
                     }
-                    if (num12 > islandOrigin.Y + 2f)
+                    if (islandYOffset > islandOrigin.Y + 2f)
                     {
-                        num12 = islandOrigin.Y + 2f;
+                        islandYOffset = islandOrigin.Y + 2f;
                     }
                     for (int l = islandTopY; l < islandBottomY; l++)
                     {
-                        if ((float)l > num12)
+                        if ((float)l > islandYOffset)
                         {
-                            float arg_218_0 = Math.Abs((float)k - islandOrigin.X);
-                            float num13 = Math.Abs((float)l - islandOrigin.Y) * 3f;
-                            if (Math.Sqrt((double)(arg_218_0 * arg_218_0 + num13 * num13)) < num11 * 0.4)
+                            float tileCheckXDist = Math.Abs((float)k - islandOrigin.X);
+                            float tileCheckYDist = Math.Abs((float)l - islandOrigin.Y) * 3f;
+                            if (Math.Sqrt((double)(tileCheckXDist * tileCheckXDist + tileCheckYDist * tileCheckYDist)) < extraIslandWidth * 0.4)
                             {
                                 if (k < islandPositionX)
                                 {
@@ -879,17 +883,17 @@ namespace CalamityMod.World
                 }
             }
             int m = islandPositionX;
-            int num15;
-            for (m += WorldGen.genRand.Next(5); m < islandPositionXAgain; m += WorldGen.genRand.Next(num15, (int)(num15 * 1.5)))
+            int randMinMaxValues;
+            for (m += WorldGen.genRand.Next(5); m < islandPositionXAgain; m += WorldGen.genRand.Next(randMinMaxValues, (int)(randMinMaxValues * 1.5)))
             {
-                int num14 = islandPositionY;
-                while (!Main.tile[m, num14].HasTile)
+                int islandTileY = islandPositionY;
+                while (!Main.tile[m, islandTileY].HasTile)
                 {
-                    num14--;
+                    islandTileY--;
                 }
-                num14 += WorldGen.genRand.Next(-3, 4);
-                num15 = WorldGen.genRand.Next(4, 8);
-                int num16 = tileType;
+                islandTileY += WorldGen.genRand.Next(-3, 4);
+                randMinMaxValues = WorldGen.genRand.Next(4, 8);
+                int placedTile = tileType;
 
                 //chance to place clumps of whatever defined block
                 if (hasClumps && WorldGen.genRand.NextBool(3))
@@ -898,36 +902,36 @@ namespace CalamityMod.World
                     if (tileType != ModContent.TileType<PyreMantle>())
                     {
                         //if scoria is enabled, then place it, otherwise place planty mush clumps
-                        num16 = hasScoria ? ModContent.TileType<ScoriaOre>() : ModContent.TileType<PlantyMush>();
+                        placedTile = hasScoria ? ModContent.TileType<ScoriaOre>() : ModContent.TileType<PlantyMush>();
                     }
                     //if the tile is pyre mantle then always place scoria
                     else
                     {
                         //place molten pyre mantle and scorcia ore
-                        num16 = hasScoria ? ModContent.TileType<ScoriaOre>() : ModContent.TileType<PyreMantleMolten>();
+                        placedTile = hasScoria ? ModContent.TileType<ScoriaOre>() : ModContent.TileType<PyreMantleMolten>();
                     }
                 }
 
-                for (int n = m - num15; n <= m + num15; n++)
+                for (int n = m - randMinMaxValues; n <= m + randMinMaxValues; n++)
                 {
-                    for (int num17 = num14 - num15; num17 <= num14 + num15; num17++)
+                    for (int p = islandTileY - randMinMaxValues; p <= islandTileY + randMinMaxValues; p++)
                     {
-                        if (num17 > islandPositionYAgain)
+                        if (p > islandPositionYAgain)
                         {
-                            float arg_409_0 = (float)Math.Abs(n - m);
-                            float num18 = (float)(Math.Abs(num17 - num14) * 2);
-                            if (Math.Sqrt((double)(arg_409_0 * arg_409_0 + num18 * num18)) < (double)(num15 + WorldGen.genRand.Next(2)))
+                            float islandTileXDist = (float)Math.Abs(n - m);
+                            float islandTileYDist = (float)(Math.Abs(p - islandTileY) * 2);
+                            if (Math.Sqrt((double)(islandTileXDist * islandTileXDist + islandTileYDist * islandTileYDist)) < (double)(randMinMaxValues + WorldGen.genRand.Next(2)))
                             {
-                                Main.tile[n, num17].Get<TileWallWireStateData>().HasTile = true;
+                                Main.tile[n, p].Get<TileWallWireStateData>().HasTile = true;
 
-                                Main.tile[n, num17].TileType = (ushort)num16;
-                                CalamityUtils.SafeSquareTileFrame(n, num17, true);
+                                Main.tile[n, p].TileType = (ushort)placedTile;
+                                CalamityUtils.SafeSquareTileFrame(n, p, true);
                             }
                         }
                     }
                 }
             }
-            
+
             int sizeMinSmall2 = sizeMin2 / 8;
             int sizeMaxSmall2 = sizeMax2 / 8;
             islandWidth = WorldGen.genRand.Next(sizeMin2, sizeMax2);
@@ -963,43 +967,43 @@ namespace CalamityMod.World
                     vector2.Y = -0.2f;
                 }
             }
-            int num23 = islandPositionX;
-            num23 += WorldGen.genRand.Next(5);
-            while (num23 < islandPositionXAgain)
+            int islandXOffsetPos = islandPositionX;
+            islandXOffsetPos += WorldGen.genRand.Next(5);
+            while (islandXOffsetPos < islandPositionXAgain)
             {
-                int num24 = islandPositionY;
-                while ((!Main.tile[num23, num24].HasTile || Main.tile[num23, num24].TileType != 0) && num23 < islandPositionXAgain)
+                int islandYOffsetPos = islandPositionY;
+                while ((!Main.tile[islandXOffsetPos, islandYOffsetPos].HasTile || Main.tile[islandXOffsetPos, islandYOffsetPos].TileType != 0) && islandXOffsetPos < islandPositionXAgain)
                 {
-                    num24--;
-                    if (num24 < islandPositionYAgain)
+                    islandYOffsetPos--;
+                    if (islandYOffsetPos < islandPositionYAgain)
                     {
-                        num24 = islandPositionY;
-                        num23 += WorldGen.genRand.Next(1, 4);
+                        islandYOffsetPos = islandPositionY;
+                        islandXOffsetPos += WorldGen.genRand.Next(1, 4);
                     }
                 }
-                if (num23 < islandPositionXAgain)
+                if (islandXOffsetPos < islandPositionXAgain)
                 {
-                    num24 += WorldGen.genRand.Next(0, 4);
-                    int num25 = WorldGen.genRand.Next(2, 5);
-                    int num26 = tileType;
-                    for (int num27 = num23 - num25; num27 <= num23 + num25; num27++)
+                    islandYOffsetPos += WorldGen.genRand.Next(0, 4);
+                    int islandOffsetRandValues = WorldGen.genRand.Next(2, 5);
+                    int placeTile = tileType;
+                    for (int r = islandXOffsetPos - islandOffsetRandValues; r <= islandXOffsetPos + islandOffsetRandValues; r++)
                     {
-                        for (int num28 = num24 - num25; num28 <= num24 + num25; num28++)
+                        for (int s = islandYOffsetPos - islandOffsetRandValues; s <= islandYOffsetPos + islandOffsetRandValues; s++)
                         {
-                            if (num28 > islandPositionYAgain)
+                            if (s > islandPositionYAgain)
                             {
-                                float arg_890_0 = Math.Abs(num27 - num23);
-                                float num29 = (Math.Abs(num28 - num24) * 2);
-                                if (Math.Sqrt((double)(arg_890_0 * arg_890_0 + num29 * num29)) < num25)
+                                float islandOffsetXDist = Math.Abs(r - islandXOffsetPos);
+                                float islandOffsetYDist = (Math.Abs(s - islandYOffsetPos) * 2);
+                                if (Math.Sqrt((double)(islandOffsetXDist * islandOffsetXDist + islandOffsetYDist * islandOffsetYDist)) < islandOffsetRandValues)
                                 {
-                                    Main.tile[num27, num28].TileType = (ushort)num26;
-                                    CalamityUtils.SafeSquareTileFrame(num27, num28, true);
+                                    Main.tile[r, s].TileType = (ushort)placeTile;
+                                    CalamityUtils.SafeSquareTileFrame(r, s, true);
                                 }
                             }
                         }
                     }
 
-                    num23 += WorldGen.genRand.Next(num25, (int)(num25 * 1.5));
+                    islandXOffsetPos += WorldGen.genRand.Next(islandOffsetRandValues, (int)(islandOffsetRandValues * 1.5));
                 }
             }
         }
@@ -1020,7 +1024,7 @@ namespace CalamityMod.World
                     GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
 
                     int radius = (int)(WorldGen.genRand.Next(3, 5) * WorldGen.genRand.NextFloat(0.74f, 0.82f));
-                    
+
                     WorldUtils.Gen(new Point(clearX, clearY), new Shapes.Circle(radius), Actions.Chain(new GenAction[]
                     {
                         blotchMod.Output(circle)
@@ -1128,7 +1132,7 @@ namespace CalamityMod.World
                     GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
 
                     int radius = (int)(WorldGen.genRand.Next(3, 5) * WorldGen.genRand.NextFloat(0.74f, 0.82f));
-                    
+
                     WorldUtils.Gen(new Point(clearX, clearY), new Shapes.Circle(radius), Actions.Chain(new GenAction[]
                     {
                         blotchMod.Output(circle)
@@ -1156,30 +1160,37 @@ namespace CalamityMod.World
             WorldGen.PlaceObject(i, j - 2, (ushort)ModContent.TileType<AbyssFossilTile>());
         }
 
+        /// <summary>
+        /// Unlocks all abyss chests, automatically synced across the server.
+        /// Only run initally on the server.
+        /// </summary>
         public static void UnlockAllAbyssChests()
         {
-            int genLimit = Main.maxTilesX / 2;
-            int abyssChasmX = AtLeftSideOfWorld ? genLimit - (genLimit - 135) + 35 : genLimit + (genLimit - 135) - 35;
-            int abyssMinX = AtLeftSideOfWorld ? 0 : abyssChasmX - 150;
-            int abyssMaxX = AtLeftSideOfWorld ? abyssChasmX + 150 : Main.maxTilesX;
+            UnlockChests = true;
 
-            //loop to unlock all abyss treasure chests
-            for (int x = abyssMinX; x < abyssMaxX; x++)
+            if (Main.netMode == NetmodeID.Server)
             {
-                for (int y = Main.remixWorld ? SulphurousSea.YStart - (int)((Main.maxTilesY - 200) * 0.4f) : (int)Main.worldSurface; y < Main.maxTilesY - 300; y++)
+                var netMessage = CalamityMod.Instance.GetPacket();
+                netMessage.Write((byte)CalamityModMessageType.UnlockAbyssChests);
+                netMessage.Send();
+            }
+
+            for (int c = 0; c < Main.maxChests; c++)
+            {
+                var chest = Main.chest[c];
+                if (chest == null)
                 {
-                    //make SURE to check for the entire chest at once, otherwise it will break when unlocking
-                    if (Main.tile[x, y].TileType == ModContent.TileType<Tiles.Abyss.AbyssTreasureChest>() && //top left
-                    Main.tile[x + 1, y].TileType == ModContent.TileType<Tiles.Abyss.AbyssTreasureChest>() && //top right
-                    Main.tile[x, y + 1].TileType == ModContent.TileType<Tiles.Abyss.AbyssTreasureChest>() && //bottom left
-                    Main.tile[x + 1, y + 1].TileType == ModContent.TileType<Tiles.Abyss.AbyssTreasureChest>()) //bottom right
-                    {
-                        Chest.Unlock(x, y);
-                        NetMessage.SendData(MessageID.LockAndUnlock, -1, -1, null, Main.LocalPlayer.whoAmI, 1f, x, y);
-                    }
+                    continue;
+                }
+
+                var chestTile = Framing.GetTileSafely(chest.x, chest.y);
+                if (chestTile.HasTile && chestTile.TileType == ModContent.TileType<AbyssTreasureChest>() && Chest.IsLocked(chest.x, chest.y))
+                {
+                    Chest.Unlock(chest.x, chest.y);
                 }
             }
-            AbleToUnlockChests = false; //reseting the variable in case players generate multiple worlds to prevent already unlocked chests from spawning
+
+            UnlockChests = false;
         }
     }
 }

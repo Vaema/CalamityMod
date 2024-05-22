@@ -1,5 +1,5 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Rogue
             Color color = new Color(0, 80, 255, 100);
             if (Main.rand.NextBool(12))
             {
-                Dust.NewDust(Projectile.position + Vector2.One * 6f, Projectile.width - 12, Projectile.height - 12, 4, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 175, color, 1.2f);
+                Dust.NewDust(Projectile.position + Vector2.One * 6f, Projectile.width - 12, Projectile.height - 12, DustID.TintableDust, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 175, color, 1.2f);
             }
             //Sticky Behaviour
             Projectile.StickyProjAI(10);

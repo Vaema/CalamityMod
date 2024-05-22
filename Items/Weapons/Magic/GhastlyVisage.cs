@@ -14,13 +14,13 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
         {
+            Item.width = 32;
+            Item.height = 36;
             Item.damage = 120;
             Item.DamageType = DamageClass.Magic;
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.mana = 20;
-            Item.width = 32;
-            Item.height = 36;
             Item.useTime = 27;
             Item.useAnimation = 27;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<GhastlyVisageProj>();
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

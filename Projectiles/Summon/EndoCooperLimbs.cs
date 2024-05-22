@@ -1,13 +1,13 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -47,12 +47,12 @@ namespace CalamityMod.Projectiles.Summon
         {
             Projectile body = Main.projectile[(int)Projectile.ai[1]];
             //Apply the buff
-            bool flag64 = Projectile.type == ModContent.ProjectileType<EndoCooperLimbs>();
+            bool isMinion = Projectile.type == ModContent.ProjectileType<EndoCooperLimbs>();
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
             player.AddBuff(ModContent.BuffType<EndoCooperBuff>(), 3600);
 
-            if (flag64)
+            if (isMinion)
             {
                 if (player.dead)
                 {
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override void PostDraw(Color lightColor)
-        {            
+        {
             if (Projectile.ai[0] == 2f)
                 return;
 

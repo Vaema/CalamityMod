@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Dyes
 {
     public class CosmiliteDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/CosmiliteDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/CosmiliteDyeShader"), "DyePass").
             UseColor(new Color(154, 140, 191)).UseSecondaryColor(new Color(249, 109, 235)).UseImage("Images/Misc/Perlin");
         public override void SafeSetStaticDefaults()
         {

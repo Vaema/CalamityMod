@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.NPCs.Cryogen;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.NPCs.Cryogen;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -35,23 +35,23 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.ai[0] += 1f;
                 if (Projectile.ai[0] == 120f)
                 {
-                    for (int num621 = 0; num621 < 8; num621++)
+                    for (int i = 0; i < 8; i++)
                     {
-                        int num622 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 2f);
-                        Main.dust[num622].velocity *= 3f;
+                        int iceDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
+                        Main.dust[iceDust].velocity *= 3f;
                         if (Main.rand.NextBool())
                         {
-                            Main.dust[num622].scale = 0.5f;
-                            Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                            Main.dust[iceDust].scale = 0.5f;
+                            Main.dust[iceDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                         }
                     }
-                    for (int num623 = 0; num623 < 14; num623++)
+                    for (int j = 0; j < 14; j++)
                     {
-                        int num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 3f);
-                        Main.dust[num624].noGravity = true;
-                        Main.dust[num624].velocity *= 5f;
-                        num624 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 2f);
-                        Main.dust[num624].velocity *= 2f;
+                        int iceDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 3f);
+                        Main.dust[iceDust2].noGravity = true;
+                        Main.dust[iceDust2].velocity *= 5f;
+                        iceDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
+                        Main.dust[iceDust2].velocity *= 2f;
                     }
 
                     Projectile.scale = 1.2f;
@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
+            //SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
 
             if (Projectile.owner == Main.myPlayer)
             {
@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             for (int k = 0; k < 10; k++)
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 67, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)

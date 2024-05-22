@@ -1,4 +1,4 @@
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.LivingFire;
 using Terraria;
 using Terraria.ID;

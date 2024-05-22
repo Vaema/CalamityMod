@@ -5,17 +5,16 @@ namespace CalamityMod.Particles
 {
     public class FlameParticle : Particle
     {
-        public override string Texture => "CalamityMod/Particles/Fire";
+        public override string Texture => "CalamityMod/Particles/Flames";
         public override bool UseAdditiveBlend => true;
         public override bool SetLifetime => true;
-        public override int FrameVariants => 3;
         public float RelativePower;
-        
-        
+
+
 
         public Color BrightColor;
         public Color DarkColor;
-        
+
 
         public FlameParticle(Vector2 position, int lifetime, float scale, float relativePower, Color brightColor, Color darkColor)
         {
@@ -34,6 +33,7 @@ namespace CalamityMod.Particles
         {
             Scale += RelativePower * 0.01f;
             Position.Y -= RelativePower * 1.25f;
+            Scale *= 0.97f;
 
             Color = Color.Lerp(BrightColor, DarkColor, LifetimeCompletion);
             Color = Color.Lerp(Color, Color.White, Utils.GetLerpValue(0.1f, 0.25f, LifetimeCompletion, true) * Utils.GetLerpValue(0.4f, 0.25f, LifetimeCompletion, true) * 0.7f);

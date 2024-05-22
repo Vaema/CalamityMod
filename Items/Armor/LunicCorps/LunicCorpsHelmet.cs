@@ -1,6 +1,8 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -13,7 +15,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.LunicCorps
 {
     [AutoloadEquip(EquipType.Head)]
-    public class LunicCorpsHelmet : ModItem, ILocalizedModType
+    public class LunicCorpsHelmet : ModItem, ILocalizedModType, IDyeableShaderRenderer
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
 
@@ -30,11 +32,36 @@ namespace CalamityMod.Items.Armor.LunicCorps
         public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(5);
         public static int TotalShieldRechargeTime = CalamityUtils.SecondsToFrames(2);
 
+        // Interface stuff.
+        public float RenderDepth => IDyeableShaderRenderer.HaloShieldDepth;
+
+        public bool ShaderIsDyeable => false;
+
+        public bool ShouldDrawDyeableShader
+        {
+            get
+            {
+                bool result = false;
+                foreach (Player player in Main.ActivePlayers)
+                {
+                    if (player.outOfRange || player.dead)
+                        continue;
+
+                    CalamityPlayer modPlayer = player.Calamity();
+
+                    // Do not render shield if it does not exist
+                    bool shouldntDraw = modPlayer.LunicCorpsShieldDurability <= 0 || modPlayer.drawnAnyShieldThisFrame;
+                    result |= !shouldntDraw;
+                }
+                return result;
+            }
+        }
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.defense = 14;
             Item.rare = ItemRarityID.Cyan;
             Item.Calamity().donorItem = true;
@@ -49,7 +76,10 @@ namespace CalamityMod.Items.Armor.LunicCorps
         {
             var modPlayer = player.Calamity();
             modPlayer.lunicCorpsSet = true;
-            player.setBonus = this.GetLocalizedValue("SetBonus");
+
+            // The localization is formatted strangely, but attempting to put the {0} on its own line will leave a blank space if given an empty string
+            string adrenTooltip = CalamityWorld.revenge ? "\n" + this.GetLocalizedValue("ShieldAdren") : "";
+            player.setBonus = this.GetLocalization("SetBonus").Format(adrenTooltip);
 
             player.bulletDamage += 0.1f;
             player.specialistDamage += 0.1f;
@@ -77,7 +107,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
 
         // Complex drawcode which draws Lunic Corps shields on ALL players who have it available. Supposedly.
         // This is applied as IL (On hook) which draws right before Inferno Ring.
-        internal static void DrawHaloShields(On_Main.orig_DrawInfernoRings orig, Main mainObj)
+        public void DrawDyeableShader(SpriteBatch spriteBatch)
         {
             // TODO -- Control flow analysis indicates that this hook is not stable (as it was copied from Rover Drive).
             // Lunic Corps shields will be drawn for each player with the Lunic Corps armor, yes.
@@ -85,10 +115,9 @@ namespace CalamityMod.Items.Armor.LunicCorps
             // Visibility is not net synced, for example.
             bool alreadyDrawnShieldForPlayer = false;
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active || player.outOfRange || player.dead)
+                if (player.outOfRange || player.dead)
                     continue;
 
                 CalamityPlayer modPlayer = player.Calamity();
@@ -99,6 +128,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
 
                 // Scale the shield is drawn at. The Lunic Corps shield sticks very close to the body to mimic Halo and occasionally pulses.
                 // The "i" parameter is to make different player's shields not be perfectly synced.
+                int i = player.whoAmI;
                 float baseScale = 0.11f;
                 float maxExtraScale = 0.013f;
                 float extraScalePulseInterpolant = MathF.Pow(12f, MathF.Sin(Main.GlobalTimeWrappedHourly * 1.6f + i) - 1);
@@ -142,8 +172,8 @@ namespace CalamityMod.Items.Armor.LunicCorps
 
                     // GOD I LOVE END BEGIN CAN THIS GAME PLEASE BE SWALLOWED BY THE FIRES OF HELL THANKS
                     // yes I copy pasted that comment, I hate end begin that much
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
+                    spriteBatch.End();
+                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
                 }
 
                 alreadyDrawnShieldForPlayer = true;
@@ -153,16 +183,14 @@ namespace CalamityMod.Items.Armor.LunicCorps
                 NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes2");
                 Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
                 Texture2D tex = NoiseTex.Value;
-                Main.spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
+                spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
             }
 
             if (alreadyDrawnShieldForPlayer)
             {
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
             }
-
-            orig(mainObj);
         }
     }
 }

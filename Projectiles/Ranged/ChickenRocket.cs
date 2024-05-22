@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -32,11 +32,11 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     float dx = i == 1 ? Projectile.velocity.X * 0.5f : 0f;
                     float dy = i == 1 ? Projectile.velocity.Y * 0.5f : 0f;
-                    int d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + dx, Projectile.position.Y + 3f + dy) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 6, 0f, 0f, 100, default, 1f);
+                    int d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + dx, Projectile.position.Y + 3f + dy) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.Torch, 0f, 0f, 100, default, 1f);
                     Main.dust[d].scale *= 2f + Main.rand.NextFloat();
                     Main.dust[d].velocity *= 0.2f;
                     Main.dust[d].noGravity = true;
-                    d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + dx, Projectile.position.Y + 3f + dy) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 244, 0f, 0f, 100, default, 0.5f);
+                    d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + dx, Projectile.position.Y + 3f + dy) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.CopperCoin, 0f, 0f, 100, default, 0.5f);
                     Main.dust[d].fadeIn = 1f + Main.rand.NextFloat(0.5f);
                     Main.dust[d].velocity *= 0.05f;
                 }
@@ -48,13 +48,13 @@ namespace CalamityMod.Projectiles.Ranged
                 // When going at very high speed, emit even more dust.
                 else if (Main.rand.NextBool())
                 {
-                    int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1f);
+                    int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
                     Main.dust[d].scale = 0.1f + Main.rand.NextFloat(0.5f);
                     Main.dust[d].fadeIn = 1.5f + Main.rand.NextFloat(0.5f);
                     Main.dust[d].noGravity = true;
                     Main.dust[d].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2)).RotatedBy(Projectile.rotation) * 1.1f;
                     Main.rand.Next(2);
-                    d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1f);
+                    d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
                     Main.dust[d].scale = 1f + Main.rand.NextFloat(0.5f);
                     Main.dust[d].noGravity = true;
                     Main.dust[d].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2 - 6)).RotatedBy(Projectile.rotation) * 1.1f;
@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             for (int i = 0; i < 40; i++)
             {
-                int d = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 31, 0f, 0f, 100, default, 2f);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
                 Main.dust[d].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -106,10 +106,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int i = 0; i < 70; i++)
             {
-                int d = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 3f);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
                 Main.dust[d].noGravity = true;
                 Main.dust[d].velocity *= 5f;
-                d = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 2f);
+                d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                 Main.dust[d].velocity *= 2f;
             }
         }

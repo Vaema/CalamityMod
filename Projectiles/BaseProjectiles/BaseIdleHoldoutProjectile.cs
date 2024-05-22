@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Core;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {
@@ -25,7 +26,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
             // Look through every type in the mod, and check if it's derived from BaseIdleHoldoutProjectile.
             // If it is, cache it into the item/projectile relationship cache.
-            foreach (Type type in typeof(CalamityMod).Assembly.GetTypes())
+            Type[] types = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
+            foreach (Type type in types)
             {
                 // Don't load abstract classes; they cannot have instances.
                 if (type.IsAbstract)
@@ -49,9 +51,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
                 bool bladeIsPresent = false;
                 int holdoutType = ItemProjectileRelationship[itemID];
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type != holdoutType || Main.projectile[i].owner != player.whoAmI || !Main.projectile[i].active)
+                    if (p.type != holdoutType || p.owner != player.whoAmI)
                         continue;
 
                     bladeIsPresent = true;

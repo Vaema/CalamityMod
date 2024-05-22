@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 32;
             Item.height = 34;
-            Item.damage = 50;
+            Item.damage = 82;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 9;
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<StellarKnifeProj>();
             Item.shootSpeed = 10f;

@@ -2,11 +2,11 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.NPCs.TownNPCs;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Mounts
 {
@@ -71,12 +71,12 @@ namespace CalamityMod.Items.Mounts
 
         public override void SetMount(Player player, ref bool skipDust)
         {
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                if (Main.npc[i].type == ModContent.NPCType<FAP>())
+                if (npc.type == ModContent.NPCType<FAP>())
                 {
-                    Main.npc[i].active = false;
-                    Main.npc[i].netUpdate = true;
+                    npc.active = false;
+                    npc.netUpdate = true;
                     break;
                 }
             }
@@ -85,12 +85,8 @@ namespace CalamityMod.Items.Mounts
         public override void Dismount(Player player, ref bool skipDust)
         {
             bool anyPlayerOnFabMount = false;
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player2 in Main.ActivePlayers)
             {
-                Player player2 = Main.player[i];
-                if (!player2.active)
-                    continue;
-
                 // The player that is dismounting is technically not on the mount anymore.
                 if (player2.Calamity().fab && player2.whoAmI != player.whoAmI)
                 {
@@ -134,7 +130,7 @@ namespace CalamityMod.Items.Mounts
                     meme = new Color(25, 105, 255);
                 }
                 Rectangle rect = player.getRect();
-                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, 234, 0, 0, 0, meme);
+                int dust = Dust.NewDust(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.BoneTorch, 0, 0, 0, meme);
                 Main.dust[dust].noGravity = true;
             }
 

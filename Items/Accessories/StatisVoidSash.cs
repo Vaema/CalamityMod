@@ -3,13 +3,13 @@ using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.GameContent;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 28;
             Item.height = 32;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
 
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             player.autoJump = true;
-            player.jumpSpeedBoost += 0.6f;
+            player.jumpSpeedBoost += 1.6f;
             player.noFallDmg = true;
             player.blackBelt = true;
             modPlayer.DashID = StatisVoidSashDash.ID;

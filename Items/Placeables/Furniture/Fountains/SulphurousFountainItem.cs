@@ -1,7 +1,7 @@
+﻿using CalamityMod.Tiles.Furniture.Fountains;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Tiles.Furniture.Fountains;
 
 namespace CalamityMod.Items.Placeables.Furniture.Fountains
 {
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Fountains
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.value = Item.buyPrice(0, 4, 0, 0);
-            Item.rare = ItemRarityID.White;
+            Item.rare = ItemRarityID.Blue;
             Item.createTile = ModContent.TileType<SulphurousFountainTile>();
         }
     }

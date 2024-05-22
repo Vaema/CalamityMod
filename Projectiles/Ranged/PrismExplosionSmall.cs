@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D lightTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SmallGreyscaleCircle").Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;

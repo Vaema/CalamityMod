@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
@@ -13,31 +14,34 @@ using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.CalClone
 {
     [AutoloadBossHead]
     public class CalamitasClone : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.65f,
                 PortraitScale = 0.65f
@@ -45,6 +49,10 @@ namespace CalamityMod.NPCs.CalClone
             value.Position.Y -= 10f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -79,7 +87,7 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.NightTime,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
@@ -119,7 +127,7 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void AI()
         {
-            CalamityAI.CalamitasCloneAI(NPC, Mod);
+            CalamitasCloneAI.VanillaCalamitasCloneAI(NPC, Mod);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -138,14 +146,14 @@ namespace CalamityMod.NPCs.CalClone
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
-                    Color color1 = drawColor;
-                    color1 = Color.Lerp(color1, white, colorLerpAmt);
-                    color1 = NPC.GetAlpha(color1);
-                    color1 *= (float)(afterimageAmt - i) / 15f;
+                    Color afterimageColor = drawColor;
+                    afterimageColor = Color.Lerp(afterimageColor, white, colorLerpAmt);
+                    afterimageColor = NPC.GetAlpha(afterimageColor);
+                    afterimageColor *= (float)(afterimageAmt - i) / 15f;
                     Vector2 offset = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
                     offset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
                     offset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(texture, offset, NPC.frame, color1, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                    spriteBatch.Draw(texture, offset, NPC.frame, afterimageColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
                 }
             }
 
@@ -154,7 +162,7 @@ namespace CalamityMod.NPCs.CalClone
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/CalClone/CalamitasCloneGlow").Value;
+            texture = GlowTexture.Value;
             Color color = Color.Lerp(Color.White, Color.Red, 0.5f);
             if (Main.zenithWorld)
             {
@@ -165,13 +173,13 @@ namespace CalamityMod.NPCs.CalClone
             {
                 for (int i = 1; i < afterimageAmt; i++)
                 {
-                    Color color2 = color;
-                    color2 = Color.Lerp(color2, white, colorLerpAmt);
-                    color2 *= (float)(afterimageAmt - i) / 15f;
+                    Color extraAfterimageColor = color;
+                    extraAfterimageColor = Color.Lerp(extraAfterimageColor, white, colorLerpAmt);
+                    extraAfterimageColor *= (float)(afterimageAmt - i) / 15f;
                     Vector2 offset = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
                     offset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
                     offset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(texture, offset, NPC.frame, color2, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                    spriteBatch.Draw(texture, offset, NPC.frame, extraAfterimageColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
                 }
             }
 
@@ -183,8 +191,7 @@ namespace CalamityMod.NPCs.CalClone
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<CalamitasCloneBag>()));
-            npcLoot.Add(ItemID.BrokenHeroSword);
-            
+
             // Normal drops: Everything that would otherwise be in the bag
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
             {
@@ -233,18 +240,6 @@ namespace CalamityMod.NPCs.CalClone
 
             CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedCalamitasClone);
 
-            // Abyss awakens after killing Calamitas
-            string key = "Mods.CalamityMod.Status.Progression.PlantBossText";
-            Color messageColor = Color.RoyalBlue;
-
-            if (!DownedBossSystem.downedCalamitasClone)
-            {
-                if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                    SoundEngine.PlaySound(CommonCalamitySounds.WyrmScreamSound, Main.player[Main.myPlayer].Center);
-
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
-            }
-
             // Mark the Calamitas Clone as dead
             DownedBossSystem.downedCalamitasClone = true;
             CalamityNetcode.SyncWorld();
@@ -275,30 +270,30 @@ namespace CalamityMod.NPCs.CalClone
                 NPC.height = 100;
                 NPC.position.X = NPC.position.X - (float)(NPC.width / 2);
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
-                for (int num621 = 0; num621 < 40; num621++)
+                for (int i = 0; i < 40; i++)
                 {
-                    int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
-                    Main.dust[num622].velocity *= 3f;
+                    int brimDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    Main.dust[brimDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
-                        Main.dust[num622].scale = 0.5f;
-                        Main.dust[num622].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                        Main.dust[brimDust].scale = 0.5f;
+                        Main.dust[brimDust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                     }
                 }
-                for (int num623 = 0; num623 < 70; num623++)
+                for (int j = 0; j < 70; j++)
                 {
-                    int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
-                    Main.dust[num624].noGravity = true;
-                    Main.dust[num624].velocity *= 5f;
-                    num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
-                    Main.dust[num624].velocity *= 2f;
+                    int brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
+                    Main.dust[brimDust2].noGravity = true;
+                    Main.dust[brimDust2].velocity *= 5f;
+                    brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    Main.dust[brimDust2].velocity *= 2f;
                 }
             }
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 

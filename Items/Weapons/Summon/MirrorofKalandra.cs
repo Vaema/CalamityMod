@@ -25,34 +25,36 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public static float Purple_MinRamSpeed = 40f;
         public static float Purple_MaxRamSpeed = 60f;
-        public static int Purple_IFrames = 15;
-        public static float Purple_BlastDMGModifier = 3f;
-        public static float Purple_BlastFireRate = 180f; // In frames.
+        public static int Purple_IFrames = 23;
+        public static float Purple_BlastDMGModifier = 2.25f;
+        public static float Purple_BlastFireRate = 240f; // In frames.
         public static int Purple_BlastSize = 300;
         public static int Purple_BlastChargeTime = 10;
         public static float Purple_SpinSpeed = 25f; // In degrees per frame.
 
-        public static int Scimitar_IFrames = 15;
+        public static int Scimitar_IFrames = 36; // Note that the effective iframes are half of this number, since the weapon is given an extra update while attacking.
 
         public static int Wind_BowChargeTime = 5; // Therefore, the higher the time, the slower the fire rate will be, and viceversa.
-        public static float Wind_ArrowSpeed = 35f;
+        public static float Wind_ArrowSpeed = 5f;
+        public static int Wind_ArrowSpeedMult = 10;
 
         public static int Vile_BowChargeTime = 8;
-        public static float Vile_ArrowSpeed = 35f;
+        public static float Vile_ArrowSpeed = 5f;
+        public static int Vile_ArrowSpeedMult = 10;
         public static float Vile_SplitDMGMultiplier = .33f;
         public static int Vile_SplitIFrames = 30;
         public static int Vile_SplitSpreadAngle = 8; // In degrees.
 
         public override void SetDefaults()
         {
-            Item.damage = 380;
+            Item.width = 58;
+            Item.height = 50;
+            Item.damage = 317;
             Item.useTime = Item.useAnimation = 30;
             Item.knockBack = 4f;
             Item.mana = 10;
             Item.shoot = ModContent.ProjectileType<AtzirisDisfavor>();
 
-            Item.width = 58;
-            Item.height = 50;
             Item.autoReuse = true;
             Item.noMelee = true;
             Item.Calamity().donorItem = true;
@@ -60,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item4;
             Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-15, 0);

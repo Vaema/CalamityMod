@@ -1,10 +1,10 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -41,6 +41,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.timeLeft = 360;
             Projectile.Opacity = 0f;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -146,7 +148,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 23; i++)
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f);
         }
     }
 }

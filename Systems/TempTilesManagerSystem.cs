@@ -1,16 +1,16 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria.ModLoader;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Tools;
 using CalamityMod.Systems;
-using Terraria;
-using CalamityMod.Items.Materials;
-using System.Linq;
-using Terraria.ID;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.Graphics.Shaders;
-using Terraria.Graphics.Effects;
 using CalamityMod.Tiles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Graphics.Effects;
+using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
 {

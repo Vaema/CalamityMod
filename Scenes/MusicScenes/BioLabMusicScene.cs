@@ -1,9 +1,9 @@
-﻿using CalamityMod.Systems;
+﻿using System;
+using CalamityMod.Systems;
 using CalamityMod.Walls;
 using CalamityMod.Walls.DraedonStructures;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

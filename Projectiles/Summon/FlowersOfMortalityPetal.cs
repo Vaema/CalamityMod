@@ -1,9 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D petalTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D petalTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D coreTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/FlowersOfMortalityCore").Value;
             Color drawColor = Main.hslToRgb(Hue, 0.95f, 0.5f) * 2.3f;
 

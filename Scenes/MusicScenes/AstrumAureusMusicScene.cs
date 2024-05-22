@@ -1,4 +1,4 @@
-using CalamityMod.NPCs.AstrumAureus;
+﻿using CalamityMod.NPCs.AstrumAureus;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

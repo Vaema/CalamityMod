@@ -9,7 +9,7 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
         internal static readonly int CritBoost = 4;
-        
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;

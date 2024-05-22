@@ -9,14 +9,15 @@ using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.ForegroundDrawing;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Dyes;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.Crabulon;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
-using CalamityMod.Particles.Metaballs;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
@@ -30,15 +31,20 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.GameContent.Achievements;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.Liquid;
+using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;
 using Terraria.Graphics;
 using Terraria.Graphics.Light;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.IO;
+using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.UI.Gamepad;
 
 namespace CalamityMod.ILEditing
@@ -51,6 +57,8 @@ namespace CalamityMod.ILEditing
         private static int aLabDoorClosed = -1;
         private static int exoDoorOpen = -1;
         private static int exoDoorClosed = -1;
+        // Cached for use in ChangeWaterQuadColors.
+        private static CustomLavaStyle cachedLavaStyle = default;
 
         // Holds the vanilla game function which spawns town NPCs, wrapped in a delegate for reflection purposes.
         // This function is (optionally) invoked manually in an IL edit to enable NPCs to spawn at night.
@@ -76,7 +84,8 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
 
             // Emit a delegate which calls the Calamity utility to consistently provide iframes.
-            cursor.EmitDelegate<Action<Player, int>>((p, frames) => CalamityUtils.GiveIFrames(p, frames, false));
+            // 17APR2024: Ozzatron: Consistent shield slam iframes are not boosted by Cross Necklace at all and are fixed.
+            cursor.EmitDelegate<Action<Player, int>>((p, frames) => CalamityUtils.GiveUniversalIFrames(p, frames, false));
         }
 
         private static readonly Func<Player, int> CalamityDashEquipped = (Player p) => p.Calamity().HasCustomDash ? 1 : 0;
@@ -261,7 +270,7 @@ namespace CalamityMod.ILEditing
                     self.dashTime = 15;
                     return;
                 }
-                
+
                 dashing = true;
                 self.dashTime = 0;
                 self.timeSinceLastDashStarted = 0;
@@ -282,7 +291,7 @@ namespace CalamityMod.ILEditing
         #region Allow Empress to Enrage in Boss Rush
         private static bool AllowEmpressToEnrageInBossRush(Terraria.On_NPC.orig_ShouldEmpressBeEnraged orig)
         {
-            if (Main.dayTime || BossRushEvent.BossRushActive)
+            if (BossRushEvent.BossRushActive)
                 return true;
 
             return orig();
@@ -298,8 +307,8 @@ namespace CalamityMod.ILEditing
                 self.velocity = Collision.AdvancedTileCollision(TileID.Sets.ForAdvancedCollision.ForSandshark, cPosition, self.velocity, cWidth, cHeight, fall, fall, 1);
                 return;
             }
-
-            if (self.active && self.Calamity().ShouldFallThroughPlatforms)
+            var isNpcValid = self.TryGetGlobalNPC(out CalamityGlobalNPC npc); //why the fuck this errors is anybody's guess, it absolutely shouldn't and yet it does
+            if (isNpcValid && self.active && npc.ShouldFallThroughPlatforms)
                 fall = true;
 
             orig(self, fall, cPosition, cWidth, cHeight);
@@ -494,10 +503,58 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Mana Sickness Replacement for Chaos Stone
-        private static void ConditionallyReplaceManaSickness(ILContext il)
+        #region Chaos Stone and Chalice of the Blood God
+        private static void ManaSicknessAndChaliceBufferHeal(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
+
+            //
+            // The following section enables Chalice of the Blood God's feature of healing potions clearing 50% of its bleedout buffer.
+            //
+
+            // Start by finding the moment where health is restored from a healing item.
+            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchStfld<Player>("statLife")))
+            {
+                LogFailure("Chalice of the Blood God Bleedout Heal", "Could not locate the player's health being restored");
+                return;
+            }
+
+            // Load the player and the healing potion used onto the stack for use in the following delegate.
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldarg_1);
+
+            // Insert a delegate which applies Chalice of the Blood God's function as appropriate.
+            cursor.EmitDelegate<Action<Player, Item>>((player, potion) =>
+            {
+                // If the consumed item heals 0 health, don't bother.
+                if (!player.active || player.dead || potion.healLife <= 0)
+                    return;
+
+                CalamityPlayer modPlayer = player.Calamity();
+                if (modPlayer is null)
+                    return;
+
+                if (modPlayer.chaliceOfTheBloodGod && modPlayer.chaliceBleedoutBuffer > 0D)
+                {
+                    // 20FEB2024: Ozzatron: to prevent abuse, buffer clearing is now 50% of the potion instead of 50% of your buffer
+                    float amountOfBleedToClear = ChaliceOfTheBloodGod.HealingPotionRatioForBufferClear * player.GetHealLife(potion, true);
+
+                    // Actually clear the buffer
+                    modPlayer.chaliceBleedoutBuffer -= amountOfBleedToClear;
+
+                    // Display text indicating that healing was applied to the bleedout buffer.
+                    if (Main.netMode != NetmodeID.Server)
+                    {
+                        string text = $"(+{amountOfBleedToClear})";
+                        Rectangle location = new Rectangle((int)player.position.X + 4, (int)player.position.Y - 3, player.width - 4, player.height - 4);
+                        CombatText.NewText(location, ChaliceOfTheBloodGod.BleedoutBufferDamageTextColor, Language.GetTextValue(text), dot: true);
+                    }
+                }
+            });
+
+            //
+            // The following section enables Mana Burn for Chaos Stone by conditionally replacing Mana Sickness.
+            //
 
             // Start by finding the vanilla code which applies Mana Sickness (buff ID 94).
             if (!cursor.TryGotoNext(c => c.MatchLdcI4(BuffID.ManaSickness)))
@@ -679,22 +736,16 @@ namespace CalamityMod.ILEditing
                 Main.spriteBatch.SetBlendState(BlendState.Additive);
 
                 // Draw Projectiles.
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (!Main.projectile[i].active)
-                        continue;
-
-                    if (Main.projectile[i].ModProjectile is IAdditiveDrawer d)
+                    if (p.ModProjectile is IAdditiveDrawer d)
                         d.AdditiveDraw(Main.spriteBatch);
                 }
 
                 // Draw NPCs.
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (!Main.npc[i].active)
-                        continue;
-
-                    if (Main.npc[i].ModNPC is IAdditiveDrawer d)
+                    if (n.ModNPC is IAdditiveDrawer d)
                         d.AdditiveDraw(Main.spriteBatch);
                 }
 
@@ -707,7 +758,6 @@ namespace CalamityMod.ILEditing
         private static void DrawFusableParticles(Terraria.On_Main.orig_SortDrawCacheWorms orig, Main self)
         {
             DeathAshParticle.DrawAll();
-            FusableParticleManager.RenderAllFusableParticles();
 
             if (Main.LocalPlayer.dye.Any(dyeItem => dyeItem.type == ModContent.ItemType<ProfanedMoonlightDye>()))
                 Main.LocalPlayer.Calamity().ProfanedMoonlightAuroraDrawer?.Draw(Main.LocalPlayer.Center - Main.screenPosition, false, Main.GameViewMatrix.TransformationMatrix, Matrix.Identity);
@@ -720,16 +770,28 @@ namespace CalamityMod.ILEditing
             GeneralParticleHandler.DrawAllParticles(Main.spriteBatch);
             orig(self);
         }
-
-        private static void ResetRenderTargetSizes(Terraria.On_Main.orig_SetDisplayMode orig, int width, int height, bool fullscreen)
-        {
-            if (FusableParticleManager.HasBeenFormallyDefined)
-                FusableParticleManager.LoadParticleRenderSets(true, width, height);
-            orig(width, height, fullscreen);
-        }
         #endregion
 
         #region Custom Lava Visuals
+
+        private static void CacheLavaStyle(Terraria.On_Main.orig_RenderWater orig, Main self)
+        {
+            // Immediately cache the lava drawing style.
+            // This will pay off in SPADES when we go to draw the tiles.
+            foreach (CustomLavaStyle style in CustomLavaManagement.CustomLavaStyles)
+            {
+                if (style.ChooseLavaStyle())
+                {
+                    cachedLavaStyle = style;
+                    orig(self);
+                    return;
+                }
+            }
+
+            cachedLavaStyle = default;
+            orig(self);
+        }
+
         private static void DrawCustomLava(Terraria.GameContent.Drawing.On_TileDrawing.orig_DrawPartialLiquid orig, TileDrawing self, bool behindBlocks, Tile tileCache, ref Vector2 position, ref Rectangle liquidSize, int liquidType, ref VertexColors colors)
         {
             if (liquidType != 1)
@@ -739,30 +801,30 @@ namespace CalamityMod.ILEditing
             }
 
             int slope = (int)tileCache.Slope;
-            colors = SelectLavaQuadColor(TextureAssets.LiquidSlope[liquidType].Value, ref colors, liquidType == 1);
+            colors = SelectLavaQuadColor(TextureAssets.LiquidSlope[liquidType].Value, ref colors, true);
             if (!TileID.Sets.BlocksWaterDrawingBehindSelf[tileCache.TileType] || behindBlocks || slope == 0)
             {
                 Texture2D liquidTexture = SelectLavaTexture(liquidType == 1 ? CustomLavaManagement.LavaBlockTexture : TextureAssets.Liquid[liquidType].Value, LiquidTileType.Block);
                 Main.tileBatch.Draw(liquidTexture, position, liquidSize, colors, default(Vector2), 1f, SpriteEffects.None);
                 return;
             }
-            
+
             Texture2D slopeTexture = SelectLavaTexture(liquidType == 1 ? CustomLavaManagement.LavaSlopeTexture : TextureAssets.LiquidSlope[liquidType].Value, LiquidTileType.Slope);
             liquidSize.X += 18 * (slope - 1);
             switch (slope)
             {
-            case 1:
-                Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
-                break;
-            case 2:
-                Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
-                break;
-            case 3:
-                Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
-                break;
-            case 4:
-                Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
-                break;
+                case 1:
+                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
+                    break;
+                case 2:
+                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
+                    break;
+                case 3:
+                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
+                    break;
+                case 4:
+                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
+                    break;
             }
         }
 
@@ -800,16 +862,29 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldloc, 8);
             cursor.Emit(OpCodes.Ldloc, 3);
             cursor.Emit(OpCodes.Ldloc, 4);
+
+            // Caching these values can save a LOT of overhead at runtime.
+            ModWaterStyle sunkenSeaWater = ModContent.GetInstance<SunkenSeaWater>();
+            ModWaterStyle sulphuricWater = ModContent.GetInstance<SulphuricWater>();
+            ModWaterStyle sulphuricDepthsWater = ModContent.GetInstance<SulphuricDepthsWater>();
+            ModWaterStyle upperAbyssWater = ModContent.GetInstance<UpperAbyssWater>();
+            ModWaterStyle middleAbyssWater = ModContent.GetInstance<MiddleAbyssWater>();
+            ModWaterStyle voidWater = ModContent.GetInstance<VoidWater>();
+
             cursor.EmitDelegate<Func<VertexColors, Texture2D, int, int, int, VertexColors>>((initialColor, initialTexture, liquidType, x, y) =>
             {
-                initialColor = SelectLavaQuadColor(initialTexture, ref initialColor, liquidType == 1);
+                // Don't bother changing the color if the cached drawing style is null.
+                if (cachedLavaStyle != default)
+                {
+                    initialColor = SelectLavaQuadColor(initialTexture, ref initialColor, liquidType == 1);
+                }
 
-                if (liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaWater").Slot || 
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/UpperAbyssWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/MiddleAbyssWater").Slot ||
-                liquidType == ModContent.Find<ModWaterStyle>("CalamityMod/VoidWater").Slot)
+                if (liquidType == sunkenSeaWater.Slot ||
+                liquidType == sulphuricWater.Slot ||
+                liquidType == sulphuricDepthsWater.Slot ||
+                liquidType == upperAbyssWater.Slot ||
+                liquidType == middleAbyssWater.Slot ||
+                liquidType == voidWater.Slot)
                 {
                     SelectSulphuricWaterColor(x, y, ref initialColor);
                 }
@@ -930,7 +1005,7 @@ namespace CalamityMod.ILEditing
                 return;
 
             Tile above = CalamityUtils.ParanoidTileRetrieval(x, y - 1);
-            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9) && 
+            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9) &&
             Main.waterStyle == SulphuricWater.Type)
             {
                 MediumMistParticle acidFoam = new(new(x * 16f + Main.rand.NextFloat(16f), y * 16f + 8f), -Vector2.UnitY.RotatedByRandom(0.67f) * Main.rand.NextFloat(1f, 2.4f), Color.LightSeaGreen, Color.White, 0.16f, 128f, 0.02f);
@@ -1284,6 +1359,70 @@ namespace CalamityMod.ILEditing
             cursor.EmitDelegate<Func<bool, bool>>((x) => !x);
 
             // The next (untouched) instruction stores this value into Player.scope.
+        }
+        #endregion
+
+        #region Custom world selection difficulties
+        internal static void GetDifficultyOverride(Terraria.GameContent.UI.Elements.On_AWorldListItem.orig_GetDifficulty orig, AWorldListItem self, out string expertText, out Color gameModeColor)
+        {
+            // Run the original code and pull out the original text and text color
+            orig(self, out expertText, out gameModeColor);
+
+            string difficultyText = expertText;
+            Color difficultyColor = gameModeColor;
+
+            // Journey Mode takes ultimate priority
+            if (difficultyColor == Main.creativeModeColor)
+            {
+                return;
+            }
+            
+            // Go through the World Selection Difficulty System's World Difficulty list backwards and choose the latest difficulty that applies
+            for (int i = WorldSelectionDifficultySystem.WorldDifficulties.Count - 1; i >= 0; i--)
+            {
+                WorldSelectionDifficultySystem.WorldDifficulty d = WorldSelectionDifficultySystem.WorldDifficulties[i];
+                {
+                    if (d.function(self))
+                    {
+                        difficultyText = d.name;
+                        difficultyColor = d.color;
+                        break;
+                    }
+                }
+            }
+
+            // Set the text and text color
+            expertText = difficultyText;
+            gameModeColor = difficultyColor;
+        }
+        #endregion
+
+        #region Shimmer effect edits
+        public static void ShimmerEffectEdits(Terraria.On_Item.orig_GetShimmered orig, Item self)
+        {
+            // Don't keep the original stack amount when shimmering Fabsol's Vodka into Crystal Heart Vodka
+            if (self.type == ModContent.ItemType<FabsolsVodka>())
+            {
+                self.SetDefaults(ModContent.ItemType<CrystalHeartVodka>());
+                self.shimmered = true;
+                self.shimmerWet = true;
+                self.wet = true;
+                self.velocity *= 0.1f;
+                if (Main.netMode == 0)
+                {
+                    Item.ShimmerEffect(self.Center);
+                }
+                else
+                {
+                    NetMessage.SendData(146, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
+                    NetMessage.SendData(145, -1, -1, null, self.whoAmI, 1f);
+                }
+                AchievementsHelper.NotifyProgressionEvent(27);
+            }
+            else
+            {
+                orig(self);
+            }
         }
         #endregion
     }

@@ -11,11 +11,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class CosmicKunai : RogueWeapon
     {
-        private int counter = 0;
-
         public override void SetDefaults()
         {
             Item.width = 26;
+            Item.height = 48;
             Item.damage = 92;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -27,31 +26,29 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
-            Item.height = 48;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<CosmicKunaiProj>();
             Item.shootSpeed = 28f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
+        public override float StealthDamageMultiplier => 1.5f;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable() && player.ownedProjectileCounts[ModContent.ProjectileType<CosmicScythe>()] < 10 && counter == 0 && stealth.WithinBounds(Main.maxProjectiles))
+            if (player.Calamity().StealthStrikeAvailable())
             {
                 Main.projectile[stealth].Calamity().stealthStrike = true;
+                Main.projectile[stealth].penetrate = 3;
                 SoundEngine.PlaySound(SoundID.Item73, player.Center);
                 for (float i = 0; i < 5; i++)
                 {
                     float angle = MathHelper.TwoPi / 5f * i;
-                    Projectile.NewProjectile(source, player.Center, angle.ToRotationVector2() * 8f, ModContent.ProjectileType<CosmicScythe>(), (int)(damage * 2.568f), knockback, player.whoAmI, angle, 0f);
+                    Projectile.NewProjectile(source, player.Center, angle.ToRotationVector2() * 8f, ModContent.ProjectileType<CosmicScythe>(), (int)(damage * 1.55f), knockback, player.whoAmI, angle, 0f);
                 }
             }
-
-            counter++;
-            if (counter >= Item.useAnimation / Item.useTime)
-                counter = 0;
             return false;
         }
     }

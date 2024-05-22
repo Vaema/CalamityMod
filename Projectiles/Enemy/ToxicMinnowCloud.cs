@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Enemy
         {
             if (info.Damage <= 0)
                 return;
-            
+
             target.AddBuff(BuffID.Poisoned, 240);
         }
 

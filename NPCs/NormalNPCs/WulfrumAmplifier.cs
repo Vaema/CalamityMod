@@ -1,16 +1,16 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Sounds;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using CalamityMod.World;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -28,10 +28,12 @@ namespace CalamityMod.NPCs.NormalNPCs
         }
         public const float ChargeRadiusMax = 495f;
         public const float SuperchargeTime = 720f;
+
+        public int laserDelay = 150;
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
             };
@@ -46,7 +48,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 44;
             NPC.height = 44;
             NPC.defense = 4;
-            NPC.lifeMax = 46;
+            NPC.lifeMax = Main.zenithWorld ? 72 : 46;
             NPC.knockBackResist = 0f;
             NPC.value = Item.buyPrice(0, 0, 1, 50);
             NPC.noGravity = false;
@@ -57,11 +59,17 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<WulfrumAmplifierBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+            if (Main.zenithWorld)
+                NPC.scale = 1.5f;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.DayTime,
@@ -91,7 +99,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 // Spawn some off-screen enemies to act as threats if the player enters the field.
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int enemiesToSpawn = CalamityWorld.death ? 3 : CalamityWorld.revenge ? 2 : 1;
+                    int enemiesToSpawn = CalamityWorld.LegendaryMode ? 4 : CalamityWorld.death ? 3 : CalamityWorld.revenge ? 2 : 1;
                     for (int i = 0; i < enemiesToSpawn; i++)
                     {
                         int tries = 0;
@@ -107,9 +115,30 @@ namespace CalamityMod.NPCs.NormalNPCs
                         }
                         while (WorldGen.SolidTile(CalamityUtils.ParanoidTileRetrieval((int)spawnPosition.X / 16, (int)spawnPosition.Y / 16)));
 
-                        if (tries < 500)
+                        if (tries < 500 && !Main.zenithWorld)
                         {
                             int npcToSpawn = Main.rand.NextBool() ? ModContent.NPCType<WulfrumDrone>() : ModContent.NPCType<WulfrumHovercraft>();
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnPosition.X, (int)spawnPosition.Y, npcToSpawn);
+                        }
+                        else if (tries < 500 && Main.zenithWorld)
+                        {
+                            //Summon the army
+                            int npcToSpawn = CalamityWorld.LegendaryMode ? 0 : Main.rand.Next(0, 4);
+                            switch (enemiesToSpawn)
+                            {
+                                case 0:
+                                    npcToSpawn = ModContent.NPCType<WulfrumDrone>();
+                                    break;
+                                case 1:
+                                    npcToSpawn = ModContent.NPCType<WulfrumHovercraft>();
+                                    break;
+                                case 2:
+                                    npcToSpawn = ModContent.NPCType<WulfrumGyrator>();
+                                    break;
+                                case 3:
+                                    npcToSpawn = ModContent.NPCType<WulfrumRover>();
+                                    break;
+                            }
                             NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnPosition.X, (int)spawnPosition.Y, npcToSpawn);
                         }
                     }
@@ -136,12 +165,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     }
                 }
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (var npcAtIndex in Main.ActiveNPCs)
                 {
-                    NPC npcAtIndex = Main.npc[i];
-                    if (!npcAtIndex.active)
-                        continue;
-
                     // For some strange reason, the Wulfrum enemies are not counted when SuperchargableEnemies is a static list declared up front.
                     // What I assume is going on is that it hasn't been loaded yet since it's later alphabetically (Amplifier is before the other enemies).
                     if (!SuperchargableEnemies.Contains(npcAtIndex.type) && npcAtIndex.type != ModContent.NPCType<WulfrumRover>())
@@ -162,8 +187,19 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     for (int j = 0; j < 10; j++)
                     {
-                        Dust.NewDust(npcAtIndex.position, npcAtIndex.width, npcAtIndex.height, 226);
+                        Dust.NewDust(npcAtIndex.position, npcAtIndex.width, npcAtIndex.height, DustID.Electric);
                     }
+                }
+                if (CalamityWorld.LegendaryMode)
+                {
+                    laserDelay--;
+                    NPC.spriteDirection = (player.Center.X - NPC.Center.X < 0).ToDirectionInt();
+                    for (int times = CalamityWorld.LegendaryMode ? 3 : 2; times > 0 && laserDelay == 0; times--)
+                    {
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitX * 6f * NPC.spriteDirection, NPC.SafeDirectionTo(player.Center, Vector2.UnitY) * 4.5f, ProjectileID.SaucerMissile, 10, 0f);
+                    }
+                    if (laserDelay <= 0)
+                        laserDelay = 150;
                 }
             }
         }
@@ -178,14 +214,14 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.PlayerSafe || spawnInfo.Player.Calamity().ZoneSulphur || !spawnInfo.Player.ZoneOverworldHeight)
+            if (spawnInfo.PlayerSafe || spawnInfo.Player.Calamity().ZoneSulphur || (!spawnInfo.Player.ZoneOverworldHeight && !Main.remixWorld) || (!spawnInfo.Player.ZoneNormalCaverns && spawnInfo.Player.ZoneGlowshroom && Main.remixWorld))
                 return 0f;
 
             // Spawn less frequently in the inner third of the world.
             if (spawnInfo.PlayerFloorX > Main.maxTilesX * 0.333f && spawnInfo.PlayerFloorX < Main.maxTilesX - Main.maxTilesX * 0.333f)
-                return SpawnCondition.OverworldDaySlime.Chance * (Main.hardMode ? 0.01f : 0.06f) * (!NPC.AnyNPCs(NPC.type) ? 1.3f : 1f);
+                return (Main.remixWorld ? SpawnCondition.Cavern.Chance : SpawnCondition.OverworldDaySlime.Chance) * (Main.hardMode ? 0.01f : 0.06f) * (!NPC.AnyNPCs(NPC.type) ? 1.3f : 1f);
 
-            return SpawnCondition.OverworldDaySlime.Chance * (Main.hardMode ? 0.033f : 0.15f) * (!NPC.AnyNPCs(NPC.type) ? 1.3f : 1f);
+            return (Main.remixWorld ? SpawnCondition.Cavern.Chance : SpawnCondition.OverworldDaySlime.Chance) * (Main.hardMode ? 0.033f : 0.15f) * (!NPC.AnyNPCs(NPC.type) ? 1.3f : 1f);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

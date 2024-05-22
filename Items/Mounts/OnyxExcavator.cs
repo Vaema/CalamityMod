@@ -1,14 +1,14 @@
-﻿using CalamityMod.Buffs.Mounts;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Buffs.Mounts;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 //using Terraria.GameContent.Achievements;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Items.Mounts
 {
@@ -74,7 +74,7 @@ namespace CalamityMod.Items.Mounts
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust dust = Dust.NewDustDirect(mountedPlayer.BottomLeft, mountedPlayer.width, 6, 192, 0f, 0f, 0, default, 1f);
+                    Dust dust = Dust.NewDustDirect(mountedPlayer.BottomLeft, mountedPlayer.width, 6, DustID.Ghost, 0f, 0f, 0, default, 1f);
                     dust.velocity = new Vector2(velocity.X * 0.15f, Main.rand.NextFloat() * -2f);
                     dust.noLight = true;
                     dust.scale = 0.2f + Main.rand.NextFloat() * 0.8f;

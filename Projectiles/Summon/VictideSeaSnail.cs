@@ -1,11 +1,11 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using System;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int d = 0; d < 45; d++)
                 {
-                    Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 179, 0f, 0f, 0, default, 1f);
+                    Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.BubbleBurst_Purple, 0f, 0f, 0, default, 1f);
                     dust.velocity *= 2f;
                     dust.scale *= 1.15f;
                 }
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Summon
                 int dustAmount = Main.rand.Next(40, 50);
                 for (int d = 0; d < dustAmount; d++)
                 {
-                    Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 179, 0f, 0f, 0, default, 1f);
+                    Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.BubbleBurst_Purple, 0f, 0f, 0, default, 1f);
                     dust.velocity *= 2f;
                     dust.scale *= 1.15f;
                 }
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 PlayerStandStillTimer++;
                 //pop out the shell
-                if (PlayerStandStillTimer == timeToStandStillBeforePeekOut )
+                if (PlayerStandStillTimer == timeToStandStillBeforePeekOut)
                 {
                     DustTimer = 0;
                     float direction = Main.rand.NextBool() ? 1f : -1f;
@@ -148,15 +148,14 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (FireCooldown > 0f)
                 {
-                    FireCooldown --;
+                    FireCooldown--;
                     return;
                 }
 
                 bool foundTarget = false;
                 float maxDist = 300f;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         if (Vector2.Distance(Projectile.Center, npc.Center) < maxDist && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
@@ -197,7 +196,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int d = 0; d < 45; d++)
             {
-                Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 179, 0f, 0f, 0, default, 1f);
+                Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.BubbleBurst_Purple, 0f, 0f, 0, default, 1f);
                 dust.velocity *= 2f;
                 dust.scale *= 1.15f;
             }
@@ -217,7 +216,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player owner = Main.player[Projectile.owner];
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = new Rectangle(0, 36 * Projectile.frame, 38, 34);
             Vector2 origin = !CanComePeekOut ? new Vector2(15, 23) : frame.Size() / 2f;
 

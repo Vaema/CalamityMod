@@ -1,9 +1,10 @@
-﻿using CalamityMod.DataStructures;
-using CalamityMod.Particles;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.DataStructures;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,6 +13,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
+using CalamityMod.Graphics.Primitives;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -27,8 +29,6 @@ namespace CalamityMod.Projectiles.Summon
         //Sounds
         public static readonly SoundStyle ZapSound = SoundID.Item94 with { Volume = SoundID.Item94.Volume * 0.5f };
         public static readonly SoundStyle SlapSound = new("CalamityMod/Sounds/Custom/WetSlap", 4);
-
-        internal PrimitiveTrail TrailRenderer;
 
         public List<VerletSimulatedSegment> Segments;
         public Player Owner => Main.player[Projectile.owner];
@@ -136,24 +136,24 @@ namespace CalamityMod.Projectiles.Summon
                 int maxDust = 2 + Main.rand.Next(3);
                 for (int i = 0; i < maxDust; i++)
                 {
-                    Dust.NewDustDirect(Projectile.Center, 0, 0, 226, -3f + Main.rand.NextFloat(0, 6f), -5f, Scale: Main.rand.NextFloat(0.2f, 1f));
+                    Dust.NewDustDirect(Projectile.Center, 0, 0, DustID.Electric, -3f + Main.rand.NextFloat(0, 6f), -5f, Scale: Main.rand.NextFloat(0.2f, 1f));
 
-                    Dust.NewDustDirect(CnidarianPos, 0, 0, 226, -4f + Main.rand.NextFloat(0, 8f), -3f, Scale: Main.rand.NextFloat(0.2f, 1f));
+                    Dust.NewDustDirect(CnidarianPos, 0, 0, DustID.Electric, -4f + Main.rand.NextFloat(0, 8f), -3f, Scale: Main.rand.NextFloat(0.2f, 1f));
                 }
 
                 int[] targetArray = new int[maxTargets];
                 int targetsAquired = 0;
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
                     if (targetsAquired == maxTargets)
                         break;
 
-                    if (Main.npc[i].CanBeChasedBy(Projectile))
+                    if (n.CanBeChasedBy(Projectile))
                     {
-                        if ((CnidarianPos - Main.npc[i].Center).Length() < targettingDistance)
+                        if ((CnidarianPos - n.Center).Length() < targettingDistance)
                         {
-                            targetArray[targetsAquired] = i;
+                            targetArray[targetsAquired] = n.whoAmI;
                             targetsAquired++;
                         }
                     }
@@ -167,11 +167,11 @@ namespace CalamityMod.Projectiles.Summon
                     for (int i = 0; i < targetsAquired; i++)
                     {
                         velocity = (Main.npc[targetArray[i]].Center - CnidarianPos).SafeNormalize(Vector2.Zero) * 10f;
-                        
+
                         for (int j = 0; j < 3; j++)
                         {
                             Color bloomColor = Main.rand.NextBool() ? (Main.rand.NextBool() ? Color.Gold : Color.Cyan) : Color.SpringGreen;
-                            ElectricSpark spark = new ElectricSpark(CnidarianPos, velocity.RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(0.2f, 1.3f), Color.Gold, bloomColor, 0.5f + Main.rand.NextFloat(0.5f), 30, bloomScale: 2) ;
+                            ElectricSpark spark = new ElectricSpark(CnidarianPos, velocity.RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(0.2f, 1.3f), Color.Gold, bloomColor, 0.5f + Main.rand.NextFloat(0.5f), 30, bloomScale: 2);
                             GeneralParticleHandler.SpawnParticle(spark);
                         }
 
@@ -228,7 +228,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public Color PrimColorFunction(float completionRatio)
         {
-            float timeAfterZap = MathHelper.Clamp( 20 - (Timer - 5 - completionRatio * 12f) % ElectrifyTimer, 0, 20);
+            float timeAfterZap = MathHelper.Clamp(20 - (Timer - 5 - completionRatio * 12f) % ElectrifyTimer, 0, 20);
             float postZapTime = 1 - timeAfterZap / 20f;
 
             Color startingColor = Color.Lerp(Color.Cyan, Color.Maroon, (float)Math.Pow(postZapTime, 2f)) * (Projectile.timeLeft / (float)FadeoutTime);
@@ -238,15 +238,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TrailRenderer is null)
-                TrailRenderer = new PrimitiveTrail(PrimWidthFunction, PrimColorFunction);
-
             Vector2[] segmentPositions = Segments.Select(x => x.position).ToArray();
 
-            TrailRenderer.Draw(segmentPositions, -Main.screenPosition, 66);
+            PrimitiveRenderer.RenderTrail(segmentPositions, new(PrimWidthFunction, PrimColorFunction), 66);
 
-
-            Texture2D tex = Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Vector2 squish = new Vector2(2 - StretchRatio(), StretchRatio());
 
@@ -291,7 +287,8 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     Segments[SegmentCount - 1].position = sentPos;
                 }
-                catch (Exception) {
+                catch (Exception)
+                {
                     CalamityMod.Instance.Logger.Warn("IbanPlay Victide Cnidarian Position Netcode failed safely");
                 }
             }

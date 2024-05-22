@@ -1,7 +1,7 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -25,8 +25,8 @@ namespace CalamityMod.Tiles.Abyss
             Main.tileLavaDeath[Type] = true;
             TileID.Sets.CommonSapling[Type] = true;
             TileID.Sets.TreeSapling[Type] = true;
-			TileID.Sets.SwaysInWindBasic[Type] = true;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+            TileID.Sets.SwaysInWindBasic[Type] = true;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
             TileObjectData.newTile.Width = 1;
             TileObjectData.newTile.Height = 2;
             TileObjectData.newTile.Origin = new Point16(0, 1);
@@ -43,7 +43,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.RandomStyleRange = 3;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(113, 90, 71), Language.GetText("MapObject.Sapling"));
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
             AdjTiles = new int[] { TileID.Saplings };
         }
 
@@ -101,7 +101,7 @@ namespace CalamityMod.Tiles.Abyss
                         if (frameY != frameYIdeal)
                         {
                             float heightRatio = k / (float)treeHeight;
-                            bool increaseFrameY = heightRatio >= 0.25f && ((heightRatio < 0.5f && WorldGen.genRand.Next(13) == 0) || (heightRatio < 0.7f && WorldGen.genRand.NextBool(9)) || heightRatio >= 0.95f || WorldGen.genRand.Next(5) != 0 || true);
+                            bool increaseFrameY = heightRatio >= 0.25f && ((heightRatio < 0.5f && WorldGen.genRand.NextBool(13)) || (heightRatio < 0.7f && WorldGen.genRand.NextBool(9)) || heightRatio >= 0.95f || WorldGen.genRand.Next(5) != 0 || true);
                             if (increaseFrameY)
                                 frameY += (short)(Math.Sign(frameYIdeal) * 2);
                         }

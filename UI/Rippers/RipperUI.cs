@@ -293,7 +293,7 @@ namespace CalamityMod.UI.Rippers
             if (animationActive)
             {
                 rageAnimTimer++;
-                if(rageAnimTimer >= RageAnimFrameDelay)
+                if (rageAnimTimer >= RageAnimFrameDelay)
                 {
                     rageAnimTimer = 0;
                     rageAnimFrame++; // This will eventually increment it to RageAnimFrames, thus stopping the animation.
@@ -340,7 +340,7 @@ namespace CalamityMod.UI.Rippers
         #region Draw Adrenaline Bar
         private static void DrawAdrenalineBar(SpriteBatch spriteBatch, CalamityPlayer modPlayer, Vector2 screenPos)
         {
-			bool draedonHeart = modPlayer.draedonsHeart;
+            bool draedonHeart = modPlayer.draedonsHeart;
             bool useFullTexture = modPlayer.adrenaline >= modPlayer.adrenalineMax || modPlayer.adrenalineModeActive;
 
             float uiScale = Main.UIScale;
@@ -358,18 +358,18 @@ namespace CalamityMod.UI.Rippers
                     adrenBarTimer = 0;
                     adrenBarFrame++;
                     adrenBarFullFrame++;
-					if (adrenBarFrame == AdrenBarFrames)
-						adrenBarFrame = 1;
-					if (adrenBarFullFrame == AdrenBarFullFrames)
-						adrenBarFullFrame = 1;
+                    if (adrenBarFrame == AdrenBarFrames)
+                        adrenBarFrame = 1;
+                    if (adrenBarFullFrame == AdrenBarFullFrames)
+                        adrenBarFullFrame = 1;
                 }
             }
             else
-			{
-				adrenBarTimer = 0;
-				adrenBarFrame = 0;
-				adrenBarFullFrame = 0;
-			}
+            {
+                adrenBarTimer = 0;
+                adrenBarFrame = 0;
+                adrenBarFullFrame = 0;
+            }
 
             // If adrenaline is full this frame and the animation hasn't started yet, start it.
             float adrenRatio = modPlayer.adrenaline / modPlayer.adrenalineMax;
@@ -393,20 +393,20 @@ namespace CalamityMod.UI.Rippers
             }
 
             if (!useFullTexture)
-			{
-				int frameHeight = (adrenBorderTex.Height / AdrenBarFrames) - 1;
-				Rectangle borderRect = new Rectangle(0, (frameHeight + 1) * adrenBarFrame, adrenBorderTex.Width, frameHeight);
-				// Draw the border of the Adrenaline Bar first
-				spriteBatch.Draw(adrenBorderTex, screenPos + shakeOffset, borderRect, Color.White, 0f, origin, uiScale, SpriteEffects.None, 0);
-			}
+            {
+                int frameHeight = (adrenBorderTex.Height / AdrenBarFrames) - 1;
+                Rectangle borderRect = new Rectangle(0, (frameHeight + 1) * adrenBarFrame, adrenBorderTex.Width, frameHeight);
+                // Draw the border of the Adrenaline Bar first
+                spriteBatch.Draw(adrenBorderTex, screenPos + shakeOffset, borderRect, Color.White, 0f, origin, uiScale, SpriteEffects.None, 0);
+            }
             else
-			{
+            {
                 // Use a slightly different texture if Adrenaline is full or active
-				int frameHeight = (adrenBorderTexFull.Height / AdrenBarFullFrames) - 1;
-				Rectangle borderRect = new Rectangle(0, (frameHeight + 1) * adrenBarFullFrame, adrenBorderTexFull.Width, frameHeight);
+                int frameHeight = (adrenBorderTexFull.Height / AdrenBarFullFrames) - 1;
+                Rectangle borderRect = new Rectangle(0, (frameHeight + 1) * adrenBarFullFrame, adrenBorderTexFull.Width, frameHeight);
 
                 spriteBatch.Draw(adrenBorderTexFull, screenPos + shakeOffset, borderRect, Color.White, 0f, origin, uiScale, SpriteEffects.None, 0);
-			}
+            }
 
             // The amount of the bar to draw depends on the player's current Adrenaline level
             // offset calculates the deadspace that is the border and not the bar. Bar is 24 pixels tall

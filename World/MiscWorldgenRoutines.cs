@@ -1,4 +1,7 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Rogue;
@@ -10,16 +13,13 @@ using CalamityMod.Tiles.FurnitureAncient;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
-using System;
-using System.Reflection;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using Terraria.GameContent.Generation;
 
 namespace CalamityMod.World
 {
@@ -77,7 +77,7 @@ namespace CalamityMod.World
             // Astral Chest has completely different loot in it
             if (type == ModContent.TileType<AstralChestLocked>())
             {
-                PutItemInChest(ref chest, ModContent.ItemType<Stardust>(), 30, 80);
+                PutItemInChest(ref chest, ModContent.ItemType<StarblightSoot>(), 30, 80);
                 PutItemInChest(ref chest, ModContent.ItemType<AureusCell>(), 10, 14);
                 PutItemInChest(ref chest, ModContent.ItemType<ZergPotion>(), 8);
                 PutItemInChest(ref chest, ModContent.ItemType<ZenPotion>(), 3, 5);
@@ -181,7 +181,7 @@ namespace CalamityMod.World
         #region Chasm Generator
         public static void ChasmGenerator(int i, int j, int steps, bool ocean = false)
         {
-            float num = steps; //850 small 1450 medium 2050 large
+            float maxChasmSize = steps; //850 small 1450 medium 2050 large
             int limitIncrease = Main.remixWorld ? 110 : 0;
             if (ocean)
             {
@@ -202,123 +202,123 @@ namespace CalamityMod.World
                 }
                 j = tileYLookup;
             }
-            Vector2 vector;
-            vector.X = i;
-            vector.Y = j;
-            Vector2 vector2;
-            vector2.X = WorldGen.genRand.Next(-1, 2) * 0.1f;
-            vector2.Y = WorldGen.genRand.Next(3, 8) * 0.2f + 0.5f;
-            int num2 = 5;
-            double num3 = WorldGen.genRand.Next(5, 7) + 20; //start width
-            while (num3 > 0.0)
+            Vector2 chasmGenPosition;
+            chasmGenPosition.X = i;
+            chasmGenPosition.Y = j;
+            Vector2 randChasmGenOffset;
+            randChasmGenOffset.X = WorldGen.genRand.Next(-1, 2) * 0.1f;
+            randChasmGenOffset.Y = WorldGen.genRand.Next(3, 8) * 0.2f + 0.5f;
+            int five = 5;
+            double chasmWidth = WorldGen.genRand.Next(5, 7) + 20; //start width
+            while (chasmWidth > 0.0)
             {
-                if (num > 0f)
+                if (maxChasmSize > 0f)
                 {
-                    num3 += WorldGen.genRand.Next(10);
-                    num3 -= WorldGen.genRand.Next(10);
+                    chasmWidth += WorldGen.genRand.Next(10);
+                    chasmWidth -= WorldGen.genRand.Next(10);
                     float smallHoleLimit = 790f; //small
-                    
+
                     if (Main.maxTilesY > 1500)
-                    { 
-                        smallHoleLimit = 1360f; 
-                        
-                        if (Main.maxTilesY > 2100) 
-                        { 
-                            smallHoleLimit = 1950f; 
-                        } 
-                    }
-                    
-                    if (ocean && num > smallHoleLimit)
                     {
-                        if (num3 < 7.0) //min width
+                        smallHoleLimit = 1360f;
+
+                        if (Main.maxTilesY > 2100)
                         {
-                            num3 = 7.0; //min width
+                            smallHoleLimit = 1950f;
                         }
-                        if (num3 > 45.0) //max width
+                    }
+
+                    if (ocean && maxChasmSize > smallHoleLimit)
+                    {
+                        if (chasmWidth < 7.0) //min width
                         {
-                            num3 = 45.0; //max width
+                            chasmWidth = 7.0; //min width
+                        }
+                        if (chasmWidth > 45.0) //max width
+                        {
+                            chasmWidth = 45.0; //max width
                         }
                     }
                     else //dig large hole
                     {
-                        if (num3 < (ocean ? 30.0 : 8.0)) //min width
+                        if (chasmWidth < (ocean ? 30.0 : 8.0)) //min width
                         {
-                            num3 = ocean ? 30.0 : 8.0; //min width
+                            chasmWidth = ocean ? 30.0 : 8.0; //min width
                         }
-                        if (num3 > (ocean ? 70.0 : 20.0)) //max width
+                        if (chasmWidth > (ocean ? 70.0 : 20.0)) //max width
                         {
-                            num3 = ocean ? 70.0 : 20.0; //max width
+                            chasmWidth = ocean ? 70.0 : 20.0; //max width
                         }
-                        if (num == 1f && num3 < (ocean ? 50.0 : 15.0))
+                        if (maxChasmSize == 1f && chasmWidth < (ocean ? 50.0 : 15.0))
                         {
-                            num3 = ocean ? 50.0 : 15.0;
+                            chasmWidth = ocean ? 50.0 : 15.0;
                         }
                     }
                 }
                 else
                 {
-                    if ((double)vector.Y > (Abyss.AbyssChasmBottom + limitIncrease))
+                    if ((double)chasmGenPosition.Y > (Abyss.AbyssChasmBottom + limitIncrease))
                     {
-                        num3 -= WorldGen.genRand.Next(5) + 8;
+                        chasmWidth -= WorldGen.genRand.Next(5) + 8;
                     }
                 }
                 if (Main.maxTilesY > 2100)
                 {
-                    if (((double)vector.Y > (Abyss.AbyssChasmBottom + limitIncrease) && num > 0f && ocean) ||
-                    (vector.Y >= Main.maxTilesY && num > 0f && !ocean))
+                    if (((double)chasmGenPosition.Y > (Abyss.AbyssChasmBottom + limitIncrease) && maxChasmSize > 0f && ocean) ||
+                    (chasmGenPosition.Y >= Main.maxTilesY && maxChasmSize > 0f && !ocean))
                     {
-                        num = 0f;
+                        maxChasmSize = 0f;
                     }
                 }
                 else if (Main.maxTilesY > 1500)
                 {
-                    if (((double)vector.Y > (Abyss.AbyssChasmBottom + limitIncrease) && num > 0f && ocean) ||
-                    (vector.Y > Main.maxTilesY && num > 0f && !ocean))
+                    if (((double)chasmGenPosition.Y > (Abyss.AbyssChasmBottom + limitIncrease) && maxChasmSize > 0f && ocean) ||
+                    (chasmGenPosition.Y > Main.maxTilesY && maxChasmSize > 0f && !ocean))
                     {
-                        num = 0f;
+                        maxChasmSize = 0f;
                     }
                 }
                 else
                 {
-                    if (((double)vector.Y > (Abyss.AbyssChasmBottom + limitIncrease) && num > 0f && ocean) ||
-                    (vector.Y > Main.maxTilesY && num > 0f && !ocean))
+                    if (((double)chasmGenPosition.Y > (Abyss.AbyssChasmBottom + limitIncrease) && maxChasmSize > 0f && ocean) ||
+                    (chasmGenPosition.Y > Main.maxTilesY && maxChasmSize > 0f && !ocean))
                     {
-                        num = 0f;
+                        maxChasmSize = 0f;
                     }
                 }
 
-                num -= 1f;
-                int num4;
-                int num5;
-                int num6;
-                int num7;
-                if (num > num2)
+                maxChasmSize -= 1f;
+                int chasmWidthMin;
+                int chasmWidthMax;
+                int chasmHeightMin;
+                int chasmHeightMax;
+                if (maxChasmSize > five)
                 {
-                    num4 = (int)(vector.X - num3 * 0.5);
-                    num5 = (int)(vector.X + num3 * 0.5);
-                    num6 = (int)(vector.Y - num3 * 0.5);
-                    num7 = (int)(vector.Y + num3 * 0.5);
-                    if (num4 < 0)
+                    chasmWidthMin = (int)(chasmGenPosition.X - chasmWidth * 0.5);
+                    chasmWidthMax = (int)(chasmGenPosition.X + chasmWidth * 0.5);
+                    chasmHeightMin = (int)(chasmGenPosition.Y - chasmWidth * 0.5);
+                    chasmHeightMax = (int)(chasmGenPosition.Y + chasmWidth * 0.5);
+                    if (chasmWidthMin < 0)
                     {
-                        num4 = 0;
+                        chasmWidthMin = 0;
                     }
-                    if (num5 > Main.maxTilesX - 1)
+                    if (chasmWidthMax > Main.maxTilesX - 1)
                     {
-                        num5 = Main.maxTilesX - 1;
+                        chasmWidthMax = Main.maxTilesX - 1;
                     }
-                    if (num6 < 0)
+                    if (chasmHeightMin < 0)
                     {
-                        num6 = 0;
+                        chasmHeightMin = 0;
                     }
-                    if (num7 > Main.maxTilesY)
+                    if (chasmHeightMax > Main.maxTilesY)
                     {
-                        num7 = Main.maxTilesY;
+                        chasmHeightMax = Main.maxTilesY;
                     }
-                    for (int k = num4; k < num5; k++)
+                    for (int k = chasmWidthMin; k < chasmWidthMax; k++)
                     {
-                        for (int l = num6; l < num7; l++)
+                        for (int l = chasmHeightMin; l < chasmHeightMax; l++)
                         {
-                            if ((Math.Abs(k - vector.X) + Math.Abs(l - vector.Y)) < num3 * 0.5 * (1.0 + WorldGen.genRand.Next(-5, 6) * 0.015))
+                            if ((Math.Abs(k - chasmGenPosition.X) + Math.Abs(l - chasmGenPosition.Y)) < chasmWidth * 0.5 * (1.0 + WorldGen.genRand.Next(-5, 6) * 0.015))
                             {
                                 if (ocean)
                                 {
@@ -336,51 +336,51 @@ namespace CalamityMod.World
                         }
                     }
                 }
-                /*if (num <= 2f && vector.Y < (Main.rockLayer + Main.maxTilesY * 0.3))
+                /*if (maxChasmSize <= 2f && chasmGenPosition.Y < (Main.rockLayer + Main.maxTilesY * 0.3))
                 {
-                    num = 2f;
+                    maxChasmSize = 2f;
                 }*/
-                vector += vector2;
-                vector2.X += WorldGen.genRand.Next(-1, 2) * 0.01f;
-                if (vector2.X > 0.02)
+                chasmGenPosition += randChasmGenOffset;
+                randChasmGenOffset.X += WorldGen.genRand.Next(-1, 2) * 0.01f;
+                if (randChasmGenOffset.X > 0.02)
                 {
-                    vector2.X = 0.02f;
+                    randChasmGenOffset.X = 0.02f;
                 }
-                if (vector2.X < -0.02)
+                if (randChasmGenOffset.X < -0.02)
                 {
-                    vector2.X = -0.02f;
+                    randChasmGenOffset.X = -0.02f;
                 }
-                num4 = (int)(vector.X - num3 * 1.1);
-                num5 = (int)(vector.X + num3 * 1.1);
-                num6 = (int)(vector.Y - num3 * 1.1);
-                num7 = (int)(vector.Y + num3 * 1.1);
-                if (num4 < 1)
+                chasmWidthMin = (int)(chasmGenPosition.X - chasmWidth * 1.1);
+                chasmWidthMax = (int)(chasmGenPosition.X + chasmWidth * 1.1);
+                chasmHeightMin = (int)(chasmGenPosition.Y - chasmWidth * 1.1);
+                chasmHeightMax = (int)(chasmGenPosition.Y + chasmWidth * 1.1);
+                if (chasmWidthMin < 1)
                 {
-                    num4 = 1;
+                    chasmWidthMin = 1;
                 }
-                if (num5 > Main.maxTilesX - 1)
+                if (chasmWidthMax > Main.maxTilesX - 1)
                 {
-                    num5 = Main.maxTilesX - 1;
+                    chasmWidthMax = Main.maxTilesX - 1;
                 }
-                if (num6 < 0)
+                if (chasmHeightMin < 0)
                 {
-                    num6 = 0;
+                    chasmHeightMin = 0;
                 }
-                if (num7 > Main.maxTilesY)
+                if (chasmHeightMax > Main.maxTilesY)
                 {
-                    num7 = Main.maxTilesY;
+                    chasmHeightMax = Main.maxTilesY;
                 }
-                for (int m = num4; m < num5; m++)
+                for (int m = chasmWidthMin; m < chasmWidthMax; m++)
                 {
-                    for (int n = num6; n < num7; n++)
+                    for (int n = chasmHeightMin; n < chasmHeightMax; n++)
                     {
-                        if ((Math.Abs(m - vector.X) + Math.Abs(n - vector.Y)) < num3 * 1.1 * (1.0 + WorldGen.genRand.Next(-5, 6) * 0.015))
+                        if ((Math.Abs(m - chasmGenPosition.X) + Math.Abs(n - chasmGenPosition.Y)) < chasmWidth * 1.1 * (1.0 + WorldGen.genRand.Next(-5, 6) * 0.015))
                         {
                             if (n > j + WorldGen.genRand.Next(7, 16))
                             {
                                 Main.tile[m, n].Get<TileWallWireStateData>().HasTile = false;
                             }
-                            if (steps <= num2)
+                            if (steps <= five)
                             {
                                 Main.tile[m, n].Get<TileWallWireStateData>().HasTile = false;
                             }
@@ -397,25 +397,25 @@ namespace CalamityMod.World
                         }
                     }
                 }
-                for (int num11 = num4; num11 < num5; num11++)
+                for (int r = chasmWidthMin; r < chasmWidthMax; r++)
                 {
-                    for (int num12 = num6; num12 < num7; num12++)
+                    for (int s = chasmHeightMin; s < chasmHeightMax; s++)
                     {
-                        if ((Math.Abs(num11 - vector.X) + Math.Abs(num12 - vector.Y)) < num3 * 1.1 * (1.0 + WorldGen.genRand.Next(-5, 6) * 0.015))
+                        if ((Math.Abs(r - chasmGenPosition.X) + Math.Abs(s - chasmGenPosition.Y)) < chasmWidth * 1.1 * (1.0 + WorldGen.genRand.Next(-5, 6) * 0.015))
                         {
                             if (ocean)
                             {
-                                Main.tile[num11, num12].LiquidAmount = 255;
-                                Main.tile[num11, num12].Get<LiquidData>().LiquidType = LiquidID.Water;
+                                Main.tile[r, s].LiquidAmount = 255;
+                                Main.tile[r, s].Get<LiquidData>().LiquidType = LiquidID.Water;
                             }
                             else
                             {
-                                Main.tile[num11, num12].LiquidAmount = 255;
-                                Main.tile[num11, num12].Get<LiquidData>().LiquidType = LiquidID.Lava;
+                                Main.tile[r, s].LiquidAmount = 255;
+                                Main.tile[r, s].Get<LiquidData>().LiquidType = LiquidID.Lava;
                             }
-                            if (steps <= num2)
+                            if (steps <= five)
                             {
-                                Main.tile[num11, num12].Get<TileWallWireStateData>().HasTile = false;
+                                Main.tile[r, s].Get<TileWallWireStateData>().HasTile = false;
                             }
                         }
                     }
@@ -427,7 +427,7 @@ namespace CalamityMod.World
         #region Smart Gem Gen
         public static void SmartGemGen()
         {
-            double oneThirdOfUnderground = (Main.maxTilesY - 200 - Main.worldSurface) / 3D;
+            double oneThirdOfUnderground = (Main.UnderworldLayer - Main.worldSurface) / 3D;
             double verticalStartFactor_Layer1 = Main.worldSurface;
             double verticalStartFactor_Layer2 = verticalStartFactor_Layer1 + oneThirdOfUnderground;
             double verticalStartFactor_Layer3 = verticalStartFactor_Layer1 + oneThirdOfUnderground * 2D;

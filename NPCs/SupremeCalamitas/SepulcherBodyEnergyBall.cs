@@ -1,14 +1,14 @@
-﻿using CalamityMod.Events;
+﻿using System.IO;
+using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
@@ -18,6 +18,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public NPC AheadSegment => Main.npc[(int)NPC.ai[1]];
         public NPC HeadSegment => Main.npc[(int)NPC.ai[2]];
         public ref float AttackTimer => ref NPC.localAI[0];
+        public int NoStartAttack = 240;
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.SepulcherHead.DisplayName");
         public override void SetStaticDefaults()
         {
@@ -66,6 +67,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void AI()
         {
+            NoStartAttack--;
+
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 
@@ -88,7 +91,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        Dust fire = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 182, 0f, 0f, 100, default, 2f);
+                        Dust fire = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.TheDestroyer, 0f, 0f, 100, default, 2f);
                         fire.noGravity = true;
                         fire.noLight = true;
                     }
@@ -103,9 +106,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             else
                 NPC.alpha = HeadSegment.alpha;
 
-            AttackTimer += BossRushEvent.BossRushActive ? 1.5f : 1f;
+            /*AttackTimer += BossRushEvent.BossRushActive ? 1.5f : 1f;
             float attackgate = !HeadSegment.Calamity().unbreakableDR && Main.zenithWorld ? 450f : 900f;
-            if (AttackTimer >= attackgate)
+            if (AttackTimer >= attackgate && NoStartAttack <= 0)
             {
                 AttackTimer = 0f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -114,16 +117,19 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     int damage = NPC.GetProjectileDamage(type);
                     int totalProjectiles = 4;
                     float radians = MathHelper.TwoPi / totalProjectiles;
-                    Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
+                    float velocity = 1f;
+                    float projectileVelocityToPass = 15f;
+
+                    Vector2 spinningPoint = Vector2.Normalize(new Vector2(-velocity, -velocity));
                     for (int k = 0; k < totalProjectiles; k++)
                     {
-                        Vector2 velocity = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
+                        Vector2 projectileVelocity = spinningPoint.RotatedBy(radians * k);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
                     }
                     NPC.netUpdate = true;
                 }
                 SoundEngine.PlaySound(SupremeCalamitas.BrimstoneShotSound, NPC.Center);
-            }
+            }*/
 
             if (Main.npc.IndexInRange((int)NPC.ai[1]))
             {

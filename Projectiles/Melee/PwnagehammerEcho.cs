@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 offset = new Vector2(7, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(3, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.position.X, Projectile.position.Y) + offset, DustID.GoldFlame, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
+                Dust dust = Dust.NewDustPerfect(Projectile.position + offset, DustID.GoldFlame, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
                 dust.noGravity = true;
             }
 
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 offset = new Vector2(7, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(3, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.position.X, Projectile.position.Y) + offset, DustID.GoldFlame, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
+                Dust dust = Dust.NewDustPerfect(Projectile.position + offset, DustID.GoldFlame, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100, new Color(255, 245, 198), 2f);
                 dust.noGravity = true;
             }
         }
@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles.Melee
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(15f, 0).RotatedBy(rot);
                 Vector2 velOffset = new Vector2(12.5f, 0).RotatedBy(rot);
-                int dust = Dust.NewDust(Projectile.position + offset, Projectile.width, Projectile.height, 269, velOffset.X, velOffset.Y);
+                int dust = Dust.NewDust(Projectile.position + offset, Projectile.width, Projectile.height, DustID.Sandnado, velOffset.X, velOffset.Y);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity = velOffset;
                 Main.dust[dust].scale = 3f;
@@ -137,7 +137,7 @@ namespace CalamityMod.Projectiles.Melee
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle sourceRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
             Vector2 origin = sourceRectangle.Size() / 2f;
 

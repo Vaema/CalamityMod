@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -131,7 +131,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             // Special quieter version of this noise used by Soul Edge and similar
-            SoundEngine.PlaySound(SoulEdge.ProjectileDeathSound, Projectile.Center);
+            SoundEngine.PlaySound(VoidEdge.ProjectileDeathSound, Projectile.Center);
         }
 
         // Cannot deal damage for the first several frames of existence.

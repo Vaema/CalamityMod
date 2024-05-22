@@ -1,7 +1,7 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.ai[0] == 1f)
             {
                 kunaiStabbing++;
-                if (kunaiStabbing >= 30 || (Projectile.Calamity().stealthStrike && kunaiStabbing >=20))
+                if (kunaiStabbing >= 30 || (Projectile.Calamity().stealthStrike && kunaiStabbing >= 20))
                 {
                     kunaiStabbing = 0;
                     float startOffsetX = Main.rand.NextFloat(100f, 200f) * (Main.rand.NextBool() ? -1f : 1f);

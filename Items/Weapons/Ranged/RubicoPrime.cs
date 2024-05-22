@@ -15,6 +15,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
+            Item.width = 82;
+            Item.height = 28;
             Item.damage = 1050;
             Item.DamageType = DamageClass.Ranged;
             Item.knockBack = 10f;
@@ -24,14 +26,11 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.width = 82;
-            Item.height = 28;
-
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;

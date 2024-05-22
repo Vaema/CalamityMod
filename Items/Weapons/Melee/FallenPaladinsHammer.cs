@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         {
             Item.width = 14;
+            Item.height = 28;
             Item.damage = 368;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -24,7 +25,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 20f;
             Item.UseSound = SoundID.Item1;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.height = 28;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<FallenPaladinsHammerProj>();

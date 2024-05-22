@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
@@ -42,7 +43,7 @@ namespace CalamityMod.Items.Armor.Empyrean
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.defense = 20; //71
         }
@@ -68,8 +69,8 @@ namespace CalamityMod.Items.Armor.Empyrean
             player.setBonus = this.GetLocalizedValue("SetBonus");
             if (player.statLife <= (int)(player.statLifeMax2 * 0.5))
             {
-                player.AddBuff(BuffID.Wrath, 2);
-                player.AddBuff(BuffID.Rage, 2);
+                player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 2);
+                player.AddBuff(ModContent.BuffType<EmpyreanRage>(), 2);
             }
             player.GetDamage<ThrowingDamageClass>() += 0.09f;
             modPlayer.rogueVelocity += 0.09f;

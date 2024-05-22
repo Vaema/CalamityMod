@@ -1,10 +1,10 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Rogue;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<SandslasherProj>();
             Item.shootSpeed = 8f;

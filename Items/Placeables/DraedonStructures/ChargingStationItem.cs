@@ -1,4 +1,4 @@
-using CalamityMod.Rarities;
+﻿using CalamityMod.Rarities;
 using CalamityMod.Tiles.DraedonStructures;
 using Terraria;
 using Terraria.ID;

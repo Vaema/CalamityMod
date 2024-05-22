@@ -1,10 +1,10 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class ProfanedSoulGuardians : ModBuff 
+    public class ProfanedSoulGuardians : ModBuff
     {
         public override void SetStaticDefaults()
         {

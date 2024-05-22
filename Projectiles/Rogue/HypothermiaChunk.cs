@@ -1,8 +1,8 @@
-﻿using Terraria;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Rogue
 {

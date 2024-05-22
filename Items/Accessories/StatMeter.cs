@@ -1,8 +1,8 @@
-﻿using CalamityMod.Balancing;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.World;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Accessories
             Item heldItem = null;
             if (player.selectedItem >= 0 && player.selectedItem < Main.InventorySlotsTotal)
                 heldItem = player.ActiveItem();
-            
+
             static string OnePlace(float f) => f.ToString("n1");
             static string TwoPlaces(float f) => f.ToString("n2");
 
@@ -63,13 +63,13 @@ namespace CalamityMod.Items.Accessories
             if (heldItem != null && !heldItem.IsAir)
             {
                 // If block/wall, add respective placement stats, and ignore all combat stats
-                if (heldItem.createWall >= 0 || heldItem.createTile >= 0)
+                if (heldItem.createWall >= 0 || heldItem.createTile >= TileID.Dirt)
                 {
                     int extraBlockRangeX = player.blockRange + Player.tileRangeX - 5;
                     int extraBlockRangeY = player.blockRange + Player.tileRangeY - 4;
                     stats2 += "\n" + this.GetLocalization("PlacementRange").Format(Sign(extraBlockRangeX) + extraBlockRangeX, Sign(extraBlockRangeY) + extraBlockRangeY);
 
-                    if (heldItem.createTile >= 0 && player.tileSpeed != 0f)
+                    if (heldItem.createTile >= TileID.Dirt && player.tileSpeed != 0f)
                     {
                         float tileSpeed = (1f / player.tileSpeed) - 1f;
                         stats2 += this.GetLocalization("TileSpeed").Format(Sign(tileSpeed) + OnePlace(100f * tileSpeed));
@@ -164,7 +164,7 @@ namespace CalamityMod.Items.Accessories
                     // If summon, or any direct subclass thereof, AND NOT A WHIP, display minion/sentry slots
                     if (dc != DamageClass.SummonMeleeSpeed && (dc == DamageClass.Summon || dc.GetModifierInheritance(DamageClass.Summon).Equals(StatInheritanceData.Full)))
                         stats2 += "\n" + this.GetLocalization("SummonStats").Format(player.maxMinions, player.maxTurrets);
-                    
+
                     // If whip, show whip range
                     float whipRange = player.whipRangeMultiplier - 1f;
                     if (dc == DamageClass.SummonMeleeSpeed || dc.GetModifierInheritance(DamageClass.SummonMeleeSpeed).Equals(StatInheritanceData.Full))

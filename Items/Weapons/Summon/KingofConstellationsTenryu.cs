@@ -1,10 +1,10 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,17 +16,17 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
+            Item.width = 44;
+            Item.height = 62;
             Item.mana = 10;
-            Item.damage = 213;
+            Item.damage = 187;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<BlackDragonHead>();
-            Item.width = 44;
-            Item.height = 62;
             Item.UseSound = Flare.FlareSound;
             Item.useAnimation = Item.useTime = 25;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
 

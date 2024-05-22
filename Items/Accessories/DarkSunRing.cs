@@ -2,13 +2,13 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using Terraria.GameContent;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 42;
             Item.height = 60;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 10;
             Item.lifeRegen = 1;
             Item.accessory = true;

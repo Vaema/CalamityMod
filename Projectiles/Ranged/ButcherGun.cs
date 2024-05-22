@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.ai[1] = (float)(shootDelayBase - incrementMult * incrementAmt);
                 willShoot = true;
             }
-            bool canShoot = player.channel && player.HasAmmo(player.ActiveItem()) && !player.noItems && !player.CCed;
+            bool canShoot = !player.CantUseHoldout() && player.HasAmmo(player.ActiveItem());
             if (Projectile.localAI[0] > 0f)
             {
                 Projectile.localAI[0] -= 1f;
@@ -133,9 +133,9 @@ namespace CalamityMod.Projectiles.Ranged
                         source += Utils.RandomVector2(Main.rand, -5f, 5f);
                         bulletVel.X += (float)Main.rand.Next(-15, 16) * spreadMult;
                         bulletVel.Y += (float)Main.rand.Next(-15, 16) * spreadMult;
-                        int num44 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), source, bulletVel, projType, damage, kback, Projectile.owner, 0f, 0f);
-                        Main.projectile[num44].noDropItem = true;
-                        Main.projectile[num44].extraUpdates += incrementAmt / 2; //0 to 4
+                        int bullet = Projectile.NewProjectile(Projectile.GetSource_FromThis(), source, bulletVel, projType, damage, kback, Projectile.owner, 0f, 0f);
+                        Main.projectile[bullet].noDropItem = true;
+                        Main.projectile[bullet].extraUpdates += incrementAmt / 2; //0 to 4
                     }
                 }
                 else

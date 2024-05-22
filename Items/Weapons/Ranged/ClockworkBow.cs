@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Ranged;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -13,17 +13,17 @@ namespace CalamityMod.Items.Weapons.Ranged
         public const int MaxBolts = 6;
         public override void SetDefaults()
         {
-            Item.damage = 770;
-            Item.DamageType = DamageClass.Ranged;
             Item.width = 48;
             Item.height = 96;
+            Item.damage = 770;
+            Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.channel = true;
             Item.knockBack = 4.25f;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-        
+
         // Spawning the holdout cannot consume ammo
         public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0;
 
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Projectile.NewProjectile(source, position, shootDirection, ModContent.ProjectileType<ClockworkBowHoldout>(), damage, knockback, player.whoAmI);
             return false;
         }
-        
+
         public override void AddRecipes()
         {
             CreateRecipe().

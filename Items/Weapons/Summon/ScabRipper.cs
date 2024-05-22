@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,21 +12,24 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
-            Item.damage = 15;
-            Item.mana = 10;
             Item.width = 66;
             Item.height = 70;
+            Item.damage = 16;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 30;
-            Item.useStyle = ItemUseStyleID.Swing;
+            Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item83;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BabyBloodCrawler>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
+
+            // This doesn't do anything, it's just so the item is held like a staff.
+            Item.shootSpeed = 1f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

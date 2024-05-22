@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -51,7 +52,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (deathCounter >= 6000)
                 {
                     NPC.damage = NPC.lifeMax;
-                    CalamityGlobalAI.BuffedMimicAI(NPC, Mod);
+                    RevengeanceAndDeathAI.BuffedMimicAI(NPC, Mod);
                     return false;
                 }
             }
@@ -97,7 +98,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if ((NPC.justHit || deathCounter > 6000) && NPC.frame.Y > frameHeight * 2)
                 {
                     NPC.frame.Y = frameHeight;
-                }    
+                }
                 else if (NPC.frame.Y > frameHeight * 3)
                 {
                     NPC.frame.Y = 0;

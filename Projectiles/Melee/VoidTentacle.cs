@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Melee
                 while (i < Projectile.scale * 4f)
                 {
                     int dustID = Main.rand.NextBool(5) ? 199 : 175;
-                    int idx = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustID, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1.1f);
+                    int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1.1f);
                     Main.dust[idx].position = (Main.dust[idx].position + Projectile.Center) / 2f;
                     Main.dust[idx].noGravity = true;
                     Main.dust[idx].velocity *= 0.1f;

@@ -1,14 +1,14 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System.Linq;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
@@ -21,8 +21,8 @@ namespace CalamityMod.Items.PermanentBoosters
 
         public override void SetStaticDefaults()
         {
-			// For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 21; // Mana Crystal
+            // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 21; // Mana Crystal
         }
 
         public override void SetDefaults()
@@ -71,7 +71,7 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             CreateRecipe().
                 AddIngredient<RuinousSoul>(5).
-                AddIngredient<Polterplasm>(25).
+                AddIngredient<Necroplasm>(25).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

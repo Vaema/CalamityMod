@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<TacticiansTrumpCardProj>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }

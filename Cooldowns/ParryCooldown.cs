@@ -12,13 +12,13 @@ namespace CalamityMod.Cooldowns
         public override Color OutlineColor => outlineColor;
         public override Color CooldownStartColor => cooldownColorStart;
         public override Color CooldownEndColor => cooldownColorEnd;
-        
+
         //It's the same cooldown with different skins each time, basically.
         public string skinTexture;
         public Color outlineColor;
         public Color cooldownColorStart;
         public Color cooldownColorEnd;
-        
+
         public ParryCooldown() : this("") { }
         public ParryCooldown(string skin)
         {
@@ -30,7 +30,7 @@ namespace CalamityMod.Cooldowns
                     cooldownColorStart = new Color(181, 136, 177);
                     cooldownColorEnd = new Color(255, 194, 161);
                     break;
-                
+
                 //readd if spritework for the cooldown is done at a later point
                 /*case "flamelickedshell":
                     skinTexture = "FlameLickedShellParry";

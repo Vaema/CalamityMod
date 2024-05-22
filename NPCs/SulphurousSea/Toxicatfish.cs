@@ -1,7 +1,8 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Placeables.Banners;
-using System.IO;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -15,7 +16,7 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.X += 10f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
@@ -42,11 +43,15 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[2] { ModContent.GetInstance<SulphurousSeaBiome>().Type, ModContent.GetInstance<AbyssLayer1Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Toxicatfish")
             });
@@ -64,7 +69,7 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void AI()
         {
-            CalamityAI.PassiveSwimmingAI(NPC, Mod, 0, Main.player[NPC.target].Calamity().GetAbyssAggro(160f), 0.25f, 0.15f, 8f, 8f, 0.1f);
+            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 0, Main.player[NPC.target].Calamity().GetAbyssAggro(160f), 0.25f, 0.15f, 8f, 8f, 0.1f);
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)

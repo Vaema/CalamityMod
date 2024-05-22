@@ -1,10 +1,12 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -17,10 +19,18 @@ namespace CalamityMod.NPCs.AstrumDeus
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.AstrumDeusHead.DisplayName");
 
+        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> GlowTexture2;
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                GlowTexture2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -30,7 +40,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.width = 52;
             NPC.height = 68;
             NPC.defense = 50;
-            NPC.DR_NERD(0.3f);
+            NPC.DR_NERD(0.4f);
             NPC.LifeMaxNERB(200000, 240000, 650000);
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
@@ -51,8 +61,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
-            NPC.HitSound = SoundID.NPCHit4;
+            NPC.HitSound = AstrumDeusHead.HitSound;
             NPC.DeathSound = AstrumDeusHead.DeathSound;
             NPC.netAlways = true;
             NPC.boss = true;
@@ -82,7 +91,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
         public override void AI()
         {
-            CalamityAI.AstrumDeusAI(NPC, Mod, false);
+            AstrumDeusAI.VanillaAstrumDeusAI(NPC, Mod, false);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -98,24 +107,24 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool deathModeEnragePhase = Main.npc[(int)NPC.ai[2]].Calamity().newAI[0] == 3f;
             bool doubleWormPhase = NPC.Calamity().newAI[0] != 0f && !deathModeEnragePhase;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Texture2D wormTexture = TextureAssets.Npc[NPC.type].Value;
+            Vector2 halfSizeTex = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
 
-            Vector2 vector2 = NPC.Center - screenPos;
-            vector2 -= new Vector2(texture.Width, texture.Height) * NPC.scale / 2f;
-            vector2 += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture, vector2, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            Vector2 drawLocation = NPC.Center - screenPos;
+            drawLocation -= new Vector2(wormTexture.Width, wormTexture.Height) * NPC.scale / 2f;
+            drawLocation += halfSizeTex * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+            spriteBatch.Draw(wormTexture, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumDeus/AstrumDeusTailGlow").Value;
+            wormTexture = GlowTexture.Value;
             Color phaseColor = drawCyan ? Color.Cyan : Color.Orange;
             if (doubleWormPhase)
-                texture = drawCyan ? ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumDeus/AstrumDeusTailGlow2").Value : texture;
+                wormTexture = drawCyan ? GlowTexture2.Value : wormTexture;
 
-            Color color = Color.Lerp(Color.White, doubleWormPhase ? phaseColor : Color.Orange, 0.5f) * (deathModeEnragePhase ? 1f : NPC.Opacity);
+            Color wormColorLerp = Color.Lerp(Color.White, doubleWormPhase ? phaseColor : Color.Orange, 0.5f) * (deathModeEnragePhase ? 1f : NPC.Opacity);
 
             int timesToDraw = deathModeEnragePhase ? 3 : drawCyan ? 2 : 1;
             for (int i = 0; i < timesToDraw; i++)
-                spriteBatch.Draw(texture, vector2, NPC.frame, color, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+                spriteBatch.Draw(wormTexture, drawLocation, NPC.frame, wormColorLerp, NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
 
             return false;
         }
@@ -135,23 +144,23 @@ namespace CalamityMod.NPCs.AstrumDeus
                 NPC.height = 50;
                 NPC.position.X = NPC.position.X - (NPC.width / 2);
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
-                for (int num621 = 0; num621 < 5; num621++)
+                for (int i = 0; i < 5; i++)
                 {
-                    int num622 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
-                    Main.dust[num622].velocity *= 3f;
+                    int purpleDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    Main.dust[purpleDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
-                        Main.dust[num622].scale = 0.5f;
-                        Main.dust[num622].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                        Main.dust[purpleDust].scale = 0.5f;
+                        Main.dust[purpleDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                     }
                 }
-                for (int num623 = 0; num623 < 10; num623++)
+                for (int j = 0; j < 10; j++)
                 {
-                    int num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 3f);
-                    Main.dust[num624].noGravity = true;
-                    Main.dust[num624].velocity *= 5f;
-                    num624 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
-                    Main.dust[num624].velocity *= 2f;
+                    int astralDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 3f);
+                    Main.dust[astralDust].noGravity = true;
+                    Main.dust[astralDust].velocity *= 5f;
+                    astralDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
+                    Main.dust[astralDust].velocity *= 2f;
                 }
             }
         }
@@ -169,7 +178,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }

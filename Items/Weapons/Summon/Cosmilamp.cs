@@ -21,15 +21,15 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 127;
-            Item.mana = 10;
             Item.width = 42;
             Item.height = 60;
+            Item.damage = 127;
+            Item.mana = 10;
             Item.useTime = Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;
@@ -45,12 +45,12 @@ namespace CalamityMod.Items.Weapons.Summon
             if (player.altFunctionUse != 2)
             {
                 // Reset the timer for all lamps, to re-align the formation.
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile pro in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type == type && Main.projectile[i].owner == player.whoAmI && Main.projectile[i].active)
+                    if (pro.type == type && pro.owner == player.whoAmI)
                     {
-                        Main.projectile[i].ModProjectile<CosmilampMinion>().Timer = 0f;
-                        Main.projectile[i].netUpdate = true;
+                        pro.ModProjectile<CosmilampMinion>().Timer = 0f;
+                        pro.netUpdate = true;
                     }
                 }
 

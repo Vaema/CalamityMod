@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 30;
             NPC.defense = 25;
             NPC.lifeMax = 1000;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.3f;
             AnimationType = NPCID.CorruptSlime;
             NPC.value = Item.buyPrice(0, 0, 25, 0);
             NPC.alpha = 50;
@@ -37,15 +37,24 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<BloomSlimeBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Caverns,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BloomSlime")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BloomSlime")
             });
+        }
+
+        public override void AI()
+        {
+            NPC.damage = (NPC.velocity.Y == 0f || NPC.velocity.Length() < 3f) ? 0 : NPC.defDamage;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -62,13 +71,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Rogue
         public static readonly SoundStyle Hitsound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit2") { PitchVariance = 0.3f, Volume = 0.5f };
 
         public int framesInAir = 0;
-        public int SparkChance = 7;
+        public int SparkChance = 1;
 
         public override void SetDefaults()
         {
@@ -41,20 +41,10 @@ namespace CalamityMod.Projectiles.Rogue
                 Lighting.AddLight(Projectile.Center + Projectile.velocity * 0.6f, 0.6f, 0.2f, 0.5f);
             }
 
-            if (Main.rand.NextBool(SparkChance))
+            if (Projectile.timeLeft % 2 == 0 && Main.rand.NextBool(SparkChance) && Projectile.numHits == 0)
             {
-                Vector2 SparkVelocity1 = Projectile.velocity.RotatedBy(-3, default) * 0.1f - Projectile.velocity / 2f;
-                Vector2 SparkPosition1 = Projectile.velocity.RotatedBy(-0.8, default);
-                SparkParticle spark = new SparkParticle(Projectile.Center + SparkPosition1, SparkVelocity1, false, Main.rand.Next(6, 8), Main.rand.NextFloat(0.6f, 0.8f), Color.Plum);
+                SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 7, 1.3f, Color.Plum * 0.5f);
                 GeneralParticleHandler.SpawnParticle(spark);
-
-            }
-            if (Main.rand.NextBool(SparkChance))
-            {
-                Vector2 SparkVelocity2 = Projectile.velocity.RotatedBy(3, default) * 0.1f - Projectile.velocity / 2f;
-                Vector2 SparkPosition2 = Projectile.velocity.RotatedBy(0.8, default);
-                SparkParticle spark2 = new SparkParticle(Projectile.Center + SparkPosition2, SparkVelocity2, false, Main.rand.Next(6, 8), Main.rand.NextFloat(0.6f, 0.8f), Color.Plum);
-                GeneralParticleHandler.SpawnParticle(spark2);
             }
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
@@ -63,16 +53,16 @@ namespace CalamityMod.Projectiles.Rogue
             float maxDistance = 350f;
             bool homeIn = false;
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].CanBeChasedBy(Projectile, false))
+                if (n.CanBeChasedBy(Projectile, false))
                 {
-                    float extraDistance = (float)(Main.npc[i].width / 2) + (float)(Main.npc[i].height / 2);
-                    bool canHit = Projectile.Calamity().stealthStrike || Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1);
+                    float extraDistance = (float)(n.width / 2) + (float)(n.height / 2);
+                    bool canHit = Projectile.Calamity().stealthStrike || Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1);
 
-                    if (Vector2.Distance(Main.npc[i].Center, Projectile.Center) < (maxDistance + extraDistance) && canHit)
+                    if (Vector2.Distance(n.Center, Projectile.Center) < (maxDistance + extraDistance) && canHit)
                     {
-                        center = Main.npc[i].Center;
+                        center = n.Center;
                         homeIn = true;
                         break;
                     }
@@ -81,7 +71,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (homeIn)
             {
-                SparkChance = 14;
+                SparkChance = 2;
                 Projectile.extraUpdates = 4;
                 Vector2 moveDirection = Projectile.SafeDirectionTo(center, Vector2.UnitY);
                 Projectile.velocity = (Projectile.velocity * 20f + moveDirection * 12f) / (21f);
@@ -92,12 +82,13 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i <= 2; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 272, Projectile.oldVelocity.X * Main.rand.NextFloat(1.1f, 1.3f), Projectile.oldVelocity.Y * Main.rand.NextFloat(1.1f, 1.3f));
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.WitherLightning, Projectile.oldVelocity.X * Main.rand.NextFloat(1.1f, 1.3f), Projectile.oldVelocity.Y * Main.rand.NextFloat(1.1f, 1.3f));
             }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            Projectile.damage = (int)(Projectile.damage * 0.8f);
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.8f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }

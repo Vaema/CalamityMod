@@ -6,10 +6,10 @@
         // 1. Their internal value is not constant, meaning it cannot be used in this enum, and
         // 2. It's a custom dust.
 
-        SulfurousSeaAcid = 75,
+        SulphurousSeaAcid = 75,
         Brimstone = 235,
         Ectoplasm = 180,
-        Polterplasm = 60,
+        Necroplasm = 60,
         Plague = 46,
         ProfanedFire = 244,
         Nightwither = 185,

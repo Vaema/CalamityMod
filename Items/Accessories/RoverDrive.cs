@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.CalPlayer;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -12,7 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class RoverDrive : ModItem, ILocalizedModType
+    public class RoverDrive : ModItem, ILocalizedModType, IDyeableShaderRenderer
     {
         public new string LocalizationCategory => "Items.Accessories";
 
@@ -27,6 +30,31 @@ namespace CalamityMod.Items.Accessories
         // While active, Rover Drive gives 10 defense
         public static int ShieldDefenseBoost = 10;
 
+        // Interface stuff.
+        public float RenderDepth => IDyeableShaderRenderer.RoverDriveDepth;
+
+        public bool ShouldDrawDyeableShader
+        {
+            get
+            {
+                bool result = false;
+                foreach (Player player in Main.ActivePlayers)
+                {
+                    if (player.outOfRange || player.dead)
+                       continue;
+
+                    CalamityPlayer modPlayer = player.Calamity();
+
+                    // Do not render the shield if its visibility is off (or it does not exist)
+                    bool isVanityOnly = modPlayer.roverDriveShieldVisible && !modPlayer.roverDrive;
+                    bool shieldExists = isVanityOnly || modPlayer.RoverDriveShieldDurability > 0;
+                    bool shouldntDraw = (!modPlayer.roverDriveShieldVisible || modPlayer.drawnAnyShieldThisFrame || !shieldExists);
+                    result |= !shouldntDraw;
+                }
+                return result;
+            }
+        }
+
         // Allows item to be extractinated and specifies custom behavior instead of copying an existing item
         public override void SetStaticDefaults() => ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
 
@@ -34,7 +62,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 38;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
             Item.MakeUsableWithChlorophyteExtractinator();
@@ -54,6 +82,12 @@ namespace CalamityMod.Items.Accessories
         // In vanity, provides a visual shield but no actual functionality
         public override void UpdateVanity(Player player) => player.Calamity().roverDriveShieldVisible = true;
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            string adrenTooltip = CalamityWorld.revenge ? this.GetLocalizedValue("ShieldAdren") : "";
+            tooltips.FindAndReplace("[ADREN]", adrenTooltip);
+        }
+
         // Scrappable for 3-5 wulfrum scrap or a 20% chance to get an energy core
         public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
         {
@@ -69,7 +103,7 @@ namespace CalamityMod.Items.Accessories
 
         // Complex drawcode which draws Rover Drive shields on ALL players who have it available. Supposedly.
         // This is applied as IL (On hook) which draws right before Inferno Ring.
-        internal static void DrawRoverDriveShields(On_Main.orig_DrawInfernoRings orig, Main mainObj)
+        public void DrawDyeableShader(SpriteBatch spriteBatch)
         {
             // TODO -- Control flow analysis indicates that this hook is not stable.
             // Rover Drive shields will be drawn for each player with Rover Drive, yes.
@@ -77,10 +111,9 @@ namespace CalamityMod.Items.Accessories
             // Visibility is not net synced, for example.
             bool alreadyDrawnShieldForPlayer = false;
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active || player.outOfRange || player.dead)
+                if (player.outOfRange || player.dead)
                     continue;
 
                 CalamityPlayer modPlayer = player.Calamity();
@@ -92,7 +125,7 @@ namespace CalamityMod.Items.Accessories
                     continue;
 
                 // The shield very gently grows and shrinks
-                float scale = 0.15f + 0.03f * (0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.5f + i * 0.2f));
+                float scale = 0.15f + 0.03f * (0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.5f + player.whoAmI * 0.2f));
 
                 if (!alreadyDrawnShieldForPlayer)
                 {
@@ -121,63 +154,21 @@ namespace CalamityMod.Items.Accessories
                     shieldEffect.Parameters["shieldOpacity"].SetValue(baseShieldOpacity * (0.5f + 0.5f * shieldStrength));
                     shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
 
-                    Color edgeColor;
-                    Color shieldColor;
+                    // Get the shield color.
+                    Color blueTint = new Color(51, 102, 255);
+                    Color cyanTint = new Color(71, 202, 255);
+                    Color wulfGreen = new Color(194, 255, 67) * 0.8f;
+                    Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, blueTint, cyanTint, wulfGreen);
+                    Color shieldColor = blueTint;
 
-                    // Outside of single player, the shield color is overridden if the player is on a team.
-                    if (Main.netMode != NetmodeID.SinglePlayer && player.team != 0)
-                    {
-                        switch (Main.player[i].team)
-                        {
-                            // Red team
-                            case 1:
-                                shieldColor = new Color(178, 24, 31);
-                                edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, Color.Tomato, Color.Crimson, shieldColor);
-                                break;
-
-                            // Green team
-                            case 2:
-                                shieldColor = new Color(194, 255, 67) * 0.7f;
-                                edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, Color.Chartreuse, Color.YellowGreen, new Color(194, 255, 67));
-                                break;
-
-                            // Blue team
-                            case 3:
-                                shieldColor = new Color(64, 207, 200);
-                                edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, Color.MediumSpringGreen, Color.DeepSkyBlue, new Color(64, 207, 200));
-                                break;
-
-                            // Yellow team
-                            case 4:
-                                shieldColor = new Color(176, 156, 45);
-                                edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, Color.Gold, Color.Coral, Color.LightGoldenrodYellow);
-                                break;
-
-                            // Pink team or any other team
-                            default:
-                                shieldColor = new Color(173, 111, 221);
-                                edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, Color.DeepPink, Color.MediumOrchid, Color.MediumPurple);
-                                break;
-                        }
-                    }
-
-                    // Un-teamed / single player shield colors
-                    else
-                    {
-                        Color blueTint = new Color(51, 102, 255);
-                        Color cyanTint = new Color(71, 202, 255);
-                        Color wulfGreen = new Color(194, 255, 67) * 0.8f;
-                        edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, blueTint, cyanTint, wulfGreen);
-                        shieldColor = blueTint;
-                    }
 
                     // Define shader parameters for shield color
                     shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
                     shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
                     // GOD I LOVE END BEGIN CAN THIS GAME PLEASE BE SWALLOWED BY THE FIRES OF HELL THANKS
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
+                    spriteBatch.End();
+                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
 
                 }
 
@@ -188,16 +179,14 @@ namespace CalamityMod.Items.Accessories
                 NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/TechyNoise");
                 Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
                 Texture2D tex = NoiseTex.Value;
-                Main.spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
+                spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
             }
 
             if (alreadyDrawnShieldForPlayer)
             {
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
             }
-
-            orig(mainObj);
         }
     }
 }

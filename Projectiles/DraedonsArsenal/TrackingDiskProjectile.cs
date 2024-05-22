@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,9 +26,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
 
         public const int LaserFireRate = 20;
+        public const int LaserFireRateStealth = 16;
         public const int MaxLaserCountPerShot = 4; // This only applies to stealth strikes.
         public const float MaxTargetSearchDistance = 480f;
-        public const float ReturnAcceleration = 0.15f;
+        public const float MaxTargetSearchStealth = 800f;
+        public const float ReturnAccelerationFactor = 0.0012f;
         public const float ReturnMaxSpeed = 12f;
 
         public override void SetStaticDefaults()
@@ -72,10 +74,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 // This is done instead of a Normalize or DirectionTo call because the variables needed are already present and calculating the square root again would be unnecessary.
                 Vector2 idealVelocity = (player.Center - Projectile.Center) / distanceFromPlayer * ReturnMaxSpeed;
 
-                Projectile.velocity.X += Math.Sign(idealVelocity.X - Projectile.velocity.X) * ReturnAcceleration;
-                Projectile.velocity.Y += Math.Sign(idealVelocity.Y - Projectile.velocity.Y) * ReturnAcceleration;
+                Projectile.velocity.X += Math.Sign(idealVelocity.X - Projectile.velocity.X) * (ReturnAccelerationFactor * Time);
+                Projectile.velocity.Y += Math.Sign(idealVelocity.Y - Projectile.velocity.Y) * (ReturnAccelerationFactor * Time);
 
-                if (Time % LaserFireRate == 0f)
+                if (Time % (Projectile.Calamity().stealthStrike ? LaserFireRateStealth : LaserFireRate) == 0f)
                     AttemptToFireLasers((int)(Projectile.damage * 0.25));
 
                 if (Main.myPlayer == Projectile.owner)
@@ -97,7 +99,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 int targetCount = 0;
                 List<NPC> targets = Main.npc.Where(npc =>
                 {
-                    return npc.active && Projectile.Distance(npc.Center) < MaxTargetSearchDistance && npc.CanBeChasedBy();
+                    return npc.active && Projectile.Distance(npc.Center) < MaxTargetSearchStealth && npc.CanBeChasedBy();
                 }).ToList();
                 foreach (var target in targets)
                 {

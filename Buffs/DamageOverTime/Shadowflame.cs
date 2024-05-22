@@ -30,7 +30,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             if (Main.rand.Next(5) < 4)
             {
-                int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, 27, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.1f);
+                int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.Shadowflame, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 0.75f;
                 Main.dust[dust].velocity.X = Main.dust[dust].velocity.X * 0.75f;

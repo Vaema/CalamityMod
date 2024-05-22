@@ -11,7 +11,7 @@ namespace CalamityMod.Items.SummonItems.Invasion
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 4; // Goblin Battle Standard
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 4; // Goblin Battle Standard
         }
 
         public override void SetDefaults()
@@ -26,10 +26,10 @@ namespace CalamityMod.Items.SummonItems.Invasion
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
+        }
 
         public override bool CanUseItem(Player player)
         {

@@ -1,8 +1,9 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Typeless;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -14,7 +15,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }
@@ -32,6 +33,7 @@ namespace CalamityMod.Items.Accessories
                     if (player.miscCounter % 10 == 0)
                     {
                         int damage = (int)player.GetBestClassDamage().ApplyTo(30);
+                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
                         CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 22f, ModContent.ProjectileType<StandingFire>(), damage, 5f, player.whoAmI);
                     }
                 }

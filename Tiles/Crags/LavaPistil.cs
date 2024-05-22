@@ -23,8 +23,8 @@ namespace CalamityMod.Tiles.Crags
             Main.tileFrameImportant[Type] = true;
             Main.tileLighted[Type] = true;
             TileID.Sets.ReplaceTileBreakUp[Type] = true;
-			TileID.Sets.SwaysInWindBasic[Type] = false;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+            TileID.Sets.SwaysInWindBasic[Type] = false;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
             TileObjectData.addTile(Type);

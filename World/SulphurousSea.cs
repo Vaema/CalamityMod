@@ -1,4 +1,7 @@
-﻿using CalamityMod.Items;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Weapons.Summon;
@@ -8,9 +11,6 @@ using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.Abyss.Stalactite;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.GameContent.RGB;
 using Terraria.ID;
@@ -68,7 +68,7 @@ namespace CalamityMod.World
         };
 
         public const float CheeseCaveMagnification = 0.00237f;
-        
+
         public static readonly float[] CheeseCaveCarveOutThresholds = new float[]
         {
             0.32f
@@ -103,7 +103,7 @@ namespace CalamityMod.World
         public const float SandstoneEdgeNoiseMagnification = 0.00115f;
 
         public const int StalactitePairMinDistance = 6;
-        
+
         public const int StalactitePairMaxDistance = 44;
 
         // Loop variables that are accessed via getter methods should be stored externally in local variables for performance reasons.
@@ -130,7 +130,7 @@ namespace CalamityMod.World
             get
             {
                 if (Main.remixWorld)
-                    return (int)((Main.maxTilesY - 200) * 0.2f);
+                    return (int)(Main.UnderworldLayer * 0.2f);
 
                 float depthFactor = Main.maxTilesX switch
                 {
@@ -208,7 +208,7 @@ namespace CalamityMod.World
             if (!Main.remixWorld)
                 LayTreesOnSurface();
         }
-        
+
         public static void SulphurSeaGenerationAfterAbyss()
         {
             CreateBeachNearSea();
@@ -235,7 +235,7 @@ namespace CalamityMod.World
                 xCheckPosition += Abyss.AtLeftSideOfWorld.ToDirectionInt();
             }
             while (CalamityUtils.ParanoidTileRetrieval(determinedPoint.X, determinedPoint.Y).TileType == TileID.Ebonstone);
-            YStart = Main.remixWorld ? (int)((Main.maxTilesY - 200) * 0.8f) : determinedPoint.Y;
+            YStart = Main.remixWorld ? (int)(Main.UnderworldLayer * 0.8f) : determinedPoint.Y;
         }
 
         public static void GenerateSandBlock()
@@ -311,7 +311,7 @@ namespace CalamityMod.World
             int totalSandTilesBeforeWater = WorldGen.genRand.Next(TotalSandTilesBeforeWaterMin, TotalSandTilesBeforeWaterMax);
             int width = (int)((BiomeWidth - totalSandTilesBeforeWater) * OpenSeaWidthPercentage);
             float descentSmoothness = WorldGen.genRand.NextFloat(TopWaterDescentSmoothnessMin, TopWaterDescentSmoothnessMax);
-            
+
             for (int i = 1; i < width; i++)
             {
                 int x = GetActualX(i);
@@ -326,7 +326,7 @@ namespace CalamityMod.World
                 {
                     if (y >= top + DepthForWater)
                         Main.tile[x, y + WorldGen.genRand.Next(22, 25)].WallType = (ushort)ModContent.WallType<SulphurousSandWall>();
-                        Main.tile[x, y].LiquidAmount = byte.MaxValue;
+                    Main.tile[x, y].LiquidAmount = byte.MaxValue;
                     Main.tile[x, y].Get<TileWallWireStateData>().HasTile = false;
                 }
 
@@ -527,7 +527,7 @@ namespace CalamityMod.World
                 (ushort)ModContent.TileType<HardenedSulphurousSandstone>(),
             };
             ushort wallID = (ushort)ModContent.WallType<SulphurousSandWall>();
-            
+
             void getAttachedPoints(int x, int y, List<Point> points)
             {
                 Tile t = CalamityUtils.ParanoidTileRetrieval(x, y);
@@ -641,7 +641,7 @@ namespace CalamityMod.World
         public static void LayTreesOnSurface()
         {
             int width = BiomeWidth;
-            
+
             for (int i = 0; i < width - 8; i++)
             {
                 // Only sometimes generate trees.
@@ -682,7 +682,7 @@ namespace CalamityMod.World
                 return;
 
             Tile tileAtEdge = CalamityUtils.ParanoidTileRetrieval(determinedPoint.X, determinedPoint.Y);
-            
+
             // Extend outward to encompass some of the desert, if there is one.
             if (tileAtEdge.TileType is TileID.Sand or TileID.Ebonsand or TileID.Crimsand)
                 beachWidth += 85;
@@ -891,7 +891,7 @@ namespace CalamityMod.World
                 // Try again if the distance between the top and bottom is too short.
                 if (MathHelper.Distance(y, top.Y) < MinColumnHeight)
                     tryAgain = true;
-                
+
                 if (tryAgain)
                 {
                     c--;
@@ -972,17 +972,17 @@ namespace CalamityMod.World
         }
 
         public static void PlaceAmbience()
-        {   
+        {
             for (int i = 0; i < BiomeWidth; i++)
             {
                 int x = GetActualX(i);
-                for (int y = YStart - 140; y < (Main.remixWorld ? (Main.maxTilesY - 200) : Main.rockLayer); y++)
+                for (int y = YStart - 140; y < (Main.remixWorld ? Main.UnderworldLayer : Main.rockLayer); y++)
                 {
                     Tile tile = Main.tile[x, y];
                     Tile tileUp = Main.tile[x, y - 1];
                     Tile tileDown = Main.tile[x, y + 1];
 
-                    if (tile.TileType == ModContent.TileType<SulphurousSand>() || tile.TileType == ModContent.TileType<SulphurousSandstone>() || 
+                    if (tile.TileType == ModContent.TileType<SulphurousSand>() || tile.TileType == ModContent.TileType<SulphurousSandstone>() ||
                     tile.TileType == ModContent.TileType<HardenedSulphurousSandstone>() || tile.TileType == ModContent.TileType<SulphurousShale>())
                     {
                         //stalagmites, fossiles, and ribs
@@ -1025,7 +1025,7 @@ namespace CalamityMod.World
                             if (WorldGen.genRand.NextBool(18))
                             {
                                 ushort[] Ribs = new ushort[] { (ushort)ModContent.TileType<SulphurousRib1>(),
-                                (ushort)ModContent.TileType<SulphurousRib2>(), (ushort)ModContent.TileType<SulphurousRib3>(), 
+                                (ushort)ModContent.TileType<SulphurousRib2>(), (ushort)ModContent.TileType<SulphurousRib3>(),
                                 (ushort)ModContent.TileType<SulphurousRib4>(), (ushort)ModContent.TileType<SulphurousRib5>() };
 
                                 WorldGen.PlaceObject(x, y - 1, WorldGen.genRand.Next(Ribs));
@@ -1472,7 +1472,7 @@ namespace CalamityMod.World
                 Main.tile[x, y + dy].Get<TileWallWireStateData>().HasTile = true;
             }
         }
-        
+
         public static void PlaceStalacmite(int x, int y, int height, ushort type)
         {
             for (int dy = height - 1; dy > 0; dy--)

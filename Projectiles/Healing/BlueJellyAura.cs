@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
@@ -10,7 +11,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
 
 namespace CalamityMod.Projectiles.Healing
 {
@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Healing
         public static readonly SoundStyle Spawnsound = new("CalamityMod/Sounds/Custom/OrbHeal1") { Volume = 0.5f };
         public ref int CleansingEffect => ref Main.player[Projectile.owner].Calamity().CleansingEffect;
         public List<bool> cleanseList = new List<bool>(new bool[Main.maxPlayers]);
-        
+
 
         public override void SetDefaults()
         {
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Healing
                     }
                     for (int i = 0; i < 55; i++)
                     {
-                        int dust = Dust.NewDust(player.Center, player.width + 4, player.height + 4, 187, player.velocity.X * 0.2f, player.velocity.Y * 0.2f, 100, default, 5.5f);
+                        int dust = Dust.NewDust(player.Center, player.width + 4, player.height + 4, DustID.Flare_Blue, player.velocity.X * 0.2f, player.velocity.Y * 0.2f, 100, default, 5.5f);
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].velocity *= 1.2f;
                         Main.dust[dust].velocity.Y -= 0.5f;

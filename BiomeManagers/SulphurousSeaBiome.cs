@@ -15,7 +15,7 @@ namespace CalamityMod.BiomeManagers
     public class SulphurousSeaBiome : ModBiome
     {
         public override ModWaterStyle WaterStyle => Main.zenithWorld ? ModContent.Find<ModWaterStyle>("CalamityMod/PissWater") : ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricWater");
-        public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => Main.zenithWorld ?ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/PissSeaSurfaceBGStyle") : ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/SulphurSeaSurfaceBGStyle");
+        public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => Main.zenithWorld ? ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/PissSeaSurfaceBGStyle") : ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/SulphurSeaSurfaceBGStyle");
         public override int BiomeTorchItemType => ModContent.ItemType<SulphurousTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/SulphurousSeaIcon";
@@ -45,7 +45,7 @@ namespace CalamityMod.BiomeManagers
                         ? CalamityMod.Instance.GetMusicFromMusicMod("SulphurousSeaNight") ?? MusicID.Desert // Nighttime
                         : CalamityMod.Instance.GetMusicFromMusicMod("SulphurousSeaDay") ?? MusicID.Desert; // Daytime
                 }
-                
+
                 return music;
             }
         }
@@ -69,13 +69,13 @@ namespace CalamityMod.BiomeManagers
                     sulphurPosX = true;
                 }
             }
-            
+
             if (Main.remixWorld)
-                return (BiomeTileCounterSystem.SulphurTiles >= 300 || (point.Y > SulphurousSea.YStart && point.Y < Main.maxTilesY - 200 && sulphurPosX && !WeakReferenceSupport.InAnySubworld())) && !player.Calamity().ZoneAbyss;
+                return (BiomeTileCounterSystem.SulphurTiles >= 300 || (point.Y > SulphurousSea.YStart && point.Y < Main.UnderworldLayer && sulphurPosX && !WeakReferenceSupport.InAnySubworld())) && !player.Calamity().ZoneAbyss;
 
             return (BiomeTileCounterSystem.SulphurTiles >= 300 || (point.Y < (Main.rockLayer - Main.maxTilesY / 13) && sulphurPosX && !WeakReferenceSupport.InAnySubworld())) && !player.Calamity().ZoneAbyss;
         }
-        
+
         public override void SpecialVisuals(Player player, bool isActive)
         {
             string biomeName = "CalamityMod:SulphurSea";

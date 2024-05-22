@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -64,20 +64,12 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 fireRate++;
             }
-            if (Projectile.ai[0] >= 360f)
+            if (Projectile.ai[0] >= 360f) // Full speed after 6 seconds
             {
                 fireRate++;
             }
-            if (Projectile.ai[0] >= 420f)
-            {
-                fireRate++;
-            }
-            if (Projectile.ai[0] >= 480f) //full speed after 8 seconds
-            {
-                fireRate++;
-            }
-            int initialRate = 24;
-            int fireRateMult = 2;
+            int initialRate = 26;
+            int fireRateMult = 3;
             Projectile.ai[1] -= 1f;
             bool shouldShoot = false;
             if (Projectile.ai[1] <= 0f)
@@ -85,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.ai[1] = (float)(initialRate - fireRateMult * fireRate);
                 shouldShoot = true;
             }
-            bool canShoot = player.channel && player.HasAmmo(player.ActiveItem()) && !player.noItems && !player.CCed;
+            bool canShoot = !player.CantUseHoldout() && player.HasAmmo(player.ActiveItem());
             if (Projectile.localAI[0] > 0f)
             {
                 Projectile.localAI[0] -= 1f;
@@ -134,14 +126,14 @@ namespace CalamityMod.Projectiles.Ranged
                         snowballVel = -Vector2.UnitY;
                     }
                     Vector2 sourceS = source + Utils.RandomVector2(Main.rand, -5f, 5f);
-                    snowballVel.X += Main.rand.NextFloat(-2.25f, 2.25f);
-                    snowballVel.Y += Main.rand.NextFloat(-2.25f, 2.25f);
+                    snowballVel.X += Main.rand.NextFloat(-2f, 2f);
+                    snowballVel.Y += Main.rand.NextFloat(-2f, 2f);
                     int snowball = Projectile.NewProjectile(Projectile.GetSource_FromThis(), sourceS, snowballVel, projType, dmg, kBack, Projectile.owner);
                     if (snowball.WithinBounds(Main.maxProjectiles))
                     {
                         Main.projectile[snowball].noDropItem = true;
                         Main.projectile[snowball].DamageType = DamageClass.Ranged;
-                        Main.projectile[snowball].extraUpdates += Main.rand.Next(0,2);
+                        Main.projectile[snowball].extraUpdates += Main.rand.Next(0, 2);
                     }
 
                     if (Main.rand.NextBool(5)) //ice chunk

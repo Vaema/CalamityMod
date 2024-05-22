@@ -15,20 +15,20 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 90;
-            Item.damage = 250;
+            Item.height = 90;
+            Item.damage = 200;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 24;
+            Item.useAnimation = 34;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 24;
+            Item.useTime = 34;
             Item.useTurn = true;
             Item.knockBack = 7.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.height = 90;
             Item.shoot = ModContent.ProjectileType<DracoBeam>();
             Item.shootSpeed = 14f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(5))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 35);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Lava);
             }
         }
 

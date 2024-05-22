@@ -1,16 +1,16 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
-using CalamityMod.Sounds;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -121,9 +121,9 @@ namespace CalamityMod.Projectiles.Melee
                 //Check for the up arrow once more so if the player has good reflexes they can avoid the dash. Gives them more control
                 if (Owner.controlUp && Charge >= 5)
                 {
-                    Owner.GiveIFrames(ArkoftheCosmos.DashIframes);
+                    // 17APR2024: Ozzatron: Dash iframes are not boosted by Cross Necklace at all and are fixed.
+                    Owner.GiveUniversalIFrames(ArkoftheCosmos.DashIframes);
                     Dashing = true;
-
                 }
 
                 for (int i = 0; i < 20; i++)
@@ -268,7 +268,7 @@ namespace CalamityMod.Projectiles.Melee
             Texture2D sliceTex = Request<Texture2D>("CalamityMod/Particles/BloomLine").Value;
             Color sliceColor = Color.Lerp(Color.OrangeRed, Color.White, SnapProgress);
             float rot = Projectile.rotation + MathHelper.PiOver2;
-            Vector2 sliceScale = new Vector2(0.2f * (1 - SnapProgress) ,ThrustDisplaceRatio() * 242f);
+            Vector2 sliceScale = new Vector2(0.2f * (1 - SnapProgress), ThrustDisplaceRatio() * 242f);
             Main.EntitySpriteDraw(sliceTex, Projectile.Center - Main.screenPosition, null, sliceColor, rot, new Vector2(sliceTex.Width / 2f, sliceTex.Height), sliceScale, 0f, 0);
 
             //Draw the scissors

@@ -11,7 +11,6 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 64;
             Item.height = 66;
-            Item.scale = 2f;
             Item.damage = 120;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 38;
@@ -20,12 +19,12 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
         }
 
         public override float UseSpeedMultiplier(Player player) => 1f + (player.Calamity().evilSmasherBoost * 0.1f);
- 
+
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage) => damage *= 1f + player.Calamity().evilSmasherBoost * 0.1f;
 
         public override void ModifyWeaponKnockback(Player player, ref StatModifier knockback) => knockback *= 1f + (player.Calamity().evilSmasherBoost * 0.1f);

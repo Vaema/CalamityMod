@@ -1,11 +1,11 @@
-﻿using CalamityMod.Tiles.PlayerTurrets;
-using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
 using CalamityMod.CustomRecipes;
+using CalamityMod.Items.Materials;
+using CalamityMod.Tiles.PlayerTurrets;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using System.Collections.Generic;
 
 namespace CalamityMod.Items.Placeables.PlaceableTurrets
 {
