@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Terraria.Chat;
 using Microsoft.Xna.Framework.Input;
 using Terraria.Localization;
+using CalamityMod.Graphics.Primitives;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -20,7 +21,6 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
 
-        public PrimitiveTrail TrailDrawer = null;
         public Vector2[] TrailPositions = new Vector2[10];
 
         public override void SetStaticDefaults()
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitY) * 10f, ModContent.ProjectileType<GaleforceWind>(), (int)(Projectile.damage / 2f), Projectile.knockBack, Projectile.owner, target.whoAmI);
         }
-        public Color TrailColor(float completionRatio)
+        public Color PrimitiveColorFunction(float completionRatio)
         {
             Color color = Color.Lerp(Color.Cyan, Color.LightCyan, completionRatio);
             color = Color.Lerp(color, Color.White, completionRatio);
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
             return color;
         }
 
-        public float TrailWidth(float completionRatio)
+        public float PrimitiveWidthFunction(float completionRatio)
         {
             return MathHelper.Lerp(5f, 0f, completionRatio);
         }
@@ -108,9 +108,6 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool PreDraw(ref Color lightColor)
         {
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
-
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(TrailWidth, TrailColor, null, GameShaders.Misc["CalamityMod:GaleforceArrowTrail"]);
 
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
             //regular draw position BUT the start point is displaced an extra amount towards the tip of the arrow. The final float is to further multiply this displacement
@@ -132,7 +129,7 @@ namespace CalamityMod.Projectiles.Ranged
                 GameShaders.Misc["CalamityMod:GaleforceArrowTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
                 GameShaders.Misc["CalamityMod:GaleforceArrowTrail"].Apply();
 
-                TrailDrawer.Draw(TrailPositions, Projectile.Size * 0.5f - Main.screenPosition, 6);
+                PrimitiveRenderer.RenderTrail(TrailPositions, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:GaleforceArrowTrail"]), 6);
                 Main.spriteBatch.ExitShaderRegion();
 
                 Main.EntitySpriteDraw(texture, drawPosition, null, Color.White, Projectile.rotation, origin, Projectile.scale, 0, 0);

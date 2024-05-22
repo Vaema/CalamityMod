@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,7 +19,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public Vector2 destination = Vector2.Zero;
 
-        public PrimitiveTrail TrailDrawer = null;
         public Vector2[] TrailPositions = new Vector2[10];
         public float[] TrailWaveMultipliers = new float[10];
         public int direction = Main.rand.NextBool() ? -1 : 1; // upon spawning, choose which way the projectile will do a circle
@@ -64,14 +64,14 @@ namespace CalamityMod.Projectiles.Ranged
             for (int i = 0; i < 6; i++)
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 91, 0f, 0f, 0, default, 0.5f);
         }
-        public Color TrailColor(float completionRatio)
+        public Color PrimitiveColorFunction(float completionRatio)
         {
             Color color = Color.White;
             color.A = (byte)(int)(Utils.GetLerpValue(0.7f, 0f, completionRatio) * 64);
             return color;
         }
 
-        public float TrailWidth(float completionRatio)
+        public float PrimitiveWidthFunction(float completionRatio)
         {
             float widthInterpolant = MathHelper.Lerp(0f, completionRatio, completionRatio);
             return MathHelper.Lerp(5f, 0f, widthInterpolant);
@@ -80,9 +80,6 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool PreDraw(ref Color lightColor)
         {
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
-
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(TrailWidth, TrailColor, null, GameShaders.Misc["CalamityMod:GaleforceArrowTrail"]);
 
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY + ((Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * Projectile.height * 1.5f);
@@ -117,7 +114,7 @@ namespace CalamityMod.Projectiles.Ranged
                 GameShaders.Misc["CalamityMod:GaleforceArrowTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
                 GameShaders.Misc["CalamityMod:GaleforceArrowTrail"].Apply();
 
-                TrailDrawer.Draw(TrailPositions, Projectile.Size * 0.5f - Main.screenPosition, 6);
+                PrimitiveRenderer.RenderTrail(TrailPositions, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:GaleforceArrowTrail"]), 6);
                 Main.spriteBatch.ExitShaderRegion();
 
                 Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), Projectile.rotation, origin, Projectile.scale, 0, 0);
