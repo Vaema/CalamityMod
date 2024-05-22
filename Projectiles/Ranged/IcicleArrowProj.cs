@@ -149,6 +149,7 @@ namespace CalamityMod.Projectiles.Ranged
                     dust2.noGravity = false;
                 }
                 Projectile.velocity = new Vector2(0, -6.5f).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.75f, 1.1f);
+                Projectile.tileCollide = false;
                 return false;
             }
             else
