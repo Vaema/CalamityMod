@@ -2581,10 +2581,13 @@ namespace CalamityMod.CalPlayer
             }
 
             if (crawCarapace)
-                Player.GetDamage<GenericDamageClass>() += 0.05f;
+                Player.GetDamage<GenericDamageClass>() += 0.08f;
 
             if (baroclaw)
+            {
+                Player.endurance += 0.05f;
                 Player.GetDamage<GenericDamageClass>() += 0.1f;
+            }
 
             if (aeroStone && !Player.slowFall && Player.wingTime < Player.wingTimeMax)
             {

@@ -428,7 +428,7 @@ CrawCarapace: {
 	DisplayName: Craw Carapace
 	Tooltip:
 		'''
-		5% increased damage
+		8% increased damage
 		Enemies that hit you take damage and are inflicted with Crumbling
 		'''
 }
@@ -437,7 +437,7 @@ Baroclaw: {
 	DisplayName: Baroclaw
 	Tooltip:
 		'''
-		10% increased damage
+		10% increased damage and 5% increased damage reduction
 		Enemies that hit you take high damage and are inflicted with Armor Crunch and Crush Depth
 		'''
 }
