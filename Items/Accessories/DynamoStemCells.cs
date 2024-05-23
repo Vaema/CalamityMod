@@ -35,7 +35,6 @@ namespace CalamityMod.Items.Accessories
             player.Calamity().MiniSwarmers = true;
             player.GetDamage<RangedDamageClass>() += 0.1f;
             player.moveSpeed += 0.1f;
-            player.Calamity().eleResist = true;
         }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)

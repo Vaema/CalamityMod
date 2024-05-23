@@ -130,6 +130,10 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<WhisperingDeath>(), 120);
                     break;
 
+                case ItemID.InfluxWaver:
+                    target.AddBuff(BuffID.Electrified, 300);
+                    break;
+
                 case ItemID.BeeKeeper:
                 case ItemID.BladeofGrass:
                     target.AddBuff(BuffID.Poisoned, 240);
@@ -260,6 +264,18 @@ namespace CalamityMod.CalPlayer
 
                 case ProjectileID.ObsidianSwordfish:
                     target.AddBuff(BuffID.OnFire3, 180);
+                    break;
+
+                case ProjectileID.InfluxWaver:
+                case ProjectileID.UFOLaser:
+                case ProjectileID.Electrosphere:
+                    target.AddBuff(BuffID.Electrified, 180);
+                    break;
+
+                case ProjectileID.ThunderSpear:
+                case ProjectileID.ThunderSpearShot:
+                case ProjectileID.ThunderStaffShot:
+                    target.AddBuff(BuffType<StaticDischarge>(), 90);
                     break;
 
                 case ProjectileID.GolemFist:
@@ -1249,7 +1265,7 @@ namespace CalamityMod.CalPlayer
                     //20% chance for Voltaic Jelly
                     if (Main.rand.NextBool(starTaintedGenerator ? 1 : 5))
                     {
-                        target.AddBuff(BuffID.Electrified, 60);
+                        target.AddBuff(ModContent.BuffType<StaticDischarge>(), 60);
                     }
                 }
 

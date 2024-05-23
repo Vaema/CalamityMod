@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
@@ -171,7 +172,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(ModContent.BuffType<AuricRebuke>(), 180);
             if (hit.Damage > 1 && Projectile.ai[2] == 3)
                 Projectile.Kill();
         }

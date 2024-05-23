@@ -166,14 +166,14 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SoundEngine.PlaySound(SoundID.Item93, Projectile.position);
-            target.AddBuff(BuffID.Electrified, 150);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 150);
             Sparks();
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             SoundEngine.PlaySound(SoundID.Item93, Projectile.position);
-            target.AddBuff(BuffID.Electrified, 150);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 150);
             Sparks();
         }
 

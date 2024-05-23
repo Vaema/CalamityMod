@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -91,7 +92,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     dust.velocity *= 2.1f;
                     dust.noGravity = true;
                 }
-                Target.AddBuff(BuffID.Electrified, 180);
+                Target.AddBuff(ModContent.BuffType<StaticDischarge>(), 180);
                 Projectile.Kill();
             }
             Time++;

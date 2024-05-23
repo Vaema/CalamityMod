@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -59,7 +60,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(BuffID.Electrified, 60);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 90);
         }
     }
 }

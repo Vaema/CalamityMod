@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Potions;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
@@ -69,7 +70,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 90);
             target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 6);
 
             if (target.knockBackResist <= 0f)
@@ -87,7 +88,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 90);
             target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 6);
         }
 
