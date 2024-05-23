@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
-    public class KingSlimeJewel3 : ModNPC
+    public class KingSlimeJewelEmerald : ModNPC
     {
         public override string Texture => "CalamityMod/NPCs/NormalNPCs/KingSlimeJewel";
 
