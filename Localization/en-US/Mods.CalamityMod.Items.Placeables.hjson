@@ -3578,3 +3578,108 @@ WaterTurret: {
 		Cannot attack while a boss is alive
 		'''
 }
+
+MarniteChest: {
+	DisplayName: Mods.CalamityMod.Items.Placeables.MarniteChest.DisplayName
+	Tooltip: ""
+}
+
+MarniteDresser: {
+	DisplayName: Mods.CalamityMod.Items.Placeables.MarniteDresser.DisplayName
+	Tooltip: ""
+}
+
+MarniteBathtub: {
+	DisplayName: Marnite Bathtub
+	Tooltip: ""
+}
+
+MarniteBed: {
+	DisplayName: Marnite Bed
+	Tooltip: ""
+}
+
+MarniteBookcase: {
+	DisplayName: Marnite Bookcase
+	Tooltip: ""
+}
+
+MarniteCandelabra: {
+	DisplayName: Marnite Candelabra
+	Tooltip: ""
+}
+
+MarniteCandle: {
+	DisplayName: Marnite Candle
+	Tooltip: ""
+}
+
+MarniteChair: {
+	DisplayName: Marnite Chair
+	Tooltip: ""
+}
+
+MarniteChandelier: {
+	DisplayName: Marnite Chandelier
+	Tooltip: ""
+}
+
+MarniteClock: {
+	DisplayName: Marnite Clock
+	Tooltip: ""
+}
+
+MarniteDoor: {
+	DisplayName: Marnite Door
+	Tooltip: ""
+}
+
+MarniteLamp: {
+	DisplayName: Marnite Lamp
+	Tooltip: ""
+}
+
+MarniteLantern: {
+	DisplayName: Marnite Lantern
+	Tooltip: ""
+}
+
+MarniteLight: {
+	DisplayName: Marnite Light
+	Tooltip: ""
+}
+
+MarniteOrgan: {
+	DisplayName: Marnite Organ
+	Tooltip: ""
+}
+
+MarniteSink: {
+	DisplayName: Marnite Sink
+	Tooltip: ""
+}
+
+MarniteSofa: {
+	DisplayName: Marnite Sofa
+	Tooltip: ""
+}
+
+MarniteTable: {
+	DisplayName: Marnite Table
+	Tooltip: ""
+}
+
+MarniteWorkBench: {
+	DisplayName: Marnite Work Bench
+	Tooltip: ""
+}
+
+PolishedMarniteBlock: {
+	DisplayName: Polished Marnite Block
+	Tooltip: ""
+}
+
+PolishedMarnitePlatform: {
+	DisplayName: Polished Marnite Platform
+	Tooltip: ""
+}
