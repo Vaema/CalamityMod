@@ -1172,7 +1172,7 @@ namespace CalamityMod.CalPlayer
             if (crawCarapace)
             {
                 npc.AddBuff(ModContent.BuffType<Crumbling>(), 900);
-                int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(50);
+                int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(40);
                 Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
                 SoundEngine.PlaySound(SoundID.NPCHit33 with { Volume = 0.5f }, Player.Center);
             }
