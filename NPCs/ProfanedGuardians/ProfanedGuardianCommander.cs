@@ -13,6 +13,7 @@ using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -81,6 +82,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.noTileCollide = true;
             AIType = -1;
             NPC.boss = true;
+            NPC.BossBar = ModContent.GetInstance<ProfanedGuardianBossBar>();
             NPC.value = Item.buyPrice(1, 0, 0, 0);
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
