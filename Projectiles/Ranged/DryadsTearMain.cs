@@ -34,9 +34,6 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Lighting.AddLight(Projectile.Center, Color.LimeGreen.ToVector3() * 0.25f);
 
-            if (Projectile.localAI[0] == 0f)
-                Projectile.damage = (int)(Projectile.damage * 0.75f);
-
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
@@ -63,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int b = 0; b < 2; b++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<DryadsTearSplit>(), (int)(Projectile.damage * 0.4), 0f, Projectile.owner, 0f, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<DryadsTearSplit>(), (int)(Projectile.damage * 0.1), 0f, Projectile.owner, 0f, 0f);
                 }
                 for (int i = 0; i < 3; i++)
                 {

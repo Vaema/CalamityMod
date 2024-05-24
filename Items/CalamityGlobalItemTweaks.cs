@@ -225,6 +225,7 @@ namespace CalamityMod.Items
                 { ItemID.SkyFracture, Do(DamageExact(54), ShootSpeedExact(30f)) },
                 { ItemID.SlapHand, Do(UseTurn, DamageExact(120)) },
                 { ItemID.Smolstar, Do(DamageExact(9), AutoReuse, UseExact(25)) }, // Blade Staff
+                { ItemID.SniperRifle, Do(PointBlank, DamageExact(215)) },
                 { ItemID.SolarEruption, Do(DamageExact(157)) },
                 { ItemID.SoulDrain, Do(DamageExact(38)) }, // Life Drain
                 { ItemID.SpaceGun, Do(DamageExact(25)) },
@@ -238,7 +239,7 @@ namespace CalamityMod.Items
                 { ItemID.StylistKilLaKillScissorsIWish, Do(AutoReuse, UseTurn, DamageExact(18)) }, // Stylish Scissors
                 { ItemID.Stynger, Do(DamageExact(75)) },
                 { ItemID.Swordfish, Do(AutoReuse, TrueMelee, DamageExact(24)) },
-                { ItemID.TacticalShotgun, Do(PointBlank, DamageExact(34)) },
+                { ItemID.TacticalShotgun, Do(PointBlank, DamageExact(41)) },
                 { ItemID.TaxCollectorsStickOfDoom, Do(AutoReuse, UseTurn, UseRatio(0.8f), DamageExact(70)) }, // Classy Cane
                 { ItemID.TendonBow, Do(PointBlank, DamageExact(17), AutoReuse) },
                 { ItemID.TerraBlade, Do(DamageExact(122)) },
@@ -267,6 +268,7 @@ namespace CalamityMod.Items
                 { ItemID.VampireKnives, Do(DamageExact(38)) },
                 { ItemID.ValkyrieYoyo, Do(AutoReuse, DamageExact(48)) }, // Red's Throw and Valkyrie Yoyo have the same stats
                 { ItemID.VenomStaff, Do(DamageExact(55)) },
+                { ItemID.VenusMagnum, Do(PointBlank, DamageExact(65)) },
                 { ItemID.WaspGun, Do(UseExact(11), DamageExact(58)) },
                 { ItemID.WaterBolt, Do(DamageExact(23)) },
                 { ItemID.WhitePhaseblade, Do(AutoReuse, UseTurn, DamageExact(32)) },
@@ -456,13 +458,11 @@ namespace CalamityMod.Items
                 { ItemID.RichMahoganyBow, pointBlank },
                 { ItemID.ShadewoodBow, pointBlank },
                 { ItemID.SilverBow, pointBlank },
-                { ItemID.SniperRifle, pointBlank },
                 { ItemID.SnowballCannon, pointBlank },
                 { ItemID.StakeLauncher, pointBlank },
                 { ItemID.TinBow, pointBlank },
                 { ItemID.TungstenBow, pointBlank },
                 { ItemID.Uzi, pointBlank },
-                { ItemID.VenusMagnum, pointBlank },
                 { ItemID.VortexBeater, pointBlank },
                 { ItemID.WoodenBow, pointBlank },
                 #endregion
