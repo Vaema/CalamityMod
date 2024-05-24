@@ -61,16 +61,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (spawnGreenCrystal)
             {
                 if (masterMode)
-                    greenCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewel3>());
+                    greenCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelEmerald>());
             }
 
             if (phase3)
-                crystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewel>());
+                crystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelRuby>());
 
             if (spawnBlueCrystal)
             {
                 if (masterMode)
-                    blueCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewel2>());
+                    blueCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelSapphire>());
             }
 
             // Sapphire Crystal buffs
@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     SoundEngine.PlaySound(SoundID.Item38, vector);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewel3>());
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelEmerald>());
                 }
 
                 if (phase3 && npc.Calamity().newAI[0] == 1f)
@@ -133,7 +133,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     SoundEngine.PlaySound(SoundID.Item38, vector);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewel>());
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
                 }
 
                 if (spawnBlueCrystal && npc.Calamity().newAI[0] == 2f)
@@ -157,7 +157,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     SoundEngine.PlaySound(SoundID.Item38, vector);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewel2>());
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelSapphire>());
                 }
             }
             else
@@ -184,7 +184,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     SoundEngine.PlaySound(SoundID.Item38, vector);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewel>());
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)vector.X, (int)vector.Y, ModContent.NPCType<KingSlimeJewelRuby>());
                 }
             }
 
@@ -340,7 +340,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC blueCrystal = Main.npc[i];
-                            if (blueCrystal.active && blueCrystal.type == ModContent.NPCType<KingSlimeJewel2>())
+                            if (blueCrystal.active && blueCrystal.type == ModContent.NPCType<KingSlimeJewelSapphire>())
                             {
                                 blueCrystal.position.X = npc.position.X;
                                 blueCrystal.position.Y = npc.position.Y - 200f;

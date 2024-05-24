@@ -2581,7 +2581,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (crawCarapace)
-                Player.GetDamage<GenericDamageClass>() += 0.08f;
+                Player.GetDamage<GenericDamageClass>() += 0.07f;
 
             if (baroclaw)
             {

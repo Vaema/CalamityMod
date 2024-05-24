@@ -428,7 +428,7 @@ CrawCarapace: {
 	DisplayName: Craw Carapace
 	Tooltip:
 		'''
-		8% increased damage
+		7% increased damage
 		Enemies that hit you take damage and are inflicted with Crumbling
 		'''
 }
