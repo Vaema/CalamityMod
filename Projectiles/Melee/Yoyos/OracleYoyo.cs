@@ -1,5 +1,7 @@
 ﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -25,11 +27,13 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         private const float MaxCharge = 200f;
         private const float MinAuraRadius = 20f;
         private const float SuperchargeThreshold = 50f;
-        private const float MaxAuraRadius = 100f;
+        private const float MaxAuraRadius = 150f;
         private const float MinDischargeRate = 0.05f;
         private const float MaxDischargeRate = 0.53f;
         private const float DischargeRateScaleFactor = 0.003f;
         private const float ChargePerHit = 6f;
+        private float rotationAngle = 0;
+        private bool rotDirection = false;
         private const int HitsPerOrbVolley = 2;
         private int OrbCooldown = 0;
 
@@ -123,7 +127,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             if (AuraCharge > MinAuraRadius)
             {
                 float auraRadius = AuraCharge > MaxAuraRadius ? MaxAuraRadius : AuraCharge;
-                DrawRedLightningAura(auraRadius);
+                DrawLightningAura(auraRadius);
 
                 if (Projectile.soundDelay == 0)
                 {
@@ -153,11 +157,13 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<AuricRebuke>(), 90);
+
             // On hit effects do not apply if no damage was done.
             if (hit.Damage <= 0)
                 return;
 
-            // Charge up the red lightning aura with every hit.
+            // Charge up the lightning aura with every hit.
             AuraCharge += ChargePerHit;
 
             // Fire Auric orbs every few hits while supercharged.
@@ -169,11 +175,11 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         }
 
         // Uses dust type 260, which lives for an extremely short amount of time
-        private void DrawRedLightningAura(float radius)
+        private void DrawLightningAura(float radius)
         {
             // Light emits from the yoyo itself while the aura is active, eventually becoming insanely bright
             float brightness = radius * 0.03f;
-            Lighting.AddLight(Projectile.Center, brightness, 0.2f * brightness, 0.1f * brightness);
+            Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * brightness);
 
             // Number of particles on the circumference scales directly with the circumference
             float dustDensity = 0.2f;
@@ -186,6 +192,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             for (int i = 0; i < numDust; ++i)
             {
                 dustOffset = dustOffset.RotatedBy(angleIncrement);
+                /*
                 int dustType = 260;
                 float scale = 1.6f + Main.rand.NextFloat(0.9f);
                 int idx = Dust.NewDust(Projectile.Center, 1, 1, dustType);
@@ -194,39 +201,58 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 Main.dust[idx].noLight = true;
                 Main.dust[idx].velocity *= 0.5f;
                 Main.dust[idx].scale = scale;
+                */
+
+                Particle spark = new GlowOrbParticle(Projectile.Center + dustOffset, Vector2.One.RotatedByRandom(100), false, 2, Main.rand.NextFloat(0.65f, 1.1f), Main.rand.NextBool(11) ? Color.Lavender : Color.Cyan);
+                GeneralParticleHandler.SpawnParticle(spark);
+
+                dustOffset = dustOffset.RotatedBy(angleIncrement);
+                int dustType = 226;
+                float scale = Main.rand.NextFloat(0.4f, 0.7f);
+                Vector2 dustyVel = (dustOffset).SafeNormalize(Vector2.UnitX) * 10;
+                if (Main.rand.NextBool(40))
+                {
+                    int idx = Dust.NewDust(Projectile.Center, 1, 1, dustType);
+                    Main.dust[idx].position = Projectile.Center + dustOffset;
+                    Main.dust[idx].noGravity = true;
+                    Main.dust[idx].noLight = true;
+                    Main.dust[idx].velocity = dustyVel.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.2f, 0.75f);
+                    Main.dust[idx].scale = scale;
+                    Main.dust[idx].noLightEmittence = true;
+                }
             }
 
             // Rarely, draw some "arcs" which are lines of dust to the edge
-            if (Main.rand.NextBool(15))
+            if (Main.rand.NextBool(3))
             {
-                int numArcs = 3;
-                float arcDustDensity = 0.6f;
-                if (Main.rand.NextBool())
-                    ++numArcs;
-                if (Main.rand.NextBool())
-                    ++numArcs;
-
-                Vector2 radiusVec = new Vector2(radius, 0f);
-                int dustPerArc = (int)(arcDustDensity * radius);
+                int numArcs = Main.rand.Next(2, 3 + 1);
                 for (int i = 0; i < numArcs; ++i)
                 {
+                    rotDirection = Main.rand.NextBool();
+                    float rotInstensity = Main.rand.NextFloat(0.15f, 0.4f);
+                    Vector2 radiusVec = new Vector2(radius, 0f);
+                    int dustPerArc = 40;
                     radiusVec = radiusVec.RotatedByRandom(MathHelper.TwoPi);
                     for (int j = 0; j < dustPerArc; ++j)
                     {
+                        if (rotationAngle >= 1.55f)
+                            rotDirection = true;
+                        if (rotationAngle <= -1.55f)
+                            rotDirection = false;
+
+                        rotationAngle += (rotInstensity * (rotDirection ? -1 : 1));
+
                         Vector2 partialRadius = (float)j / dustPerArc * radiusVec;
-                        int dustType = 260;
-                        float scale = 1.6f + Main.rand.NextFloat(0.9f);
-                        int idx = Dust.NewDust(Projectile.Center, 1, 1, dustType);
-                        Main.dust[idx].position = Projectile.Center + partialRadius;
-                        Main.dust[idx].noGravity = true;
-                        Main.dust[idx].noLight = true;
-                        Main.dust[idx].velocity *= 0.3f;
-                        Main.dust[idx].scale = scale;
+                        Vector2 radiusBonus = (partialRadius.SafeNormalize(Vector2.UnitX) * 5).RotatedBy(MathHelper.ToRadians(90f)) * rotationAngle;
+
+                        Particle spark = new GlowOrbParticle(Projectile.Center + partialRadius + radiusBonus, radiusVec * 0.001f, false, 3, 0.75f - j * 0.0025f, Main.rand.NextBool(11) ? Color.Lavender : Color.Cyan);
+                        GeneralParticleHandler.SpawnParticle(spark);
                     }
                 }
+                
 
                 // Make extra sound when these arcs happen
-                SoundEngine.PlaySound(SoundID.NPCHit53 with { Volume = 0.2f }, Projectile.Center);
+                //SoundEngine.PlaySound(SoundID.NPCHit53 with { Volume = 0.2f }, Projectile.Center);
             }
         }
 
@@ -252,6 +278,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
                 if (dist <= radius)
                 {
+                    target.AddBuff(ModContent.BuffType<AuricRebuke>(), 300);
                     int finalDamage = (int)owner.GetTotalDamage<MeleeDamageClass>().ApplyTo(baseDamage);
                     if (Projectile.owner == Main.myPlayer)
                     {
