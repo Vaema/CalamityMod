@@ -603,7 +603,8 @@ namespace CalamityMod.Projectiles
                 blood2.scale = 1.2f;
                 blood2.position = projectile.Center + Main.rand.NextFloat() * projectile.velocity * 2f;
 
-                for (int j = 1; j < projectile.oldPos.Length && !(projectile.oldPos[j] == Vector2.Zero); j++)
+                int trailLength = projectile.oldPos.Length / 2;
+                for (int j = 1; j < trailLength && !(projectile.oldPos[j] == Vector2.Zero); j++)
                 {
                     if (Main.rand.NextBool(3))
                     {
