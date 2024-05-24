@@ -3683,3 +3683,8 @@ PolishedMarnitePlatform: {
 	DisplayName: Polished Marnite Platform
 	Tooltip: ""
 }
+
+PolishedMarniteWall: {
+	DisplayName: Polished Marnite Wall
+	Tooltip: ""
+}

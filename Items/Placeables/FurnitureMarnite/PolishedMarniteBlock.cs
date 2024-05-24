@@ -34,10 +34,10 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
                 AddIngredient(ItemID.Marble, 5).
                 AddTile(TileID.WorkBenches).
                 Register();
-            //CreateRecipe().
-            //    AddIngredient<SmoothAbyssGravelWall>(4).
-            //    AddTile(TileID.WorkBenches).
-            //    Register();
+            CreateRecipe().
+                AddIngredient<PolishedMarniteWall>(4).
+                AddTile(TileID.WorkBenches).
+                Register();
             CreateRecipe().
                 AddIngredient<PolishedMarnitePlatform>(2).
                 Register();
