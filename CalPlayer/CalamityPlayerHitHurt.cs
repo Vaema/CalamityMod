@@ -1239,13 +1239,13 @@ namespace CalamityMod.CalPlayer
                 if (Main.player[proj.owner] is null)
                 {
                     if (!Main.npc[proj.owner].friendly)
-                        Main.npc[proj.owner].AddBuff(BuffID.Poisoned, 90);
+                        Main.npc[proj.owner].AddBuff(BuffID.Poisoned, 60);
                 }
                 else
                 {
                     Player p = Main.player[proj.owner];
                     if (p.hostile && Player.hostile && (Player.team != p.team || p.team == 0))
-                        p.AddBuff(BuffID.Poisoned, 90);
+                        p.AddBuff(BuffID.Poisoned, 60);
                 }
             }
 
