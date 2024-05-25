@@ -585,13 +585,6 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-
-            // TODO -- Why is this here?
-            if (weakPetrification)
-            {
-                if (Player.mount.Active)
-                    Player.mount.Dismount(Player);
-            }
             #endregion
 
             // Chalice of the Blood God bleedout
