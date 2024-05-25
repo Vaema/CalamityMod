@@ -162,6 +162,7 @@ namespace CalamityMod.Items
                 { ItemID.MonkStaffT1, Do(TrueMeleeNoSpeed, DamageExact(83)) }, // Sleepy Octopod
                 { ItemID.MonkStaffT2, Do(AutoReuse, TrueMelee, DamageExact(90)) }, // Ghastly Glaive
                 { ItemID.MonkStaffT3, Do(DamageExact(225)) }, // Sky Dragon's Fury
+                { ItemID.MoonlordBullet, Do(DamageExact(19)) }, // Luminite Bullet
                 { ItemID.MoonlordTurretStaff, Do(DamageExact(50), UseExact(15)) }, //Lunar Portal Staff
                 { ItemID.Muramasa, Do(CritDelta(+20)) },
                 { ItemID.MushroomSpear, Do(AutoReuse, TrueMelee, UseRatio(0.8f), DamageExact(100)) },
@@ -211,7 +212,6 @@ namespace CalamityMod.Items
                 { ItemID.RocketLauncher, Do(DamageExact(70)) },
                 { ItemID.Sandgun, Do(PointBlank, DamageExact(22), UseExact(20)) },
                 { ItemID.SapphireStaff, Do(DamageExact(25)) },
-                { ItemID.SDMG, Do(PointBlank, DamageExact(80)) },
                 { ItemID.Seedler, Do(UseMeleeSpeed, DamageExact(74), ShootSpeedDelta(+4f)) },
                 { ItemID.ShadowbeamStaff, Do(DamageExact(100)) },
                 { ItemID.ShadowFlameBow, Do(PointBlank, DamageExact(55)) },
@@ -456,6 +456,7 @@ namespace CalamityMod.Items
                 { ItemID.PulseBow, pointBlank },
                 { ItemID.Revolver, Do(PointBlank, AutoReuse) },
                 { ItemID.RichMahoganyBow, pointBlank },
+                { ItemID.SDMG, pointBlank },
                 { ItemID.ShadewoodBow, pointBlank },
                 { ItemID.SilverBow, pointBlank },
                 { ItemID.SnowballCannon, pointBlank },
