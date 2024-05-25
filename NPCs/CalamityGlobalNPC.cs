@@ -5818,24 +5818,37 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            // Plague debuff on kill effect
             if (pFlames > 0 && npc.life <= 0)
             {
-                Rectangle hitbox = npc.Hitbox;
-                for (int i = 0; i < 20; i++)
-                {
-                    int idx = Dust.NewDust(hitbox.TopLeft(), npc.width, npc.height, DustID.GemEmerald, 0f, -2.5f);
-                    Dust dust = Main.dust[idx];
-                    dust.alpha = 200;
-                    dust.velocity *= 1.4f;
-                    dust.scale += Main.rand.NextFloat();
-                }
-
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    foreach (NPC nPC in Main.ActiveNPCs)
+                    for (int i = 0; i < 10; i++)
                     {
-                        if (!nPC.buffImmune[BuffType<Plague>()] && npc.Distance(nPC.Center) < 100f && !nPC.dontTakeDamage && nPC.lifeMax > 5 && !nPC.friendly && !nPC.townNPC)
-                            nPC.AddBuff(BuffType<Plague>(), 300);
+                        int DustID = 220;
+                        Dust dust2 = Dust.NewDustDirect(npc.Center, npc.width, npc.height, DustID);
+                        dust2.scale = Main.rand.NextFloat(0.6f, 0.75f);
+                        dust2.velocity = new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 0.8f);
+                        dust2.noGravity = true;
+                    }
+
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        NPC target = Main.npc[i];
+
+                        if (target != null && target.IsAnEnemy(true, true) && !target.buffImmune[BuffType<Plague>()] && Vector2.Distance(target.Center, npc.Center) < 400)
+                        {
+                            if (target.HasBuff<Plague>() || target.life <= 0)
+                            {
+                                target.AddBuff(BuffType<Plague>(), 300);
+                            }
+                            else
+                            {
+                                target.AddBuff(BuffType<Plague>(), 300);
+                                DirectionalPulseRing pulse = new DirectionalPulseRing(target.Center, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f) * 3, 0f, 15);
+                                GeneralParticleHandler.SpawnParticle(pulse);
+                            }
+                        }
                     }
                 }
             }
