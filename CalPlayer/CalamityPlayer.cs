@@ -4395,13 +4395,7 @@ namespace CalamityMod.CalPlayer
             Player.blockExtraJumps = true;
 
             Player.rocketBoots = 0;
-            Player.jumpBoost = false;
-            Player.slowFall = false;
-            Player.gravControl = false;
-            Player.gravControl2 = false;
-            Player.jumpSpeedBoost = 0f;
             Player.wingTimeMax = (int)(Player.wingTimeMax * 0.5);
-            Player.balloon = -1;
         }
         #endregion
 

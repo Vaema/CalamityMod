@@ -1266,7 +1266,7 @@ namespace CalamityMod.CalPlayer
             if (omegaBlueChestplate)
                 target.AddBuff(BuffType<CrushDepth>(), 180);
             if (sulphurSet)
-                target.AddBuff(BuffID.Poisoned, 90);
+                target.AddBuff(BuffID.Poisoned, 60);
             if (abyssalAmulet)
             {
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffType<RiptideDebuff>());

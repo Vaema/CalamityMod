@@ -40,7 +40,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    DirectionalPulseRing pulse = new DirectionalPulseRing(Player.Calamity().RandomDebuffVisualSpot, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f), 0f, 35);
+                    DirectionalPulseRing pulse = new DirectionalPulseRing(Player.Calamity().RandomDebuffVisualSpot, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f), 0f, 20);
                     GeneralParticleHandler.SpawnParticle(pulse);
                 }
 
@@ -62,7 +62,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             Vector2 npcSize = npc.Center + new Vector2(Main.rand.NextFloat(-npc.width / 2, npc.width / 2), Main.rand.NextFloat(-npc.height / 2, npc.height / 2));
             if (Main.rand.NextBool(3))
             {
-                DirectionalPulseRing pulse = new DirectionalPulseRing(npcSize, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f) + (0.0000007f * npc.width * npc.height), 0f, 35);
+                DirectionalPulseRing pulse = new DirectionalPulseRing(npcSize, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f) + (0.0000007f * npc.width * npc.height), 0f, 15);
                 GeneralParticleHandler.SpawnParticle(pulse);
 
                 for (int i = 0; i < 4; i++)

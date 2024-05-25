@@ -136,7 +136,7 @@ AmbrosialAmpoule: {
 	DisplayName: Ambrosial Ampoule
 	Tooltip:
 		'''
-		+70 max life
+		+50 max life
 		Grants +2 to +6 HP/s life regen based on missing health
 		Provides life regeneration equivalent to standing in Honey
 		Standing still grants extremely powerful regen
@@ -1330,8 +1330,8 @@ Radiance: {
 	DisplayName: Radiance
 	Tooltip:
 		'''
-		+100 max life
-		Grants +3 to +7 HP/s life regen based on missing health
+		+70 max life
+		Grants +2 to +6 HP/s life regen based on missing health
 		Provides life regeneration equivalent to standing in Honey
 		Standing still grants extremely powerful regen
 		Grants 20 defense and continuous healing while afflicted with any debuff
