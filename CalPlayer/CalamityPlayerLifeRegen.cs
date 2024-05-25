@@ -422,8 +422,8 @@ namespace CalamityMod.CalPlayer
             if (rOoze || aAmpoule || purity)
             {
                 float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / Player.statLifeMax2;
-                //Ambrosial Ampule and ooze give between 2 and 6 hp/s, Purity gives between 3 and 7 hp/s
-                float lifeRegenToGive = MathHelper.Lerp(purity ? 6f : 4f, purity ? 14f : 12f, missingLifeRatio);
+                //Ambrosial Ampule and ooze give between 2 and 6 hp/s
+                float lifeRegenToGive = MathHelper.Lerp(4f, 12f, missingLifeRatio);
                 Player.lifeRegen += (int)lifeRegenToGive;
             }
 
