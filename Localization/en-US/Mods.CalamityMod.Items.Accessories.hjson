@@ -1064,8 +1064,7 @@ ManaPolarizer: {
 		'''
 		Increases max mana by 50 and magic damage by 6%
 		-1.5 HP/s life regen if mana is above 50% of its maximum
-		Grants spectre healing, the amount healed scales with your mana
-		The healing only works while holding a magic weapon
+		Magic projectiles give lifesteal while holding a magic weapon
 		The more mana you have, the more you heal
 		'''
 }
