@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             rotIncrease += 0.1f * (rotDirection ? -1 : 1);
 
-            Projectile.velocity *= 0.982f;
+            Projectile.velocity *= 0.984f;
 
             if (Projectile.localAI[0] > 100f && Projectile.localAI[0] < 300 && Projectile.localAI[0] % 9 == 0)
             {
@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Ranged
                     WaterFlavoredParticle subTrail = new WaterFlavoredParticle(Projectile.Center + velocity * 4.5f + addedPlacement, velocity * 7, false, 6, 0.65f, Color.SkyBlue);
                     GeneralParticleHandler.SpawnParticle(subTrail);
                 }
-                int onHitDamage = Owner.CalcIntDamage<RangedDamageClass>(0.36f * Projectile.damage);
+                int onHitDamage = (int)(Projectile.damage * 0.5f);
                 Owner.ApplyDamageToNPC(target, onHitDamage, 0f, 0, false);
             }
         }
