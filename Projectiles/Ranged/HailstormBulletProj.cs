@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -71,12 +72,15 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player Owner = Main.player[Projectile.owner];
-            target.AddBuff(BuffID.Frostburn, 120);
+            target.AddBuff(BuffID.Frostburn2, 120);
             if (hit.Crit)
             {
                 SoundStyle crit = new("CalamityMod/Sounds/NPCHit/CryogenPhaseTransitionCrack");
                 SoundEngine.PlaySound(crit with { Volume = 0.35f, Pitch = 1f }, Projectile.Center);
-                target.AddBuff(BuffID.Frostburn2, 300);
+
+                if (!target.boss)
+                    target.AddBuff(ModContent.BuffType<GlacialState>(), 120);
+
                 int points = 6;
                 float radians = MathHelper.TwoPi / points;
                 Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
