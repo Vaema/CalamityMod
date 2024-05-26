@@ -234,7 +234,11 @@ ProfanedShard: {
 		Not consumable
 		'Her Guardians seek the holder of such vast stolen power.'
 		'''
-	SpawnNormal: Summons the Profaned Guardians when used in the Hallow or Underworld during daytime
+	SpawnNormal:
+		'''
+		Summons the Profaned Guardians when used in the Hallow or Underworld
+		Enrages when fought during nighttime
+		'''
 	SpawnRemix: Summons the Profaned Guardians when used in the Hallow or Underworld
 }
 

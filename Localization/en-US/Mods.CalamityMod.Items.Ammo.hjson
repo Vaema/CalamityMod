@@ -103,7 +103,7 @@ HailstormBullet: {
 		'''
 		Bullets imbued with potent ice magic
 		These bullets rapidly decelerate after being fired
-		Critical hits cause a flash freeze, dealing additional damage
+		Critical hits cause a flash freeze, dealing additional damage and freezing normal enemies
 		'''
 }
 

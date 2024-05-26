@@ -994,7 +994,7 @@ RealmRavager: {
 	DisplayName: Realm Ravager
 	Tooltip:
 		'''
-		Shoots a burst of 3 to 4 bullets
+		Shoots a burst of 4 bullets
 		Converts musket balls into explosive bullets
 		'''
 }
