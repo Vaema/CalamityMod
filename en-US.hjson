@@ -1,0 +1,10 @@
+Mods: {
+	CalamityMod: {
+		Items: {
+			SongOfParadise: {
+				DisplayName: Song Of Paradise
+				Tooltip: ""
+			}
+		}
+	}
+}

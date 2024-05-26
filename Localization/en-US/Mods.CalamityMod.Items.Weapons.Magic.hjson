@@ -480,6 +480,24 @@ Lazhar: {
 	Tooltip: Fires a highly volatile concentrated solar beam
 }
 
+SongOfParadise: {
+	DisplayName: Melody of Paradise
+	Tooltip:
+		'''
+		Plays [c/7CD4D4:flute trills] that conjure music notes toward your foes
+		Music notes will slow down then burst into a small area of effect after hitting an enemy
+		After playing five trills, releases a widening sound wave that inflicts Temporal Sadness
+		[c/FFDD9B:By right clicking on the weapon, you can re-tune your flute to play a beautiful melody]
+		'''
+	Tooltip2:
+		'''
+		Plays a [c/FFDD9B:beautiful melody] that conjures music notes toward your foes
+		Music notes will slow down then burst into a small area of effect after hitting an enemy
+		At the end of the melody, releases a widening sound wave that inflicts Temporal Sadness
+		[c/7CD4D4:By right clicking on the weapon, you can re-tune your flute to play trills]
+		'''
+}
+
 LightGodsBrilliance: {
 	DisplayName: Light God's Brilliance
 	Tooltip: Casts small, homing light beads along with explosive light balls

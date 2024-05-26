@@ -11,6 +11,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameInput;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
@@ -31,6 +32,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         }
 
         #region Fields
+
+        /// <summary>
+        /// REQUIRED. The item ID that this projectile is linked to.
+        /// </summary>
+        public virtual int AssignedItemID => ItemID.None;
+
         /// <summary>
         /// The offset in pixels of the weapon from the projectile owner's center. This works even while using AbsolutePosition.
         /// </summary>
@@ -153,7 +160,13 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         public override void AI()
         {
+            if (Owner.HeldItem.type != AssignedItemID)
+            {
+                Projectile.Kill();
+            }
+
             Owner.Calamity().mouseWorldListener = true;
+            Owner.Calamity().rightClickListener = true;
 
             if (Owner.ItemAnimationActive)
             {
@@ -199,6 +212,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             if (Owner.ItemAnimationJustStarted)
             {
                 Projectile.timeLeft = Owner.HeldItem.useAnimation + 1;
+                if (DrawUnconditionally) Projectile.timeLeft = 100;
                 OnBeginUse();
             }
         }
@@ -225,7 +239,6 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
             Vector2 cen = Projectile.Center + new Vector2(HitboxOutset, 0).RotatedBy(FinalRotation + HitboxRotationOffset);
-
 
             hitbox = new Rectangle((int)cen.X - (int)(HitboxSize.X / 2), (int)cen.Y - (int)(HitboxSize.Y / 2), (int)HitboxSize.X, (int)HitboxSize.Y);
 

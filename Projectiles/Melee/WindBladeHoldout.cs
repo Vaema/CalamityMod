@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -14,6 +15,8 @@ namespace CalamityMod.Projectiles.Melee
 {
     public class WindBladeHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
+        public override int AssignedItemID => ModContent.ItemType<WindBlade>();
+
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<WindBlade>();
 
         public override float HitboxOutset => 60;
@@ -44,7 +47,7 @@ namespace CalamityMod.Projectiles.Melee
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;
             else Owner.direction = 1;
 
-            DrawUnconditionally = true;
+            DrawUnconditionally = false;
 
             if (NumberOfAnimations % 4 < 2)
             {

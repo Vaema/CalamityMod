@@ -1307,9 +1307,9 @@ Turbulance: {
 	DisplayName: Turbulance
 	Tooltip:
 		'''
-		Fires a cloudy javelin that bursts into wind slashes on hit
-		Wind slashes home if the javelin crits
-		Stealth strikes are trailed by homing wind slashes
+		Throw a javelin that bursts into windy puffs that home in on the nearest enemy
+		Stealth strikes latch onto enemies and tiles, creating a localized wind storm
+		Wind storms create multiple bursts of faster-moving puffs that have a higher homing radius
 		'''
 }
 

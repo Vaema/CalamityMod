@@ -12,7 +12,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 {
     public class Galeforce : ModItem, ILocalizedModType
     {
-        public Vector2 visualOffset = Vector2.Zero;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
@@ -56,8 +55,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            visualOffset *= 0.9f;
-
             if (player.Calamity().mouseWorld.X > player.Center.X)
             {
                 player.ChangeDir(1);
@@ -67,7 +64,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 player.ChangeDir(-1);
             }
 
-            CalamityUtils.CleanHoldStyle(player, player.compositeFrontArm.rotation + MathHelper.PiOver2, player.GetFrontHandPosition(player.compositeFrontArm.stretch, player.compositeFrontArm.rotation).Floor() + new Vector2(16, 0), new Vector2(38, 68), new Vector2(-9, 0));
+            CalamityUtils.CleanHoldStyle(player, player.compositeFrontArm.rotation + MathHelper.PiOver2, player.GetFrontHandPosition(player.compositeFrontArm.stretch, player.compositeFrontArm.rotation).Floor(), new Vector2(38, 68), new Vector2(-9, 0));
         }
 
         public override void AddRecipes()

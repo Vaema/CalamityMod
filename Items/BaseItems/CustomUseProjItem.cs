@@ -12,12 +12,16 @@ namespace CalamityMod.Items.BaseItems
     {
         public override void SetDefaults()
         {
-            Item.channel = true;
+
         }
 
         public override bool CanShoot(Player player)
         {
             return player.ownedProjectileCounts[Item.shoot] < 1;
+        }
+        public override bool CanUseItem(Player player)
+        {
+            return base.CanUseItem(player);
         }
     }
 }
