@@ -1458,9 +1458,9 @@ namespace CalamityMod.NPCs
             else if (npc.type == NPCID.SkeletronHand)
             {
                 if (CalamityWorld.death)
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.65);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
                 else
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.9);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.75);
             }
             else if (npc.type == NPCID.QueenBee)
             {
