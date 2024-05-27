@@ -83,46 +83,35 @@ namespace CalamityMod.Items.Weapons.Ranged
                 return player.ownedProjectileCounts[Item.shoot] <= 0;
         }
 
+        public override void HoldItem(Player player)
+        {
+            if (player.whoAmI != Main.myPlayer)
+                return;
+
+            player.Calamity().mouseWorldListener = true;
+            player.Calamity().rightClickListener = true;
+
+            // Right-click channeling
+            if (player.Calamity().mouseRight && CanUseItem(player) && !Main.mapFullscreen && !Main.blockMouse && !player.HasCooldown(SuperradiantSawBoost.ID))
+            {
+                // Only one out at a time
+                if (Main.projectile.Any(n => n.active && n.type == Item.shoot && n.owner == player.whoAmI))
+                    return;
+
+                int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(Item.damage);
+                float kb = player.GetTotalKnockback<MeleeDamageClass>().ApplyTo(Item.knockBack);
+                Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center, player.SafeDirectionTo(player.Calamity().mouseWorld), Item.shoot, damage * 2, kb, player.whoAmI);
+            }
+        }
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            // Right click dash
+            // The holdout will initially double up when right clicking otherwise
             if (player.altFunctionUse == 2)
-            {
-                if (!player.HasCooldown(SuperradiantSawBoost.ID))
-                {
-                    // Throws a lingering saw at the cursor
-                    float mouseDist = Vector2.Distance(player.Center, Main.MouseWorld) / 21f;
-                    Projectile.NewProjectile(source, player.Center, velocity.SafeNormalize(Vector2.UnitY) * mouseDist, ModContent.ProjectileType<SuperradiantSawLingering>(), damage, knockback, Main.myPlayer);
+                return false;
 
-                    player.AddCooldown(SuperradiantSawBoost.ID, DashCooldown);
-                    player.Calamity().sBlasterDashActivated = true;
-                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), player.Center);
-
-                    // If moving, make particle effects when the dash activates
-                    if (player.velocity != Vector2.Zero)
-                    {
-                        for (int c = 0; c < 9; c++)
-                        {
-                            Vector2 sparkVel = player.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(MathHelper.ToRadians(45f)) * Main.rand.NextFloat(-28f, -36f);
-                            Color sparkColor = Color.Lerp(new Color(150, 255, 60), new Color(60, 255, 220), c / 8f);
-                            Particle spark = new CritSpark(player.Center, sparkVel, Color.White, sparkColor, 1.5f, 45, 0.5f, 2f);
-                            GeneralParticleHandler.SpawnParticle(spark);
-                        }
-                        for (int e = 0; e < 7; e++)
-                        {
-                            Vector2 sparkVel2 = player.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(MathHelper.ToRadians(36f)) * Main.rand.NextFloat(-4f, -6f);
-                            Color sparkColor2 = Color.Lerp(new Color(150, 255, 60), new Color(60, 255, 220), e / 6f);
-                            Particle spark2 = new NanoParticle(player.Center, sparkVel2, sparkColor2, 1.5f, 45, Main.rand.NextBool(3));
-                            GeneralParticleHandler.SpawnParticle(spark2);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // The holdout deals 2x base damage.
-                Projectile.NewProjectile(source, position, velocity, Item.shoot, damage * 2, knockback, player.whoAmI);
-            }
+            // The holdout deals 2x base damage.
+            Projectile.NewProjectile(source, position, velocity, Item.shoot, damage * 2, knockback, player.whoAmI);
             return false;
         }
 
