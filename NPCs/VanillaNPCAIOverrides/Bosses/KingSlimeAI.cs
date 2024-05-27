@@ -975,6 +975,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             Vector2 randomDefault = Main.rand.NextBool() ? Vector2.UnitX : -Vector2.UnitX;
             Vector2 vectorAimedAheadOfTarget = Main.player[npc.target].Center + new Vector2((float)Math.Round(Main.player[npc.target].velocity.X), 0f).SafeNormalize(randomDefault) * distanceAhead;
             Point predictiveTeleportPoint = vectorAimedAheadOfTarget.ToTileCoordinates();
+            if (predictiveTeleportPoint.X < 10)
+                predictiveTeleportPoint.X = 10;
+            if (predictiveTeleportPoint.X > Main.maxTilesX - 10)
+                predictiveTeleportPoint.X = Main.maxTilesX - 10;
+            if (predictiveTeleportPoint.Y < 10)
+                predictiveTeleportPoint.Y = 10;
+            if (predictiveTeleportPoint.Y > Main.maxTilesY - 10)
+                predictiveTeleportPoint.Y = Main.maxTilesY - 10;
+
             int randomPredictiveTeleportOffset = 5;
             int teleportTries = 0;
             while (teleportTries < 100)
@@ -998,10 +1007,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         break;
                     }
                     else
+                    {
                         predictiveTeleportPoint.X += predictiveTeleportPoint.X < 0f ? 1 : -1;
+                        if (predictiveTeleportPoint.X < 10)
+                            predictiveTeleportPoint.X = 10;
+                        if (predictiveTeleportPoint.X > Main.maxTilesX - 10)
+                            predictiveTeleportPoint.X = Main.maxTilesX - 10;
+                    }
                 }
                 else
+                {
                     predictiveTeleportPoint.X += predictiveTeleportPoint.X < 0f ? 1 : -1;
+                    if (predictiveTeleportPoint.X < 10)
+                        predictiveTeleportPoint.X = 10;
+                    if (predictiveTeleportPoint.X > Main.maxTilesX - 10)
+                        predictiveTeleportPoint.X = Main.maxTilesX - 10;
+                }
             }
 
             // Default teleport if the above conditions aren't met in 100 iterations
