@@ -258,23 +258,6 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(ModContent.BuffType<ElementalMix>(), 90);
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") with { Pitch = 0.1f * Projectile.numHits }, Projectile.Center);
 
-            // Hitstop effect if the saw is not returning
-            if (!Returning && HitstopTimer == 0)
-            {
-                HitstopTimer = 5;
-                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) / SuperradiantSlaughterer.ShootSpeed;
-            }
-
-            if (Projectile.numHits < 1)
-                ReturnTimer = 1;
-
-            if (PierceBeforeReturn > 0)
-            {
-                PierceBeforeReturn--;
-                if (PierceBeforeReturn <= 0)
-                    Returning = true;
-            }
-
             // SUPER COLORFUL PARTICLE EFFECTS YEAH
             int onHitSparkAmount = 7 + 10 * (int)SawLevel;
             for (int s = 0; s < onHitSparkAmount; s++)
@@ -294,6 +277,23 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Particle squared = new SquareParticle(target.Center, squareVel, true, 30, squareSize, squareColor);
                 GeneralParticleHandler.SpawnParticle(squared);
+            }
+
+            // Hitstop effect if the saw is not returning
+            if (!Returning && HitstopTimer == 0)
+            {
+                HitstopTimer = 5;
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) / SuperradiantSlaughterer.ShootSpeed;
+            }
+
+            if (Projectile.numHits < 1)
+                ReturnTimer = 1;
+
+            if (PierceBeforeReturn > 0)
+            {
+                PierceBeforeReturn--;
+                if (PierceBeforeReturn <= 0)
+                    Returning = true;
             }
         }
 
