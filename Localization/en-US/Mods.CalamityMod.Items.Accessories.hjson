@@ -138,8 +138,8 @@ AmbrosialAmpoule: {
 		'''
 		+50 max life
 		Grants +2 to +6 HP/s life regen based on missing health
-		Provides life regeneration equivalent to standing in Honey
-		Standing still grants extremely powerful regen
+		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damage debuff
+		Standing still grants +1.5 HP/s life regen
 		Halves how long you are afflicted with fire and sickness debuffs
 		You emit yellow light if visibility is enabled
 		'''
@@ -885,8 +885,9 @@ HallowedRune: {
 	Tooltip:
 		'''
 		Whenever your minions hit an enemy you will gain a random buff, does not stack with downgrades
-		These buffs will either boost your defense, summon damage, or life regen for a while
-		If you have the offensive boost, enemies hit by minions will sometimes be hit by stars
+		Hallowed Power increases summon damage by 10% and makes enemy hits from minions rain stars
+		Hallowed Defense increases defense by 8 and DR by 4%
+		Hallowed Regen grants +1.5 HP/s life regeneration
 		'''
 }
 
@@ -935,8 +936,8 @@ HoneyDew: {
 	Tooltip:
 		'''
 		+30 max life
-		Provides life regeneration equivalent to standing in Honey
-		Standing still in Honey grants extremely powerful regen
+		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damage debuff
+		Standing still in Honey grants +1.5 HP/s life regen
 		Halves how long you are afflicted with sickness debuffs
 		'''
 }
@@ -1023,8 +1024,8 @@ LivingDew: {
 	Tooltip:
 		'''
 		+50 max life
-		Provides life regeneration equivalent to standing in Honey
-		Standing still in Honey grants extremely powerful regen
+		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damage debuff
+		Standing still in Honey grants +1.5 HP/s life regen
 		Halves how long you are afflicted with fire and sickness debuffs
 		'''
 }
@@ -1242,10 +1243,9 @@ PhantomicArtifact: {
 	Tooltip:
 		'''
 		Whenever your minions hit an enemy you will gain a random phantomic buff, does not stack with downgrades
-		These buffs will either boost your defense, summon damage, or life regen for a while
-		If you have the offensive boost, enemies hit by minions will sometimes be hit by phantomic knives
-		If you have the regenerative boost, a phantomic heart will occasionally materialise granting massive health regen
-		If you have the defensive boost, a phantomic bulwark will absorb 20% of the next projectile's damage that hits the bulwark, shattering it
+		Phantomic Empowerment increases summon damage by 10% and makes minion hits spawn phantomic knives
+		Phantomic Shield increases defense by 10 and DR by 5% and spawns a phantomic bulwark which absorbs 20% of the next projectile's damage that touches it
+		Phantomic Regen grants +2 HP/s life regen and spawns a phantomic heart which grants an additional 2 HP/s life regen when touched
 		'''
 }
 
@@ -1332,8 +1332,8 @@ Radiance: {
 		'''
 		+70 max life
 		Grants +2 to +6 HP/s life regen based on missing health
-		Provides life regeneration equivalent to standing in Honey
-		Standing still grants extremely powerful regen
+		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damage debuff
+		Standing still grants +2 HP/s life regen
 		Grants 20 defense and continuous healing while afflicted with any debuff
 		The healing eventually slows down if debuffed for an extended period of time
 		Massively boosts natural life regen while afflicted with any debuff
@@ -1586,7 +1586,9 @@ SpiritGlyph: {
 	Tooltip:
 		'''
 		Whenever your minions hit an enemy you will gain a random buff
-		These buffs will either boost your defense, summon damage, or life regen for a while
+		Spirit Power increases summon damage by 10%
+		Spirit Defense increases defense by 6 and DR by 3%
+		Spirit Regen grants +1 HP/s life regeneration
 		'''
 }
 
