@@ -292,6 +292,37 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text += "\nDemon Altars now drop Souls of Night instead of generating ores when destroyed" +
                 "\nHardmode ores now generate after defeating Mechanical Bosses for the first time");
 
+            // Exact life regen descriptions
+            bool isCampfire = item.type == ItemID.Campfire || item.type == ItemID.CursedCampfire || item.type == ItemID.DemonCampfire || item.type == ItemID.FrozenCampfire || item.type == ItemID.IchorCampfire || item.type == ItemID.RainbowCampfire || item.type == ItemID.UltraBrightCampfire || item.type == ItemID.BoneCampfire || item.type == ItemID.DesertCampfire || item.type == ItemID.CoralCampfire || item.type == ItemID.CorruptCampfire || item.type == ItemID.CrimsonCampfire || item.type == ItemID.HallowedCampfire || item.type == ItemID.JungleCampfire || item.type == ItemID.MushroomCampfire || item.type == ItemID.ShimmerCampfire;
+            if (isCampfire)
+                EditTooltipByNum(0, (line) => line.Text = "Life regen is increased by 0.5 HP/s when near a campfire");
+
+            if (item.type == ItemID.HeartLantern)
+                EditTooltipByNum(0, (line) => line.Text = "Grants +1 HP/s life regeneration when placed nearby");
+
+            if (item.type == ItemID.BottledHoney)
+                EditTooltipByNum(0, (line) => line.Text = "Grants +1 HP/s life regen for a short time" +
+                "\nGrants an additional +1 HP/s life regen while inflicted with a damaging debuff");
+
+            if (item.type == ItemID.ShinyStone)
+                EditTooltipByNum(0, (line) => line.Text = "Grants +2 HP/s life regen and accelerates natural life regen when not moving");
+
+            if (item.type == ItemID.BandofRegeneration)
+                EditTooltipByNum(0, (line) => line.Text = "Grants +1 HP/s life regeneration");
+
+            if (item.type == ItemID.CharmofMyths)
+                EditTooltipByNum(0, (line) => line.Text = "Grants +1 HP/s life regeneration and reduces the cooldown of healing potions by 25%");
+
+            if (item.type == ItemID.RegenerationPotion)
+                EditTooltipByNum(0, (line) => line.Text = "Provides +2 HP/s life regeneration");
+
+            if (item.type == ItemID.SoulDrain)
+                EditTooltipByNum(0, (line) => line.Text += "\nThis grants +1.5 HP/s life regen and accelerates natural life regen" +
+                "\nLife drain stacks based on the number of enemies being hit");
+
+            if (item.type == ItemID.HamBat)
+                EditTooltipByNum(1, (line) => line.Text = "Defeating enemies temporarily grants +3 HP/s life regen");
+
             // Warmth Potion provides debuff immunities
             if (item.type == ItemID.WarmthPotion)
             {
@@ -900,8 +931,10 @@ namespace CalamityMod.Items
 
             // DD2 armor tooltip edits
             #region DD2 Armor
-            // Reduce DD2 armor piece bonuses because they're overpowered
+            // Reduce DD2 armor piece bonuses because they're overpowered, and clarify life regen boosts
             // Squire armor
+            if (item.type == ItemID.SquireGreatHelm)
+                EditTooltipByNum(0, (line) => line.Text = "Increases your max number of sentries by 1 and grants +2 HP/s life regen");
             if (item.type == ItemID.SquirePlating)
                 EditTooltipByNum(0, (line) => line.Text = "10% increased minion and melee damage");
             if (item.type == ItemID.SquireGreaves)
@@ -931,7 +964,7 @@ namespace CalamityMod.Items
 
             // Valhalla Knight armor
             if (item.type == ItemID.SquireAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = "30% increased minion damage and increased life regeneration");
+                EditTooltipByNum(0, (line) => line.Text = "30% increased minion damage and grants +4 HP/s life regen");
             if (item.type == ItemID.SquireAltPants)
                 EditTooltipByNum(0, (line) => line.Text = "10% increased minion damage and melee critical strike chance");
 

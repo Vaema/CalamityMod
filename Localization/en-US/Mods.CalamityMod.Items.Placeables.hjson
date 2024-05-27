@@ -523,7 +523,6 @@ AltarOfTheAccursedItem: {
 		'''
 		Offer Ashes of Calamity at this altar to summon the Witch
 		Doing so will create a square arena of blocks, with the altar at its center
-		During the battle, heart pickups only heal for half as much
 		The Witch enrages while you are outside of the arena
 		{$CommonItemTooltip.SpecialCrafting}
 		'''

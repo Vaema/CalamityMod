@@ -305,11 +305,7 @@ Teratoma: {
 Terminus: {
 	DisplayName: Terminus
 	GFBName: Ogscule
-	Tooltip:
-		'''
-		Activates Boss Rush Mode, using it again will deactivate Boss Rush Mode
-		During the Boss Rush, all wires and wired devices will be disabled
-		'''
+	Tooltip: Activates Boss Rush Mode, using it again will deactivate Boss Rush Mode
 }
 
 YharonEgg: {
