@@ -63,8 +63,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item89, Projectile.Center);
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
             Projectile.ExpandHitboxBy(128);
             Projectile.maxPenetrate = -1;
             Projectile.penetrate = -1;
