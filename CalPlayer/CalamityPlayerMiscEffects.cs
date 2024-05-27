@@ -2918,15 +2918,17 @@ namespace CalamityMod.CalPlayer
             }
 
             if (wDeath && !purity)
-                Player.GetDamage<GenericDamageClass>() -= 0.25f;
+                Player.GetDamage<GenericDamageClass>() -= 0.2f;
 
             if (astralInfection && !(infectedJewel || purity))
-                Player.GetDamage<GenericDamageClass>() -= 0.15f;
+                Player.GetDamage<GenericDamageClass>() -= 0.1f;
 
             if (pFlames && !purity)
             {
-                Player.blind = true;
-                Player.GetDamage<GenericDamageClass>() -= 0.15f;
+                if (!alchFlask)
+                    Player.blind = true;
+
+                Player.GetDamage<GenericDamageClass>() -= 0.1f;
             }
 
             if (aCrunch && !laudanum && !purity)
