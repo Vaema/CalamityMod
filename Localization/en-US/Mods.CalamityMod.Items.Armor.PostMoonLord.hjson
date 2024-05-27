@@ -527,7 +527,7 @@ TarragonHeadMelee: {
 		'''
 		15% increased melee speed
 		Enemies are more likely to target you
-		You gain a life regen buff when you take damage
+		Taking damage gives the Tarra Life buff, which grants +1.5 HP/s life regen
 		Press {0} to cloak yourself in life energy that heavily reduces enemy contact damage for 10 seconds
 		This has a 30 second cooldown
 		'''

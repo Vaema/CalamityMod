@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.UseSound = FireSound;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<NitroShot>();
+            Item.shoot = ProjectileID.Bullet;
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Bullet;
             Item.rare = ItemRarityID.LightRed;
@@ -66,7 +66,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             player.velocity += -velocity * 0.3f;
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NitroShot>(), damage, knockback, player.whoAmI, 0f);
+            if (type == ProjectileID.Bullet)
+                type = ModContent.ProjectileType<NitroShot>();
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f);
             return false;
         }
 

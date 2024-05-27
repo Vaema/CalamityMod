@@ -1172,6 +1172,8 @@ namespace CalamityMod.CalPlayer
             if (crawCarapace)
             {
                 npc.AddBuff(ModContent.BuffType<Crumbling>(), 900);
+                int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(40);
+                Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
                 SoundEngine.PlaySound(SoundID.NPCHit33 with { Volume = 0.5f }, Player.Center);
             }
 
@@ -1179,6 +1181,8 @@ namespace CalamityMod.CalPlayer
             {
                 npc.AddBuff(ModContent.BuffType<ArmorCrunch>(), 900);
                 npc.AddBuff(ModContent.BuffType<CrushDepth>(), 900);
+                int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(250);
+                Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
                 SoundEngine.PlaySound(BaroclawHit, Player.Center);
                 Vector2 bloodSpawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height) * 0.04f;
                 Vector2 splatterDirection = (Player.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
@@ -1198,6 +1202,8 @@ namespace CalamityMod.CalPlayer
             if (absorber)
             {
                 npc.AddBuff(ModContent.BuffType<AbsorberAffliction>(), 900);
+                int onHitDamage = Player.CalcIntDamage<GenericDamageClass>(350);
+                Player.ApplyDamageToNPC(npc, onHitDamage, 0f, 0, false);
                 SoundEngine.PlaySound(AbsorberHit, Player.Center);
                 Vector2 bloodSpawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height) * 0.04f;
                 Vector2 splatterDirection = (Player.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
@@ -1233,13 +1239,13 @@ namespace CalamityMod.CalPlayer
                 if (Main.player[proj.owner] is null)
                 {
                     if (!Main.npc[proj.owner].friendly)
-                        Main.npc[proj.owner].AddBuff(BuffID.Poisoned, 120);
+                        Main.npc[proj.owner].AddBuff(BuffID.Poisoned, 60);
                 }
                 else
                 {
                     Player p = Main.player[proj.owner];
                     if (p.hostile && Player.hostile && (Player.team != p.team || p.team == 0))
-                        p.AddBuff(BuffID.Poisoned, 120);
+                        p.AddBuff(BuffID.Poisoned, 60);
                 }
             }
 
@@ -1672,7 +1678,7 @@ namespace CalamityMod.CalPlayer
 
             if (blazingCoreParry > 0) //check for active parry
             {
-                if (blazingCoreParry >= 18) //only the first 12 frames (0.2 seconds) counts for a valid parry
+                if (blazingCoreParry >= 12) //only the first 18 frames (0.3 seconds) counts for a valid parry
                 {
                     if (!Player.HasCooldown(ParryCooldown.ID))
                     {
@@ -1696,7 +1702,7 @@ namespace CalamityMod.CalPlayer
             }
             else if (flameLickedShellParry > 0)
             {
-                if (flameLickedShellParry >= 18)
+                if (flameLickedShellParry >= 12)
                 {
                     if (!Player.HasCooldown(ParryCooldown.ID))
                     {

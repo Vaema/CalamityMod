@@ -80,23 +80,12 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             writer.Write(NPC.alpha);
             writer.Write(NPC.dontTakeDamage);
-
-            // Frame syncs
-            writer.Write(NPC.frame.X);
-            writer.Write(NPC.frame.Y);
-            writer.Write(NPC.frame.Width);
-            writer.Write(NPC.frame.Height);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             NPC.alpha = reader.ReadInt32();
             NPC.dontTakeDamage = reader.ReadBoolean();
-
-            // Frame syncs
-            Rectangle frame = new Rectangle(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
-            if (frame.Width > 0 && frame.Height > 0)
-                NPC.frame = frame;
         }
 
         public override void AI()
@@ -117,10 +106,8 @@ namespace CalamityMod.NPCs.DesertScourge
                         NPC.ai[3] = 1f;
 
                         NPC.position = NPC.Center;
-                        //NPC.width = (int)(BodyTexture2.Width() * NPC.scale);
-                        //NPC.height = (int)(BodyTexture2.Height() * NPC.scale);
                         NPC.position -= NPC.Size * 0.5f;
-                        NPC.frame = new Rectangle(0, 0, BodyTexture2.Width(), BodyTexture2.Height());
+                        NPC.frame = new Rectangle(0, 0, BodyTexture2 is null ? 0 : BodyTexture2.Width(), BodyTexture2 is null ? 0 : BodyTexture2.Height());
 
                         NPC.netUpdate = true;
 
@@ -134,10 +121,8 @@ namespace CalamityMod.NPCs.DesertScourge
                         NPC.ai[3] = 2f;
 
                         NPC.position = NPC.Center;
-                        //NPC.width = (int)(BodyTexture3.Width() * NPC.scale);
-                        //NPC.height = (int)(BodyTexture3.Height() * NPC.scale);
                         NPC.position -= NPC.Size * 0.5f;
-                        NPC.frame = new Rectangle(0, 0, BodyTexture3.Width(), BodyTexture3.Height());
+                        NPC.frame = new Rectangle(0, 0, BodyTexture3 is null ? 0 : BodyTexture3.Width(), BodyTexture3 is null ? 0 : BodyTexture3.Height());
 
                         NPC.netUpdate = true;
 
@@ -151,10 +136,8 @@ namespace CalamityMod.NPCs.DesertScourge
                         NPC.ai[3] = 3f;
 
                         NPC.position = NPC.Center;
-                        //NPC.width = (int)(BodyTexture4.Width() * NPC.scale);
-                        //NPC.height = (int)(BodyTexture4.Height() * NPC.scale);
                         NPC.position -= NPC.Size * 0.5f;
-                        NPC.frame = new Rectangle(0, 0, BodyTexture4.Width(), BodyTexture4.Height());
+                        NPC.frame = new Rectangle(0, 0, BodyTexture4 is null ? 0 : BodyTexture4.Width(), BodyTexture4 is null ? 0 : BodyTexture4.Height());
 
                         NPC.netUpdate = true;
 

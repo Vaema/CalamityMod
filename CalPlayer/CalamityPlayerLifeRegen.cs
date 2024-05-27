@@ -107,7 +107,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(vHex, 35);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || purity);
-            ApplyDoTDebuff(pFlames, 30, purity);
+            ApplyDoTDebuff(pFlames, alchFlask ? 10 : 30, purity);
             ApplyDoTDebuff(cragsLava, 30);
             ApplyDoTDebuff(shadowflame, 30, purity);
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
@@ -423,8 +423,8 @@ namespace CalamityMod.CalPlayer
             if (rOoze || aAmpoule || purity)
             {
                 float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / Player.statLifeMax2;
-                //Ambrosial Ampule and ooze give between 2 and 6 hp/s, Purity gives between 3 and 7 hp/s
-                float lifeRegenToGive = MathHelper.Lerp(purity ? 6f : 4f, purity ? 14f : 12f, missingLifeRatio);
+                //Ambrosial Ampule and ooze give between 2 and 6 hp/s
+                float lifeRegenToGive = MathHelper.Lerp(4f, 12f, missingLifeRatio);
                 Player.lifeRegen += (int)lifeRegenToGive;
             }
 
@@ -585,13 +585,6 @@ namespace CalamityMod.CalPlayer
                         Player.lifeRegen -= (int)(160D * calamityDebuffMultiplier);
                     }
                 }
-            }
-
-            // TODO -- Why is this here?
-            if (weakPetrification)
-            {
-                if (Player.mount.Active)
-                    Player.mount.Dismount(Player);
             }
             #endregion
 

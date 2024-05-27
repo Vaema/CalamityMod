@@ -23,10 +23,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 npc.TargetClosest();
 
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
-                npc.TargetClosest();
-
             bool bossRush = BossRushEvent.BossRushActive;
             bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
@@ -1031,6 +1027,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 while ((float)num647 == num646);
 
+                npc.TargetClosest();
                 npc.ai[0] = num647;
                 npc.ai[1] = 0f;
                 npc.ai[2] = 0f;
@@ -1081,8 +1078,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     // Avoid cheap bullshit
                     npc.damage = 0;
-
-                    npc.TargetClosest();
                     
                     float chargeDistanceY = 20f;
                     chargeDistanceY += 20f * num644;
@@ -1239,8 +1234,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Avoid cheap bullshit
                     npc.damage = 0;
 
-                    npc.TargetClosest();
-
                     float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
                     npc.direction = playerLocation < 0 ? 1 : -1;
                     npc.spriteDirection = npc.direction;
@@ -1290,8 +1283,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Avoid cheap bullshit
                 npc.damage = 0;
 
-                npc.TargetClosest();
-
                 float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
                 npc.direction = playerLocation < 0 ? 1 : -1;
                 npc.spriteDirection = npc.direction;
@@ -1322,7 +1313,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.damage = 0;
 
                 npc.localAI[0] = 0f;
-                npc.TargetClosest();
 
                 float num672 = Main.masterMode ? 16f : 14f;
                 float num673 = Main.masterMode ? 0.15f : 0.1f;

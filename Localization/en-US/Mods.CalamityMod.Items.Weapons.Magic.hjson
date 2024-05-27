@@ -392,11 +392,6 @@ HadalUrn: {
 		'''
 }
 
-HarvestStaff: {
-	DisplayName: Harvest Staff
-	Tooltip: Casts flaming pumpkins
-}
-
 HeliumFlash: {
 	DisplayName: Helium Flash
 	Tooltip:
@@ -861,11 +856,7 @@ Tradewinds: {
 
 UltraLiquidator: {
 	DisplayName: Ultra Liquidator
-	Tooltip:
-		'''
-		Summons liquidation blades that summon more blades on enemy hits
-		The blades inflict ichor, cursed inferno and brimstone flames
-		'''
+	Tooltip: Summons liquidation blades that summon more blades on enemy hits
 }
 
 UndinesRetribution: {

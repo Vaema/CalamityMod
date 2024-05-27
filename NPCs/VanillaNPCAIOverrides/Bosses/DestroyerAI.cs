@@ -92,10 +92,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Return to ground phase, with less time spent in later phases
             if (calamityGlobalNPC.newAI[3] >= FlightPhaseResetGateValue)
-            {
                 calamityGlobalNPC.newAI[3] = flightPhaseTimerSetValue;
-                npc.TargetClosest();
-            }
 
             // Spawn DR check
             bool hasSpawnDR = calamityGlobalNPC.newAI[1] < DRIncreaseTime && calamityGlobalNPC.newAI[1] > 60f;
@@ -123,10 +120,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             bool increaseSpeed = Vector2.Distance(player.Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles;
             bool increaseSpeedMore = Vector2.Distance(player.Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles;
-
-            // Get a new target if current target is too far away
-            if (increaseSpeedMore && npc.type == NPCID.TheDestroyer)
-                npc.TargetClosest();
 
             float enrageScale = bossRush ? 1f : 0f;
             if (Main.IsItDay() || bossRush)
@@ -343,85 +336,88 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            if (npc.type == NPCID.TheDestroyer)
             {
-                if (npc.type == NPCID.TheDestroyer)
+                // Spawn segments from head
+                if (npc.ai[0] == 0f)
                 {
-                    // Spawn segments from head
-                    if (npc.ai[0] == 0f)
+                    npc.ai[3] = npc.whoAmI;
+                    npc.realLife = npc.whoAmI;
+                    int index = npc.whoAmI;
+                    for (int j = 0; j <= totalSegments; j++)
                     {
-                        npc.ai[3] = npc.whoAmI;
-                        npc.realLife = npc.whoAmI;
-                        int index = npc.whoAmI;
-                        for (int j = 0; j <= totalSegments; j++)
-                        {
-                            int type = NPCID.TheDestroyerBody;
-                            if (j == totalSegments)
-                                type = NPCID.TheDestroyerTail;
+                        int type = NPCID.TheDestroyerBody;
+                        if (j == totalSegments)
+                            type = NPCID.TheDestroyerTail;
 
-                            int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
-                            Main.npc[segment].ai[3] = npc.whoAmI;
-                            Main.npc[segment].realLife = npc.whoAmI;
-                            Main.npc[segment].ai[1] = index;
-                            Main.npc[index].ai[0] = segment;
-                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
-                            index = segment;
-                        }
+                        int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
+                        Main.npc[segment].ai[3] = npc.whoAmI;
+                        Main.npc[segment].realLife = npc.whoAmI;
+                        Main.npc[segment].ai[1] = index;
+                        Main.npc[index].ai[0] = segment;
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
+                        index = segment;
+                    }
+                }
+
+                // Laser breath in Death Mode
+                if (spitLaserSpreads)
+                {
+                    // Set laser color and type
+                    if (calamityGlobalNPC.destroyerLaserColor == -1)
+                    {
+                        calamityGlobalNPC.destroyerLaserColor = phase3 ? 3 : phase2 ? 2 : 1;
+                        npc.SyncDestroyerLaserColor();
                     }
 
-                    // Laser breath in Death Mode
-                    if (spitLaserSpreads)
+                    float laserBreathGateValue = DeathModeLaserBreathGateValue;
+                    if (calamityGlobalNPC.newAI[0] < laserBreathGateValue)
+                        calamityGlobalNPC.newAI[0] += 1f;
+
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        // Set laser color and type
-                        if (calamityGlobalNPC.destroyerLaserColor == -1)
-                        {
-                            calamityGlobalNPC.destroyerLaserColor = phase3 ? 3 : phase2 ? 2 : 1;
-                            npc.SyncDestroyerLaserColor();
-                        }
-
-                        float laserBreathGateValue = DeathModeLaserBreathGateValue;
-                        if (calamityGlobalNPC.newAI[0] < laserBreathGateValue)
-                            calamityGlobalNPC.newAI[0] += 1f;
-
                         // Sync newAI every 20 frames for the new telegraph
-                        if (calamityGlobalNPC.newAI[0] % 20f == 0f)
+                        if (calamityGlobalNPC.newAI[0] % 20f == 10f)
                             npc.SyncExtraAI();
+                    }
 
-                        if ((player.Center - npc.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(npc.velocity.ToRotation(), MathHelper.PiOver4) == npc.velocity.ToRotation() &&
-                            calamityGlobalNPC.newAI[0] >= laserBreathGateValue && Vector2.Distance(npc.Center, player.Center) > 480f &&
-                            Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
+                    if ((player.Center - npc.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(npc.velocity.ToRotation(), MathHelper.PiOver4) == npc.velocity.ToRotation() &&
+                        calamityGlobalNPC.newAI[0] >= laserBreathGateValue && Vector2.Distance(npc.Center, player.Center) > 480f &&
+                        Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
+                    {
+                        if (calamityGlobalNPC.newAI[0] % 30f == 0f)
                         {
-                            if (calamityGlobalNPC.newAI[0] % 30f == 0f)
+                            float velocity = bossRush ? 6f : death ? 5.333f : 5f;
+                            int type = ProjectileID.DeathLaser;
+                            switch (calamityGlobalNPC.destroyerLaserColor)
                             {
-                                float velocity = bossRush ? 6f : death ? 5.333f : 5f;
-                                int type = ProjectileID.DeathLaser;
-                                switch (calamityGlobalNPC.destroyerLaserColor)
-                                {
-                                    default:
-                                    case 0:
-                                        break;
+                                default:
+                                case 0:
+                                    break;
 
-                                    case 1:
-                                        type = ModContent.ProjectileType<DestroyerCursedLaser>();
-                                        break;
+                                case 1:
+                                    type = ModContent.ProjectileType<DestroyerCursedLaser>();
+                                    break;
 
-                                    case 2:
-                                        type = ModContent.ProjectileType<DestroyerElectricLaser>();
-                                        break;
-                                }
-                                int damage = npc.GetProjectileDamage(type);
+                                case 2:
+                                    type = ModContent.ProjectileType<DestroyerElectricLaser>();
+                                    break;
+                            }
+                            int damage = npc.GetProjectileDamage(type);
 
-                                // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                                {
-                                    double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                    double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                    if (!NPC.downedMechBossAny)
-                                        damage = (int)(damage * firstMechMultiplier);
-                                    else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                        damage = (int)(damage * secondMechMultiplier);
-                                }
+                            // Reduce mech boss projectile damage depending on the new ore progression changes
+                            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                            {
+                                double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
+                                double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
+                                if (!NPC.downedMechBossAny)
+                                    damage = (int)(damage * firstMechMultiplier);
+                                else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
+                                    damage = (int)(damage * secondMechMultiplier);
+                            }
 
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
                                 Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                                 int numProj = calamityGlobalNPC.newAI[0] % 60f == 0f ? (masterMode ? 9 : 7) : (masterMode ? 6 : 4);
                                 int spread = masterMode ? 38 : 26;
@@ -433,111 +429,132 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     Main.projectile[proj].timeLeft = 1200;
                                 }
                             }
+                        }
 
-                            calamityGlobalNPC.newAI[0] += 1f;
-                            if (calamityGlobalNPC.newAI[0] > laserBreathGateValue + 60f)
-                            {
-                                calamityGlobalNPC.newAI[0] = 0f;
-                                calamityGlobalNPC.destroyerLaserColor = -1;
-                                npc.SyncDestroyerLaserColor();
-                                npc.SyncExtraAI();
-                            }
+                        calamityGlobalNPC.newAI[0] += 1f;
+                        if (calamityGlobalNPC.newAI[0] > laserBreathGateValue + 60f)
+                        {
+                            calamityGlobalNPC.newAI[0] = 0f;
+                            calamityGlobalNPC.destroyerLaserColor = -1;
+                            npc.SyncDestroyerLaserColor();
+                            npc.SyncExtraAI();
                         }
                     }
                 }
+            }
 
-                // Fire lasers
-                if (npc.type == NPCID.TheDestroyerBody)
+            // Fire lasers
+            if (npc.type == NPCID.TheDestroyerBody)
+            {
+                bool ableToFireLaser = calamityGlobalNPC.destroyerLaserColor != -1;
+
+                // Set laser color and type
+                if (calamityGlobalNPC.destroyerLaserColor == -1 && !probeLaunched)
                 {
-                    bool ableToFireLaser = calamityGlobalNPC.destroyerLaserColor != -1;
-
-                    // Set laser color and type
-                    if (calamityGlobalNPC.destroyerLaserColor == -1 && !probeLaunched)
+                    if (Main.rand.NextBool(masterMode ? OneInXChanceToFireLaser / (phase5 ? 4 : phase4 ? 3 : 2) : OneInXChanceToFireLaser))
                     {
-                        if (Main.rand.NextBool(masterMode ? OneInXChanceToFireLaser / (phase5 ? 4 : phase4 ? 3 : 2) : OneInXChanceToFireLaser))
+                        int random = phase3 ? 4 : phase2 ? 3 : 2;
+                        switch (Main.rand.Next(random))
                         {
-                            int random = phase3 ? 4 : phase2 ? 3 : 2;
-                            switch (Main.rand.Next(random))
-                            {
-                                case 0:
-                                case 1:
-                                    calamityGlobalNPC.destroyerLaserColor = 0;
-                                    break;
-                                case 2:
-                                    calamityGlobalNPC.destroyerLaserColor = 1;
-                                    break;
-                                case 3:
-                                    calamityGlobalNPC.destroyerLaserColor = 2;
-                                    break;
-                            }
-
-                            if (calamityGlobalNPC.newAI[2] > 0f || bossRush)
+                            case 0:
+                            case 1:
+                                calamityGlobalNPC.destroyerLaserColor = 0;
+                                break;
+                            case 2:
+                                calamityGlobalNPC.destroyerLaserColor = 1;
+                                break;
+                            case 3:
                                 calamityGlobalNPC.destroyerLaserColor = 2;
-
-                            npc.SyncDestroyerLaserColor();
+                                break;
                         }
-                    }
 
-                    if (probeLaunched && ableToFireLaser)
-                    {
-                        calamityGlobalNPC.destroyerLaserColor = -1;
+                        if (calamityGlobalNPC.newAI[2] > 0f || bossRush)
+                            calamityGlobalNPC.destroyerLaserColor = 2;
+
                         npc.SyncDestroyerLaserColor();
                     }
+                }
 
-                    // Laser rate of fire
-                    float shootProjectileTime = death ? (masterMode ? (phase5 ? 120f : phase4 ? 150f : 180f) : 270f) : (masterMode ? (phase5 ? 150f : phase4 ? 210f : 270f) : 450f);
-                    float bodySegmentTime = npc.ai[0] * (masterMode ? 20f : 30f);
-                    float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
-                    float laserTimerIncrement = (calamityGlobalNPC.newAI[0] > shootProjectileGateValue - LaserTelegraphTime) ? 1f : 2f;
-                    if (ableToFireLaser)
-                        calamityGlobalNPC.newAI[0] += laserTimerIncrement;
+                if (probeLaunched && ableToFireLaser)
+                {
+                    calamityGlobalNPC.destroyerLaserColor = -1;
+                    npc.SyncDestroyerLaserColor();
+                }
 
+                // Laser rate of fire
+                float shootProjectileTime = death ? (masterMode ? (phase5 ? 120f : phase4 ? 150f : 180f) : 270f) : (masterMode ? (phase5 ? 150f : phase4 ? 210f : 270f) : 450f);
+                float bodySegmentTime = npc.ai[0] * (masterMode ? 20f : 30f);
+                float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
+                float laserTimerIncrement = (calamityGlobalNPC.newAI[0] > shootProjectileGateValue - LaserTelegraphTime) ? 1f : 2f;
+                if (ableToFireLaser)
+                    calamityGlobalNPC.newAI[0] += laserTimerIncrement;
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
                     // Sync newAI every 20 frames for the new telegraph
-                    if (calamityGlobalNPC.newAI[0] % 20f == 0f && ableToFireLaser)
+                    if (calamityGlobalNPC.newAI[0] % 20f == 10f && ableToFireLaser)
                         npc.SyncExtraAI();
+                }
 
-                    Color telegraphColor = Color.Transparent;
-                    switch (calamityGlobalNPC.destroyerLaserColor)
+                Color telegraphColor = Color.Transparent;
+                switch (calamityGlobalNPC.destroyerLaserColor)
+                {
+                    case 0:
+                        telegraphColor = Color.Red;
+                        break;
+                    case 1:
+                        telegraphColor = Color.Green;
+                        break;
+                    case 2:
+                        telegraphColor = Color.Cyan;
+                        break;
+                }
+
+                if (calamityGlobalNPC.newAI[0] == shootProjectileGateValue - LaserTelegraphTime)
+                {
+                    Particle telegraph = new DestroyerReticleTelegraph(
+                        npc,
+                        telegraphColor,
+                        1.5f,
+                        0.15f,
+                        (int)LaserTelegraphTime);
+                    GeneralParticleHandler.SpawnParticle(telegraph);
+                }
+
+                if (calamityGlobalNPC.newAI[0] == shootProjectileGateValue - SparkTelegraphTime)
+                {
+                    Particle spark = new DestroyerSparkTelegraph(
+                        npc,
+                        telegraphColor * 2f,
+                        Color.White,
+                        3f,
+                        30,
+                        Main.rand.NextFloat(MathHelper.ToRadians(3f)) * Main.rand.NextBool().ToDirectionInt());
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+
+                // Shoot lasers
+                // Shoot nothing if probe has been launched
+                if (calamityGlobalNPC.newAI[0] >= shootProjectileGateValue && ableToFireLaser)
+                {
+                    if (!masterMode)
                     {
-                        case 0:
-                            telegraphColor = Color.Red;
-                            break;
-                        case 1:
-                            telegraphColor = Color.Green;
-                            break;
-                        case 2:
-                            telegraphColor = Color.Cyan;
-                            break;
+                        int numProbeSegments = 0;
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            if (Main.npc[i].active && Main.npc[i].type == npc.type && Main.npc[i].ai[2] == 0f)
+                                numProbeSegments++;
+                        }
+                        float lerpAmount = MathHelper.Clamp(numProbeSegments / (float)totalSegments, 0f, 1f);
+                        float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
+                        calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
+                        npc.SyncExtraAI();
+                        npc.TargetClosest();
                     }
 
-                    if (calamityGlobalNPC.newAI[0] == shootProjectileGateValue - LaserTelegraphTime)
+                    if (Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
                     {
-                        Particle telegraph = new DestroyerReticleTelegraph(
-                            npc,
-                            telegraphColor,
-                            1.5f,
-                            0.15f,
-                            (int)LaserTelegraphTime);
-                        GeneralParticleHandler.SpawnParticle(telegraph);
-                    }
-
-                    if (calamityGlobalNPC.newAI[0] == shootProjectileGateValue - SparkTelegraphTime)
-                    {
-                        Particle spark = new DestroyerSparkTelegraph(
-                            npc,
-                            telegraphColor * 2f,
-                            Color.White,
-                            3f,
-                            30,
-                            Main.rand.NextFloat(MathHelper.ToRadians(3f)) * Main.rand.NextBool().ToDirectionInt());
-                        GeneralParticleHandler.SpawnParticle(spark);
-                    }
-
-                    // Shoot lasers
-                    // Shoot nothing if probe has been launched
-                    if (calamityGlobalNPC.newAI[0] >= shootProjectileGateValue && ableToFireLaser)
-                    {
-                        if (!masterMode)
+                        if (masterMode)
                         {
                             int numProbeSegments = 0;
                             for (int i = 0; i < Main.maxNPCs; i++)
@@ -552,79 +569,64 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.TargetClosest();
                         }
 
-                        if (Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
+                        // Laser speed
+                        float projectileSpeed = (masterMode ? 4.5f : 3.5f) + Main.rand.NextFloat() * 1.5f;
+                        projectileSpeed += enrageScale;
+
+                        // Set projectile damage and type
+                        int projectileType = ProjectileID.DeathLaser;
+                        switch (calamityGlobalNPC.destroyerLaserColor)
                         {
-                            if (masterMode)
-                            {
-                                int numProbeSegments = 0;
-                                for (int i = 0; i < Main.maxNPCs; i++)
-                                {
-                                    if (Main.npc[i].active && Main.npc[i].type == npc.type && Main.npc[i].ai[2] == 0f)
-                                        numProbeSegments++;
-                                }
-                                float lerpAmount = MathHelper.Clamp(numProbeSegments / (float)totalSegments, 0f, 1f);
-                                float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
-                                calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
-                                npc.SyncExtraAI();
-                                npc.TargetClosest();
-                            }
+                            default:
+                            case 0:
+                                break;
 
-                            // Laser speed
-                            float projectileSpeed = (masterMode ? 4.5f : 3.5f) + Main.rand.NextFloat() * 1.5f;
-                            projectileSpeed += enrageScale;
+                            case 1:
+                                projectileType = ModContent.ProjectileType<DestroyerCursedLaser>();
+                                break;
 
-                            // Set projectile damage and type
-                            int projectileType = ProjectileID.DeathLaser;
-                            switch (calamityGlobalNPC.destroyerLaserColor)
-                            {
-                                default:
-                                case 0:
-                                    break;
-
-                                case 1:
-                                    projectileType = ModContent.ProjectileType<DestroyerCursedLaser>();
-                                    break;
-
-                                case 2:
-                                    projectileType = ModContent.ProjectileType<DestroyerElectricLaser>();
-                                    break;
-                            }
-
-                            // Get target vector
-                            Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
-                            Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 100f;
-
-                            // Shoot projectile
-                            int damage = npc.GetProjectileDamage(projectileType);
-
-                            // Reduce mech boss projectile damage depending on the new ore progression changes
-                            if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                            {
-                                double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                if (!NPC.downedMechBossAny)
-                                    damage = (int)(damage * firstMechMultiplier);
-                                else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                    damage = (int)(damage * secondMechMultiplier);
-                            }
-
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, 1f, 0f);
-                            Main.projectile[proj].timeLeft = 1200;
-
-                            npc.netUpdate = true;
-
-                            if (masterMode)
-                            {
-                                calamityGlobalNPC.destroyerLaserColor = -1;
-                                npc.SyncDestroyerLaserColor();
-                            }
+                            case 2:
+                                projectileType = ModContent.ProjectileType<DestroyerElectricLaser>();
+                                break;
                         }
 
-                        if (!masterMode)
+                        // Get target vector
+                        Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
+                        Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 100f;
+
+                        // Shoot projectile
+                        int damage = npc.GetProjectileDamage(projectileType);
+
+                        // Reduce mech boss projectile damage depending on the new ore progression changes
+                        if (CalamityConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+                        {
+                            double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
+                            double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
+                            if (!NPC.downedMechBossAny)
+                                damage = (int)(damage * firstMechMultiplier);
+                            else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
+                                damage = (int)(damage * secondMechMultiplier);
+                        }
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, 1f, 0f);
+                            Main.projectile[proj].timeLeft = 1200;
+                        }
+
+                        npc.netUpdate = true;
+
+                        if (masterMode)
                         {
                             calamityGlobalNPC.destroyerLaserColor = -1;
                             npc.SyncDestroyerLaserColor();
                         }
+                    }
+
+                    if (!masterMode)
+                    {
+                        calamityGlobalNPC.destroyerLaserColor = -1;
+                        npc.SyncDestroyerLaserColor();
                     }
                 }
             }
@@ -714,82 +716,67 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.type != NPCID.TheDestroyerBody || !probeLaunched)
             {
                 Vector3 lightColor = Color.Red.ToVector3();
-                int x = (int)((npc.position.X - 8f) / 16f);
-                int x2 = (int)((npc.position.X + npc.width + 8f) / 16f);
-                int y = (int)((npc.position.Y - 8f) / 16f);
-                int y2 = (int)((npc.position.Y + npc.height + 8f) / 16f);
-                for (int l = x; l <= x2; l++)
+
+                // Light colors
+                Vector3 groundColor = new Vector3(0.3f, 0.1f, 0.05f);
+                Vector3 flightColor = new Vector3(0.05f, 0.1f, 0.3f);
+                Vector3 segmentColor = Vector3.Lerp(groundColor, flightColor, phaseTransitionColorAmount);
+                Vector3 telegraphColor = groundColor;
+
+                // Telegraph for the laser breath and body lasers
+                float telegraphProgress = 0f;
+                if (calamityGlobalNPC.destroyerLaserColor != -1)
                 {
-                    for (int m = y; m <= y2; m++)
+                    if (npc.type == NPCID.TheDestroyer && spitLaserSpreads)
                     {
-                        if (Lighting.Brightness(l, m) == 0f)
-                            lightColor = Color.Black.ToVector3();
+                        float telegraphGateValue = DeathModeLaserBreathGateValue - LaserTelegraphTime;
+                        if (calamityGlobalNPC.newAI[0] > telegraphGateValue)
+                        {
+                            switch (calamityGlobalNPC.destroyerLaserColor)
+                            {
+                                default:
+                                case 0:
+                                    break;
+
+                                case 1:
+                                    telegraphColor = new Vector3(0.1f, 0.3f, 0.05f);
+                                    break;
+
+                                case 2:
+                                    telegraphColor = new Vector3(0.05f, 0.2f, 0.2f);
+                                    break;
+                            }
+                            telegraphProgress = MathHelper.Clamp((calamityGlobalNPC.newAI[0] - telegraphGateValue) / LaserTelegraphTime, 0f, 1f);
+                        }
+                    }
+                    else if (npc.type == NPCID.TheDestroyerBody)
+                    {
+                        float shootProjectileTime = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 270f : 450f;
+                        float bodySegmentTime = npc.ai[0] * 30f;
+                        float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
+                        float telegraphGateValue = shootProjectileGateValue - LaserTelegraphTime;
+                        if (calamityGlobalNPC.newAI[0] > telegraphGateValue)
+                        {
+                            switch (calamityGlobalNPC.destroyerLaserColor)
+                            {
+                                default:
+                                case 0:
+                                    break;
+
+                                case 1:
+                                    telegraphColor = new Vector3(0.1f, 0.3f, 0.05f);
+                                    break;
+
+                                case 2:
+                                    telegraphColor = new Vector3(0.05f, 0.2f, 0.2f);
+                                    break;
+                            }
+                            telegraphProgress = MathHelper.Clamp((calamityGlobalNPC.newAI[0] - telegraphGateValue) / LaserTelegraphTime, 0f, 1f);
+                        }
                     }
                 }
 
-                if (lightColor != Color.Black.ToVector3())
-                {
-                    // Light colors
-                    Vector3 groundColor = new Vector3(0.3f, 0.1f, 0.05f);
-                    Vector3 flightColor = new Vector3(0.05f, 0.1f, 0.3f);
-                    Vector3 segmentColor = Vector3.Lerp(groundColor, flightColor, phaseTransitionColorAmount);
-                    Vector3 telegraphColor = groundColor;
-
-                    // Telegraph for the laser breath and body lasers
-                    float telegraphProgress = 0f;
-                    if (calamityGlobalNPC.destroyerLaserColor != -1)
-                    {
-                        if (npc.type == NPCID.TheDestroyer && spitLaserSpreads)
-                        {
-                            float telegraphGateValue = DeathModeLaserBreathGateValue - LaserTelegraphTime;
-                            if (calamityGlobalNPC.newAI[0] > telegraphGateValue)
-                            {
-                                switch (calamityGlobalNPC.destroyerLaserColor)
-                                {
-                                    default:
-                                    case 0:
-                                        break;
-
-                                    case 1:
-                                        telegraphColor = new Vector3(0.1f, 0.3f, 0.05f);
-                                        break;
-
-                                    case 2:
-                                        telegraphColor = new Vector3(0.05f, 0.2f, 0.2f);
-                                        break;
-                                }
-                                telegraphProgress = MathHelper.Clamp((calamityGlobalNPC.newAI[0] - telegraphGateValue) / LaserTelegraphTime, 0f, 1f);
-                            }
-                        }
-                        else if (npc.type == NPCID.TheDestroyerBody)
-                        {
-                            float shootProjectileTime = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 270f : 450f;
-                            float bodySegmentTime = npc.ai[0] * 30f;
-                            float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
-                            float telegraphGateValue = shootProjectileGateValue - LaserTelegraphTime;
-                            if (calamityGlobalNPC.newAI[0] > telegraphGateValue)
-                            {
-                                switch (calamityGlobalNPC.destroyerLaserColor)
-                                {
-                                    default:
-                                    case 0:
-                                        break;
-
-                                    case 1:
-                                        telegraphColor = new Vector3(0.1f, 0.3f, 0.05f);
-                                        break;
-
-                                    case 2:
-                                        telegraphColor = new Vector3(0.05f, 0.2f, 0.2f);
-                                        break;
-                                }
-                                telegraphProgress = MathHelper.Clamp((calamityGlobalNPC.newAI[0] - telegraphGateValue) / LaserTelegraphTime, 0f, 1f);
-                            }
-                        }
-                    }
-
-                    Lighting.AddLight(npc.Center, Vector3.Lerp(segmentColor, telegraphColor * 2f, telegraphProgress));
-                }
+                Lighting.AddLight(npc.Center, Vector3.Lerp(segmentColor, telegraphColor * 2f, telegraphProgress));
             }
 
             // Despawn
@@ -1150,7 +1137,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.ai[3] > 0f)
                 npc.realLife = (int)npc.ai[3];
 
-            if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead)
+            if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 npc.TargetClosest();
 
             if (npc.type >= NPCID.TheDestroyer && npc.type <= NPCID.TheDestroyerTail)
@@ -1240,9 +1227,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (ableToFireLaser)
                     npc.localAI[0] += laserTimerIncrement;
 
-                // Sync newAI every 20 frames for the new telegraph
-                if (npc.localAI[0] % 20f == 0f && ableToFireLaser)
-                    npc.SyncVanillaLocalAI();
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    // Sync newAI every 20 frames for the new telegraph
+                    if (npc.localAI[0] % 20f == 10f && ableToFireLaser)
+                        npc.SyncVanillaLocalAI();
+                }
 
                 Color telegraphColor = Color.Transparent;
                 switch (npc.Calamity().destroyerLaserColor)
@@ -1403,43 +1393,28 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (npc.type != NPCID.TheDestroyerBody || npc.ai[2] != 1f)
                 {
                     Vector3 lightColor = Color.Red.ToVector3();
-                    int x = (int)((npc.position.X - 8f) / 16f);
-                    int x2 = (int)((npc.position.X + npc.width + 8f) / 16f);
-                    int y = (int)((npc.position.Y - 8f) / 16f);
-                    int y2 = (int)((npc.position.Y + npc.height + 8f) / 16f);
-                    for (int l = x; l <= x2; l++)
+
+                    // Light colors
+                    Vector3 groundColor = new Vector3(0.3f, 0.1f, 0.05f);
+                    Vector3 segmentColor = groundColor;
+                    Vector3 telegraphColor = groundColor;
+
+                    // Telegraph for the laser breath and body lasers
+                    float telegraphProgress = 0f;
+                    if (npc.Calamity().destroyerLaserColor != -1)
                     {
-                        for (int m = y; m <= y2; m++)
+                        if (npc.type == NPCID.TheDestroyerBody)
                         {
-                            if (Lighting.Brightness(l, m) == 0f)
-                                lightColor = Color.Black.ToVector3();
+                            float shootProjectileTime = Main.masterMode ? 500f : Main.expertMode ? 700f : 900f;
+                            float bodySegmentTime = npc.ai[0] * 30f;
+                            float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
+                            float telegraphGateValue = shootProjectileGateValue - LaserTelegraphTime;
+                            if (npc.localAI[0] > telegraphGateValue)
+                                telegraphProgress = MathHelper.Clamp((npc.localAI[0] - telegraphGateValue) / LaserTelegraphTime, 0f, 1f);
                         }
                     }
 
-                    if (lightColor != Color.Black.ToVector3())
-                    {
-                        // Light colors
-                        Vector3 groundColor = new Vector3(0.3f, 0.1f, 0.05f);
-                        Vector3 segmentColor = groundColor;
-                        Vector3 telegraphColor = groundColor;
-
-                        // Telegraph for the laser breath and body lasers
-                        float telegraphProgress = 0f;
-                        if (npc.Calamity().destroyerLaserColor != -1)
-                        {
-                            if (npc.type == NPCID.TheDestroyerBody)
-                            {
-                                float shootProjectileTime = Main.masterMode ? 500f : Main.expertMode ? 700f : 900f;
-                                float bodySegmentTime = npc.ai[0] * 30f;
-                                float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
-                                float telegraphGateValue = shootProjectileGateValue - LaserTelegraphTime;
-                                if (npc.localAI[0] > telegraphGateValue)
-                                    telegraphProgress = MathHelper.Clamp((npc.localAI[0] - telegraphGateValue) / LaserTelegraphTime, 0f, 1f);
-                            }
-                        }
-
-                        Lighting.AddLight(npc.Center, Vector3.Lerp(segmentColor, telegraphColor * 2f, telegraphProgress));
-                    }
+                    Lighting.AddLight(npc.Center, Vector3.Lerp(segmentColor, telegraphColor * 2f, telegraphProgress));
                 }
 
                 npc.localAI[1] = 1f;
@@ -1564,7 +1539,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 if (!flag2)
                 {
-                    npc.TargetClosest();
                     npc.velocity.Y += 0.15f;
                     if (Main.masterMode && npc.velocity.Y > 0f)
                         npc.velocity.Y += 0.05f;

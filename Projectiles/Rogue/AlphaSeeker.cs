@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = 1;
             Projectile.timeLeft = lifetime;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.Calamity().CannotProc = true;
             Projectile.extraUpdates = 1;
         }
 

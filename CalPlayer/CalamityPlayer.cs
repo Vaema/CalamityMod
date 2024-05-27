@@ -508,6 +508,7 @@ namespace CalamityMod.CalPlayer
         public bool ascendantTrail = false;
         public bool eGauntlet = false;
         public int gloveLevel = 0; // Used to prevent glove stacking
+        public bool alreadyHasFrogLeg = false; // Used to prevent Frog Leg tinker stacking
         public bool eTalisman = false;
         public int statisTimer = 0;
         public bool nucleogenesis = false;
@@ -1705,6 +1706,7 @@ namespace CalamityMod.CalPlayer
             ascendantTrail = false;
             eGauntlet = false;
             gloveLevel = 0;
+            alreadyHasFrogLeg = false;
             eTalisman = false;
             nucleogenesis = false;
             nuclearFuelRod = false;
@@ -4385,13 +4387,7 @@ namespace CalamityMod.CalPlayer
             Player.blockExtraJumps = true;
 
             Player.rocketBoots = 0;
-            Player.jumpBoost = false;
-            Player.slowFall = false;
-            Player.gravControl = false;
-            Player.gravControl2 = false;
-            Player.jumpSpeedBoost = 0f;
             Player.wingTimeMax = (int)(Player.wingTimeMax * 0.5);
-            Player.balloon = -1;
         }
         #endregion
 

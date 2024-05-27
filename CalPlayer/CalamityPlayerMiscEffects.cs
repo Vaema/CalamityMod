@@ -310,9 +310,9 @@ namespace CalamityMod.CalPlayer
                     SparkParticle spark2 = new SparkParticle(Player.Center + Player.velocity.RotatedBy(-2f * Player.direction) * 1.5f, SparkVelocity2, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool() ? Color.DarkOrange : Color.OrangeRed);
                     GeneralParticleHandler.SpawnParticle(spark2);
 
-                    if (Player.miscCounter % 5 == 0 && Player.velocity != Vector2.Zero) //every other frame spawn the hitbox
+                    if (Player.miscCounter % 6 == 0 && Player.velocity != Vector2.Zero)
                     {
-                        int damage = Player.ApplyArmorAccDamageBonusesTo(Player.GetBestClassDamage().ApplyTo(175));
+                        int damage = Player.ApplyArmorAccDamageBonusesTo(Player.GetBestClassDamage().ApplyTo(170));
                         Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<PauldronDash>(), damage, 10f, Player.whoAmI);
                     }
                 }
@@ -2581,10 +2581,13 @@ namespace CalamityMod.CalPlayer
             }
 
             if (crawCarapace)
-                Player.GetDamage<GenericDamageClass>() += 0.05f;
+                Player.GetDamage<GenericDamageClass>() += 0.07f;
 
             if (baroclaw)
+            {
+                Player.endurance += 0.05f;
                 Player.GetDamage<GenericDamageClass>() += 0.1f;
+            }
 
             if (aeroStone && !Player.slowFall && Player.wingTime < Player.wingTimeMax)
             {
@@ -2819,7 +2822,7 @@ namespace CalamityMod.CalPlayer
                 (harpyRing ? 0.2 : 0D) +
                 (reaverSpeed ? 0.1 : 0D) +
                 (angelTreads ? 0.1 : 0D) +
-                (blueCandle ? 0.1 : 0D) +
+                (blueCandle ? 0.05 : 0D) +
                 (soaring ? 0.1 : 0D) +
                 (prismaticGreaves ? 0.1 : 0D) +
                 (plagueReaper ? 0.05 : 0D) +
@@ -2827,7 +2830,7 @@ namespace CalamityMod.CalPlayer
                 (Player.empressBrooch ? 0.25 : 0D);
 
             if (blueCandle)
-                Player.moveSpeed += 0.1f;
+                Player.moveSpeed += 0.05f;
 
             if (community)
             {
@@ -2915,15 +2918,17 @@ namespace CalamityMod.CalPlayer
             }
 
             if (wDeath && !purity)
-                Player.GetDamage<GenericDamageClass>() -= 0.25f;
+                Player.GetDamage<GenericDamageClass>() -= 0.2f;
 
             if (astralInfection && !(infectedJewel || purity))
-                Player.GetDamage<GenericDamageClass>() -= 0.15f;
+                Player.GetDamage<GenericDamageClass>() -= 0.1f;
 
             if (pFlames && !purity)
             {
-                Player.blind = true;
-                Player.GetDamage<GenericDamageClass>() -= 0.15f;
+                if (!alchFlask)
+                    Player.blind = true;
+
+                Player.GetDamage<GenericDamageClass>() -= 0.1f;
             }
 
             if (aCrunch && !laudanum && !purity)

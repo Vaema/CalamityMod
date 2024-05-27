@@ -355,12 +355,10 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (CalamityConfig.Instance.BossesStopWeather)
                 CalamityMod.StopRain();
 
-            // Get a target
+            // Get a target (time is checked in the second check to ensure a new target isn't being set constantly)
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
-
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
+            else if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles && Main.time % 60D == 0D)
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
@@ -2353,6 +2351,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
                 }
             }
+
+            // There is no escape...
+            if (NPC.Distance(player.Center) > 2400f)
+                NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
 
             // Calculate contact damage based on velocity
             float minimalContactDamageVelocity = segmentVelocity * 0.25f;

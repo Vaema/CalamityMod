@@ -37,6 +37,7 @@ namespace CalamityMod.NPCs.DesertScourge
             Main.npcFrameCount[NPC.type] = 7;
             this.HideFromBestiary();
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.CantTakeLunchMoney[Type] = true;
         }
 
         public override void SetDefaults()
@@ -134,12 +135,12 @@ namespace CalamityMod.NPCs.DesertScourge
             // Percent life remaining.
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            float speed = death ? 0.22f : 0.19f;
-            float turnSpeed = death ? 0.32f : 0.27f;
+            float speed = death ? 0.16f : 0.14f;
+            float turnSpeed = death ? 0.24f : 0.2f;
             speed += speed * 0.4f * (1f - lifeRatio);
             turnSpeed += turnSpeed * 0.4f * (1f - lifeRatio);
-            speed += 0.19f * enrageScale;
-            turnSpeed += 0.27f * enrageScale;
+            speed += 0.14f * enrageScale;
+            turnSpeed += 0.2f * enrageScale;
 
             if (Main.getGoodWorld)
             {
@@ -361,7 +362,6 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (!shouldFly)
             {
-                NPC.TargetClosest();
                 NPC.velocity.Y += 0.15f;
                 if (NPC.velocity.Y > maxChaseSpeed)
                     NPC.velocity.Y = maxChaseSpeed;

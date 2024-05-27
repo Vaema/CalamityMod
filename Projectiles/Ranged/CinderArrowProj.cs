@@ -15,7 +15,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Items/Ammo/CinderArrow";
 
         public ref float Time => ref Projectile.ai[1];
-        public bool isShrapnel => Projectile.ai[2] > 0f;
+        public ref float isSplit => ref Projectile.ai[2];
+        public bool splitShot = false;
 
         public override void SetStaticDefaults()
         {
@@ -41,13 +42,23 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Time++;
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
-            if (isShrapnel)
+
+            if (isSplit > 0)
             {
+                Projectile.netUpdate = true;
+                splitShot = true;
+            }
+
+            if (splitShot)
+            {
+                Lighting.AddLight(Projectile.Center, Color.Red.ToVector3() * 0.15f);
                 if (Main.rand.NextBool(4))
                 {
                     Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 2, 90, -Projectile.velocity * Main.rand.NextFloat(0.1f, 0.55f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.65f, 0.85f);
+                    dust.noLight = true;
+                    dust.noLightEmittence = true;
                 }
             }
             else
@@ -72,7 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnKill(int timeLeft)
         {
-            if (!isShrapnel)
+            if (!splitShot)
             {
                 int Dusts = 9;
                 float radians = MathHelper.TwoPi / Dusts;
@@ -90,14 +101,14 @@ namespace CalamityMod.Projectiles.Ranged
 
                 for (int b = 0; b < 3; b++)
                 {
-                    Vector2 velocity = Vector2.UnitY.RotatedByRandom(0.8f) * Main.rand.NextFloat(-2.75f, -2.25f);
-                    Projectile shrapnel = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<CinderArrowProj>(), (int)(Projectile.damage * 0.1f), 0f, Projectile.owner, ai2: 1f);
+                    Vector2 velocity = Vector2.UnitY.RotatedByRandom(0.8f) * Main.rand.NextFloat(-3.5f, -3f);
+                    Projectile shrapnel = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<CinderArrowProj>(), (int)(Projectile.damage * 0.06f), 0f, Projectile.owner, ai2: 1f);
                     shrapnel.timeLeft = 300;
                     shrapnel.arrow = false;
                     shrapnel.MaxUpdates = 4;
                 }
 
-                Projectile.damage = (int)(Projectile.damage * 0.5f);
+                Projectile.damage = (int)(Projectile.damage * 0.4f);
                 Projectile.penetrate = -1;
                 Projectile.ExpandHitboxBy(110);
                 Projectile.Damage();
@@ -105,17 +116,17 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (isShrapnel)
+            if (splitShot)
             {
                 target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
             }
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            if (isShrapnel)
+            if (splitShot)
             {
                 Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLine").Value;
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Crimson * 0.35f, 1, texture);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Crimson * 0.3f, 1, texture);
                 return false;
             }
             else
@@ -127,6 +138,6 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override bool? CanDamage() => isShrapnel && Time < 20 ? false : null;
+        public override bool? CanDamage() => splitShot && Time < 20 ? false : null;
     }
 }

@@ -120,21 +120,24 @@ namespace CalamityMod.NPCs.SlimeGod
 
             Player player = Main.player[NPC.target];
 
-            if (NPC.ai[0] != 4f && (player.dead || !player.active))
+            if (NPC.ai[0] != 4f)
             {
-                NPC.TargetClosest();
-                player = Main.player[NPC.target];
                 if (player.dead || !player.active)
                 {
-                    NPC.ai[0] = 4f;
-                    NPC.ai[1] = 0f;
-                    NPC.ai[2] = 0f;
-                    NPC.ai[3] = 0f;
-                    NPC.netUpdate = true;
+                    NPC.TargetClosest();
+                    player = Main.player[NPC.target];
+                    if (player.dead || !player.active)
+                    {
+                        NPC.ai[0] = 4f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
+                        NPC.ai[3] = 0f;
+                        NPC.netUpdate = true;
+                    }
                 }
+                else if (NPC.timeLeft < 1800)
+                    NPC.timeLeft = 1800;
             }
-            else if (NPC.timeLeft < 1800)
-                NPC.timeLeft = 1800;
 
             bool enraged = true;
             bool hyperMode = NPC.localAI[1] == 1f;
@@ -591,6 +594,8 @@ namespace CalamityMod.NPCs.SlimeGod
                     NPC.netUpdate = true;
                 }
             }
+
+            // Despawn
             else if (NPC.ai[0] == 4f)
             {
                 // Avoid cheap bullshit
@@ -607,6 +612,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
                 NPC.velocity.X *= 0.98f;
             }
+
             else if (NPC.ai[0] == 5f)
             {
                 // Set damage
@@ -773,8 +779,6 @@ namespace CalamityMod.NPCs.SlimeGod
             // Every Slime God piece drops Gel, even if it's not the last one.
             npcLoot.Add(ItemID.Gel, 1, 32, 48);
         }
-
-        public override bool CheckActive() => false;
 
         public override void HitEffect(NPC.HitInfo hit)
         {

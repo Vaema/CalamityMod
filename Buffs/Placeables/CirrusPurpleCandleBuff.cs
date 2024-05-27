@@ -6,7 +6,7 @@ namespace CalamityMod.Buffs.Placeables
 {
     public class CirrusPurpleCandleBuff : ModBuff
     {
-        public static float DefenseRatioBonus = 0.15f;
+        public static float DefenseRatioBonus = 0.1f;
 
         public override void SetStaticDefaults()
         {

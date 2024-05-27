@@ -268,8 +268,8 @@ TaintedBladeSlasher.DisplayName: Tainted Blade
 TenebreusTidesWaterProjectile.DisplayName: Water Spear
 TenebreusTidesWaterSpear.DisplayName: Tenebreus Tides Water Spear
 TenebreusTidesWaterSword.DisplayName: Tenebreus Tides Water Sword
-TerratomereBeam.DisplayName: Terra Slash Beam
-TerratomereBigSlash.DisplayName: Terratomere Slash
+TerratomereMeleeSlash.DisplayName: Terratomere Slash
+TerratomereSwordBeam.DisplayName: Terra Slash Beam
 TerratomereExplosion.DisplayName: Terratomere Explosion
 TerratomereHoldoutProj.DisplayName: Terratomere
 TerratomereSlash.DisplayName: Terratomere Slash

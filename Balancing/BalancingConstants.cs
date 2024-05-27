@@ -16,6 +16,23 @@
         // Altered jump speed boost provided by Shiny Red Balloon via IL edit
         // This is a const because it replaces a hardcoded value in vanilla
         internal const float BalloonJumpSpeedBoost = 0.75f;
+
+        // Default jump speed boost provided by Frog Leg and tinker combinations in vanilla
+        internal const float VanillaFrogLegJumpSpeedBoost = 1.6f;
+
+        // Altered jump speed boost provided by Amphibian Boots via global item UpdateAccessory
+        internal static readonly float AmphibianBootsJumpSpeedBoost = 1f;
+
+        // Altered movement stats provided by Shadow Armor via IL edit
+        // This item is modified to not stack with Magiluminescence if on the ground. If in the air, it still functions.
+        internal static readonly float ShadowArmorRunAccelerationMultiplier = 1.25f; // Vanilla and Magi = 1.75f
+        internal static readonly float ShadowArmorMaxRunSpeedMultiplier = 1.05f; // Vanilla and Magi = 1.15f
+        internal static readonly float ShadowArmorAccRunSpeedMultiplier = 1.05f; // Vanilla and Magi = 1.15f
+        internal static readonly float ShadowArmorRunSlowdownMultiplier = 1.5f; // Vanilla and Magi = 1.75f
+
+        // Altered run acceleration multiplier provided by Soaring Insignia via IL edit
+        // This is a const because it replaces a hardcoded value in vanilla
+        internal const float SoaringInsigniaRunAccelerationMultiplier = 1.1f; // Vanilla = 1.75f
         #endregion
 
         #region Immunity Frames

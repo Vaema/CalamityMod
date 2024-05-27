@@ -46,8 +46,6 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 else if (value == AIState.Idle)
                     Animation = AnimationState.Idle;
-
-                NetUpdate();
             }
         }
 
@@ -127,8 +125,6 @@ namespace CalamityMod.Projectiles.Summon
                         FramesUntilNextAnimationFrame = 5;
                         break;
                 }
-
-                NetUpdate();
             }
         }
 
@@ -138,9 +134,10 @@ namespace CalamityMod.Projectiles.Summon
         public int AnimationFrames { get; set; }
 
         /// <summary>
-        /// The amount of time, in frames, that it'll take to go to the next frame of animation.
+        /// The amount of time, in frames, that it'll take to go to the next frame of animation.<br/>
+        /// Defaults to 1 so it doesn't divide by 0.
         /// </summary>
-        public int FramesUntilNextAnimationFrame { get; set; }
+        public int FramesUntilNextAnimationFrame { get; set; } = 1;
 
         /// <summary>
         /// A convienent bool for when the animation has been completed.<br/>
@@ -214,18 +211,19 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public int NetUpdateTimer { get; set; }
-
         #endregion
 
         #region AI and Collisions
 
         public override void AI()
         {
-            if (Animation == AnimationState.Grow && (MySentry is null || Projectile.Distance(MySentry.Center) > 600f))
+            Owner ??= Main.player[Projectile.owner];
+            Projectile.width = Projectile.height = Variant == 0 ? 28 : (Variant == 1 ? 22 : 20);
+
+            if (Animation == AnimationState.Grow && (MySentry is null || Projectile.Distance(MySentry.Center) > 600f) && Main.myPlayer == Projectile.owner)
             {
                 Projectile.Kill();
-                NetUpdate();
+                return;
             }
 
             Target = Projectile.Center.MinionHoming(State == AIState.Still ? PlantedEnemyDistanceDetection : NormalEnemyDistanceDetection, Owner, false);
@@ -249,13 +247,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.timeLeft = 2;
             DoGravity();
             DoAnimation();
-
-            NetUpdateTimer++;
-            if (NetUpdateTimer > 60)
-            {
-                NetUpdateTimer = 0;
-                NetUpdate();
-            }
+            NetUpdate();
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -300,9 +292,13 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (State != AIState.Attack)
                 return;
-            
+
             Projectile.ExpandHitboxBy(4f);
-            Projectile.Damage();
+            if (Main.myPlayer == Projectile.owner)
+                Projectile.Damage();
+
+            if (Main.dedServ)
+                return;
 
             for (int i = 0; i < (int)Utils.Remap(Variant, 0f, 2f, 4f, 2f); i++)
             {
@@ -311,11 +307,6 @@ namespace CalamityMod.Projectiles.Summon
                 Gore gore = Gore.NewGoreDirect(Projectile.GetSource_Death(), Projectile.Center, velocity, Mod.Find<ModGore>($"PumpkinGore{Main.rand.Next(6) + 1}").Type, Utils.Remap(Variant, 0f, 2f, 1f, 0.5f));
                 gore.timeLeft = 15;
             }
-
-            NetUpdate();
-
-            if (Main.dedServ)
-                return;
 
             for (int i = 0; i < 20; i++)
             {
@@ -374,7 +365,6 @@ namespace CalamityMod.Projectiles.Summon
             {
                 IdleWalkingTime = IdleWalkingTimer = Main.rand.Next(60, 180);
                 IdleWalkingDirection = MySentry == null || Projectile.WithinRange(MySentry.Center, 960f) ? (Main.rand.NextBool() ? -1 : 1) : MathF.Sign(MySentry.Center.X - Projectile.Center.X);
-                NetUpdate();
             }
 
             else if (IdleWalkingTimer != 0f)
@@ -447,8 +437,6 @@ namespace CalamityMod.Projectiles.Summon
             Animation = AnimationState.Jump;
 
             SoundEngine.PlaySound(_jumpSound with { Pitch = Utils.Remap(Variant, 0f, 2f, -0.3f, 0.3f) }, Projectile.Center);
-
-            NetUpdate();
         }
 
         /// <summary>
@@ -478,7 +466,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.velocity.Y = -MathF.Sqrt(-2f * PumpkinGravityStrength * (destination.Y - Projectile.Bottom.Y));
             Animation = AnimationState.Jump;
             SoundEngine.PlaySound(_jumpSound with { Pitch = Utils.Remap(Variant, 0f, 2f, -0.3f, 0.3f) }, Projectile.Center);
-            NetUpdate();
         }
 
         /// <summary>
@@ -524,9 +511,10 @@ namespace CalamityMod.Projectiles.Summon
                 return;
 
             Projectile.frameCounter++;
-            if (Projectile.frameCounter % FramesUntilNextAnimationFrame == 0)
+            if (Projectile.frameCounter >= FramesUntilNextAnimationFrame)
             {
                 Projectile.frame = Math.Min(Projectile.frame + 1, AnimationFrames - 1);
+                Projectile.frameCounter = 0;
 
                 // If it's the run animation, loop it.
                 if (Animation == AnimationState.Run && CompletedAnimation)
@@ -539,9 +527,8 @@ namespace CalamityMod.Projectiles.Summon
         /// </summary>
         public void NetUpdate()
         {
+            Projectile.netSpam = 0;
             Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
         }
 
         #endregion
@@ -566,34 +553,34 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(IdleWalkingTime);
-            writer.Write(IdleWalkingTimer);
-            writer.Write(IdleJumpCount);
-            writer.Write(IdleJumpCooldown);
-            writer.Write(IdleWalkingDirection);
-            writer.Write(NetUpdateTimer);
+            writer.Write7BitEncodedInt(Direction);
+            writer.Write7BitEncodedInt(IdleWalkingTime);
+            writer.Write7BitEncodedInt(IdleWalkingTimer);
+            writer.Write7BitEncodedInt(IdleJumpCount);
+            writer.Write7BitEncodedInt(IdleJumpCooldown);
+            writer.Write7BitEncodedInt(IdleWalkingDirection);
+            writer.Write7BitEncodedInt(AnimationFrames);
+            writer.Write7BitEncodedInt(FramesUntilNextAnimationFrame);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            IdleWalkingTime = reader.ReadInt32();
-            IdleWalkingTimer = reader.ReadInt32();
-            IdleJumpCount = reader.ReadInt32();
-            IdleJumpCooldown = reader.ReadInt32();
-            IdleWalkingDirection = reader.ReadInt32();
-            NetUpdateTimer = reader.ReadInt32();
+            Direction = reader.Read7BitEncodedInt();
+            IdleWalkingTime = reader.Read7BitEncodedInt();
+            IdleWalkingTimer = reader.Read7BitEncodedInt();
+            IdleJumpCount = reader.Read7BitEncodedInt();
+            IdleJumpCooldown = reader.Read7BitEncodedInt();
+            IdleWalkingDirection = reader.Read7BitEncodedInt();
+            AnimationFrames = reader.Read7BitEncodedInt();
+            FramesUntilNextAnimationFrame = reader.Read7BitEncodedInt();
         }
 
         public override bool? CanDamage() => State == AIState.Attack ? null : false;
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => NetUpdate();
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage *= Utils.Remap(Variant, 0f, 2f, 1.5f, 0.5f);
 
         public override void OnSpawn(IEntitySource source)
         {
-            Owner = Main.player[Projectile.owner];
-            Projectile.width = Projectile.height = Variant == 0 ? 28 : (Variant == 1 ? 22 : 20);
             Direction = Main.rand.NextBool() ? -1 : 1;
             Animation = AnimationState.None;
         }

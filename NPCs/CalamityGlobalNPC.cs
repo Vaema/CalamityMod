@@ -1462,9 +1462,9 @@ namespace CalamityMod.NPCs
             else if (npc.type == NPCID.SkeletronHand)
             {
                 if (CalamityWorld.death)
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.65);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
                 else
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.9);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.75);
             }
             else if (npc.type == NPCID.QueenBee)
             {
@@ -3311,6 +3311,7 @@ namespace CalamityMod.NPCs
             // Apply flat reductions first. All vanilla debuffs check their internal booleans.
             FlatEditDR(ref calcDR, npc.poisoned, BuffID.Poisoned);
             FlatEditDR(ref calcDR, npc.onFire, BuffID.OnFire);
+            FlatEditDR(ref calcDR, npc.onFire3, BuffID.OnFire3);
             FlatEditDR(ref calcDR, npc.venom, BuffID.Venom);
             FlatEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             FlatEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
@@ -3329,6 +3330,7 @@ namespace CalamityMod.NPCs
             // Apply multiplicative reductions second. All vanilla debuffs check their internal booleans.
             MultEditDR(ref calcDR, npc.poisoned, BuffID.Poisoned);
             MultEditDR(ref calcDR, npc.onFire, BuffID.OnFire);
+            MultEditDR(ref calcDR, npc.onFire3, BuffID.OnFire3);
             MultEditDR(ref calcDR, npc.venom, BuffID.Venom);
             MultEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
             MultEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
@@ -3355,7 +3357,9 @@ namespace CalamityMod.NPCs
             {
                 if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
                 {
-                    if (npc.life / (float)npc.lifeMax < 0.4f)
+                    float lifeRatio = npc.life / (float)npc.lifeMax;
+                    float mapIconVanishValue = Main.masterMode ? 0.3f : 0.4f;
+                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && Main.masterMode))
                         index = -1;
                 }
             }
@@ -5257,7 +5261,7 @@ namespace CalamityMod.NPCs
                 return;
 
             if (target.Calamity().sulphurSet)
-                npc.AddBuff(BuffID.Poisoned, 120);
+                npc.AddBuff(BuffID.Poisoned, 60);
 
             if (target.Calamity().snowman)
             {
@@ -5820,24 +5824,37 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            // Plague debuff on kill effect
             if (pFlames > 0 && npc.life <= 0)
             {
-                Rectangle hitbox = npc.Hitbox;
-                for (int i = 0; i < 20; i++)
-                {
-                    int idx = Dust.NewDust(hitbox.TopLeft(), npc.width, npc.height, DustID.GemEmerald, 0f, -2.5f);
-                    Dust dust = Main.dust[idx];
-                    dust.alpha = 200;
-                    dust.velocity *= 1.4f;
-                    dust.scale += Main.rand.NextFloat();
-                }
-
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    foreach (NPC nPC in Main.ActiveNPCs)
+                    for (int i = 0; i < 10; i++)
                     {
-                        if (!nPC.buffImmune[BuffType<Plague>()] && npc.Distance(nPC.Center) < 100f && !nPC.dontTakeDamage && nPC.lifeMax > 5 && !nPC.friendly && !nPC.townNPC)
-                            nPC.AddBuff(BuffType<Plague>(), 300);
+                        int DustID = 220;
+                        Dust dust2 = Dust.NewDustDirect(npc.Center, npc.width, npc.height, DustID);
+                        dust2.scale = Main.rand.NextFloat(0.6f, 0.75f);
+                        dust2.velocity = new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 0.8f);
+                        dust2.noGravity = true;
+                    }
+
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        NPC target = Main.npc[i];
+
+                        if (target != null && target.IsAnEnemy(true, true) && !target.buffImmune[BuffType<Plague>()] && Vector2.Distance(target.Center, npc.Center) < 400)
+                        {
+                            if (target.HasBuff<Plague>() || target.life <= 0)
+                            {
+                                target.AddBuff(BuffType<Plague>(), 300);
+                            }
+                            else
+                            {
+                                target.AddBuff(BuffType<Plague>(), 300);
+                                DirectionalPulseRing pulse = new DirectionalPulseRing(target.Center, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f) * 3, 0f, 15);
+                                GeneralParticleHandler.SpawnParticle(pulse);
+                            }
+                        }
                     }
                 }
             }
@@ -6451,7 +6468,10 @@ namespace CalamityMod.NPCs
                 drawColor = Color.Cyan;
 
             else if (electrified > 0)
-                drawColor = Main.rand.NextBool(5) ? Color.White : Color.SlateGray;
+            {
+                int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
+                drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.SlateGray, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
+            }
 
             else if (absorberAffliction > 0)
                 drawColor = Color.DarkSeaGreen;
@@ -6476,7 +6496,7 @@ namespace CalamityMod.NPCs
                 return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
             if (npc.type == NPCID.KingSlime && Main.masterMode && CalamityWorld.revenge)
-                return NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewel2>()) ? Color.Lerp(new Color(0, 0, 150, npc.alpha), new Color(125, 125, 255, npc.alpha), (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f) : null;
+                return NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelSapphire>()) ? Color.Lerp(new Color(0, 0, 150, npc.alpha), new Color(125, 125, 255, npc.alpha), (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f) : null;
 
             if (npc.type == NPCID.QueenBee && Main.zenithWorld)
             {
@@ -6816,7 +6836,9 @@ namespace CalamityMod.NPCs
 
                     Vector2 halfSize = npc.frame.Size() / 2;
 
-                    spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)TextureAssets.Npc[npc.type].Width() * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)TextureAssets.Npc[npc.type].Height() * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, alphaColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                    int width = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Width();
+                    int height = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Height();
+                    spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)width * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)height * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, alphaColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
                 }
             }
             else
@@ -6957,14 +6979,6 @@ namespace CalamityMod.NPCs
                 SpriteEffects spriteEffects = SpriteEffects.None;
                 if (npc.spriteDirection == 1)
                     spriteEffects = SpriteEffects.FlipHorizontally;
-
-                if (npc.type == NPCID.TheDestroyerBody)
-                {
-                    if (npc.ai[2] == 0f)
-                        npc.frame.Y = 0;
-                    else
-                        npc.frame.Y = frameHeight;
-                }
 
                 Color segmentDrawColor = npc.GetAlpha(drawColor);
 
@@ -7191,7 +7205,9 @@ namespace CalamityMod.NPCs
                             if (npc.spriteDirection == 1)
                                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)TextureAssets.Npc[npc.type].Width() * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)TextureAssets.Npc[npc.type].Height() * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                            int width = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Width();
+                            int height = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Height();
+                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)width * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)height * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
                         }
                     }
                 }
@@ -7241,7 +7257,9 @@ namespace CalamityMod.NPCs
 
                             position.Y -= npc.height / 2;
 
-                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)TextureAssets.Npc[npc.type].Width() * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)TextureAssets.Npc[npc.type].Height() * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                            int width = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Width();
+                            int height = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Height();
+                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)width * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)height * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
                         }
 
                         float secondAfterimageSetHealthValue = (int)(Main.npc[NPC.crimsonBoss].lifeMax * 0.8f);
@@ -7322,7 +7340,9 @@ namespace CalamityMod.NPCs
                                 position.X -= npc.width / 2;
                                 position.Y -= npc.height / 2;
 
-                                spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)TextureAssets.Npc[npc.type].Width() * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)TextureAssets.Npc[npc.type].Height() * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                                int width = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Width();
+                                int height = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Height();
+                                spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)width * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)height * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
                             }
                         }
                     }
