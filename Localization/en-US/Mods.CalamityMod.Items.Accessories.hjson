@@ -102,7 +102,7 @@ AlchemicalFlask: {
 	DisplayName: Alchemical Flask
 	Tooltip:
 		'''
-		All attacks inflict the Plague and grants immunity to the Plague
+		All attacks inflict the Plague and reduces damage taken from the Plague
 		Projectiles spawn plague seekers on enemy hits
 		'''
 }
