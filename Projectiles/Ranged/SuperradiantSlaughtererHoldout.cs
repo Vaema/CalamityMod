@@ -85,12 +85,13 @@ namespace CalamityMod.Projectiles.Ranged
                 float mouseDist = Vector2.Distance(GunTipPosition, Owner.Calamity().mouseWorld) / 21f;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * mouseDist, ModContent.ProjectileType<SuperradiantSawLingering>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
 
-                // If the owner is not holding left click, set to end animation
+                // Special case: right-clicking while not holding left-click
                 // This is to keep it friendly to use both fires at the same time, but end the animation early if not
-                NoSawOnHoldout = !Owner.channel;
-                if (NoSawOnHoldout)
+                if (Projectile.ai[1] >= 2f)
                 {
-                    Projectile.ai[1] = 1f;
+                    NoSawOnHoldout = true;
+                    OffsetLengthFromArm -= 16f;
+                    Projectile.timeLeft = Owner.ActiveItem().useAnimation;
                     KeepRefreshingLifetime = false;
                     Idle?.Stop();
                 }
@@ -113,44 +114,41 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                 }
             }
-            else if (Owner.CantUseHoldout())
+            else if (Owner.CantUseHoldout() && Projectile.ai[1] < 1f)
             {
-                if (Projectile.ai[1] < 1f)
+                KeepRefreshingLifetime = false;
+                Idle?.Stop();
+
+                Projectile.ai[1] = 1f;
+                Projectile.timeLeft = Owner.ActiveItem().useAnimation;
+                SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + SawPower * 0.5f };
+                SoundEngine.PlaySound(ShootSound, GunTipPosition);
+
+                float sawDamageMult = MathHelper.Lerp(1f, 5f, SawPower) / 2f; // The damage must be divided by 2 to offset the holdout having 2x base damage.
+                int sawPierce = (int)MathHelper.Lerp(2f, 7f, SawPower);
+                int sawLevel = (SawPower >= 1f).ToInt() + (SawPower >= 0.25f).ToInt();
+
+                // ai[0] determines which slashes are drawn. ai[1] is the saw's timer variable. ai[2] stores the saw's pierce.
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * SuperradiantSlaughterer.ShootSpeed, ModContent.ProjectileType<SuperradiantSaw>(), (int)(Projectile.damage * sawDamageMult), Projectile.knockBack, Projectile.owner, sawLevel, 0f, sawPierce);
+
+                NoSawOnHoldout = true;
+                OffsetLengthFromArm -= 4f + 12f * SawPower;
+
+                int sparkPairCount = 3 + 2 * sawLevel;
+                for (int s = 0; s < sparkPairCount; s++)
                 {
-                    KeepRefreshingLifetime = false;
-                    Idle?.Stop();
+                    float velocityMult = Main.rand.NextFloat(5f, 8f) + Main.rand.NextFloat(4f, 7f) * sawLevel;
+                    float scale = Main.rand.NextFloat(0.6f, 0.8f) + Main.rand.NextFloat(0.3f, 0.5f) * sawLevel;
+                    Color color = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.8f);
 
-                    Projectile.ai[1] = 1f;
-                    Projectile.timeLeft = Owner.ActiveItem().useAnimation;
-                    SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + SawPower * 0.5f };
-                    SoundEngine.PlaySound(ShootSound, GunTipPosition);
+                    Vector2 sparkVelocity = Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * velocityMult;
+                    Particle weaponShootSparks = new AltLineParticle(GunTipPosition, sparkVelocity, false, 40, scale, color);
+                    GeneralParticleHandler.SpawnParticle(weaponShootSparks);
 
-                    float sawDamageMult = MathHelper.Lerp(1f, 5f, SawPower) / 2f; // The damage must be divided by 2 to offset the holdout having 2x base damage.
-                    int sawPierce = (int)MathHelper.Lerp(2f, 7f, SawPower);
-                    int sawLevel = (SawPower >= 1f).ToInt() + (SawPower >= 0.25f).ToInt();
-
-                    // ai[0] determines which slashes are drawn. ai[1] is the saw's timer variable. ai[2] stores the saw's pierce.
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * SuperradiantSlaughterer.ShootSpeed, ModContent.ProjectileType<SuperradiantSaw>(), (int)(Projectile.damage * sawDamageMult), Projectile.knockBack, Projectile.owner, sawLevel, 0f, sawPierce);
-
-                    NoSawOnHoldout = true;
-                    OffsetLengthFromArm -= 4f + 12f * SawPower;
-
-                    int sparkPairCount = 3 + 2 * sawLevel;
-                    for (int s = 0; s < sparkPairCount; s++)
-                    {
-                        float velocityMult = Main.rand.NextFloat(5f, 8f) + Main.rand.NextFloat(4f, 7f) * sawLevel;
-                        float scale = Main.rand.NextFloat(0.6f, 0.8f) + Main.rand.NextFloat(0.3f, 0.5f) * sawLevel;
-                        Color color = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.8f);
-
-                        Vector2 sparkVelocity = Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * velocityMult;
-                        Particle weaponShootSparks = new AltLineParticle(GunTipPosition, sparkVelocity, false, 40, scale, color);
-                        GeneralParticleHandler.SpawnParticle(weaponShootSparks);
-
-                        // re-randomize rotation for the alternate particle
-                        sparkVelocity = Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * velocityMult;
-                        Particle weaponShootSparks2 = new AltSparkParticle(GunTipPosition, sparkVelocity, false, 40, scale, color);
-                        GeneralParticleHandler.SpawnParticle(weaponShootSparks2);
-                    }
+                    // re-randomize rotation for the alternate particle
+                    sparkVelocity = Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * velocityMult;
+                    Particle weaponShootSparks2 = new AltSparkParticle(GunTipPosition, sparkVelocity, false, 40, scale, color);
+                    GeneralParticleHandler.SpawnParticle(weaponShootSparks2);
                 }
             }
 
