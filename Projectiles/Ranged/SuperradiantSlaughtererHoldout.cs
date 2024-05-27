@@ -202,7 +202,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Time < ChargeupTime)
             {
                 if (Time == 30f && !NoSawOnHoldout)
-                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawCharge") { Volume = Main.zenithWorld ? 0.5f : 0.4f }, GunTipPosition);
+                    ChargeIdle = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BuzzsawCharge") { Volume = 0.3f }, GunTipPosition);
             }
             else
             {
