@@ -885,7 +885,7 @@ HallowedRune: {
 	Tooltip:
 		'''
 		Whenever your minions hit an enemy you will gain a random buff, does not stack with downgrades
-		Hallowed Power increases summon damage by 10% and makes enemy hits from minions rain stars
+		Hallowed Power increases summon damage by 10% and makes minion hits rain stars
 		Hallowed Defense increases defense by 8 and DR by 4%
 		Hallowed Regen grants +1.5 HP/s life regeneration
 		'''
