@@ -106,7 +106,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(vHex, 35);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || purity);
-            ApplyDoTDebuff(pFlames, alchFlask ? 15 : 30, purity);
+            ApplyDoTDebuff(pFlames, alchFlask ? 10 : 30, purity);
             ApplyDoTDebuff(cragsLava, 30);
             ApplyDoTDebuff(shadowflame, 30, purity);
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
