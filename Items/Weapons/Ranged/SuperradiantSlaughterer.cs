@@ -91,7 +91,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 if (!player.HasCooldown(SuperradiantSawBoost.ID))
                 {
                     // Throws a lingering saw at the cursor
-                    float mouseDist = Vector2.Distance(player.Center, Main.MouseWorld) / 20f;
+                    float mouseDist = Vector2.Distance(player.Center, Main.MouseWorld) / 21f;
                     Projectile.NewProjectile(source, player.Center, velocity.SafeNormalize(Vector2.UnitY) * mouseDist, ModContent.ProjectileType<SuperradiantSawLingering>(), damage, knockback, Main.myPlayer);
 
                     player.AddCooldown(SuperradiantSawBoost.ID, DashCooldown);

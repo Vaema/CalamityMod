@@ -23,6 +23,9 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float Time => ref Projectile.ai[1];
         public ref float PierceBeforeReturn => ref Projectile.ai[2];
 
+        // Hitstop timer.
+        public int HitstopTimer = 0;
+
         // Controls if the saw is returning to the player.
         public bool Returning = false;
         public int ReturnTimer = 0;
@@ -58,7 +61,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            // dies from cringe (Deadshot Brooch moment)
+            // Deadshot Brooch makes me die inside
             if (Projectile.MaxUpdates > 1)
                 Projectile.MaxUpdates = 1;
 
@@ -66,11 +69,19 @@ namespace CalamityMod.Projectiles.Ranged
             Time++;
             Projectile.rotation += MathHelper.ToRadians(6f + 18f * SawLevel);
 
+            // Hitstop timer
+            if (HitstopTimer > 0)
+            {
+                HitstopTimer--;
+                if (HitstopTimer == 0)
+                    Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * SuperradiantSlaughterer.ShootSpeed;
+            }
+
             // Control the saw being empowered or not
             Player Owner = Main.player[Projectile.owner];
             Empowered = Owner.HasCooldown(SuperradiantSawBoost.ID);
 
-            // While empowered, the saws while slightly home in on the cursor
+            // While empowered, the saws will slightly home in on the cursor
             if (Empowered && !Returning && Time > 30)
             {
                 float homingTurnSpeed = 0.18f;
@@ -247,9 +258,12 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(ModContent.BuffType<ElementalMix>(), 90);
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") with { Pitch = 0.1f * Projectile.numHits }, Projectile.Center);
 
-            // Hits slow down the forward-firing saw
-            if (!Returning && !Empowered)
-                Projectile.velocity *= 0.5f;
+            // Hitstop effect if the saw is not returning
+            if (!Returning && HitstopTimer == 0)
+            {
+                HitstopTimer = 5;
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) / SuperradiantSlaughterer.ShootSpeed;
+            }
 
             if (Projectile.numHits < 1)
                 ReturnTimer = 1;
