@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using CalamityMod.NPCs;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -50,9 +51,10 @@ namespace CalamityMod.Systems
 
             AddEntry("CloneDefeated", "Interlude1", TimeSpan.FromSeconds(216.287d), () => DownedBossSystem.downedCalamitasClone, introSilence: TimeSpan.FromSeconds(5f));
             AddEntry("MLDefeated", "Interlude2", TimeSpan.FromSeconds(160.989d), () => NPC.downedMoonlord);
-            AddEntry("YharonDefeated", "Interlude3", TimeSpan.FromSeconds(295.932d), () => DownedBossSystem.downedYharon, outroSilence: TimeSpan.FromSeconds(1.5f));
+            AddEntry("YharonDefeated", "Interlude3", TimeSpan.FromSeconds(295.932d), () => DownedBossSystem.downedYharon, outroSilence: TimeSpan.Zero);
 
             AddEntry("DoGDefeated", "DevourerofGodsEulogy", TimeSpan.FromSeconds(203.620d), () => DownedBossSystem.downedDoG, introSilence: TimeSpan.FromSeconds(5f));
+            AddEntry("ScalDefeated", "CalamitasDefeat_LongFade", TimeSpan.FromSeconds(58.689d), () => CalamityGlobalNPC.SCalAcceptance != -1);
         }
 
         public override void Unload() => EventCollection.Clear();
