@@ -323,6 +323,9 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HamBat)
                 EditTooltipByNum(1, (line) => line.Text = "Defeating enemies temporarily grants +3 HP/s life regen");
 
+            if (item.type == ItemID.AegisCrystal)
+                EditTooltipByNum(0, (line) => line.Text = "Permanently boosts natural life regeneration");
+
             // Warmth Potion provides debuff immunities
             if (item.type == ItemID.WarmthPotion)
             {
