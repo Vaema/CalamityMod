@@ -69,13 +69,14 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
+            Projectile.damage = (int)(Projectile.damage * 0.66f);
             Projectile.Damage();
             if (Projectile.owner == Main.myPlayer)
             {
                 for (int i = 0; i < 3; i++)
                 {
                     Vector2 smauldronSpeed = (Vector2.UnitY * Main.rand.NextFloat(-10f, -8f)).RotatedByRandom(MathHelper.ToRadians(30f));
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, smauldronSpeed, ModContent.ProjectileType<CauldronProjSmall>(), Projectile.damage, 3f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, smauldronSpeed, ModContent.ProjectileType<CauldronProjSmall>(), (int)(Projectile.damage * 0.5f), 3f, Projectile.owner); // 33% damage
                 }
             }
             for (int i = 0; i < 40; i++)
@@ -97,8 +98,8 @@ namespace CalamityMod.Projectiles.Magic
             Main.EntitySpriteDraw(Glow.Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 90);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire3, 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire3, 90);
     }
 }

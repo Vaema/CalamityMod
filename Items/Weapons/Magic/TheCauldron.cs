@@ -25,12 +25,12 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 46;
             Item.height = 46;
-            Item.damage = 64;
+            Item.damage = 59;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = 46;
-            Item.useTime = 46;
+            Item.useAnimation = 60;
+            Item.useTime = 60;
             Item.knockBack = 8f;
             Item.mana = 18;
             Item.UseSound = SoundID.DD2_MonkStaffSwing;
