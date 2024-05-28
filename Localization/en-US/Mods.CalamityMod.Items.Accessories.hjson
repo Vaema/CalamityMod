@@ -1882,8 +1882,9 @@ ToxicHeart: {
 	DisplayName: Toxic Heart
 	Tooltip:
 		'''
-		Summons a plague aura around you that damages nearby enemies
-		Makes you immune to the Plague debuff
+		Causes your heart to beat with powerful plague pulses, inflicting all nearby enemies with the Plague
+		The rate of these pulses scales with how low your life regen is
+		Pulses that kill targets create additional pulses
 		Multiplies all sickness-based debuff damage by 1.5
 		'''
 }

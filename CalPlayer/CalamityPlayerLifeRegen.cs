@@ -6,13 +6,16 @@ using CalamityMod.Cooldowns;
 using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.CalPlayer
 {
@@ -21,9 +24,6 @@ namespace CalamityMod.CalPlayer
         #region Update Bad Life Regen
         public override void UpdateBadLifeRegen()
         {
-            if (Player.ownedProjectileCounts[ModContent.ProjectileType<BloodBoilerFire>()] > 0)
-                noLifeRegen = true;
-
             // Universal +25% increase to DoT debuff damage in Death Mode
             float deathNegativeRegenBonus = 0.25f;
             float calamityDebuffMultiplier = 1f + (CalamityWorld.death ? deathNegativeRegenBonus : 0f);
@@ -876,6 +876,26 @@ namespace CalamityMod.CalPlayer
                         // Set the player's life regen to the scaled amount.
                         Player.lifeRegen = baseLifeRegenBoost + defLifeRegen;
                     }
+                }
+            }
+
+            if (toxicHeart) // Since it needs to know your life regen, it must be placed here
+            {
+                int auraDamage = (int)Player.GetBestClassDamage().ApplyTo(180);
+                auraDamage = Player.ApplyArmorAccDamageBonusesTo(auraDamage);
+                var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<ToxicHeart>()));
+                pulseRate = Utils.Remap(Player.lifeRegen, -30, 10, 20, 1, true);
+                if (pulseCounter >= 420)
+                {
+                    Projectile.NewProjectileDirect(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
+                    pulseCounter = 0;
+                    float soundVolume = Utils.Remap(Player.lifeRegen, -30, 10, 1f, 0.3f, true);
+                    SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");
+                    SoundEngine.PlaySound(heartbeat with { Volume = soundVolume, PitchVariance = 0.2f }, Player.Center);
+                }
+                else
+                {
+                    pulseCounter += MathHelper.Clamp(pulseRate, 1, 20);
                 }
             }
         }
