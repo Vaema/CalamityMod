@@ -1337,6 +1337,8 @@ namespace CalamityMod.CalPlayer
             if (expiredCooldowns.Count > 0)
                 SyncCooldownRemoval(Main.netMode == NetmodeID.Server, expiredCooldowns);
 
+            if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
+                ascendantInsigniaCooldown--;
             if (DragonsBreathAudioCooldown > 0)
                 DragonsBreathAudioCooldown--;
             if (DragonsBreathAudioCooldown2 > 0)
@@ -2012,6 +2014,13 @@ namespace CalamityMod.CalPlayer
             }
 
             // This section of code ensures set bonuses and accessories with cooldowns go on cooldown immediately if the armor or accessory is removed.
+            if (!ascendantInsignia && ascendantInsigniaBuffTime > 0)
+            {
+                ascendantInsigniaBuffTime = 0;
+                ascendantInsigniaCooldown = 2400;
+                Player.AddCooldown(AscendEffect.ID, 2400);
+            }
+
             if (!brimflameSet && brimflameFrenzy)
             {
                 brimflameFrenzy = false;
@@ -3077,27 +3086,13 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (ascendantInsignia)
+            if (ascendantInsignia && ascendantInsigniaBuffTime > 0)
             {
-                if (CalamityKeybinds.AscendantInsigniaHotKey.JustPressed && ascendantInsigniaCooldown <= 0)
-                {
-                    var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<AscendantInsignia>()));
-                    Projectile.NewProjectileDirect(source, Player.Center - Vector2.UnitY * 45f, Vector2.Zero, ModContent.ProjectileType<AscendantAura>(), 0, 0f);
-                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/AscendantActivate"));
-                    ascendantInsigniaCooldown = 2400;
-                    ascendantInsigniaBuffTime = 240; //4 seconds
-                }
-
-                if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
-                    ascendantInsigniaCooldown--;
+                ascendantTrail = true;
+                infiniteFlight = true;
                 if (ascendantInsigniaBuffTime == 1)
                     Player.AddCooldown(AscendEffect.ID, 2400);
-                if (ascendantInsigniaBuffTime > 0)
-                {
-                    ascendantTrail = true;
-                    infiniteFlight = true;
-                    ascendantInsigniaBuffTime--;
-                }
+                ascendantInsigniaBuffTime--;
             }
 
             if (abyssalDivingSuit && !Player.IsUnderwater())

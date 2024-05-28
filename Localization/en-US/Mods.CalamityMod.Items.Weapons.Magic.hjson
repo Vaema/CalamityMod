@@ -792,6 +792,16 @@ Teslastaff: {
 		'''
 }
 
+TheCauldron: {
+	DisplayName: The Cauldron
+	Tooltip:
+		'''
+		Launches lava bombs which explode into more lava bombs
+		80% reduced mana usage while submerged in lava or while in the underworld
+		'Believe it or not, its original wielder was only a few centimeters tall!'
+		'''
+}
+
 TheDanceofLight: {
 	DisplayName: The Dance of Light
 	Tooltip:
