@@ -1411,3 +1411,8 @@ WulfrumBlunderbuss: {
 		[c/83B87E:In fact, it is quite common for a robot to be turned into ammo right after it stops functioning.']
 		'''
 }
+
+GildedGatherer: {
+	DisplayName: Gilded Gatherer
+	Tooltip: ""
+}

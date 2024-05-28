@@ -8,6 +8,7 @@ using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -21,15 +22,16 @@ using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class SongOfParadiseDragon : ModProjectile, ILocalizedModType
+    public class SongOfParadiseDragon : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
+        public static SoundStyle CollideSound = new SoundStyle("CalamityMod/Sounds/Item/SongWyvernCollide");
         public override string Texture => "CalamityMod/Projectiles/Magic/Jimmy";
         Vector2 cen;
         NPC excen = null;
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 50;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 3;
         }
         public override void OnSpawn(IEntitySource source)
@@ -96,10 +98,19 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], 120, -0.05f);
                 Projectile.velocity = Vector2.Lerp(Projectile.Center, cen + new Vector2(Projectile.ai[0] * 2, 0).RotatedBy(MathHelper.ToRadians((-Projectile.ai[0] * 6) + (Projectile.ai[2] * 90) - 55f)), 0.3f) - Projectile.Center;
             }
-            else if (Projectile.timeLeft == 30)
+            else if (Projectile.timeLeft == 29)
             {
                 Projectile.velocity = Vector2.Zero;
-                SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
+                SoundEngine.PlaySound(CollideSound, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.NPCDeath14, Projectile.Center);
+                GeneralParticleHandler.SpawnParticle(new BloomParticle(cen, Vector2.Zero, Color.White, 3.5f, 0f, 30));
+                for (int i = 0; i < 6; i++)
+                {
+                    Vector2 vec2 = cen + new Vector2(Main.rand.Next(30, 100), 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi));
+                    Color col = Projectile.ai[2] >= 0 ? Color.SkyBlue : Color.Goldenrod;
+                    GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Vector2.Lerp(vec2, cen, 0.5f), vec2.DirectionFrom(cen) * (vec2.Distance(cen) * 0.2f), false, 30, Main.rand.NextFloat(0.02f, 0.1f), col, Vector2.One));
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(vec2, vec2.DirectionFrom(cen) * 10f, false, Main.rand.Next(20, 50), Main.rand.NextFloat(1f, 2f), col));
+                }
             }
 
             if (excen != null)
@@ -111,28 +122,39 @@ namespace CalamityMod.Projectiles.Magic
         {
 
         }
-        public override bool PreDraw(ref Color lightColor)
+        void IPixelatedPrimitiveRenderer.RenderPixelatedPrimitives(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
         {
             Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            if (!Main.getGoodWorld)
+            {
+                tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/" + (Projectile.ai[2] > 0 ? "MelodyOfParadiseDragon" : "MelodyOfParadiseDragon_Alt"));
+            }
 
             float Width = CalamityUtils.CircOutEasing(Projectile.ai[1] < 90 ? ((float)Projectile.timeLeft / 60) : 1f, 1) * tex.Height();
             if (Projectile.ai[1] > 90 && Projectile.timeLeft < 30)
             {
                 Width *= MathHelper.Lerp(0.01f, 1f, (float)Projectile.timeLeft / 30f);
             }
+            Width /= 2;
 
             List<Vector2> positions = new();
 
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < 50; i++)
             {
                 positions.Add(Projectile.oldPos[i] + (Projectile.Size / 2));
             }
 
             GameShaders.Misc["CalamityMod:PrimitiveTexture"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/" + (Projectile.ai[2] > 0 ? "Jimmy" : "Timmy")));
+            if (!Main.getGoodWorld)
+            {
+                GameShaders.Misc["CalamityMod:PrimitiveTexture"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/" + (Projectile.ai[2] > 0 ? "MelodyOfParadiseDragon" : "MelodyOfParadiseDragon_Alt")));
+            }
             GameShaders.Misc["CalamityMod:PrimitiveTexture"].Shader.Parameters["uPrimitiveSize"].SetValue(tex.Width());
             GameShaders.Misc["CalamityMod:PrimitiveTexture"].Shader.Parameters["flipVertically"].SetValue(true);
-            PrimitiveRenderer.RenderTrail(positions, new PrimitiveSettings(W => { return Width; }, C => { return Color.White; }, O => { return Vector2.Zero; }, true, false, GameShaders.Misc["CalamityMod:PrimitiveTexture"]), 75);
-
+            PrimitiveRenderer.RenderTrail(positions, new PrimitiveSettings(W => { return Width; }, C => { return Lighting.GetColor((positions[Math.Clamp((int)((float)C * (float)positions.Count), 0, positions.Count)] / 16).ToPoint()); }, O => { return Vector2.Zero; }, false, true, GameShaders.Misc["CalamityMod:PrimitiveTexture"]), 75);
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
             return false;
         }
     }

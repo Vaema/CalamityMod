@@ -6,5 +6,7 @@ Mods: {
 				Tooltip: ""
 			}
 		}
+
+		Projectiles.GildedGathererHarpoon.DisplayName: Gilded Gatherer Harpoon
 	}
 }

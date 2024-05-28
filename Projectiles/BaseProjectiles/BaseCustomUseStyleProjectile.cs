@@ -108,6 +108,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public float FinalRotation => Projectile.rotation + RotationOffset;
 
         /// <summary>
+        /// Useful for flipping the sprite horizontally or vertically in case of holdouts needing to be flipped based on player direction.
+        /// </summary>
+        public SpriteEffects spriteEffects = SpriteEffects.None;
+
+        /// <summary>
         /// Rotation offset for the hitbox that doesn't affect the sprite. 
         /// Useful for if you have, for instance, a sword sprite at a 45 degree angle, and need that to reflect on the hitbox.
         /// </summary>
@@ -122,6 +127,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
         /// <summary>
         /// Overrides the projectile owner's center as the projectile's location, so long as it isn't Vector2.Zero.
+        /// If not equal to Vector2.Zero, this value will be affected by the projectile's velocity just like its normal position.
         /// </summary>
         public Vector2 AbsolutePosition = Vector2.Zero;
 
@@ -200,6 +206,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             }
             else
             {
+                AbsolutePosition += Projectile.velocity;
                 Projectile.position = AbsolutePosition - (Projectile.Size / 2) + Offset;
             }
 
@@ -254,7 +261,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
                 float r = FlipAsSword ? MathHelper.ToRadians(90) : 0f;
 
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
 
             }
             return false; 

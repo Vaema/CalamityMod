@@ -108,7 +108,7 @@ namespace CalamityMod.Projectiles.Magic
                     {
                         if (Projectile.ai[1] > 1)
                         {
-                            VV.Volume = MathHelper.Lerp(VV.Volume, 0f, 0.1f);
+                            VV.Pitch = MathHelper.Lerp(VV.Pitch, 0f, 0.1f);
                         }
                         return new ProjectileAudioTracker(Projectile).IsActiveAndInGame();
                     });
