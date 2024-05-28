@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Time % 4 == 0)
             {
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + (Projectile.velocity.RotatedBy(MathHelper.ToRadians(45f * Projectile.direction)) * 10) + Main.rand.NextVector2Circular(13, 13) + Projectile.velocity * Main.rand.Next(10, 20 + 1), Projectile.velocity.RotatedBy(Main.rand.NextFloat(-0.01f, -0.35f) * Projectile.direction) * 4, ModContent.ProjectileType<RespiteblockBlood>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0);
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + (Projectile.velocity.RotatedBy(MathHelper.ToRadians(45f * Projectile.direction)) * 10) + Main.rand.NextVector2Circular(13, 13) + Projectile.velocity * Main.rand.Next(10, 20 + 1), Projectile.velocity.RotatedBy(Main.rand.NextFloat(-0.01f, -0.25f) * Projectile.direction) * 4, ModContent.ProjectileType<RespiteblockBlood>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner, 0);
             }
 
             DetermineVisuals(playerRotatedPosition);
