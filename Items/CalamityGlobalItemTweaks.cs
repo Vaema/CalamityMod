@@ -45,7 +45,7 @@ namespace CalamityMod.Items
                 { ItemID.Bananarang, Do(DamageExact(76), UseExact(14)) },
                 { ItemID.BatScepter, Do(DamageExact(56)) },
                 { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(142), UseAnimationExact(45), ShootSpeedExact(23f), KnockbackExact(8)) },
-                { ItemID.BeeGun, Do(DamageExact(15), ManaExact(4)) },
+                { ItemID.BeeGun, Do(DamageExact(13), ManaExact(4)) },
                 { ItemID.BeesKnees, Do(PointBlank, DamageExact(24), UseExact(38)) },
                 { ItemID.Bladetongue, Do(UseTurn, UseRatio(0.8f), DamageExact(120)) },
                 { ItemID.BlizzardStaff, Do(DamageExact(41), ManaExact(7)) },
