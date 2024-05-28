@@ -881,7 +881,7 @@ namespace CalamityMod.CalPlayer
 
             if (toxicHeart) // Since it needs to know your life regen, it must be placed here
             {
-                int auraDamage = (int)Player.GetBestClassDamage().ApplyTo(180);
+                int auraDamage = (int)Player.GetBestClassDamage().ApplyTo(200);
                 auraDamage = Player.ApplyArmorAccDamageBonusesTo(auraDamage);
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<ToxicHeart>()));
                 pulseRate = Utils.Remap(Player.lifeRegen, -30, 10, 20, 1, true);

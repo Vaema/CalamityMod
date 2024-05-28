@@ -1375,6 +1375,8 @@ namespace CalamityMod.CalPlayer
                 astralStarRainCooldown--;
             if (AbaddonCooldown > 0)
                 AbaddonCooldown--;
+            if (AlchFlaskCooldown > 0)
+                AlchFlaskCooldown--;
             if (tarraRangedCooldown > 0)
                 tarraRangedCooldown--;
             if (bloodflareMageCooldown > 0)
@@ -2934,9 +2936,6 @@ namespace CalamityMod.CalPlayer
 
             if (pFlames && !purity)
             {
-                if (!alchFlask)
-                    Player.blind = true;
-
                 Player.GetDamage<GenericDamageClass>() -= 0.1f;
             }
 

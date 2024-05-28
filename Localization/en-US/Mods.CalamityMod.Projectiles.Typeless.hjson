@@ -94,6 +94,7 @@ PauldronExplosion.DisplayName: Pauldron Explosion
 PendantProjectile1.DisplayName: Prism Shard
 PendantProjectile2.DisplayName: Prism Shard
 PendantProjectile3.DisplayName: Prism Shard
+PlaguePulse.DisplayName: Plague Pulse
 PoisonousSeawater.DisplayName: Seawater
 PscTransformAnimation.DisplayName: Psc Transform Animation
 PscTransformRocks.DisplayName: Psc Transform Rocks
@@ -133,4 +134,3 @@ WulfrumHook.DisplayName: Wulfrum Slingshot
 WulfrumLureSignal.DisplayName: Signal
 YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
-PlaguePulse.DisplayName: Plague Pulse
