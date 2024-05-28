@@ -9,7 +9,7 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Systems
 {
-    public record class MusicEventEntry(string Id, int Song, TimeSpan Length, TimeSpan IntroSilence, Func<bool> ShouldPlay);
+    public record class MusicEventEntry(string Id, int Song, TimeSpan Length, TimeSpan IntroSilence, TimeSpan OutroSilence, Func<bool> ShouldPlay);
 
     public class MusicEventSystem : ModSystem
     {
@@ -24,7 +24,8 @@ namespace CalamityMod.Systems
 
         public static int LastPlayedEvent { get; set; } = -1;
 
-        public static float VolumeCache { get; set; } = -1f;
+        // This allows skipping track fade in
+        public static bool NoFade { get; set; } = false;
 
         public static Thread EventTrackerThread { get; set; } = null;
 
@@ -32,23 +33,26 @@ namespace CalamityMod.Systems
 
         public static List<MusicEventEntry> EventCollection { get; set; } = [];
 
+        // This is to make sure that old worlds don't immediately queue a bunch of tracks on player entry
+        private static bool oldWorld { get; set; } = true;
+
         #endregion
 
         #region Events List
 
         public override void OnModLoad()
         {
-            static void AddEntry(string eventId, string songName, TimeSpan introSilence, TimeSpan length, Func<bool> shouldPlay)
+            static void AddEntry(string eventId, string songName, TimeSpan length, Func<bool> shouldPlay, TimeSpan? introSilence = null, TimeSpan? outroSilence = null)
             {
-                MusicEventEntry entry = new(eventId, MusicLoader.GetMusicSlot(CalamityMod.Instance.musicMod, songName), introSilence, length, shouldPlay);
+                MusicEventEntry entry = new(eventId, CalamityMod.Instance.GetMusicFromMusicMod(songName).Value, length, introSilence ?? TimeSpan.Zero, outroSilence ?? TimeSpan.FromSeconds(3), shouldPlay);
                 EventCollection.Add(entry);
             }
 
-            AddEntry("CloneDefeated", "Interlude1", TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(216.287d), () => DownedBossSystem.downedCalamitasClone);
-            AddEntry("MLDefeated", "Interlude2", TimeSpan.Zero, TimeSpan.FromSeconds(160.989), () => NPC.downedMoonlord);
-            AddEntry("YharonDefeated", "Interlude3", TimeSpan.FromSeconds(4), TimeSpan.FromSeconds(295.932), () => DownedBossSystem.downedYharon);
+            AddEntry("CloneDefeated", "Interlude1", TimeSpan.FromSeconds(216.287d), () => DownedBossSystem.downedCalamitasClone, introSilence: TimeSpan.FromSeconds(5f));
+            AddEntry("MLDefeated", "Interlude2", TimeSpan.FromSeconds(160.989d), () => NPC.downedMoonlord);
+            AddEntry("YharonDefeated", "Interlude3", TimeSpan.FromSeconds(295.932d), () => DownedBossSystem.downedYharon, outroSilence: TimeSpan.FromSeconds(1.5f));
 
-            AddEntry("DoGDefeated", "DevourerofGodsEulogy", TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(203.62d), () => DownedBossSystem.downedDoG);
+            AddEntry("DoGDefeated", "DevourerofGodsEulogy", TimeSpan.FromSeconds(203.620d), () => DownedBossSystem.downedDoG, introSilence: TimeSpan.FromSeconds(5f));
         }
 
         public override void Unload() => EventCollection.Clear();
@@ -59,6 +63,21 @@ namespace CalamityMod.Systems
 
         public override void PostUpdateTime()
         {
+            // If the player has already completed conditions to trigger certain music events, we don't
+            // want to queue a bunch of tracks to play as soon as they enter the world, so instead just mark them as played
+            if (oldWorld)
+            {
+                foreach (MusicEventEntry entry in EventCollection)
+                {
+                    if (entry.ShouldPlay())
+                        PlayedEvents.Add(entry.Id);
+                }
+
+                oldWorld = false;
+            }
+
+            //PlayedEvents.Remove("MLDefeated");
+
             // If the event has just finished, we want a little silence before fading back to normal
             if (TrackEnd is not null)
             {
@@ -66,18 +85,18 @@ namespace CalamityMod.Systems
                 TimeSpan silence = TimeSpan.FromSeconds(3);
                 TimeSpan postTrack = DateTime.Now - TrackEnd.Value;
 
-                // Continue "playing" the track for the amount of silent time specified
+                // Play silence for the time specified
                 if (postTrack < silence)
-                    Main.musicBox2 = LastPlayedEvent;
+                {
+                    int silenceSlot = MusicLoader.GetMusicSlot(Mod, "Sounds/Music/Silence");
+                    Main.musicBox2 = silenceSlot;
+                }
 
                 else
                 {
                     LastPlayedEvent = -1;
                     TrackEnd = null;
                 }
-
-                // But in reality set the volume to 0, so it stays silent
-                Main.musicFade[Main.curMusic] = 0f;
 
                 return;
             }
@@ -94,6 +113,7 @@ namespace CalamityMod.Systems
                         // Assign the current event and start time
                         CurrentEvent = musicEvent;
                         TrackStart = DateTime.Now + musicEvent.IntroSilence;
+                        PlayedEvents.Add(musicEvent.Id);
 
                         // On clients, use a background thread to make sure the track always plays for exactly
                         // the specified length, regardless of if the game gets minimized, lags, or time becomes
@@ -115,40 +135,32 @@ namespace CalamityMod.Systems
                 {
                     int silenceSlot = MusicLoader.GetMusicSlot(Mod, "Sounds/Music/Silence");
                     Main.musicBox2 = silenceSlot;
-
-                    VolumeCache = Main.musicVolume;
+                    NoFade = true;
                 }
 
                 else
                 {
                     Main.musicBox2 = CurrentEvent.Song;
 
-                    // This sets the music volume to 0 for one frame, then back to normal
-                    // Effectively, it immediately starts the music without fading
-                    // This only happens if there is intended silence before the song starts
-                    if (VolumeCache != -1f)
+                    if (NoFade)
                     {
-                        if (Main.musicVolume != 0f)
-                            Main.musicVolume = 0f;
-
-                        else
-                        {
-                            Main.musicVolume = VolumeCache;
-                            VolumeCache = -1f;
-                        }
+                        Main.musicFade[CurrentEvent.Song] = 1f;
+                        NoFade = false;
                     }
-                }
 
-                // If the event has finished playing, mark the end as now and clear the current event
-                if (DateTime.Now - TrackStart > CurrentEvent.Length)
-                {
-                    PlayedEvents.Add(CurrentEvent.Id);
+                    // If the event has finished playing, mark the end as now and clear the current event
+                    if (DateTime.Now - TrackStart >= CurrentEvent.Length)
+                    {
+                        int silenceSlot = MusicLoader.GetMusicSlot(Mod, "Sounds/Music/Silence");
+                        Main.musicBox2 = silenceSlot;
+                        Main.musicFade[CurrentEvent.Song] = 0f;
 
-                    TrackEnd = DateTime.Now;
-                    LastPlayedEvent = CurrentEvent.Song;
+                        TrackEnd = DateTime.Now;
+                        LastPlayedEvent = CurrentEvent.Song;
 
-                    TrackStart = null;
-                    CurrentEvent = null;
+                        TrackStart = null;
+                        CurrentEvent = null;
+                    }
                 }
             }
         }
@@ -160,10 +172,9 @@ namespace CalamityMod.Systems
         {
             DateTime? minimized = null;
 
-            int currentEventSong;
-            while ((currentEventSong = CurrentEvent?.Song ?? -1) != -1)
+            while (CurrentEvent is not null)
             {
-                bool musicPaused = Main.audioSystem.IsTrackPlaying(currentEventSong) && Main.musicVolume != 0f;
+                bool musicPaused = Main.instance.IsActive;
                 
                 if (musicPaused && !minimized.HasValue)
                     minimized = DateTime.Now;
@@ -201,6 +212,19 @@ namespace CalamityMod.Systems
                         PlayedEvents.Add(playedEvent);
                 }
             }
+
+            oldWorld = false;
+        }
+
+        public override void OnWorldUnload()
+        {
+            oldWorld = true;
+            TrackStart = null;
+            TrackEnd = null;
+            CurrentEvent = null;
+            PlayedEvents.Clear();
+            NoFade = false;
+            LastPlayedEvent = -1;
         }
 
         #endregion
