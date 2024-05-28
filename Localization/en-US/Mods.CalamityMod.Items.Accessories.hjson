@@ -1721,7 +1721,7 @@ StatMeter: {
 	// Other stats
 	GenericStats:
 		'''
-		Defense: {0} | DR: {1}% | Life Regen: {2}
+		Defense: {0} | DR: {1}% | Life Regen: {2} HP/s
 		Move Speed: {3}% | Jump Boost: {4}%
 		'''
 	FlightTime: " | Wing Flight Time: {0} seconds"
