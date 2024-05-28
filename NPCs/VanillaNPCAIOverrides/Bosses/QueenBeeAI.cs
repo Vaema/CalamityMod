@@ -422,7 +422,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         bool spawnBee = phase4 && calamityGlobalNPC.newAI[0] % beeSpawnGateValue == 0f && Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
                         if (spawnBee)
                         {
-                            SoundEngine.PlaySound(SoundID.NPCHit1, npc.Center);
+                            SoundEngine.PlaySound(SoundID.NPCHit18, npc.Center);
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -615,10 +615,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Spawn bees
                 if (Collision.CanHit(beeSpawnLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height) && spawnBee && (!beeLimitReached || !hornetLimitReached))
                 {
-                    if (!phase3 || Main.zenithWorld)
-                        SoundEngine.PlaySound(SoundID.NPCHit1, beeSpawnLocation);
-                    else
-                        SoundEngine.PlaySound(SoundID.NPCHit18, beeSpawnLocation);
+                    SoundEngine.PlaySound(SoundID.NPCHit18, beeSpawnLocation);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -1359,7 +1356,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (Collision.CanHit(beeSpawnLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height) && flag35)
                 {
-                    SoundEngine.PlaySound(SoundID.NPCHit1, npc.Center);
+                    SoundEngine.PlaySound(SoundID.NPCHit18, npc.Center);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int num670 = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
