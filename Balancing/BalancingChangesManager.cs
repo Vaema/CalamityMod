@@ -119,6 +119,11 @@ namespace CalamityMod.Balancing
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.PerforatorIDs, Do(ResistTrueMelee(0.5f))));
             #endregion
 
+            #region Slime God
+            //15% resist to Tradewings.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityLists.SlimeGodIDs, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<TradewindsProjectile>()))));
+            #endregion
+
             #region Wall of Flesh
             // 40% resist to Corro/Crimslime Staff.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.WallofFleshEye, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<CrimslimeMinion>(), ProjectileType<CorroslimeMinion>()))));
