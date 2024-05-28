@@ -30,7 +30,8 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
                 AddIngredient(ItemID.HoneyComb).
-                AddIngredient<PlagueCellCanister>(10).
+                AddIngredient(ItemID.BeeWax, 8).
+                AddIngredient<PlagueCellCanister>(15).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

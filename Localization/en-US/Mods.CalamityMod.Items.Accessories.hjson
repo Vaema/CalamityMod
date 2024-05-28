@@ -1875,7 +1875,7 @@ ToxicHeart: {
 		'''
 		Causes your heart to beat with powerful plague pulses, inflicting all nearby enemies with the Plague
 		The rate of these pulses scales with how low your life regen is
-		Pulses that kill targets create additional pulses
+		Pulses that kill targets create additional pulses and heal you
 		Multiplies all sickness-based debuff damage by 1.5
 		'''
 }

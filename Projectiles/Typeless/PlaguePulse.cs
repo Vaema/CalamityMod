@@ -82,6 +82,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (target.life <= 0)
             {
+                player.Heal(10);
                 Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), (int)(startDamage * 0.8f), 0f, Projectile.owner, 0, 0, 1);
             }
         }
