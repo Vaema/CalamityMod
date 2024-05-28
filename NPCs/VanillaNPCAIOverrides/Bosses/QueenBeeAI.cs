@@ -717,9 +717,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Get target location and shoot from ass
                 float stingerAttackSpeed = 16f + enrageScale * 4f;
-                float stingerAttackAccel = phase6 ? 0.32f : 0.24f;
+                float stingerAttackAccel = phase6 ? 0.24f : 0.18f;
                 if (enrageScale > 0f)
-                    stingerAttackAccel = MathHelper.Lerp(phase6 ? 0.4f : 0.32f, phase6 ? 0.8f : 0.64f, enrageScale / maxEnrageScale);
+                    stingerAttackAccel = MathHelper.Lerp(phase6 ? 0.3f : 0.24f, phase6 ? 0.6f : 0.48f, enrageScale / maxEnrageScale);
 
                 if (masterMode)
                 {
