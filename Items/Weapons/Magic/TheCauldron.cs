@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -38,9 +37,10 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-            Item.shoot = ModContent.ProjectileType<CauldronProj>();
+            Item.shoot = ModContent.ProjectileType<CauldronHoldout>();
             Item.shootSpeed = 12f;
             Item.DamageType = DamageClass.Magic;
+            Item.channel = true;
             Item.Calamity().donorItem = true;
         }
 
@@ -55,6 +55,14 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
             Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, Glow.Value);
+        }
+
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<CauldronHoldout>(), damage, knockback, player.whoAmI, 46);
+            return false;
         }
 
         public override void AddRecipes()

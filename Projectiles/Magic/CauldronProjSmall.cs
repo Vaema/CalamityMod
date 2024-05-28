@@ -1,11 +1,9 @@
-﻿using System;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -28,8 +26,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetDefaults()
         {
-            Projectile.width = 28;
-            Projectile.height = 28;
+            Projectile.width = 14;
+            Projectile.height = 14;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 120;

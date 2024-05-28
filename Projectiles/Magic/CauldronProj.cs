@@ -1,14 +1,9 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,17 +12,22 @@ namespace CalamityMod.Projectiles.Magic
     public class CauldronProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public override string Texture => "CalamityMod/Items/Weapons/Magic/TheCauldron";
+
+        public static Asset<Texture2D> Glow;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            if (!Main.dedServ)
+            {
+                Glow = ModContent.Request<Texture2D>(Texture + "Glow");
+            }
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 46;
-            Projectile.height = 46;
+            Projectile.width = 28;
+            Projectile.height = 28;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = 1;
@@ -80,29 +80,21 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int i = 0; i < 40; i++)
             {
-                int size = 20;
+                int size = 16;
                 Vector2 position = Projectile.Center;
                 Vector2 velocity = Main.rand.NextVector2Circular(size, size);
-                SquishyLightParticle energy = new(position, velocity, Main.rand.NextFloat(0.3f, 0.4f), Color.Orange, Main.rand.Next(6, 9), 1, 1.5f);
+                SquishyLightParticle energy = new(position, velocity, Main.rand.NextFloat(0.2f, 0.3f), Color.Orange, Main.rand.Next(6, 9), 1, 1.5f);
                 GeneralParticleHandler.SpawnParticle(energy);
-                Dust dust = Dust.NewDustPerfect(position, DustID.Torch, velocity, 0, default, Main.rand.NextFloat(1.6f, 3.1f));
+                Dust dust = Dust.NewDustPerfect(position, DustID.Torch, velocity, 0, default, Main.rand.NextFloat(1f, 2f));
                 dust.noGravity = true;
-                if (Main.rand.NextBool(13))
-                {
-                    if (Main.netMode != NetmodeID.Server)
-                    {
-                        int rocc = Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, Main.rand.NextVector2Circular(6, 6), Mod.Find<ModGore>("CauldronChunk").Type);
-                        Main.gore[rocc].timeLeft /= 10;
-                    }
-                }
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
-            Vector2 origin = TheCauldron.Glow.Value.Size() / 2f;
-            Main.EntitySpriteDraw(TheCauldron.Glow.Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            Vector2 origin = Glow.Value.Size() / 2f;
+            Main.EntitySpriteDraw(Glow.Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 180);
