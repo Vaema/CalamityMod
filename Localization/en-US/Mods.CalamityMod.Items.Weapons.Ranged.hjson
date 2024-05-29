@@ -1414,5 +1414,10 @@ WulfrumBlunderbuss: {
 
 GildedGatherer: {
 	DisplayName: Gilded Gatherer
-	Tooltip: ""
+	Tooltip:
+		'''
+		Using compressed air, fires a harpoon when releasing the mouse button. This harpoon sticks to enemies
+		Retracting the harpoon when stuck to an enemy causes compressed air to be shot out, damaging enemies behind it
+		Aiming at solid ground will cause the harpoon to shoot out an air jet, boosting you in the opposite direction
+		'''
 }

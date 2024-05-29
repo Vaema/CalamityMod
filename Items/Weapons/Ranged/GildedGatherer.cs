@@ -29,8 +29,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noUseGraphic = true;
             Item.damage = 20;
             Item.knockBack = 5;
-            Item.useTime = 50;
-            Item.useAnimation = 66;
+            Item.useTime = 20;
+            Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.channel = true;

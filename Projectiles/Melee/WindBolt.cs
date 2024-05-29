@@ -108,12 +108,16 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            Asset<Texture2D> texSmall = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/WindBolt_Small");
 
             for (int i = 5; i >= 0; i--)
             {
+                Asset<Texture2D> t = tex;
+                if (i < 3) t = texSmall;
+
                 float c = Math.Max(i, 1);
 
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, tex.Frame(), lightColor.MultiplyRGB(Color.Lerp(Color.White, Color.CadetBlue, (float)i / 5)).MultiplyRGBA(new Color(1f / c, 1f / c, 1f / c, 1f / c)), -Projectile.rotation * c, tex.Size() / 2, (float)MathHelper.Lerp(1f, i, scFactor), SpriteEffects.None);
+                Main.EntitySpriteDraw(t.Value, Projectile.Center - Main.screenPosition, t.Frame(), lightColor.MultiplyRGB(Color.Lerp(Color.White, Color.CadetBlue, (float)i / 5)).MultiplyRGBA(new Color(1f / c, 1f / c, 1f / c, 1f / c)), -Projectile.rotation * c, t.Size() / 2, (float)MathHelper.Lerp(1f, i, scFactor) / (t == texSmall ? 1 : 2), SpriteEffects.None);
             }
 
             return false;

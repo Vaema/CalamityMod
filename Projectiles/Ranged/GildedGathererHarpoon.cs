@@ -64,8 +64,13 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.velocity != Vector2.Zero)
             {
+                for (int i = 0; i < 10; i++)
+                {
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center + (oldVelocity * 2), new Vector2(Main.rand.NextFloat(10), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-20, 20)) + MathHelper.ToRadians(180)), false, 12, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.White : Color.LightSteelBlue, true));
+                }
+
                 Player player = Main.player[Projectile.owner];
-                SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, player.Center);
+                SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Projectile.Center);
             }
             Projectile.velocity = Vector2.Zero;
             return false;
@@ -112,15 +117,21 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (!player.controlUseItem && Projectile.ai[1] == 0)
             {
+                // bhop air blast!!!
+
                 Vector2 vel = player.velocity * 3;
                 if (!Collision.CanHitLine(player.Center, 1, 1, player.Center + vel + (player.DirectionTo(mousePos) * 52), 1, 1))
                 {
-                    player.velocity += (player.DirectionFrom(mousePos) * 10) * new Vector2(1f, 1.6f);
+                    Vector2 velTo = (player.DirectionFrom(mousePos) * 10) * new Vector2(1f, 1.6f);
+                    player.velocity += velTo;
+                    player.velocity.Y = velTo.Y;
+                    player.fallStart = (int)Projectile.Bottom.Y;
+                    player.fallStart2 = (int)Projectile.Bottom.Y;
                     Projectile.ai[1] = 3;
                     Projectile.ai[2] = 35f;
                     player.itemAnimation = 30;
-                    SoundEngine.PlaySound(SoundID.Item89.WithPitchOffset(0.7f));
-                    SoundEngine.PlaySound(SoundID.DD2_DrakinShot.WithPitchOffset(0.4f));
+                    SoundEngine.PlaySound(SoundID.Item89.WithPitchOffset(0.7f), Projectile.Center);
+                    SoundEngine.PlaySound(SoundID.DD2_DrakinShot.WithPitchOffset(0.4f), Projectile.Center);
 
                     for (int i = 0; i < 6; i++)
                     {
@@ -140,30 +151,53 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 else
                 {
-                    SoundEngine.PlaySound(SoundID.Item99.WithPitchOffset(-0.5f));
+                    // fire harpoon out
+
+                    Vector2 vec = player.Center + new Vector2(15, 0).RotatedBy(Projectile.rotation);
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        GeneralParticleHandler.SpawnParticle(new SparkParticle(vec, new Vector2(Main.rand.NextFloat(15), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-20, 20))), false, 12, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.White : Color.LightSteelBlue, true));
+                    }
+                    for (int i = 0; i < 10; i++)
+                    {
+                        GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(vec, new Vector2(Main.rand.NextFloat(5, 20), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-5, 5))), Color.CornflowerBlue, new Color(100, 100, 170), Main.rand.NextFloat(0.5f, 1f), 150f));
+                    }
+                    SoundEngine.PlaySound(SoundID.Item99.WithPitchOffset(-0.5f), Projectile.Center);
                     Projectile.ai[1] = 1;
                     Projectile.ai[2] = 0.45f;
                     player.itemAnimation = 3;
                     AbsolutePosition = player.Center;
                     Projectile.velocity = (player.DirectionTo(mousePos) * 135);
+
+                    for (int i = 0; i < 25; i++)
+                    {
+                        positions.Add(Projectile.Center);
+                    }
                 }
             }
             if (player.controlUseItem && Projectile.ai[1] == 1 && Projectile.velocity == Vector2.Zero)
             {
+                // retract harpoon back to player
+
                 Projectile.ai[1] = 2;
                 player.itemAnimation = 3;
                 Projectile.ai[2] = 50;
+            
+                // air blast here
+
             }
 
             switch (Projectile.ai[1])
             {
                 case 0:
                     {
+                        spriteEffects = mousePos.X < player.Center.X ? SpriteEffects.FlipVertically : SpriteEffects.None;
                         mousePos = player.Calamity().mouseWorld;
                         Projectile.rotation = player.AngleTo(mousePos);
                         Projectile.direction = Math.Sign(mousePos.X - player.Center.X);
                         player.direction = Projectile.direction;
-                        player.itemAnimation = 3;
+                        player.itemAnimation = 2;
                         Offset = ArmOffset();
                         break;
                     }
@@ -174,7 +208,7 @@ namespace CalamityMod.Projectiles.Ranged
                         Projectile.tileCollide = true;
                         Projectile.direction = Math.Sign(Projectile.Center.X - player.Center.X);
                         player.direction = Projectile.direction;
-                        player.itemAnimation = 3;
+                        player.itemAnimation = 2;
                         Offset = Vector2.Zero;
 
                         if (npcToTarget != null)
@@ -190,8 +224,6 @@ namespace CalamityMod.Projectiles.Ranged
                             Projectile.velocity.Y += 0.2f;
                             Projectile.velocity.X *= 0.99f;
                             Projectile.rotation = Vector2.Zero.AngleTo(Projectile.velocity);
-
-                            positions.Add(AbsolutePosition + Offset);
                         }
                         else
                         {
@@ -209,7 +241,7 @@ namespace CalamityMod.Projectiles.Ranged
                             Projectile.ai[2] -= 2;
                             if (Projectile.ai[2] % 4 == 0)
                             {
-                                SoundEngine.PlaySound(SoundID.Item73.WithPitchOffset(Projectile.ai[2] / 50));
+                                SoundEngine.PlaySound(SoundID.Item73.WithPitchOffset(Projectile.ai[2] / 50), Projectile.Center);
                             }
                         }
 
@@ -220,7 +252,7 @@ namespace CalamityMod.Projectiles.Ranged
                         Projectile.rotation = Vector2.Zero.AngleTo(Projectile.velocity) + MathHelper.ToRadians(180f);
                         if (Projectile.Distance(player.Center) > Projectile.ai[2] + 5)
                         {
-                            player.itemAnimation = 3;
+                            player.itemAnimation = 2;
                         }
                         else
                         {
@@ -232,6 +264,8 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                 case 3:
                     {
+                        GeneralParticleHandler.SpawnParticle(new SparkParticle(player.Center - (player.velocity) + new Vector2(Main.rand.NextFloat(5, 25), 0).RotatedByRandom(MathHelper.TwoPi), player.velocity, false, 8, Main.rand.NextFloat(0.2f, 1.2f), Color.White, true));
+
                         Vector2 v2 = mousePos - player.Center;
 
                         mousePos = player.Center + v2.RotatedBy(MathHelper.ToRadians(-player.direction * Projectile.ai[2]));
@@ -264,7 +298,8 @@ namespace CalamityMod.Projectiles.Ranged
             Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
             if (AbsolutePosition == Vector2.Zero)
             {
-                Main.EntitySpriteDraw(tex.Value, Main.player[Projectile.owner].Center + new Vector2(0,Main.player[Projectile.owner].gfxOffY) + new Vector2(0, 10) + new Vector2(0, -16).RotatedBy(Projectile.rotation) - Main.screenPosition, tex.Frame(), lightColor, Projectile.rotation, new Vector2(12, 6), 1f, spriteEffects);
+                Player player = Main.player[Projectile.owner];
+                Main.EntitySpriteDraw(tex.Value, Main.player[Projectile.owner].Center + new Vector2(0,player.gfxOffY) + new Vector2(0, -2 * player.direction) + new Vector2(0, -6 * player.direction).RotatedBy(Projectile.rotation) - Main.screenPosition, tex.Frame(), lightColor, Projectile.rotation, new Vector2(12, player.direction < 0 ? 2 : 4), 1f, spriteEffects);
             }
             else
             {

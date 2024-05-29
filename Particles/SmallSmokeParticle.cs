@@ -27,7 +27,6 @@ namespace CalamityMod.Particles
 
         public override void Update()
         {
-
             Rotation += Spin * ((Velocity.X > 0) ? 1f : -1f);
             Velocity *= 0.85f;
 

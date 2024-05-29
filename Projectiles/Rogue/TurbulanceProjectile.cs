@@ -181,13 +181,18 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool PreDraw(ref Color lightColor)
         {
             Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/WindBolt");
+            Asset<Texture2D> texSmall = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/WindBolt_Small");
+
             Asset<Texture2D> texSpear = ModContent.Request<Texture2D>(Texture);
 
             for (int i = 5; i >= 0; i--)
             {
                 float c = Math.Max(i, 1);
 
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, tex.Frame(), lightColor.MultiplyRGB(Color.Lerp(Color.White, Color.CadetBlue, (float)i / 5)).MultiplyRGBA(new Color(1f / c, 1f / c, 1f / c, 1f / c)), -MathHelper.ToRadians(Projectile.ai[1]) * c, tex.Size() / 2, (float)MathHelper.Lerp(0f, i * 0.7f, Projectile.ai[2]), SpriteEffects.None);
+                Asset<Texture2D> t = tex;
+                if (i <= 2) t = texSmall;
+
+                Main.EntitySpriteDraw(t.Value, Projectile.Center - Main.screenPosition, t.Frame(), lightColor.MultiplyRGB(Color.Lerp(Color.White, Color.CadetBlue, (float)i / 5)).MultiplyRGBA(new Color(1f / c, 1f / c, 1f / c, 1f / c)), -MathHelper.ToRadians(Projectile.ai[1]) * c, t.Size() / 2, (float)MathHelper.Lerp(0f, i * 0.7f, Projectile.ai[2]) / (t == texSmall ? 1 : 2), SpriteEffects.None);
             }
 
             Main.EntitySpriteDraw(texSpear.Value, Projectile.Center - Main.screenPosition + new Vector2(Main.rand.NextFloat(-5f * Shake, Shake * 5f), Main.rand.NextFloat(-5f * Shake, Shake * 5f)), texSpear.Frame(), lightColor, Projectile.rotation, texSpear.Size() / 2, 1f, SpriteEffects.None);
