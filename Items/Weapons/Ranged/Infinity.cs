@@ -1,4 +1,6 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -15,6 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         internal int rotation = 0;
         internal bool limit = true;
+        public int SineCounter = 0;
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
@@ -24,11 +27,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 56;
             Item.height = 24;
-            Item.damage = 110;
+            Item.damage = 90;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 2;
-            Item.useAnimation = 12;
-            Item.reuseDelay = 12;
+            Item.useTime = 1;
+            Item.useAnimation = 4;
             Item.useLimitPerAnimation = 9;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
@@ -38,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.UseSound = SoundID.Item31;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.PurificationPowder;
-            Item.shootSpeed = 12f;
+            Item.shootSpeed = 6f;
             Item.useAmmo = AmmoID.Bullet;
             Item.Calamity().canFirePointBlankShots = true;
         }
@@ -55,61 +57,34 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse == 2)
+            position = position + (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.UnitX) * 65;
+            float sine = (float)Math.Sin(SineCounter * 0.175f / MathHelper.Pi) * 3.5f;
+            SineCounter++;
+            if (SineCounter % 4 == 0)
             {
-                //If you right click, shoots a helix of normal bullets
-                Vector2 helixVel1 = velocity.RotatedBy(MathHelper.ToRadians(rotation));
-                Vector2 helixVel2 = velocity.RotatedBy(MathHelper.ToRadians(-rotation));
-                int shot1 = Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, type, damage, knockback, player.whoAmI, 0f, 0f);
-                Main.projectile[shot1].timeLeft = 180;
-                int shot2 = Projectile.NewProjectile(source, position.X, position.Y, helixVel2.X, helixVel2.Y, type, damage, knockback, player.whoAmI, 0f, 0f);
-                Main.projectile[shot2].timeLeft = 180;
-                //Code to constantly make the shooting go side to side to make the helix
-                if (limit)
+                if (player.altFunctionUse == 2)
                 {
-                    rotation += 2;
+                    //If you right click, shoots a helix of normal bullets
+                    Vector2 helixVel1 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine));
+                    Vector2 helixVel2 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(-sine));
+                    int shot1 = Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, type, damage, knockback, player.whoAmI, 0f, 0f);
+                    int shot2 = Projectile.NewProjectile(source, position.X, position.Y, helixVel2.X, helixVel2.Y, type, damage, knockback, player.whoAmI, 0f, 0f);
                 }
                 else
                 {
-                    rotation -= 2;
+                    //If left click, do the same as above but spawn Charged Blasts instead
+                    Vector2 helixVel1 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine));
+                    Vector2 helixVel2 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(-sine));
+                    int shot1 = Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0f, 1, 1f);
+                    int shot2 = Projectile.NewProjectile(source, position.X, position.Y, helixVel2.X, helixVel2.Y, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0f, 0, 1f);
                 }
-                if (rotation >= 11)
-                {
-                    limit = false;
-                }
-                else if (rotation <= -11)
-                {
-                    limit = true;
-                }
-                return false;
             }
-            else
+            else if (player.altFunctionUse != 2)
             {
-                //If left click, do the same as above but spawn Charged Blasts instead
-                Vector2 helixVel1 = velocity.RotatedBy(MathHelper.ToRadians(rotation));
-                Vector2 helixVel2 = velocity.RotatedBy(MathHelper.ToRadians(-rotation));
-                int shot1 = Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0f, 0f);
-                Main.projectile[shot1].timeLeft = 180;
-                int shot2 = Projectile.NewProjectile(source, position.X, position.Y, helixVel2.X, helixVel2.Y, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0f, 0f);
-                Main.projectile[shot2].timeLeft = 180;
-                if (limit)
-                {
-                    rotation += 2;
-                }
-                else
-                {
-                    rotation -= 2;
-                }
-                if (rotation >= 11)
-                {
-                    limit = false;
-                }
-                else if (rotation <= -11)
-                {
-                    limit = true;
-                }
-                return false;
+                Particle spark2 = new LineParticle(position + Main.rand.NextVector2Circular(6, 6), (velocity * 4).RotatedByRandom(0.2f) * Main.rand.NextFloat(0.8f, 1.2f), false, Main.rand.Next(15, 25 + 1), Main.rand.NextFloat(1.5f, 2f), new Color(229, 49, 39));
+                GeneralParticleHandler.SpawnParticle(spark2);
             }
+            return false;
         }
 
         public override void AddRecipes()
