@@ -91,11 +91,10 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.TargetClosest();
 
             float hiveMindVelocity = Main.npc[hiveMind].velocity.Length();
-            float relocateSpeed = (getFuckedAI ? 1.2f : death ? 0.8f : revenge ? 0.7f : expertMode ? 0.6f : 0.5f) + hiveMindVelocity * 0.0625f;
-            Vector2 randomLocationVector = new Vector2(NPC.ai[0] * 16f + 8f, NPC.ai[1] * 16f + 8f);
-            float targetX = Main.player[NPC.target].Center.X - (NPC.width / 2) - randomLocationVector.X;
-            float targetY = Main.player[NPC.target].Center.Y - (NPC.height / 2) - randomLocationVector.Y;
-            float targetDistance = (float)Math.Sqrt(targetX * targetX + targetY * targetY);
+            float relocateSpeed = getFuckedAI ? 1.2f : death ? 0.8f : revenge ? 0.7f : expertMode ? 0.6f : 0.5f;
+            float acceleration = 0.8f;
+            float distanceFromMind = Main.getGoodWorld ? 256f : 128f;
+
             float hiveMindX = Main.npc[hiveMind].Center.X;
             float hiveMindY = Main.npc[hiveMind].Center.Y;
             Vector2 hiveMindPos = new Vector2(hiveMindX, hiveMindY);
@@ -104,32 +103,33 @@ namespace CalamityMod.NPCs.HiveMind
             float finalRandPosX = randomPosX - hiveMindPos.X;
             float finalRandPosY = randomPosY - hiveMindPos.Y;
             float finalRandDistance = (float)Math.Sqrt(finalRandPosX * finalRandPosX + finalRandPosY * finalRandPosY);
-            finalRandDistance = (Main.getGoodWorld ? 256f : 128f) / finalRandDistance;
+            finalRandDistance = distanceFromMind / finalRandDistance;
             finalRandPosX *= finalRandDistance;
             finalRandPosY *= finalRandDistance;
+
             if (NPC.position.X < hiveMindX + finalRandPosX)
             {
-                NPC.velocity.X = NPC.velocity.X + relocateSpeed;
+                NPC.velocity.X += relocateSpeed;
                 if (NPC.velocity.X < 0f && finalRandPosX > 0f)
-                    NPC.velocity.X = NPC.velocity.X * 0.8f;
+                    NPC.velocity.X *= acceleration;
             }
             else if (NPC.position.X > hiveMindX + finalRandPosX)
             {
-                NPC.velocity.X = NPC.velocity.X - relocateSpeed;
+                NPC.velocity.X -= relocateSpeed;
                 if (NPC.velocity.X > 0f && finalRandPosX < 0f)
-                    NPC.velocity.X = NPC.velocity.X * 0.8f;
+                    NPC.velocity.X *= acceleration;
             }
             if (NPC.position.Y < hiveMindY + finalRandPosY)
             {
-                NPC.velocity.Y = NPC.velocity.Y + relocateSpeed;
+                NPC.velocity.Y += relocateSpeed;
                 if (NPC.velocity.Y < 0f && finalRandPosY > 0f)
-                    NPC.velocity.Y = NPC.velocity.Y * 0.8f;
+                    NPC.velocity.Y *= acceleration;
             }
             else if (NPC.position.Y > hiveMindY + finalRandPosY)
             {
-                NPC.velocity.Y = NPC.velocity.Y - relocateSpeed;
+                NPC.velocity.Y -= relocateSpeed;
                 if (NPC.velocity.Y > 0f && finalRandPosY < 0f)
-                    NPC.velocity.Y = NPC.velocity.Y * 0.8f;
+                    NPC.velocity.Y *= acceleration;
             }
 
             float velocityLimit = relocateSpeed * 16f;
@@ -209,7 +209,7 @@ namespace CalamityMod.NPCs.HiveMind
             Color color = NPC.GetAlpha(drawColor);
 
             if (NPC.localAI[1] > 240f)
-                color = Color.Lerp(color, Color.Green, MathHelper.Clamp((NPC.localAI[1] - 240f) / 120f, 0f, 1f));
+                color = Color.Lerp(color, Color.Green * NPC.Opacity, MathHelper.Clamp((NPC.localAI[1] - 240f) / 120f, 0f, 1f));
 
             spriteBatch.Draw(texture, vector2, NPC.frame, color, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 

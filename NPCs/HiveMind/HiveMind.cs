@@ -572,7 +572,7 @@ namespace CalamityMod.NPCs.HiveMind
                                 int fivePercentMinions = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, type);
                                 Main.npc[fivePercentMinions].SetDefaults(type);
                                 if (Main.netMode == NetmodeID.Server && fivePercentMinions < Main.maxNPCs)
-                                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, fivePercentMinions, 0f, 0f, 0f, 0, 0, 0);
+                                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, fivePercentMinions);
                             }
 
                             return;
@@ -830,15 +830,15 @@ namespace CalamityMod.NPCs.HiveMind
                         {
                             NPC.position.X = NPC.ai[1] * 16 - NPC.width / 2;
                             NPC.position.Y = NPC.ai[2] * 16 - height_Phase2 / 2;
+                        }
 
-                            for (int i = 0; i < Main.maxNPCs; i++)
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            NPC hiveBlob = Main.npc[i];
+                            if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
                             {
-                                NPC hiveBlob = Main.npc[i];
-                                if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
-                                {
-                                    hiveBlob.position.X = NPC.position.X;
-                                    hiveBlob.position.Y = NPC.position.Y;
-                                }
+                                hiveBlob.position.X = NPC.position.X;
+                                hiveBlob.position.Y = NPC.position.Y;
                             }
                         }
 
@@ -879,6 +879,16 @@ namespace CalamityMod.NPCs.HiveMind
                         NPC.velocity = Vector2.Zero;
                         dashStarted = false;
 
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            NPC hiveBlob = Main.npc[i];
+                            if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
+                            {
+                                hiveBlob.position.X = NPC.position.X;
+                                hiveBlob.position.Y = NPC.position.Y;
+                            }
+                        }
+
                         if (revenge && lifeRatio < 0.53f)
                         {
                             state = nextState;
@@ -913,6 +923,19 @@ namespace CalamityMod.NPCs.HiveMind
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                             NPC.Center = player.Center + new Vector2(teleportRadius, 0).RotatedBy(rotation);
+
+                        if (NPC.alpha == 255 - lungeFade)
+                        {
+                            for (int i = 0; i < Main.maxNPCs; i++)
+                            {
+                                NPC hiveBlob = Main.npc[i];
+                                if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
+                                {
+                                    hiveBlob.position.X = NPC.position.X;
+                                    hiveBlob.position.Y = NPC.position.Y;
+                                }
+                            }
+                        }
 
                         rotation += rotationIncrement * rotationDirection;
                         phase2timer = lungeDelay;
@@ -976,6 +999,19 @@ namespace CalamityMod.NPCs.HiveMind
                         {
                             NPC.Center = player.Center;
                             NPC.position.Y += teleportRadius;
+                        }
+
+                        if (NPC.alpha == 255 - (masterMode ? 10 : 5))
+                        {
+                            for (int i = 0; i < Main.maxNPCs; i++)
+                            {
+                                NPC hiveBlob = Main.npc[i];
+                                if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
+                                {
+                                    hiveBlob.position.X = NPC.position.X;
+                                    hiveBlob.position.Y = NPC.position.Y;
+                                }
+                            }
                         }
 
                         NPC.netUpdate = true;
@@ -1049,6 +1085,19 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.Center = player.Center;
                             NPC.position.Y -= teleportRadius;
                             NPC.position.X += teleportRadius * rotationDirection;
+                        }
+
+                        if (NPC.alpha == 255 - (masterMode ? 10 : 5))
+                        {
+                            for (int i = 0; i < Main.maxNPCs; i++)
+                            {
+                                NPC hiveBlob = Main.npc[i];
+                                if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
+                                {
+                                    hiveBlob.position.X = NPC.position.X;
+                                    hiveBlob.position.Y = NPC.position.Y;
+                                }
+                            }
                         }
 
                         NPC.netUpdate = true;
