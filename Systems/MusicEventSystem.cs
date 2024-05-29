@@ -49,7 +49,7 @@ namespace CalamityMod.Systems
                 EventCollection.Add(entry);
             }
 
-            AddEntry("CloneDefeated", "Interlude1", TimeSpan.FromSeconds(216.287d), () => DownedBossSystem.downedCalamitasClone, introSilence: TimeSpan.FromSeconds(5f));
+            AddEntry("CloneDefeated", "Interlude1", TimeSpan.FromSeconds(214.577d), () => DownedBossSystem.downedCalamitasClone, introSilence: TimeSpan.FromSeconds(5f));
             AddEntry("MLDefeated", "Interlude2", TimeSpan.FromSeconds(160.989d), () => NPC.downedMoonlord);
             AddEntry("YharonDefeated", "Interlude3", TimeSpan.FromSeconds(295.932d), () => DownedBossSystem.downedYharon, outroSilence: TimeSpan.Zero);
 
