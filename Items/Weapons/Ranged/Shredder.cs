@@ -65,6 +65,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             return false;
         }
+        public override bool CanConsumeAmmo(Item ammo, Player player)
+        {
+            if (Main.rand.Next(0, 100) < 60)
+                return false;
+            return true;
+        }
 
         public override void AddRecipes()
         {

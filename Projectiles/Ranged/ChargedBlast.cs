@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/LaserProj";
         public Color baseColor = Color.White;
         public bool outOfTime = false;
+        public Vector2 baseVel;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
@@ -34,8 +35,27 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+            bool Shredder = Projectile.ai[2] == 0;
+            bool Infinity = Projectile.ai[2] == 1;
+            bool Svant = Projectile.ai[2] == 2 || Projectile.ai[2] == 3 || Projectile.ai[2] == 4;
+
             if (baseColor == Color.White)
-                baseColor = (Projectile.ai[2] == 1 ? new Color(229, 49, 39) : Color.DodgerBlue);
+            {
+                baseColor = (Infinity ? new Color(229, 49, 39) : Svant ? Color.DarkViolet : Color.DodgerBlue);
+                if (Projectile.ai[2] == 3)
+                {
+                    baseColor = Color.Violet;
+                }
+                if (Projectile.ai[2] == 4)
+                {
+                    baseColor = Color.MediumOrchid;
+                }
+                baseVel = Projectile.velocity;
+                if (Svant)
+                    Projectile.ArmorPenetration = 100;
+                if (Infinity)
+                    Projectile.ArmorPenetration = 25;
+            }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.timeLeft == 2)
                 outOfTime = true;
@@ -49,16 +69,16 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Projectile.owner == Main.myPlayer)
                 {
                     for (int k = 0; k < projectiles; k++)
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, -Projectile.velocity.RotatedByRandom(0.9f) * Main.rand.NextFloat(0.6f, 0.7f), ModContent.ProjectileType<ChargedBlastSplit>(), (int)(Projectile.damage * (Projectile.ai[2] == 1 ? 0.3f : 0.5f)), Projectile.knockBack * 0.8f, Main.myPlayer, 0, 0, Projectile.ai[2] == 1 ? 1 : 0);
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, -baseVel.RotatedByRandom(0.9f) * Main.rand.NextFloat(0.6f, 0.7f), ModContent.ProjectileType<ChargedBlastSplit>(), (int)(Projectile.damage * (Projectile.ai[2] > 0 ? 0.3f : 0.5f)), Projectile.knockBack * 0.8f, Main.myPlayer, 0, 0, Projectile.ai[2]);
                 }
                 for (int k = 0; k < 3; k++)
                 {
-                    Particle spark2 = new LineParticle(Projectile.Center, (-Projectile.velocity * 4).RotatedByRandom(0.9f) * Main.rand.NextFloat(0.8f, 1.2f), false, Main.rand.Next(25, 32 + 1), Main.rand.NextFloat(1.5f, 2f), baseColor);
+                    Particle spark2 = new LineParticle(Projectile.Center, (-baseVel * 4).RotatedByRandom(0.9f) * Main.rand.NextFloat(0.8f, 1.2f), false, Main.rand.Next(25, 32 + 1), Main.rand.NextFloat(1.5f, 2f), baseColor);
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
                 if (Projectile.ai[2] == 1)
                 {
-                    Particle spark2 = new LineParticle(Projectile.Center, (-Projectile.velocity * 5).RotatedByRandom(0.9f) * Main.rand.NextFloat(0.8f, 1.2f), false, Main.rand.Next(35, 48 + 1), Main.rand.NextFloat(2.3f, 3f), baseColor);
+                    Particle spark2 = new LineParticle(Projectile.Center, (-baseVel * 5).RotatedByRandom(0.9f) * Main.rand.NextFloat(0.8f, 1.2f), false, Main.rand.Next(35, 48 + 1), Main.rand.NextFloat(2.3f, 3f), baseColor);
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
             }

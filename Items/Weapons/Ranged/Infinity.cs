@@ -15,8 +15,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Infinity : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        internal int rotation = 0;
-        internal bool limit = true;
         public int SineCounter = 0;
         public override void SetStaticDefaults()
         {
@@ -27,11 +25,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 56;
             Item.height = 24;
-            Item.damage = 90;
+            Item.damage = 85;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 1;
             Item.useAnimation = 4;
-            Item.useLimitPerAnimation = 9;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1f;
@@ -75,7 +72,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     //If left click, do the same as above but spawn Charged Blasts instead
                     Vector2 helixVel1 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine));
                     Vector2 helixVel2 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(-sine));
-                    int shot1 = Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0f, 1, 1f);
+                    int shot1 = Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0f, 0, 1f);
                     int shot2 = Projectile.NewProjectile(source, position.X, position.Y, helixVel2.X, helixVel2.Y, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0f, 0, 1f);
                 }
             }
@@ -86,7 +83,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             return false;
         }
-
+        public override bool CanConsumeAmmo(Item ammo, Player player)
+        {
+            if (Main.rand.Next(0, 100) > 80 && SineCounter % 4 == 0)
+                return true;
+            return false;
+        }
         public override void AddRecipes()
         {
             CreateRecipe().
