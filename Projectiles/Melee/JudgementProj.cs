@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        int whiteLightTimer = 20;
+        int whiteLightTimer = 15;
 
         public override void SetDefaults()
         {
@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 60;
+            Projectile.timeLeft = 90;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 10;
@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Melee
                         Main.projectile[projectile2].velocity.Y *= 0.1f;
                     }
                 }
-                whiteLightTimer = 20;
+                whiteLightTimer = 15;
             }
 
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.5f / 255f, (255 - Projectile.alpha) * 0.5f / 255f, (255 - Projectile.alpha) * 0.5f / 255f);
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Melee
                 Main.dust[shinyDust].velocity += Projectile.velocity * 0.1f;
             }
 
-            CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 200f, 9f, 20f);
+            CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 200f, 10f, 20f);
         }
 
         public override void OnKill(int timeLeft)

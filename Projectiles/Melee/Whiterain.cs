@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
                 Main.dust[shiny].velocity += Projectile.velocity * 0.1f;
             }
 
-            CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 12f, 20f);
+            CalamityUtils.HomeInOnNPC(Projectile, true, 320f, 14f, 20f);
         }
     }
 }
