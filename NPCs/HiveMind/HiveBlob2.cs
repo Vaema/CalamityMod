@@ -57,6 +57,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.damage = 0;
 
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
@@ -147,19 +148,24 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.localAI[1] = 180f;
 
                 NPC.localAI[1] += Main.rand.Next(3) + 1f;
+                if (masterMode)
+                    NPC.localAI[1] += 1f;
+
                 if (NPC.localAI[1] >= 360f && Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 80f)
                 {
                     NPC.localAI[1] = 0f;
-                    NPC.TargetClosest(true);
+                    NPC.TargetClosest();
                     if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                     {
                         float projSpeed = death ? 5f : revenge ? 4.5f : expertMode ? 4f : 3.5f;
+                        if (masterMode)
+                            projSpeed += 2.5f;
                         if (Main.getGoodWorld)
                             projSpeed *= 2.4f;
 
-                        Vector2 projDirection = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + (NPC.height / 2));
-                        float playerX = Main.player[NPC.target].position.X + Main.player[NPC.target].width * 0.5f - projDirection.X;
-                        float playerY = Main.player[NPC.target].position.Y + Main.player[NPC.target].height * 0.5f - projDirection.Y;
+                        Vector2 projDirection = NPC.Center;
+                        float playerX = Main.player[NPC.target].Center.X - projDirection.X;
+                        float playerY = Main.player[NPC.target].Center.Y - projDirection.Y;
                         float playerDist = (float)Math.Sqrt(playerX * playerX + playerY * playerY);
                         playerDist = projSpeed / playerDist;
                         playerX *= playerDist;

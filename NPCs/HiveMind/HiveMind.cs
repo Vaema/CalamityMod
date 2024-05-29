@@ -129,13 +129,19 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
 
-            if (Main.expertMode)
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
+            bool revenge = CalamityWorld.revenge || bossRush;
+            bool death = CalamityWorld.death || bossRush;
+
+            if (expertMode)
             {
                 minimumDriftTime = 120;
                 reelbackFade = 4;
             }
 
-            if (CalamityWorld.revenge)
+            if (revenge)
             {
                 lungeRots = 0.3;
                 minimumDriftTime = 90;
@@ -145,17 +151,17 @@ namespace CalamityMod.NPCs.HiveMind
                 driftBoost = 2f;
             }
 
-            if (CalamityWorld.death)
+            if (death)
             {
                 lungeRots = 0.4;
                 minimumDriftTime = 60;
                 reelbackFade = 6;
                 lungeTime = 23;
-                driftSpeed = 3f;
-                driftBoost = 1f;
+                driftSpeed = 3.5f;
+                driftBoost = 1.5f;
             }
 
-            if (BossRushEvent.BossRushActive)
+            if (bossRush)
             {
                 lungeRots = 0.4;
                 minimumDriftTime = 40;
@@ -163,6 +169,16 @@ namespace CalamityMod.NPCs.HiveMind
                 lungeTime = 16;
                 driftSpeed = 6f;
                 driftBoost = 1f;
+            }
+
+            if (masterMode)
+            {
+                lungeRots += 0.1;
+                minimumDriftTime /= 2;
+                reelbackFade *= 2;
+                lungeTime -= 5;
+                driftSpeed += ((death && !bossRush) ? 0.5f : 1f);
+                driftBoost += ((death && !bossRush) ? 0.5f : 1f);
             }
 
             if (Main.getGoodWorld)
@@ -319,7 +335,13 @@ namespace CalamityMod.NPCs.HiveMind
 
         private void SpawnStuff()
         {
-            int maxSpawns = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 5 : CalamityWorld.revenge ? 4 : Main.expertMode ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
+            bool revenge = CalamityWorld.revenge || bossRush;
+            bool death = CalamityWorld.death || bossRush;
+
+            int maxSpawns = death ? 5 : revenge ? 4 : expertMode ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
             for (int i = 0; i < maxSpawns; i++)
             {
                 int type = NPCID.EaterofSouls;
@@ -357,11 +379,14 @@ namespace CalamityMod.NPCs.HiveMind
 
         private void ReelBack()
         {
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || bossRush;
+
             NPC.alpha = 0;
             phase2timer = 0;
             deceleration = NPC.velocity / 255f * reelbackFade;
 
-            if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
+            if (revenge)
             {
                 state = 2;
                 SoundEngine.PlaySound(FastRoarSound, NPC.Center);
@@ -395,6 +420,7 @@ namespace CalamityMod.NPCs.HiveMind
 
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -691,7 +717,7 @@ namespace CalamityMod.NPCs.HiveMind
                             else
                             {
                                 reelCount++;
-                                if (Main.expertMode && reelCount == 2)
+                                if (expertMode && reelCount == 2)
                                 {
                                     reelCount = 0;
                                     nextState = 2;
@@ -741,6 +767,15 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.velocity = player.Center - NPC.Center;
 
                     phase2timer--;
+
+                    // Use an attack sooner in expert mode if being hit
+                    if (NPC.justHit && expertMode)
+                        phase2timer--;
+
+                    // Use an attack sooner if target is close
+                    if (NPC.Distance(player.Center) < 160f)
+                        phase2timer -= 2;
+
                     if (phase2timer <= -180) // No stalling drift mode forever
                     {
                         NPC.velocity *= 2f / 255f * (reelbackFade + 2 * (int)enrageScale);
@@ -779,7 +814,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.position.Y = NPC.ai[2] * 16 - height_Phase2 / 2;
                         }
 
-                        phase2timer = minimumDriftTime + Main.rand.Next(121);
+                        phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
                         NPC.netUpdate = true;
                         NPC.netSpam = 0;
                     }
