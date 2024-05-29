@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.velocity.Y = -velocity;
             }
 
-            bool dropRain = NPC.Bottom < Main.player[NPC.target].position.Y - 200f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
+            bool dropRain = NPC.Bottom.Y < Main.player[NPC.target].position.Y - 200f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
             if (NPC.Center.X > Main.player[NPC.target].Center.X + 400f)
             {
                 dropRain = false;
