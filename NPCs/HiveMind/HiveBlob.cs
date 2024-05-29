@@ -70,6 +70,8 @@ namespace CalamityMod.NPCs.HiveMind
                 return;
             }
 
+            NPC.alpha = Main.npc[hiveMind].alpha;
+
             if (NPC.ai[3] > 0f)
                 hiveMind = (int)NPC.ai[3] - 1;
 
@@ -86,15 +88,16 @@ namespace CalamityMod.NPCs.HiveMind
                 }
             }
 
-            NPC.TargetClosest(true);
+            NPC.TargetClosest();
 
-            float relocateSpeed = getFuckedAI ? 1.2f : death ? 0.8f : revenge ? 0.7f : expertMode ? 0.6f : 0.5f;
+            float hiveMindVelocity = Main.npc[hiveMind].velocity.Length();
+            float relocateSpeed = (getFuckedAI ? 1.2f : death ? 0.8f : revenge ? 0.7f : expertMode ? 0.6f : 0.5f) + hiveMindVelocity * 0.0625f;
             Vector2 randomLocationVector = new Vector2(NPC.ai[0] * 16f + 8f, NPC.ai[1] * 16f + 8f);
-            float targetX = Main.player[NPC.target].position.X + (Main.player[NPC.target].width / 2) - (NPC.width / 2) - randomLocationVector.X;
-            float targetY = Main.player[NPC.target].position.Y + (Main.player[NPC.target].height / 2) - (NPC.height / 2) - randomLocationVector.Y;
+            float targetX = Main.player[NPC.target].Center.X - (NPC.width / 2) - randomLocationVector.X;
+            float targetY = Main.player[NPC.target].Center.Y - (NPC.height / 2) - randomLocationVector.Y;
             float targetDistance = (float)Math.Sqrt(targetX * targetX + targetY * targetY);
-            float hiveMindX = Main.npc[hiveMind].position.X + (Main.npc[hiveMind].width / 2);
-            float hiveMindY = Main.npc[hiveMind].position.Y + (Main.npc[hiveMind].height / 2);
+            float hiveMindX = Main.npc[hiveMind].Center.X;
+            float hiveMindY = Main.npc[hiveMind].Center.Y;
             Vector2 hiveMindPos = new Vector2(hiveMindX, hiveMindY);
             float randomPosX = hiveMindX + NPC.ai[0];
             float randomPosY = hiveMindY + NPC.ai[1];
@@ -129,7 +132,7 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.velocity.Y = NPC.velocity.Y * 0.8f;
             }
 
-            float velocityLimit = getFuckedAI ? 32f : 8f;
+            float velocityLimit = relocateSpeed * 16f;
             if (NPC.velocity.X > velocityLimit)
                 NPC.velocity.X = velocityLimit;
             if (NPC.velocity.X < -velocityLimit)
@@ -144,11 +147,18 @@ namespace CalamityMod.NPCs.HiveMind
                 if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                     NPC.localAI[1] = 180f;
 
-                NPC.localAI[1] += Main.rand.Next(2) + 1f;
-                if (masterMode)
-                    NPC.localAI[1] += 1f;
+                float shootGateValue = 360f;
+                if (NPC.localAI[1] < shootGateValue)
+                {
+                    NPC.localAI[1] += Main.rand.Next(2) + 1f;
+                    if (masterMode)
+                        NPC.localAI[1] += 1f;
+                }
 
-                if (NPC.localAI[1] >= 360f && Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 80f)
+                if (NPC.alpha > 0)
+                    return;
+
+                if (NPC.localAI[1] >= shootGateValue && Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 80f)
                 {
                     NPC.localAI[1] = 0f;
                     NPC.TargetClosest();
@@ -181,6 +191,8 @@ namespace CalamityMod.NPCs.HiveMind
                 }
             }
         }
+
+        public override bool CanHitNPC(NPC target) => NPC.alpha == 0; // Can only be hit while fully visible
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {

@@ -595,6 +595,8 @@ namespace CalamityMod.NPCs.HiveMind
                 {
                     NPC.scale += 0.0165f;
                     NPC.alpha -= 4;
+                    if (NPC.alpha < 0)
+                        NPC.alpha = 0;
 
                     int burrowedDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.Center.Y), NPC.width, NPC.height / 2, DustID.Demonite, 0f, -3f, 100, default, 2.5f * NPC.scale);
                     Main.dust[burrowedDust].velocity *= 2f;
@@ -628,6 +630,16 @@ namespace CalamityMod.NPCs.HiveMind
                             tilePosY++;
                             NPC.position.Y += 16;
                         }
+
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            NPC hiveBlob = Main.npc[i];
+                            if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
+                            {
+                                hiveBlob.position.X = NPC.position.X;
+                                hiveBlob.position.Y = NPC.position.Y;
+                            }
+                        }
                     }
                     NPC.netUpdate = true;
                     NPC.netSpam = 0;
@@ -636,6 +648,8 @@ namespace CalamityMod.NPCs.HiveMind
                 {
                     NPC.scale -= 0.0165f;
                     NPC.alpha += 4;
+                    if (NPC.alpha > 255)
+                        NPC.alpha = 255;
 
                     int burrowedDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.Center.Y), NPC.width, NPC.height / 2, DustID.Demonite, 0f, -3f, 100, default, 2.5f * NPC.scale);
                     Main.dust[burrowedDust].velocity *= 2f;
@@ -678,7 +692,11 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.damage = 0;
 
                     if (NPC.alpha > 0)
+                    {
                         NPC.alpha -= 3;
+                        if (NPC.alpha < 0)
+                            NPC.alpha = 0;
+                    }
 
                     if (nextState == 0)
                     {
@@ -812,6 +830,16 @@ namespace CalamityMod.NPCs.HiveMind
                         {
                             NPC.position.X = NPC.ai[1] * 16 - NPC.width / 2;
                             NPC.position.Y = NPC.ai[2] * 16 - height_Phase2 / 2;
+
+                            for (int i = 0; i < Main.maxNPCs; i++)
+                            {
+                                NPC hiveBlob = Main.npc[i];
+                                if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
+                                {
+                                    hiveBlob.position.X = NPC.position.X;
+                                    hiveBlob.position.Y = NPC.position.Y;
+                                }
+                            }
                         }
 
                         phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
@@ -880,6 +908,8 @@ namespace CalamityMod.NPCs.HiveMind
                     if (NPC.alpha > 0)
                     {
                         NPC.alpha -= lungeFade;
+                        if (NPC.alpha < 0)
+                            NPC.alpha = 0;
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                             NPC.Center = player.Center + new Vector2(teleportRadius, 0).RotatedBy(rotation);
@@ -938,12 +968,16 @@ namespace CalamityMod.NPCs.HiveMind
 
                     if (NPC.alpha > 0)
                     {
-                        NPC.alpha -= 5;
+                        NPC.alpha -= masterMode ? 10 : 5;
+                        if (NPC.alpha < 0)
+                            NPC.alpha = 0;
+
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             NPC.Center = player.Center;
                             NPC.position.Y += teleportRadius;
                         }
+
                         NPC.netUpdate = true;
                         NPC.netSpam = 0;
                     }
@@ -972,24 +1006,25 @@ namespace CalamityMod.NPCs.HiveMind
                             if (phase2timer == (int)arcTime / 6)
                             {
                                 phase2timer = 0;
-                                NPC.ai[0]++;
+                                NPC.ai[0] += 1f;
                                 if (Main.netMode != NetmodeID.MultiplayerClient && Collision.CanHit(NPC.Center, 1, 1, player.position, player.width, player.height))
                                 {
-                                    if (NPC.ai[0] == 2 || NPC.ai[0] == 4)
+                                    if (NPC.ai[0] == 2f || (NPC.ai[0] == 4f && death))
                                     {
-                                        if (expertMode && !NPC.AnyNPCs(ModContent.NPCType<DarkHeart>()))
+                                        int maxHearts = revenge ? 2 : 1;
+                                        if (expertMode && NPC.CountNPCS(ModContent.NPCType<DarkHeart>()) < maxHearts)
                                             NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<DarkHeart>());
                                     }
                                     else if (!NPC.AnyNPCs(NPCID.EaterofSouls))
                                         NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.EaterofSouls);
                                 }
 
-                                if (NPC.ai[0] == 6)
+                                if (NPC.ai[0] == 6f)
                                 {
                                     NPC.velocity = NPC.velocity.RotatedBy(MathHelper.Pi / arcTime * -rotationDirection);
                                     SpawnStuff();
                                     state = 6;
-                                    NPC.ai[0] = 0;
+                                    NPC.ai[0] = 0f;
                                     deceleration = NPC.velocity / decelerationTime;
                                 }
                             }
@@ -1005,13 +1040,17 @@ namespace CalamityMod.NPCs.HiveMind
 
                     if (NPC.alpha > 0)
                     {
-                        NPC.alpha -= 5;
+                        NPC.alpha -= masterMode ? 10 : 5;
+                        if (NPC.alpha < 0)
+                            NPC.alpha = 0;
+
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             NPC.Center = player.Center;
                             NPC.position.Y -= teleportRadius;
                             NPC.position.X += teleportRadius * rotationDirection;
                         }
+
                         NPC.netUpdate = true;
                         NPC.netSpam = 0;
                     }
@@ -1038,7 +1077,7 @@ namespace CalamityMod.NPCs.HiveMind
                             if (phase2timer == (int)arcTime / 20)
                             {
                                 phase2timer = 0;
-                                NPC.ai[0]++;
+                                NPC.ai[0] += 1f;
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     int type = ModContent.ProjectileType<ShadeNimbusHostile>();
@@ -1048,10 +1087,10 @@ namespace CalamityMod.NPCs.HiveMind
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), cloudSpawnPos, randomVelocity, type, damage, 0, Main.myPlayer, 11f);
                                 }
 
-                                if (NPC.ai[0] == 10)
+                                if (NPC.ai[0] == 10f)
                                 {
                                     state = 6;
-                                    NPC.ai[0] = 0;
+                                    NPC.ai[0] = 0f;
                                     deceleration = NPC.velocity / decelerationTime;
                                 }
                             }
