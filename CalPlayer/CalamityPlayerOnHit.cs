@@ -1237,9 +1237,6 @@ namespace CalamityMod.CalPlayer
                 if (divineBless)
                     target.AddBuff(BuffType<BanishingFire>(), 60);
 
-                if (holyMinions)
-                    target.AddBuff(BuffType<HolyFlames>(), 180);
-
                 if (shadowMinions)
                     target.AddBuff(BuffID.ShadowFlame, 180);
 

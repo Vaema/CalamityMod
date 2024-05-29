@@ -1616,9 +1616,8 @@ StatisBlessing: {
 	DisplayName: Statis' Blessing
 	Tooltip:
 		'''
-		Increased max minions by 2 and 10% increased summon damage
+		Increased max minions by 2 and 12% increased summon damage
 		Increased minion knockback
-		Minions inflict holy flames on hit
 		'''
 }
 
@@ -1627,9 +1626,9 @@ StatisCurse: {
 	Tooltip:
 		'''
 		Increases max minions by 3, does not stack with downgrades
-		10% increased summon damage
+		12% increased summon damage
 		Increased minion knockback
-		Minions inflict holy flames and shadowflames on hit
+		Minions inflict shadowflames on hit
 		Grants immunity to Shadowflame
 		'''
 }
