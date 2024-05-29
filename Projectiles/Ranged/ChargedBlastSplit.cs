@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 baseColor = (Infinity ? new Color(229, 49, 39) : Svant ? Color.DarkViolet : Color.DodgerBlue);
                 if (Projectile.ai[2] == 3)
-                    baseColor = Color.Violet;
+                    baseColor = Color.DarkOrchid;
                 if (Projectile.ai[2] == 4)
                     baseColor = Color.MediumOrchid;
                 startVel = Projectile.velocity;
@@ -82,13 +82,13 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Vector2.Distance(Projectile.Center, player.Calamity().mouseWorld) < 80)
                 {
                     Projectile.timeLeft = 300;
-                    Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * homeSpeed;
+                    Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * homeSpeed / 2;
                     goToMouse = false;
                 }
             }
             if (!goToMouse)
             {
-                float sine = (float)Math.Sin(Projectile.timeLeft * 0.375f / MathHelper.Pi) * 2.5f;
+                float sine = (float)Math.Sin(Projectile.timeLeft * 0.175f / MathHelper.Pi) * 1.2f;
                 Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * (direction ? 1 : -1);
                 Projectile.Center += offset;
             }
@@ -100,7 +100,8 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void OnKill(int timeLeft)
         {
-            for (int k = 0; k < 3; k++)
+            bool Svant = Projectile.ai[2] == 2 || Projectile.ai[2] == 3 || Projectile.ai[2] == 4;
+            for (int k = 0; k < (Svant ? 2 : 3); k++)
             {
                 Particle spark2 = new LineParticle(Projectile.Center, (Projectile.velocity * 5).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.8f, 1.2f), false, Main.rand.Next(8, 11 + 1), Main.rand.NextFloat(0.5f, 1f), baseColor);
                 GeneralParticleHandler.SpawnParticle(spark2);

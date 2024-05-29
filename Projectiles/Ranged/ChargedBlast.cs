@@ -39,12 +39,15 @@ namespace CalamityMod.Projectiles.Ranged
             bool Infinity = Projectile.ai[2] == 1;
             bool Svant = Projectile.ai[2] == 2 || Projectile.ai[2] == 3 || Projectile.ai[2] == 4;
 
+            Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+
             if (baseColor == Color.White)
             {
                 baseColor = (Infinity ? new Color(229, 49, 39) : Svant ? Color.DarkViolet : Color.DodgerBlue);
                 if (Projectile.ai[2] == 3)
                 {
-                    baseColor = Color.Violet;
+                    baseColor = Color.DarkOrchid;
                 }
                 if (Projectile.ai[2] == 4)
                 {
@@ -59,6 +62,11 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.timeLeft == 2)
                 outOfTime = true;
+            if ((Svant || Infinity) && Projectile.timeLeft % 2 == 0 && targetDist < 1400f)
+            {
+                Particle spark = new LineParticle(Projectile.Center - Projectile.velocity * 3, -Projectile.velocity * 0.05f, false, 5, 2f, baseColor * 0.65f);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
         }
         public override void OnKill(int timeLeft)
         {
