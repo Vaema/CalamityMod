@@ -917,14 +917,10 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.netSpam = 0;
                     if (NPC.alpha > 0)
                     {
-                        NPC.alpha -= lungeFade;
-                        if (NPC.alpha < 0)
-                            NPC.alpha = 0;
-
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                             NPC.Center = player.Center + new Vector2(teleportRadius, 0).RotatedBy(rotation);
 
-                        if (NPC.alpha == 255 - lungeFade)
+                        if (NPC.alpha == 255)
                         {
                             for (int i = 0; i < Main.maxNPCs; i++)
                             {
@@ -939,6 +935,10 @@ namespace CalamityMod.NPCs.HiveMind
 
                         rotation += rotationIncrement * rotationDirection;
                         phase2timer = lungeDelay;
+
+                        NPC.alpha -= lungeFade;
+                        if (NPC.alpha < 0)
+                            NPC.alpha = 0;
                     }
                     else
                     {
@@ -991,17 +991,13 @@ namespace CalamityMod.NPCs.HiveMind
 
                     if (NPC.alpha > 0)
                     {
-                        NPC.alpha -= masterMode ? 10 : 5;
-                        if (NPC.alpha < 0)
-                            NPC.alpha = 0;
-
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             NPC.Center = player.Center;
                             NPC.position.Y += teleportRadius;
                         }
 
-                        if (NPC.alpha == 255 - (masterMode ? 10 : 5))
+                        if (NPC.alpha == 255)
                         {
                             for (int i = 0; i < Main.maxNPCs; i++)
                             {
@@ -1013,6 +1009,10 @@ namespace CalamityMod.NPCs.HiveMind
                                 }
                             }
                         }
+
+                        NPC.alpha -= masterMode ? 10 : 5;
+                        if (NPC.alpha < 0)
+                            NPC.alpha = 0;
 
                         NPC.netUpdate = true;
                         NPC.netSpam = 0;
@@ -1076,10 +1076,6 @@ namespace CalamityMod.NPCs.HiveMind
 
                     if (NPC.alpha > 0)
                     {
-                        NPC.alpha -= masterMode ? 10 : 5;
-                        if (NPC.alpha < 0)
-                            NPC.alpha = 0;
-
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             NPC.Center = player.Center;
@@ -1087,7 +1083,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.position.X += teleportRadius * rotationDirection;
                         }
 
-                        if (NPC.alpha == 255 - (masterMode ? 10 : 5))
+                        if (NPC.alpha == 255)
                         {
                             for (int i = 0; i < Main.maxNPCs; i++)
                             {
@@ -1099,6 +1095,10 @@ namespace CalamityMod.NPCs.HiveMind
                                 }
                             }
                         }
+
+                        NPC.alpha -= masterMode ? 10 : 5;
+                        if (NPC.alpha < 0)
+                            NPC.alpha = 0;
 
                         NPC.netUpdate = true;
                         NPC.netSpam = 0;
