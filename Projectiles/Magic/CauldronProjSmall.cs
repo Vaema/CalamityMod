@@ -36,9 +36,9 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] > 10f)
+            if (Projectile.ai[0] > 8f)
             {
-                Projectile.ai[0] = 10f;
+                Projectile.ai[0] = 8f;
                 if (Projectile.velocity.Y == 0f && Projectile.velocity.X != 0f)
                 {
                     Projectile.velocity.X = Projectile.velocity.X * 0.97f;
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
                         Projectile.netUpdate = true;
                     }
                 }
-                Projectile.velocity.Y += 0.3f;
+                Projectile.velocity.Y += 0.38f;
             }
             Projectile.rotation += Projectile.velocity.X * 0.05f;
             int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, Scale: Main.rand.NextFloat(0.6f, 0.8f));
@@ -63,6 +63,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
+            Projectile.damage /= 2;
             Projectile.Damage();
             for (int i = 0; i < 10; i++)
             {
@@ -82,8 +83,11 @@ namespace CalamityMod.Projectiles.Magic
             Main.EntitySpriteDraw(Glow.Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 180);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire3, 180);
+        public override bool? CanDamage() => Projectile.velocity.Y < 0f ? false : null;
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 90);
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire3, 90);
     }
 }

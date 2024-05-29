@@ -323,6 +323,9 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HamBat)
                 EditTooltipByNum(1, (line) => line.Text = "Defeating enemies temporarily grants +3 HP/s life regen");
 
+            if (item.type == ItemID.AegisCrystal)
+                EditTooltipByNum(0, (line) => line.Text = "Permanently boosts natural life regeneration");
+
             // Warmth Potion provides debuff immunities
             if (item.type == ItemID.WarmthPotion)
             {
@@ -920,6 +923,8 @@ namespace CalamityMod.Items
             // Solar Flare
             if (item.type == ItemID.SolarFlareHelmet)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("26%", "20%"));
+            if (item.type == ItemID.SolarFlareHelmet || item.type == ItemID.SolarFlareBreastplate || item.type == ItemID.SolarFlareLeggings)
+                EditTooltipByNum(1, (line) => line.Text = "Grants +1 HP/s life regeneration");
 
             // Vortex
             if (item.type == ItemID.VortexHelmet)

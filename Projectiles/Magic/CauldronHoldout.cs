@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override string Texture => "CalamityMod/Items/Weapons/Magic/TheCauldron";
 
-        public static int FireRate = 46;
+        public static int FireRate = 60;
 
         public override void SetDefaults()
         {
