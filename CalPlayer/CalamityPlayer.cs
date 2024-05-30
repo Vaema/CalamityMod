@@ -53,6 +53,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.CalPlayer
 {
@@ -532,6 +533,8 @@ namespace CalamityMod.CalPlayer
         public bool honeyDewHalveDebuffs = false;
         public bool livingDewHalveDebuffs = false;
         public int jewelBonusDefense = 0;
+        public float pulseCounter = 0; // Toxic Heart
+        public float pulseRate = 1; // Toxic Heart
         public bool aAmpoule = false;
         public bool rOoze = false;
         public bool JustWasDebuffed = false;
@@ -793,6 +796,7 @@ namespace CalamityMod.CalPlayer
         public bool astralStarRain = false;
         public int astralStarRainCooldown = 0;
         public int AbaddonCooldown = 0;
+        public int AlchFlaskCooldown = 0;
         public bool plagueReaper = false;
         public bool plaguebringerPatronSet = false;
         public bool plaguebringerCarapace = false;
@@ -2313,6 +2317,7 @@ namespace CalamityMod.CalPlayer
             gSabatonTempJumpSpeed = 0;
             astralStarRainCooldown = 0;
             AbaddonCooldown = 0;
+            AlchFlaskCooldown = 0;
             silvaMageCooldown = 0;
             bloodflareMageCooldown = 0;
             tarraRangedCooldown = 0;
