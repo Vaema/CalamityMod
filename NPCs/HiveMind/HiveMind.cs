@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
@@ -417,10 +418,6 @@ namespace CalamityMod.NPCs.HiveMind
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
-                NPC.TargetClosest();
-
             Player player = Main.player[NPC.target];
 
             bool bossRush = BossRushEvent.BossRushActive;
@@ -799,11 +796,11 @@ namespace CalamityMod.NPCs.HiveMind
                         NPC.netSpam = 0;
                     }
 
-                    if (!player.active || player.dead || Vector2.Distance(NPC.Center, player.Center) > 5000f)
+                    if (!player.active || player.dead || Vector2.Distance(NPC.Center, player.Center) > 8000f)
                     {
                         NPC.TargetClosest(false);
                         player = Main.player[NPC.target];
-                        if (!player.active || player.dead || Vector2.Distance(NPC.Center, player.Center) > 5000f)
+                        if (!player.active || player.dead || Vector2.Distance(NPC.Center, player.Center) > 8000f)
                         {
                             if (NPC.timeLeft > 60)
                                 NPC.timeLeft = 60;
@@ -830,9 +827,9 @@ namespace CalamityMod.NPCs.HiveMind
 
                     phase2timer--;
 
-                    // Use an attack sooner in expert mode if being hit
-                    if (NPC.justHit && expertMode)
-                        phase2timer--;
+                    // Use an attack sooner if being hit
+                    if (NPC.justHit)
+                        phase2timer -= masterMode ? 7 : expertMode ? 5 : 3;
 
                     // Use an attack sooner if target is close
                     if (NPC.Distance(player.Center) < 160f)
@@ -1142,7 +1139,7 @@ namespace CalamityMod.NPCs.HiveMind
                     phase2timer++;
                     if (phase2timer == decelerationTime)
                     {
-                        phase2timer = minimumDriftTime + Main.rand.Next(121);
+                        phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
                         state = 0;
                         NPC.netUpdate = true;
                         NPC.netSpam = 0;
@@ -1173,6 +1170,14 @@ namespace CalamityMod.NPCs.HiveMind
                 minDist = hitboxBotRight;
 
             return minDist <= 60f && NPC.alpha == 0 && NPC.scale == 1f; // No damage while not fully visible or shrunk
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        {
+            if (hurtInfo.Damage < 0)
+                return;
+
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 300);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => NPC.scale == 1f; // Only draw HP bar while at full size

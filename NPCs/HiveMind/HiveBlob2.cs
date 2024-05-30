@@ -107,8 +107,6 @@ namespace CalamityMod.NPCs.HiveMind
                 }
             }
 
-            NPC.TargetClosest();
-
             float hiveMindVelocity = Main.npc[hiveMind].velocity.Length();
             float relocateSpeed = getFuckedAI ? 1.2f : death ? 0.8f : revenge ? 0.7f : expertMode ? 0.6f : 0.5f;
             float acceleration = 0.8f;
@@ -163,7 +161,7 @@ namespace CalamityMod.NPCs.HiveMind
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
+                if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[Main.npc[hiveMind].target].position, Main.player[Main.npc[hiveMind].target].width, Main.player[Main.npc[hiveMind].target].height))
                     NPC.localAI[1] = ShootGateValue * 0.5f;
 
                 float shootGateValue = ShootGateValue;
@@ -179,11 +177,10 @@ namespace CalamityMod.NPCs.HiveMind
                 if (NPC.alpha > 0)
                     return;
 
-                if (NPC.localAI[1] >= shootGateValue && Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 80f)
+                if (NPC.localAI[1] >= shootGateValue && Vector2.Distance(Main.player[Main.npc[hiveMind].target].Center, NPC.Center) > 80f)
                 {
                     NPC.localAI[1] = 0f;
-                    NPC.TargetClosest();
-                    if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
+                    if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[Main.npc[hiveMind].target].position, Main.player[Main.npc[hiveMind].target].width, Main.player[Main.npc[hiveMind].target].height))
                     {
                         float projSpeed = death ? 8f : revenge ? 7f : expertMode ? 6f : 4f;
                         if (masterMode)
@@ -192,8 +189,8 @@ namespace CalamityMod.NPCs.HiveMind
                             projSpeed *= 1.5f;
 
                         Vector2 projDirection = NPC.Center;
-                        float playerX = Main.player[NPC.target].Center.X - projDirection.X;
-                        float playerY = Main.player[NPC.target].Center.Y - projDirection.Y;
+                        float playerX = Main.player[Main.npc[hiveMind].target].Center.X - projDirection.X;
+                        float playerY = Main.player[Main.npc[hiveMind].target].Center.Y - projDirection.Y;
                         float playerDist = (float)Math.Sqrt(playerX * playerX + playerY * playerY);
                         playerDist = projSpeed / playerDist;
                         playerX *= playerDist;
@@ -203,7 +200,7 @@ namespace CalamityMod.NPCs.HiveMind
                         Vector2 projectileVelocity = new Vector2(playerX, playerY);
                         if (type == ProjectileID.CursedFlameHostile)
                         {
-                            Vector2 v = Main.player[NPC.target].Center - NPC.Center - Main.player[NPC.target].velocity * 20f;
+                            Vector2 v = Main.player[Main.npc[hiveMind].target].Center - NPC.Center - Main.player[Main.npc[hiveMind].target].velocity * 20f;
                             projectileVelocity = v.SafeNormalize(Vector2.UnitY) * projSpeed;
                         }
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), projDirection, projectileVelocity, type, damage, 0f, Main.myPlayer);

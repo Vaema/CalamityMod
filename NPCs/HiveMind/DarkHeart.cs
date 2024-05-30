@@ -60,15 +60,26 @@ namespace CalamityMod.NPCs.HiveMind
             // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
             NPC.damage = 0;
 
+            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Float around the player
             NPC.rotation = NPC.velocity.X / 20f;
 
-            NPC.TargetClosest();
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                NPC.TargetClosest();
 
-            float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 10f : revenge ? 6f : 4f;
-            float acceleration = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.5f : revenge ? 0.3f : 0.2f;
+            float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 10f : death ? 7f : revenge ? 6f : 4f;
+            float acceleration = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.5f : death ? 0.35f : revenge ? 0.3f : 0.2f;
+            float deceleration = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.9f : death ? 0.95f : revenge ? 0.96f : 0.98f;
+            if (masterMode)
+            {
+                velocity += 2f;
+                acceleration += 0.2f;
+                deceleration -= 0.05f;
+            }
             if (BossRushEvent.BossRushActive)
             {
                 velocity *= 2f;
@@ -78,7 +89,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (NPC.position.Y > Main.player[NPC.target].position.Y - 350f)
             {
                 if (NPC.velocity.Y > 0f)
-                    NPC.velocity.Y *= 0.98f;
+                    NPC.velocity.Y *= deceleration;
 
                 NPC.velocity.Y -= acceleration;
 
@@ -88,7 +99,7 @@ namespace CalamityMod.NPCs.HiveMind
             else if (NPC.position.Y < Main.player[NPC.target].position.Y - 450f)
             {
                 if (NPC.velocity.Y < 0f)
-                    NPC.velocity.Y *= 0.98f;
+                    NPC.velocity.Y *= deceleration;
 
                 NPC.velocity.Y += acceleration;
 
@@ -97,35 +108,38 @@ namespace CalamityMod.NPCs.HiveMind
             }
 
             bool dropRain = NPC.Bottom.Y < Main.player[NPC.target].position.Y - 200f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
-            if (NPC.Center.X > Main.player[NPC.target].Center.X + 400f)
+            float distanceX = masterMode ? 200f : 400f;
+            float velocityX = velocity * 1.5f;
+            if (NPC.Center.X > Main.player[NPC.target].Center.X + distanceX)
             {
                 dropRain = false;
 
                 if (NPC.velocity.X > 0f)
-                    NPC.velocity.X *= 0.98f;
+                    NPC.velocity.X *= deceleration;
 
                 NPC.velocity.X -= acceleration;
 
-                if (NPC.velocity.X > 8f)
-                    NPC.velocity.X = 8f;
+                if (NPC.velocity.X > velocityX)
+                    NPC.velocity.X = velocityX;
             }
-            if (NPC.Center.X < Main.player[NPC.target].Center.X - 400f)
+            if (NPC.Center.X < Main.player[NPC.target].Center.X - distanceX)
             {
                 dropRain = false;
 
                 if (NPC.velocity.X < 0f)
-                    NPC.velocity.X *= 0.98f;
+                    NPC.velocity.X *= deceleration;
 
                 NPC.velocity.X += acceleration;
 
-                if (NPC.velocity.X < -8f)
-                    NPC.velocity.X = -8f;
+                if (NPC.velocity.X < -velocityX)
+                    NPC.velocity.X = -velocityX;
             }
 
             if (dropRain && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 NPC.ai[0] += 1f;
-                if (NPC.ai[0] >= (Main.getGoodWorld ? 12f : 24f))
+                float rainDropRate = Main.getGoodWorld ? 8f : death ? 16f : revenge ? 20f : 24f;
+                if (NPC.ai[0] >= rainDropRate)
                 {
                     NPC.ai[0] = 0f;
                     int shaderainXPos = (int)(NPC.position.X + 10f + Main.rand.Next(NPC.width - 20));
@@ -133,7 +147,8 @@ namespace CalamityMod.NPCs.HiveMind
                     int type = ModContent.ProjectileType<ShaderainHostile>();
                     int damage = NPC.GetProjectileDamage(type);
                     float randomXVelocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? Main.rand.NextFloat() * 5f : 0f;
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shaderainXPos, shaderainYos, randomXVelocity, 4f, type, damage, 0f, Main.myPlayer);
+                    float velocityY = 8f;
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shaderainXPos, shaderainYos, randomXVelocity, velocityY, type, damage, 0f, Main.myPlayer);
                 }
             }
         }
