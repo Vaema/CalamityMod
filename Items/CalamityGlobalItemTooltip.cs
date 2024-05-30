@@ -326,10 +326,10 @@ namespace CalamityMod.Items
             if (item.type == ItemID.AegisCrystal)
                 EditTooltipByNum(0, (line) => line.Text = "Permanently boosts natural life regeneration");
 
-            // Warmth Potion provides debuff immunities
+            // Warmth Potion reduces debuff durations
             if (item.type == ItemID.WarmthPotion)
             {
-                string immunityLine = "\nGrants immunity to Chilled, Frozen and Glacial State";
+                string immunityLine = "\nGreatly reduces the duration of Chilled, Frozen, and Glacial State";
                 EditTooltipByNum(0, (line) => line.Text += immunityLine);
             }
 
