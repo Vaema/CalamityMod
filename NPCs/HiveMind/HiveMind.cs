@@ -1204,18 +1204,18 @@ namespace CalamityMod.NPCs.HiveMind
 
             if (!phase2)
             {
-                if (NPC.CountNPCS(NPCID.EaterofSouls) < 3 && NPC.CountNPCS(NPCID.DevourerHead) < 1)
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (Main.rand.NextBool(60) && Main.netMode != NetmodeID.MultiplayerClient)
+                    if (Main.rand.NextBool(60))
                     {
-                        Vector2 spawnAt = NPC.Center + new Vector2(0f, NPC.height / 2f);
-                        NPC.NewNPC(NPC.GetSource_FromThis(), (int)spawnAt.X, (int)spawnAt.Y, NPCID.EaterofSouls);
+                        if (NPC.CountNPCS(NPCID.EaterofSouls) < 3)
+                            NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.EaterofSouls);
                     }
 
-                    if (Main.rand.NextBool(150) && Main.netMode != NetmodeID.MultiplayerClient)
+                    if (Main.rand.NextBool(150))
                     {
-                        Vector2 spawnAt = NPC.Center + new Vector2(0f, NPC.height / 2f);
-                        NPC.NewNPC(NPC.GetSource_FromThis(), (int)spawnAt.X, (int)spawnAt.Y, NPCID.DevourerHead);
+                        if (!NPC.AnyNPCs(NPCID.DevourerHead))
+                            NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.DevourerHead);
                     }
                 }
             }
