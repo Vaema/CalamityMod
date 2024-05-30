@@ -70,6 +70,7 @@ namespace CalamityMod.NPCs.HiveMind
         private int lungeFade = 15; // Divide 255 by this for duration of hive mind spin before slowing for lunge
         private double lungeRots = 0.2; // Number of revolutions made while spinning/fading in for lunge
         private bool dashStarted = false;
+        private int vileSpitFireRate = 24; // Fire rate for Expert-exclusive Vile Spits during phase 1 teleports
         private int phase2timer = 360;
         private int rotationDirection;
         private double rotation;
@@ -149,6 +150,7 @@ namespace CalamityMod.NPCs.HiveMind
                 lungeTime = 28;
                 driftSpeed = 2f;
                 driftBoost = 2f;
+                vileSpitFireRate = 18;
             }
 
             if (death)
@@ -159,6 +161,7 @@ namespace CalamityMod.NPCs.HiveMind
                 lungeTime = 23;
                 driftSpeed = 3.5f;
                 driftBoost = 1.5f;
+                vileSpitFireRate = 15;
             }
 
             if (bossRush)
@@ -169,6 +172,7 @@ namespace CalamityMod.NPCs.HiveMind
                 lungeTime = 16;
                 driftSpeed = 6f;
                 driftBoost = 1f;
+                vileSpitFireRate = 12;
             }
 
             if (masterMode)
@@ -179,6 +183,7 @@ namespace CalamityMod.NPCs.HiveMind
                 lungeTime -= 5;
                 driftSpeed += ((death && !bossRush) ? 0.5f : 1f);
                 driftBoost += ((death && !bossRush) ? 0.5f : 1f);
+                vileSpitFireRate -= 6;
             }
 
             if (Main.getGoodWorld)
@@ -541,7 +546,7 @@ namespace CalamityMod.NPCs.HiveMind
                             maxBlobs = 50;
 
                         for (int i = 0; i < maxBlobs; i++)
-                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<HiveBlob>(), NPC.whoAmI);
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, Main.rand.NextBool() ? ModContent.NPCType<HiveBlob2>() : ModContent.NPCType<HiveBlob>(), NPC.whoAmI);
                     }
                 }
 
@@ -550,13 +555,34 @@ namespace CalamityMod.NPCs.HiveMind
 
                 if (NPC.life > 0)
                 {
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    int fivePercentHP = (int)(NPC.lifeMax * 0.05);
+                    if ((NPC.life + fivePercentHP) < NPC.ai[3])
                     {
-                        int fivePercentHP = (int)(NPC.lifeMax * 0.05);
-                        if ((NPC.life + fivePercentHP) < NPC.ai[3])
-                        {
-                            NPC.ai[3] = NPC.life;
+                        SoundEngine.PlaySound(SoundID.NPCDeath22, NPC.Center);
 
+                        NPC.ai[3] = NPC.life;
+
+                        for (int i = 0; i < 20; i++)
+                        {
+                            int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
+                            Main.dust[dust].velocity *= 3f;
+                            if (Main.rand.NextBool())
+                            {
+                                Main.dust[dust].scale = 0.5f;
+                                Main.dust[dust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                            }
+                        }
+                        for (int j = 0; j < 35; j++)
+                        {
+                            int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 3f);
+                            Main.dust[dust].noGravity = true;
+                            Main.dust[dust].velocity *= 5f;
+                            dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
+                            Main.dust[dust].velocity *= 2f;
+                        }
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
                             int maxSpawns = bossRush ? 10 : death ? 5 : revenge ? 4 : expertMode ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
                             int maxDankSpawns = bossRush ? 4 : death ? Main.rand.Next(2, 4) : revenge ? 2 : expertMode ? Main.rand.Next(1, 3) : 1;
 
@@ -565,7 +591,7 @@ namespace CalamityMod.NPCs.HiveMind
                                 int x = (int)(NPC.position.X + Main.rand.Next(NPC.width - 32));
                                 int y = (int)(NPC.position.Y + Main.rand.Next(NPC.height - 32));
 
-                                int type = ModContent.NPCType<HiveBlob>();
+                                int type = Main.rand.NextBool() ? ModContent.NPCType<HiveBlob2>() : ModContent.NPCType<HiveBlob>();
                                 if (NPC.CountNPCS(ModContent.NPCType<DankCreeper>()) < maxDankSpawns)
                                     type = ModContent.NPCType<DankCreeper>();
 
@@ -613,6 +639,15 @@ namespace CalamityMod.NPCs.HiveMind
                         Main.dust[burrowedDust2].velocity *= 3.5f;
                         burrowedDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.Center.Y), NPC.width, NPC.height / 2, DustID.Demonite, 0f, -3f, 100, default, 2.5f * NPC.scale);
                         Main.dust[burrowedDust2].velocity *= 1f;
+                    }
+
+                    if (expertMode)
+                    {
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            if (Collision.CanHitLine(NPC.Center, 1, 1, player.Center, 1, 1) && NPC.Distance(player.Center) > 160f && burrowTimer % vileSpitFireRate == 0)
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.VileSpitEaterOfWorlds, 0, 0f, 69f);
+                        }
                     }
                 }
                 else if (burrowTimer == -60)
@@ -666,6 +701,15 @@ namespace CalamityMod.NPCs.HiveMind
                         Main.dust[burrowedDust2].velocity *= 3.5f;
                         burrowedDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.Center.Y), NPC.width, NPC.height / 2, DustID.Demonite, 0f, -3f, 100, default, 2.5f * NPC.scale);
                         Main.dust[burrowedDust2].velocity *= 1f;
+                    }
+
+                    if (expertMode)
+                    {
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            if (Collision.CanHitLine(NPC.Center, 1, 1, player.Center, 1, 1) && NPC.Distance(player.Center) > 160f && burrowTimer % vileSpitFireRate == 0)
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.VileSpitEaterOfWorlds, 0, 0f, 69f);
+                        }
                     }
                 }
                 else if (burrowTimer == 0)
@@ -832,16 +876,6 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.position.Y = NPC.ai[2] * 16 - height_Phase2 / 2;
                         }
 
-                        for (int i = 0; i < Main.maxNPCs; i++)
-                        {
-                            NPC hiveBlob = Main.npc[i];
-                            if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
-                            {
-                                hiveBlob.position.X = NPC.position.X;
-                                hiveBlob.position.Y = NPC.position.Y;
-                            }
-                        }
-
                         phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
                         NPC.netUpdate = true;
                         NPC.netSpam = 0;
@@ -879,16 +913,6 @@ namespace CalamityMod.NPCs.HiveMind
                         NPC.velocity = Vector2.Zero;
                         dashStarted = false;
 
-                        for (int i = 0; i < Main.maxNPCs; i++)
-                        {
-                            NPC hiveBlob = Main.npc[i];
-                            if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
-                            {
-                                hiveBlob.position.X = NPC.position.X;
-                                hiveBlob.position.Y = NPC.position.Y;
-                            }
-                        }
-
                         if (revenge && lifeRatio < 0.53f)
                         {
                             state = nextState;
@@ -919,19 +943,6 @@ namespace CalamityMod.NPCs.HiveMind
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                             NPC.Center = player.Center + new Vector2(teleportRadius, 0).RotatedBy(rotation);
-
-                        if (NPC.alpha == 255)
-                        {
-                            for (int i = 0; i < Main.maxNPCs; i++)
-                            {
-                                NPC hiveBlob = Main.npc[i];
-                                if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
-                                {
-                                    hiveBlob.position.X = NPC.position.X;
-                                    hiveBlob.position.Y = NPC.position.Y;
-                                }
-                            }
-                        }
 
                         rotation += rotationIncrement * rotationDirection;
                         phase2timer = lungeDelay;
@@ -995,19 +1006,6 @@ namespace CalamityMod.NPCs.HiveMind
                         {
                             NPC.Center = player.Center;
                             NPC.position.Y += teleportRadius;
-                        }
-
-                        if (NPC.alpha == 255)
-                        {
-                            for (int i = 0; i < Main.maxNPCs; i++)
-                            {
-                                NPC hiveBlob = Main.npc[i];
-                                if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
-                                {
-                                    hiveBlob.position.X = NPC.position.X;
-                                    hiveBlob.position.Y = NPC.position.Y;
-                                }
-                            }
                         }
 
                         NPC.alpha -= masterMode ? 10 : 5;
@@ -1081,19 +1079,6 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.Center = player.Center;
                             NPC.position.Y -= teleportRadius;
                             NPC.position.X += teleportRadius * rotationDirection;
-                        }
-
-                        if (NPC.alpha == 255)
-                        {
-                            for (int i = 0; i < Main.maxNPCs; i++)
-                            {
-                                NPC hiveBlob = Main.npc[i];
-                                if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
-                                {
-                                    hiveBlob.position.X = NPC.position.X;
-                                    hiveBlob.position.Y = NPC.position.Y;
-                                }
-                            }
                         }
 
                         NPC.alpha -= masterMode ? 10 : 5;
@@ -1217,15 +1202,7 @@ namespace CalamityMod.NPCs.HiveMind
             for (int k = 0; k < hit.Damage / NPC.lifeMax * 100.0; k++)
                 Dust.NewDust(NPC.position, NPC.width, phase2 ? height_Phase2 : NPC.height, DustID.Demonite, hit.HitDirection, -1f, 0, default, 1f);
 
-            if (phase2)
-            {
-                if (Main.netMode != NetmodeID.MultiplayerClient && Main.zenithWorld ? NPC.CountNPCS(ModContent.NPCType<HiveBlob2>()) < 10 : (Main.rand.NextBool(15) && NPC.CountNPCS(ModContent.NPCType<HiveBlob2>()) < 2))
-                {
-                    Vector2 spawnAt = NPC.Center + new Vector2(0f, height_Phase2 / 2f);
-                    NPC.NewNPC(NPC.GetSource_FromThis(), (int)spawnAt.X, (int)spawnAt.Y, ModContent.NPCType<HiveBlob2>());
-                }
-            }
-            else
+            if (!phase2)
             {
                 if (NPC.CountNPCS(NPCID.EaterofSouls) < 3 && NPC.CountNPCS(NPCID.DevourerHead) < 1)
                 {

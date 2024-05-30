@@ -14,6 +14,10 @@ namespace CalamityMod.NPCs.HiveMind
 {
     public class HiveBlob2 : ModNPC
     {
+        private const float ShootGateValue = 180f;
+        private const float TelegraphDuration = 120f;
+        private const float ShowTelegraphValue = ShootGateValue - TelegraphDuration;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.HiveBlob.DisplayName");
         public override string Texture => "CalamityMod/NPCs/HiveMind/HiveBlob";
 
@@ -65,6 +69,18 @@ namespace CalamityMod.NPCs.HiveMind
 
             int hiveMind = CalamityGlobalNPC.hiveMind;
             if (hiveMind < 0 || !Main.npc[hiveMind].active)
+            {
+                NPC.life = 0;
+                NPC.HitEffect();
+                NPC.active = false;
+                NPC.netUpdate = true;
+                return;
+            }
+
+            // When Hive Mind starts flying around
+            bool phase2 = Main.npc[hiveMind].life / (float)Main.npc[hiveMind].lifeMax < 0.8f;
+
+            if (phase2)
             {
                 NPC.life = 0;
                 NPC.HitEffect();
@@ -148,12 +164,14 @@ namespace CalamityMod.NPCs.HiveMind
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
-                    NPC.localAI[1] = 180f;
+                    NPC.localAI[1] = ShootGateValue * 0.5f;
 
-                float shootGateValue = 360f;
+                float shootGateValue = ShootGateValue;
                 if (NPC.localAI[1] < shootGateValue)
                 {
-                    NPC.localAI[1] += Main.rand.Next(3) + 1f;
+                    NPC.localAI[1] += 1f;
+                    if (NPC.localAI[1] < ShowTelegraphValue)
+                        NPC.localAI[1] += Main.rand.Next(2);
                     if (masterMode)
                         NPC.localAI[1] += 1f;
                 }
@@ -167,11 +185,11 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.TargetClosest();
                     if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                     {
-                        float projSpeed = death ? 5f : revenge ? 4.5f : expertMode ? 4f : 3.5f;
+                        float projSpeed = death ? 8f : revenge ? 7f : expertMode ? 6f : 4f;
                         if (masterMode)
-                            projSpeed += 2.5f;
+                            projSpeed += 2f;
                         if (Main.getGoodWorld)
-                            projSpeed *= 2.4f;
+                            projSpeed *= 1.5f;
 
                         Vector2 projDirection = NPC.Center;
                         float playerX = Main.player[NPC.target].Center.X - projDirection.X;
@@ -211,8 +229,8 @@ namespace CalamityMod.NPCs.HiveMind
             vector2 += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Color color = NPC.GetAlpha(drawColor);
 
-            if (NPC.localAI[1] > 240f)
-                color = Color.Lerp(color, Color.Green * NPC.Opacity, MathHelper.Clamp((NPC.localAI[1] - 240f) / 120f, 0f, 1f));
+            if (NPC.localAI[1] > ShowTelegraphValue)
+                color = Color.Lerp(color, Color.LimeGreen * NPC.Opacity, MathHelper.Clamp((NPC.localAI[1] - ShowTelegraphValue) / TelegraphDuration, 0f, 1f));
 
             spriteBatch.Draw(texture, vector2, NPC.frame, color, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
