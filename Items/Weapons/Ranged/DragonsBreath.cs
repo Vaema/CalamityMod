@@ -29,7 +29,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         public bool StrongShotMode = false;
         public int DragonsBreathSetUseTime = 5;
         public int DragonsBreathSetUseAnimation = 9;
-        private Player Owner;
 
         public override void SetDefaults()
         {
