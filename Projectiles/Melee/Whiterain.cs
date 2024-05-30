@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item125, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.Item125 with { Volume = 0.7f }, Projectile.Center);
             }
 
             Lighting.AddLight(Projectile.Center, 0.2f, 0.2f, 0.2f);
