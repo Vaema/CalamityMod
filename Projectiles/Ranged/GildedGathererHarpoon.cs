@@ -8,6 +8,7 @@ using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using FullSerializer.Internal;
@@ -32,6 +33,12 @@ namespace CalamityMod.Projectiles.Ranged
         public Vector2 mousePos;
         public override Vector2 SpriteOrigin => new(4,4);
         public override int AssignedItemID => ModContent.ItemType<GildedGatherer>();
+
+        public int DamageOverTime => 12;
+        public int AirblastDamageMax => 50;
+        public int AirblastDamageMin => 10;
+        public int DoTDelay => 5;
+
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -59,6 +66,31 @@ namespace CalamityMod.Projectiles.Ranged
             player.direction = Math.Sign(v2.X);
 
             mousePos = player.Center + v2.RotatedBy(MathHelper.ToRadians(-player.direction * 45));
+        }
+        public void DamageNPCsInLine(Vector2 pos1, Vector2 pos2, float range)
+        {
+            float e = Vector2.Distance(pos1, pos2) / 35;
+
+            for (float i = 0; i < e; i++)
+            {
+                Vector2 p = Vector2.Lerp(pos1, pos2, i / e);
+
+                if (!Collision.CanHitLine(pos1, 1, 1, p, 1, 1)) break;
+
+                Player player = Main.player[Projectile.owner];
+
+                NPC np = CalamityUtils.ClosestNPCAt(p, 30, false, false);
+
+                if (np != null)
+                {
+                    if (np.immune[0] == 0)
+                    {
+                        Projectile pr = Projectile.NewProjectileDirect(new EntitySource_ItemUse(player, player.HeldItem), p, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)MathHelper.Lerp((float)AirblastDamageMax, (float)AirblastDamageMin, i / 20f), MathHelper.Lerp(4f, 2f, i / 20), player.whoAmI, np.whoAmI);
+                        pr.width = 30;
+                        pr.height = 30;
+                    }
+                }
+            }
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
@@ -183,9 +215,38 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.ai[1] = 2;
                 player.itemAnimation = 3;
                 Projectile.ai[2] = 50;
-            
+
                 // air blast here
 
+                float range = 150;
+
+                if (npcToTarget != null)
+                {
+                    SoundEngine.PlaySound(SoundID.DD2_BookStaffCast.WithPitchOffset(0.5f), Projectile.Center);
+                    SoundEngine.PlaySound(SoundID.DD2_DrakinShot.WithPitchOffset(1f), Projectile.Center);
+
+                    Projectile.NewProjectile(new EntitySource_ItemUse(player, player.HeldItem), npcToTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), Projectile.damage * 2, 4f, player.whoAmI, npcToTarget.whoAmI);
+
+                    DamageNPCsInLine(Projectile.Center, Projectile.Center + new Vector2(range, 0).RotatedBy(Projectile.rotation), 15);
+
+                    for (int i = 0; i < 23; i++)
+                    {
+                        GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(Projectile.Center + new Vector2(7, 0).RotatedBy(Projectile.rotation), new Vector2(i, 0).RotatedBy(Projectile.rotation), Color.White, Color.LightBlue, 0.07f * i, 150f));
+                    }
+                    for (int i = 0; i < 6; i++)
+                    {
+                        GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(Projectile.Center + new Vector2(7, 0).RotatedBy(Projectile.rotation), new Vector2(Main.rand.NextFloat(8), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-20f, 20f))), Color.White, Color.LightBlue, Main.rand.NextFloat(1f, 1.5f), 150f));
+                    }
+                    for (int i = 0; i < 3; i++)
+                    {
+                        GeneralParticleHandler.SpawnParticle(
+                            new SparkParticle(Projectile.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f) + MathHelper.ToRadians(90f)) * Main.rand.NextFloat(10, 20), false, 10, 1f, Color.LightSkyBlue)
+                            );
+                        GeneralParticleHandler.SpawnParticle(
+                            new SparkParticle(Projectile.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f) + MathHelper.ToRadians(-90f)) * Main.rand.NextFloat(10, 20), false, 10, 1f, Color.LightSkyBlue)
+                            );
+                    }
+                }
             }
 
             switch (Projectile.ai[1])
@@ -213,6 +274,12 @@ namespace CalamityMod.Projectiles.Ranged
 
                         if (npcToTarget != null)
                         {
+                            Projectile.ai[0]++;
+                            if (Projectile.ai[0] % DoTDelay == 0)
+                            {
+                                Projectile.NewProjectile(new EntitySource_ItemUse(player, player.HeldItem), npcToTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), DamageOverTime, 4f, player.whoAmI, npcToTarget.whoAmI);
+                            }
+
                             AbsolutePosition = npcToTarget.Center + latchOffset;
                             Projectile.velocity = Vector2.Zero;
                             spriteEffects = Projectile.Center.X > player.Center.X ? SpriteEffects.None : SpriteEffects.FlipVertically;
