@@ -7,7 +7,6 @@ using Terraria;
 using Terraria.ID;
 using Terraria.Audio;
 using Terraria.ModLoader;
-using Microsoft.Build.ObjectModelRemoting;
 
 namespace CalamityMod.Items.Accessories
 {
