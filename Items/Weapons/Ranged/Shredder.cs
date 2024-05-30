@@ -46,22 +46,12 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            int shotType = (player.altFunctionUse == 2 ? type : ModContent.ProjectileType<ChargedBlast>());
             int bulletAmt = 3;
-            if (player.altFunctionUse == 2)
+            Vector2 newPosition = position + velocity.SafeNormalize(Vector2.UnitY) * 50f;
+            for (int index = 0; index < bulletAmt; index++)
             {
-                Vector2 newPosition = position + velocity.SafeNormalize(Vector2.UnitY) * 50f;
-                for (int index = 0; index < bulletAmt; index++)
-                {
-                    int shot = Projectile.NewProjectile(source, newPosition, (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedByRandom(0.2f), type, damage, knockback, player.whoAmI);
-                }
-            }
-            else
-            {
-                Vector2 newPosition = position + velocity.SafeNormalize(Vector2.UnitY) * 50f;
-                for (int index = 0; index < bulletAmt; index++)
-                {
-                    Projectile.NewProjectile(source, newPosition, (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedByRandom(0.2f), ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI);
-                }
+                Projectile.NewProjectile(source, newPosition, (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedByRandom(0.2f), shotType, damage, knockback, player.whoAmI);
             }
             return false;
         }

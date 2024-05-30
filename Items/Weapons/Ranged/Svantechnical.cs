@@ -49,37 +49,23 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             return true;
         }
-
         public override void HoldItem(Player player) => player.scope = false;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            int shotType = (player.altFunctionUse == 2 ? type : ModContent.ProjectileType<ChargedBlast>());
             position = position + (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.UnitX) * 65;
             float sine = (float)Math.Sin(SineCounter * 0.175f / MathHelper.Pi) * 4f;
             float sine2 = (float)Math.Sin(SineCounter * 0.275f / MathHelper.Pi) * 2f;
             SineCounter++;
             if (SineCounter % 4 == 0)
             {
-                if (player.altFunctionUse == 2)
-                {
-                    //If you right click, shoots a helix of normal bullets
                     Vector2 helixVel1 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine));
                     Vector2 helixVel2 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(-sine));
                     Vector2 helixVel3 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine2));
-                    int shot1 = Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, type, damage, knockback, player.whoAmI, 0f, 0f);
-                    int shot2 = Projectile.NewProjectile(source, position.X, position.Y, helixVel2.X, helixVel2.Y, type, damage, knockback, player.whoAmI, 0f, 0f);
-                    int shot3 = Projectile.NewProjectile(source, position.X, position.Y, helixVel3.X, helixVel3.Y, type, damage, knockback, player.whoAmI, 0f, 0f);
-                }
-                else
-                {
-                    //If left click, do the same as above but spawn Charged Blasts instead
-                    Vector2 helixVel1 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine));
-                    Vector2 helixVel2 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(-sine));
-                    Vector2 helixVel3 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine2));
-                    int shot1 = Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0f, 0, 2f);
-                    int shot2 = Projectile.NewProjectile(source, position.X, position.Y, helixVel2.X, helixVel2.Y, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0f, 0, 4f);
-                    int shot3 = Projectile.NewProjectile(source, position.X, position.Y, helixVel3.X, helixVel3.Y, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0f, 0, 3f);
-                }
+                    int shot1 = Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, shotType, damage, knockback, player.whoAmI, 0f, 0, 2f);
+                    int shot2 = Projectile.NewProjectile(source, position.X, position.Y, helixVel2.X, helixVel2.Y, shotType, damage, knockback, player.whoAmI, 0f, 0, 4f);
+                    int shot3 = Projectile.NewProjectile(source, position.X, position.Y, helixVel3.X, helixVel3.Y, shotType, damage, knockback, player.whoAmI, 0f, 0, 3f);
             }
             else if (player.altFunctionUse != 2)
             {
