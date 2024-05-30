@@ -132,7 +132,7 @@ namespace CalamityMod
             }
 
             // MELEE (includes tools and whips)
-            else if (item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>())
+            else if (item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<MeleeRangedHybridDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>())
             {
                 // Terrarian (has its own special "Legendary" for marketing reasons)
                 // Other items that want to use Legendary2 are also compatible
