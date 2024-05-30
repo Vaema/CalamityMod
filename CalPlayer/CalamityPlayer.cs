@@ -1783,7 +1783,6 @@ namespace CalamityMod.CalPlayer
             corrosiveSpine = false;
             RustyMedallionDroplets = false;
             MiniSwarmers = false;
-            noStupidNaturalARSpawns = false;
             rottenDogTooth = false;
             angelicAlliance = false;
             BloomStoneRegen = false;
@@ -2153,7 +2152,8 @@ namespace CalamityMod.CalPlayer
             StellarTorus = false;
             LiliesOfFinalityBool = false;
 
-            /*
+            /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
+            noStupidNaturalARSpawns = false
             disableVoodooSpawns = false;
             disablePerfCystSpawns = false;
             disableHiveCystSpawns = false;
