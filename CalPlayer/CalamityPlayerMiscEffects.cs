@@ -4170,9 +4170,6 @@ namespace CalamityMod.CalPlayer
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.WikiStatus1");
                         CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.WikiStatus2");
                     }
-
-                    // 04JAN2024: Ozzatron: Plushie message always appears.
-                    CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Misc.GimmeSwagPlushieCampaign");
                 }
 
                 --startMessageDisplayDelay;
