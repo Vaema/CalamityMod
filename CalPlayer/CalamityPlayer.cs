@@ -903,6 +903,9 @@ namespace CalamityMod.CalPlayer
         public bool wither = false;
         public bool ManaBurn = false;
 
+        public int ImmobilityDebuffImmunityTimer = 0;
+        public const int ImmobilityDebuffImmunityTimerMax = 300;
+
         public const int SulphSeaWaterSafetyTime = 720;
         public const int SulphSeaWaterRecoveryTime = 150;
         #endregion
@@ -2384,6 +2387,7 @@ namespace CalamityMod.CalPlayer
             banishingFire = false;
             wither = false;
             PurityHealSlowdownFrames = 0;
+            ImmobilityDebuffImmunityTimer = 0;
             #endregion
 
             #region Rogue

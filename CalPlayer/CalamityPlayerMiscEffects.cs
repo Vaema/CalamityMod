@@ -1337,6 +1337,20 @@ namespace CalamityMod.CalPlayer
             if (expiredCooldowns.Count > 0)
                 SyncCooldownRemoval(Main.netMode == NetmodeID.Server, expiredCooldowns);
 
+            // Grant the player 5 seconds of immunity to immobilizing debuffs after an immobilizing debuff wears off.
+            if (Player.stoned || Player.frozen || Player.webbed || gState)
+            {
+                ImmobilityDebuffImmunityTimer = ImmobilityDebuffImmunityTimerMax;
+            }
+            else if (ImmobilityDebuffImmunityTimer > 0)
+            {
+                ImmobilityDebuffImmunityTimer--;
+                Player.buffImmune[BuffID.Stoned] = true;
+                Player.buffImmune[BuffID.Frozen] = true;
+                Player.buffImmune[BuffID.Webbed] = true;
+                Player.buffImmune[ModContent.BuffType<GlacialState>()] = true;
+            }
+
             if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
                 ascendantInsigniaCooldown--;
             if (DragonsBreathAudioCooldown > 0)
