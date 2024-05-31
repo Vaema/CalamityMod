@@ -69,7 +69,9 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public void DamageNPCsInLine(Vector2 pos1, Vector2 pos2, float range)
         {
-            float e = Vector2.Distance(pos1, pos2) / 35;
+            float w = range;
+
+            float e = pos1.Distance(pos2) / w;
 
             for (float i = 0; i < e; i++)
             {
@@ -79,15 +81,16 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Player player = Main.player[Projectile.owner];
 
-                NPC np = CalamityUtils.ClosestNPCAt(p, 30, false, false);
-
-                if (np != null)
+                foreach (NPC npc in Main.npc)
                 {
-                    if (np.immune[0] == 0)
+                    if (npc.Distance(p) < w)
                     {
-                        Projectile pr = Projectile.NewProjectileDirect(new EntitySource_ItemUse(player, player.HeldItem), p, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)MathHelper.Lerp((float)AirblastDamageMax, (float)AirblastDamageMin, i / 20f), MathHelper.Lerp(4f, 2f, i / 20), player.whoAmI, np.whoAmI);
-                        pr.width = 30;
-                        pr.height = 30;
+                        if (npc.immune[0] == 0)
+                        {
+                            Projectile.NewProjectile(new EntitySource_ItemUse(player, player.HeldItem), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)MathHelper.Lerp((float)AirblastDamageMax, (float)AirblastDamageMin, i / e), 4f, player.whoAmI, npc.whoAmI);
+
+                            npc.immune[0] = 10;
+                        }
                     }
                 }
             }
@@ -200,7 +203,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.ai[2] = 0.45f;
                     player.itemAnimation = 3;
                     AbsolutePosition = player.Center;
-                    Projectile.velocity = (player.DirectionTo(mousePos) * 135);
+                    Projectile.velocity = (player.DirectionTo(mousePos) * 20);
 
                     for (int i = 0; i < 25; i++)
                     {
@@ -264,7 +267,6 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                 case 1:
                     {
-                        Projectile.velocity *= Projectile.ai[2];
                         Projectile.ai[2] = MathHelper.Lerp(Projectile.ai[2], 1f, 0.35f);
                         Projectile.tileCollide = true;
                         Projectile.direction = Math.Sign(Projectile.Center.X - player.Center.X);
@@ -283,6 +285,8 @@ namespace CalamityMod.Projectiles.Ranged
                             AbsolutePosition = npcToTarget.Center + latchOffset;
                             Projectile.velocity = Vector2.Zero;
                             spriteEffects = Projectile.Center.X > player.Center.X ? SpriteEffects.None : SpriteEffects.FlipVertically;
+
+                            Projectile.rotation = player.AngleTo(Projectile.Center);
                         }
                         else if (Projectile.velocity != Vector2.Zero)
                         {
@@ -381,7 +385,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         void IPixelatedPrimitiveRenderer.RenderPixelatedPrimitives(SpriteBatch spriteBatch)
         {
-            List<Vector2> poss = positions;
+            List<Vector2> poss = LinePositions;
 
             if (poss.Count > 0)
             {
