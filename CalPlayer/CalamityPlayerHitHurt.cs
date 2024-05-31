@@ -3,6 +3,7 @@ using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
@@ -523,6 +524,15 @@ namespace CalamityMod.CalPlayer
 
             // Apply all Calamity multipliers as a sum total to TML New Damage in a single step
             modifiers.SourceDamage *= totalDamageMult;
+
+            // 31MAY2024: Ozzatron: apply Yellow Candle "chip damage" in a different way, by adjusting FinalDamage.Base
+            // This is still gated by the old conditionals to ensure it doesn't apply to "near invincible" targets
+            // Calamity's DR is also implemented at the FinalDamage step as a multiplier so Yellow Candle doesn't ignore DR anymore (and has been buffed to compensate)
+            //
+            // FinalDamage.Flat would technically be closer to the intended implementation, but is heavily discouraged from use and would cause huge cross-mod issues
+            CalamityGlobalNPC cgn = target.Calamity();
+            if (Player.HasBuff<CirrusYellowCandleBuff>() && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
+                modifiers.FinalDamage.Base *= 1f + CirrusYellowCandleBuff.ExtraChipDamageRatio;
 
             // Excalibur and True Excalibur deal +100% damage to targets above 75% HP.
             if (item.type == ItemID.Excalibur || item.type == ItemID.TrueExcalibur)
