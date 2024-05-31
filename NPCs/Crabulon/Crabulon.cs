@@ -142,10 +142,6 @@ namespace CalamityMod.NPCs.Crabulon
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
-                NPC.TargetClosest();
-
             Player player = Main.player[NPC.target];
             if (!player.active || player.dead)
             {
@@ -261,7 +257,7 @@ namespace CalamityMod.NPCs.Crabulon
                     NPC.ai[1] += 2f;
                 if (NPC.justHit)
                     NPC.ai[1] += masterMode ? 7f : expertMode ? 5f : 3f;
-                if (NPC.Distance(player.Center) < 240f)
+                if (NPC.Distance(player.Center) < 160f)
                     NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
 
                 float idleTime = death ? 30f : expertMode ? 60f : 120f;
@@ -362,7 +358,6 @@ namespace CalamityMod.NPCs.Crabulon
                 float stompPhaseGateValue = (revenge ? 150f : expertMode ? 240f : 360f) - (death ? 120f * (1f - lifeRatio) : 0f);
                 if (NPC.ai[1] >= stompPhaseGateValue)
                 {
-                    NPC.TargetClosest();
                     NPC.noGravity = false;
                     NPC.noTileCollide = false;
                     NPC.ai[0] = 2f;
@@ -512,8 +507,6 @@ namespace CalamityMod.NPCs.Crabulon
                             }
                         }
                     }
-
-                    NPC.TargetClosest();
 
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] >= (phase2 ? 4f : 3f))
