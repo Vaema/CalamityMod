@@ -622,7 +622,7 @@ namespace CalamityMod.Items
             {
                 EditTooltipByNum(0, (line) => line.Text = "Multiplies all fire-based debuff damage by 1.25\n" +
                 "All attacks light enemies on fire\n" +
-                "'Never get cold feet again'\n");
+                "'Never get cold feet again'");
             }
 
             // Hellfire Treads buff.

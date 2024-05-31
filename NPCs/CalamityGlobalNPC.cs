@@ -3197,7 +3197,7 @@ namespace CalamityMod.NPCs
 
             // Damage reduction on spawn for certain worm bosses.
             if (CalamityLists.EaterofWorldsIDs.Contains(npc.type))
-                modifiers.FinalDamage *= 1f - MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.8f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f));
+                modifiers.FinalDamage *= 1f - MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.6f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f));
             if (CalamityLists.DestroyerIDs.Contains(npc.type))
                 modifiers.FinalDamage *= 1f - MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncreaseTime, 0f, 1f));
             if (CalamityLists.AstrumDeusIDs.Contains(npc.type))
