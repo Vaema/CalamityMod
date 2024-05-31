@@ -10,7 +10,7 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Systems
 {
-    public record class MusicEventEntry(string Id, int Song, TimeSpan Length, TimeSpan IntroSilence, TimeSpan OutroSilence, Func<bool> ShouldPlay);
+    public record class MusicEventEntry(string Id, int Song, TimeSpan Length, TimeSpan IntroSilence, TimeSpan OutroSilence, Func<bool> ShouldPlay, Func<bool> Enabled);
 
     public class MusicEventSystem : ModSystem
     {
@@ -24,6 +24,8 @@ namespace CalamityMod.Systems
         public static DateTime? TrackEnd { get; set; } = null;
 
         public static int LastPlayedEvent { get; set; } = -1;
+
+        public static TimeSpan? OutroSilence { get; set; } = null;
 
         // This allows skipping track fade in
         public static bool NoFade { get; set; } = false;
@@ -43,18 +45,32 @@ namespace CalamityMod.Systems
 
         public override void OnModLoad()
         {
-            static void AddEntry(string eventId, string songName, TimeSpan length, Func<bool> shouldPlay, TimeSpan? introSilence = null, TimeSpan? outroSilence = null)
+            static void AddEntry(string eventId, string songName, TimeSpan length, Func<bool> shouldPlay, Func<bool> enabled, TimeSpan? introSilence = null, TimeSpan? outroSilence = null)
             {
-                MusicEventEntry entry = new(eventId, CalamityMod.Instance.GetMusicFromMusicMod(songName).Value, length, introSilence ?? TimeSpan.Zero, outroSilence ?? TimeSpan.FromSeconds(3), shouldPlay);
+                MusicEventEntry entry = new(eventId, CalamityMod.Instance.GetMusicFromMusicMod(songName).Value, length, introSilence ?? TimeSpan.Zero, outroSilence ?? TimeSpan.Zero, shouldPlay, enabled);
                 EventCollection.Add(entry);
             }
 
-            AddEntry("CloneDefeated", "Interlude1", TimeSpan.FromSeconds(214.577d), () => DownedBossSystem.downedCalamitasClone, introSilence: TimeSpan.FromSeconds(5f));
-            AddEntry("MLDefeated", "Interlude2", TimeSpan.FromSeconds(160.989d), () => NPC.downedMoonlord);
-            AddEntry("YharonDefeated", "Interlude3", TimeSpan.FromSeconds(295.932d), () => DownedBossSystem.downedYharon, outroSilence: TimeSpan.Zero);
+            AddEntry("CloneDefeated", "Interlude1", TimeSpan.FromSeconds(214.577d),
+                () => DownedBossSystem.downedCalamitasClone, () => CalamityConfig.Instance.Interlude1);
 
-            AddEntry("DoGDefeated", "DevourerofGodsEulogy", TimeSpan.FromSeconds(203.620d), () => DownedBossSystem.downedDoG, introSilence: TimeSpan.FromSeconds(5f));
-            AddEntry("ScalDefeated", "CalamitasDefeat_LongFade", TimeSpan.FromSeconds(58.689d), () => CalamityGlobalNPC.SCalAcceptance != -1);
+            AddEntry("MLDefeated", "Interlude2", TimeSpan.FromSeconds(191.912d), () => NPC.downedMoonlord,
+                () => CalamityConfig.Instance.Interlude2, outroSilence: TimeSpan.FromSeconds(1f));
+
+            // Alternative Interlude 2 -> AddEntry("MLDefeated", "Interlude2_CutIntro", TimeSpan.FromSeconds(160.989d),
+            //    () => NPC.downedMoonlord, () => CalamityConfig.Instance.Interlude2,
+            //    outroSilence: TimeSpan.FromSeconds(1f));
+
+            AddEntry("YharonDefeated", "Interlude3", TimeSpan.FromSeconds(295.932d),
+                () => DownedBossSystem.downedYharon, () => CalamityConfig.Instance.Interlude3);
+
+            AddEntry("DoGDefeated", "DevourerofGodsEulogy", TimeSpan.FromSeconds(203.620d),
+                () => DownedBossSystem.downedDoG, () => CalamityConfig.Instance.DevourerofGodsEulogy,
+                introSilence: TimeSpan.FromSeconds(7.5f));
+
+            // Acceptance is NOT toggleable in the config
+            AddEntry("ScalDefeated", "CalamitasDefeat_LongFade", TimeSpan.FromSeconds(58.689d),
+                () => CalamityGlobalNPC.SCalAcceptance != -1, () => true);
         }
 
         public override void Unload() => EventCollection.Clear();
@@ -84,7 +100,7 @@ namespace CalamityMod.Systems
             if (TrackEnd is not null)
             {
                 // `silence` is the time after a track ends before music goes back to normal
-                TimeSpan silence = TimeSpan.FromSeconds(3);
+                TimeSpan silence = OutroSilence.Value;
                 TimeSpan postTrack = DateTime.Now - TrackEnd.Value;
 
                 // Play silence for the time specified
@@ -98,6 +114,7 @@ namespace CalamityMod.Systems
                 {
                     LastPlayedEvent = -1;
                     TrackEnd = null;
+                    OutroSilence = null;
                 }
 
                 return;
@@ -112,21 +129,28 @@ namespace CalamityMod.Systems
                     // Make sure the event hasn't already played and SHOULD play
                     if (!PlayedEvents.Contains(musicEvent.Id) && musicEvent.ShouldPlay())
                     {
-                        // Assign the current event and start time
-                        CurrentEvent = musicEvent;
-                        TrackStart = DateTime.Now + musicEvent.IntroSilence;
+                        // Even if an event isn't marked as enabled, it should be counted
+                        // as "played" so it isn't played when the player doesn't expect it
                         PlayedEvents.Add(musicEvent.Id);
-
-                        // On clients, use a background thread to make sure the track always plays for exactly
-                        // the specified length, regardless of if the game gets minimized, lags, or time becomes
-                        // detangled from a consistent 60fps in any other way
-                        if (!Main.dedServ)
+                        
+                        // Events are always enabled on the server
+                        if (Main.dedServ || musicEvent.Enabled())
                         {
-                            EventTrackerThread = new(WatchMusicEvent);
-                            EventTrackerThread.Start();
-                        }
+                            // Assign the current event and start time
+                            CurrentEvent = musicEvent;
+                            TrackStart = DateTime.Now + musicEvent.IntroSilence;
 
-                        break;
+                            // On clients, use a background thread to make sure the track always plays for exactly
+                            // the specified length, regardless of if the game gets minimized, lags, or time becomes
+                            // detangled from a consistent 60fps in any other way
+                            if (!Main.dedServ)
+                            {
+                                EventTrackerThread = new(WatchMusicEvent);
+                                EventTrackerThread.Start();
+                            }
+
+                            break;
+                        }
                     }
                 }
             }
@@ -159,6 +183,7 @@ namespace CalamityMod.Systems
 
                         TrackEnd = DateTime.Now;
                         LastPlayedEvent = CurrentEvent.Song;
+                        OutroSilence = CurrentEvent.OutroSilence;
 
                         TrackStart = null;
                         CurrentEvent = null;
@@ -176,14 +201,14 @@ namespace CalamityMod.Systems
 
             while (CurrentEvent is not null)
             {
-                bool musicPaused = Main.instance.IsActive;
+                bool musicPaused = !Main.instance.IsActive;
                 
                 if (musicPaused && !minimized.HasValue)
                     minimized = DateTime.Now;
 
                 else if (!musicPaused && minimized.HasValue)
                 {
-                    TrackStart = TrackStart.Value + (DateTime.Now - minimized.Value);
+                    TrackStart += DateTime.Now - minimized.Value;
                     minimized = null;
                 }
             }
