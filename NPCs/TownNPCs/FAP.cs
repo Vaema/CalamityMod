@@ -886,10 +886,10 @@ namespace CalamityMod.NPCs.TownNPCs
         public override void AddShops()
         {
             Mod musicMod = CalamityMod.Instance.musicMod;
-            ModItem interlude1Box = musicMod.Find<ModItem>("Interlude1MusicBox");
-            ModItem interlude2Box = musicMod.Find<ModItem>("Interlude2MusicBox");
-            ModItem interlude3Box = musicMod.Find<ModItem>("Interlude3MusicBox");
-            ModItem eulogyBox = musicMod.Find<ModItem>("DevourerofGodsEulogyMusicBox");
+            musicMod.TryFind("Interlude1MusicBox", out ModItem interlude1Box);
+            musicMod.TryFind("Interlude2MusicBox", out ModItem interlude2Box);
+            musicMod.TryFind("Interlude3MusicBox", out ModItem interlude3Box);
+            musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
 
             NPCShop shop = new(Type);
             shop.AddWithCustomValue(ItemID.LovePotion, Item.buyPrice(silver: 25), CalamityConditions.PotionSellingConfig, Condition.HappyEnough)
