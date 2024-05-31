@@ -99,6 +99,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             // Variables for buffing the AI
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -253,7 +254,12 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     npc.localAI[1] += 1f;
-                    if (npc.localAI[1] >= (bossRush ? 5f : death ? 30f : 180f))
+                    if (npc.justHit)
+                        npc.localAI[1] += masterMode ? 7f : expertMode ? 5f : 3f;
+                    if (npc.Distance(player.Center) < 160f)
+                        npc.localAI[1] += masterMode ? 4f : expertMode ? 2f : 1f;
+
+                    if (npc.localAI[1] >= (bossRush ? 60f : death ? 120f : 180f))
                     {
                         npc.TargetClosest();
                         npc.localAI[1] = 0f;
@@ -307,7 +313,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].fadeIn = 1f;
                 }
-                npc.alpha += bossRush ? 4 : death ? 3 : 2;
+                npc.alpha += bossRush ? 15 : death ? 5 : revenge ? 4 : expertMode ? 3 : 2;
                 if (npc.alpha >= 255)
                 {
                     int spawnType = brimmy.currentMode == 3 ? NPCID.AngryNimbus : ModContent.NPCType<Brimling>();

@@ -823,6 +823,16 @@ namespace CalamityMod.NPCs.HiveMind
                         return;
                     }
 
+                    if (expertMode)
+                    {
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            NPC.localAI[2] += 1f;
+                            if (Collision.CanHitLine(NPC.Center, 1, 1, player.Center, 1, 1) && NPC.Distance(player.Center) > 160f && NPC.localAI[2] % vileSpitFireRate == 0)
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.VileSpitEaterOfWorlds, 0, 0f, 69f);
+                        }
+                    }
+
                     NPC.velocity = player.Center - NPC.Center;
 
                     phase2timer--;
@@ -939,7 +949,16 @@ namespace CalamityMod.NPCs.HiveMind
                     if (NPC.alpha > 0)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
                             NPC.Center = player.Center + new Vector2(teleportRadius, 0).RotatedBy(rotation);
+
+                            if (masterMode)
+                            {
+                                NPC.localAI[2] += 1f;
+                                if (Collision.CanHitLine(NPC.Center, 1, 1, player.Center, 1, 1) && NPC.Distance(player.Center) > 160f && NPC.localAI[2] % vileSpitFireRate == 0)
+                                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.VileSpitEaterOfWorlds, 0, 0f, 69f);
+                            }
+                        }
 
                         rotation += rotationIncrement * rotationDirection;
                         phase2timer = lungeDelay;
@@ -968,7 +987,16 @@ namespace CalamityMod.NPCs.HiveMind
                             else
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
                                     NPC.Center = player.Center + new Vector2(teleportRadius, 0).RotatedBy(rotation);
+
+                                    if (masterMode)
+                                    {
+                                        NPC.localAI[2] += 1f;
+                                        if (Collision.CanHitLine(NPC.Center, 1, 1, player.Center, 1, 1) && NPC.Distance(player.Center) > 160f && NPC.localAI[2] % vileSpitFireRate == 0)
+                                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.VileSpitEaterOfWorlds, 0, 0f, 69f);
+                                    }
+                                }
 
                                 rotation += rotationIncrement * rotationDirection * phase2timer / lungeDelay;
                             }
