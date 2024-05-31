@@ -127,6 +127,7 @@ namespace CalamityMod.NPCs.Crabulon
             bool death = CalamityWorld.death || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
 
             NPC.spriteDirection = NPC.direction;
 
@@ -258,6 +259,10 @@ namespace CalamityMod.NPCs.Crabulon
                     NPC.ai[1] += 1f;
                 if (phase3)
                     NPC.ai[1] += 2f;
+                if (NPC.justHit)
+                    NPC.ai[1] += masterMode ? 7f : expertMode ? 5f : 3f;
+                if (NPC.Distance(player.Center) < 240f)
+                    NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
 
                 float idleTime = death ? 30f : expertMode ? 60f : 120f;
                 if (NPC.ai[1] >= idleTime)
@@ -351,6 +356,9 @@ namespace CalamityMod.NPCs.Crabulon
                 }
 
                 NPC.ai[1] += 1f;
+                if (NPC.Distance(player.Center) < 160f)
+                    NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
+
                 float stompPhaseGateValue = (revenge ? 150f : expertMode ? 240f : 360f) - (death ? 120f * (1f - lifeRatio) : 0f);
                 if (NPC.ai[1] >= stompPhaseGateValue)
                 {
