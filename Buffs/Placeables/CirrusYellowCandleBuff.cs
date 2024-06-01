@@ -7,7 +7,7 @@ namespace CalamityMod.Buffs.Placeables
 {
     public class CirrusYellowCandleBuff : ModBuff
     {
-        public static float ExtraChipDamageRatio = 0.04f;
+        public static float ExtraChipDamageRatio = 0.07f;
         
         public override void SetStaticDefaults()
         {
