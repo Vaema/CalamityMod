@@ -976,7 +976,7 @@ VigorousCandle: {
 	DisplayName: Vigorous Candle
 	Tooltip:
 		'''
-		<right> when placed to regenerate 0.6% of your maximum health per second
+		<right> when placed to regenerate 0.4% of your maximum health per second
 		This regeneration is at full power even while moving and bypasses Revengeance Mode caps
 		This cannot be stacked with other Cirrus Candle buffs
 		'Its brilliant light suffuses those nearby with hope'

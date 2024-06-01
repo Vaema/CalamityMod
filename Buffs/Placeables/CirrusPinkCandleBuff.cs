@@ -6,7 +6,7 @@ namespace CalamityMod.Buffs.Placeables
 {
     public class CirrusPinkCandleBuff : ModBuff
     {
-        public static double PercentHealthPerSecond = 0.006D;
+        public static double PercentHealthPerSecond = 0.004D;
         
         public override void SetStaticDefaults()
         {
