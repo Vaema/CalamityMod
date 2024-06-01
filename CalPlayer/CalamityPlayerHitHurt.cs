@@ -531,7 +531,7 @@ namespace CalamityMod.CalPlayer
             //
             // FinalDamage.Flat would technically be closer to the intended implementation, but is heavily discouraged from use and would cause huge cross-mod issues
             CalamityGlobalNPC cgn = target.Calamity();
-            if (Player.HasBuff<CirrusYellowCandleBuff>() && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
+            if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
                 modifiers.FinalDamage.Base *= 1f + CirrusYellowCandleBuff.ExtraChipDamageRatio;
 
             // Excalibur and True Excalibur deal +100% damage to targets above 75% HP.
@@ -599,6 +599,15 @@ namespace CalamityMod.CalPlayer
 
             // Apply all Calamity multipliers as a sum total to TML New Damage in a single step
             modifiers.SourceDamage *= totalDamageMult;
+
+            // 31MAY2024: Ozzatron: apply Yellow Candle "chip damage" in a different way, by adjusting FinalDamage.Base
+            // This is still gated by the old conditionals to ensure it doesn't apply to "near invincible" targets
+            // Calamity's DR is also implemented at the FinalDamage step as a multiplier so Yellow Candle doesn't ignore DR anymore (and has been buffed to compensate)
+            //
+            // FinalDamage.Flat would technically be closer to the intended implementation, but is heavily discouraged from use and would cause huge cross-mod issues
+            CalamityGlobalNPC cgn = target.Calamity();
+            if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
+                modifiers.FinalDamage.Base *= 1f + CirrusYellowCandleBuff.ExtraChipDamageRatio;
 
             // Stealth strike damage multipliers are applied here.
             // TODO -- stealth should be its own damage class and this should be applied as player StealthDamage *= XYZ
