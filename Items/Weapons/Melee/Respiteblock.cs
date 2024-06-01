@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 40;
             Item.damage = 70;
             Item.knockBack = 9f;
-            Item.useTime = 15;
+            Item.useTime = 10;
             Item.useAnimation = 20;
             // In-game, the displayed axe power is 5x the value set here.
             // This corrects for trees having 500% hardness internally.
