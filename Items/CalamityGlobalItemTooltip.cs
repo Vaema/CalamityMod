@@ -262,6 +262,10 @@ namespace CalamityMod.Items
             if (item.type == ModContent.ItemType<LiliesOfFinality>())
                 EditTooltipByName("Damage", (line) => line.Text = LiliesOfFinality.TheNumber + " summon damage");
 
+            // Apparently 612 is a homestuck reference
+            if (item.type == ModContent.ItemType<Respiteblock>())
+                EditTooltipByName("AxePower", (line) => line.Text = line.Text.Replace("610%", "612%"));
+
             // Master Mode items also drop in Revengeance
             // Only affects vanilla and Calamity items
             if (item.master && (item.type < ItemID.Count || item.ModItem?.Mod is CalamityMod))
