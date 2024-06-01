@@ -1,12 +1,13 @@
 ﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.NPC;
 
 namespace CalamityMod.Buffs.Placeables
 {
     public class CirrusYellowCandleBuff : ModBuff
     {
-        public static float ExtraChipDamageRatio = 0.07f;
+        public static float ExtraChipDamageRatio = 0.04f;
         
         public override void SetStaticDefaults()
         {
@@ -25,5 +26,12 @@ namespace CalamityMod.Buffs.Placeables
 
         // Implementation is performed elsewhere using the yellowCandle bool.
         public override void Update(Player player, ref int buffIndex) => player.Calamity().yellowCandle = true;
+
+        // Yellow Candle is implemented as a dirty modifier.
+        internal static void ModifyHitInfo_Spite(ref HitInfo info)
+        {
+            int damageBoost = (int)(info.SourceDamage * ExtraChipDamageRatio);
+            info.Damage += damageBoost;
+        }
     }
 }

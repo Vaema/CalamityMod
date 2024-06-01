@@ -750,8 +750,8 @@ SpitefulCandle: {
 	DisplayName: Spiteful Candle
 	Tooltip:
 		'''
-		<right> when placed to deal 1.07x damage to all enemies
-		The extra 0.07x damage bypasses enemy defense
+		<right> when placed to deal 1.04x damage to all enemies
+		The extra 0.04x damage bypasses enemy defense and damage reduction
 		This cannot be stacked with other Cirrus Candle buffs
 		'Its hateful glow flickers with ire'
 		'''

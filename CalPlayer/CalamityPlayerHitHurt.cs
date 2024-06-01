@@ -525,14 +525,13 @@ namespace CalamityMod.CalPlayer
             // Apply all Calamity multipliers as a sum total to TML New Damage in a single step
             modifiers.SourceDamage *= totalDamageMult;
 
-            // 31MAY2024: Ozzatron: apply Yellow Candle "chip damage" in a different way, by adjusting FinalDamage.Base
-            // This is still gated by the old conditionals to ensure it doesn't apply to "near invincible" targets
-            // Calamity's DR is also implemented at the FinalDamage step as a multiplier so Yellow Candle doesn't ignore DR anymore (and has been buffed to compensate)
+            // 01JUN2024: Ozzatron: apply Yellow Candle "chip damage" as a dirty modifier
+            // The registration of the dirty modifier is conditional to ensure it doesn't apply to "near invincible" targets
             //
-            // FinalDamage.Flat would technically be closer to the intended implementation, but is heavily discouraged from use and would cause huge cross-mod issues
+            // FinalDamage cannot be used for the intended effect because there is no way to access the actual damage of the hit
             CalamityGlobalNPC cgn = target.Calamity();
             if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
-                modifiers.FinalDamage.Base *= 1f + CirrusYellowCandleBuff.ExtraChipDamageRatio;
+                modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
 
             // Excalibur and True Excalibur deal +100% damage to targets above 75% HP.
             if (item.type == ItemID.Excalibur || item.type == ItemID.TrueExcalibur)
@@ -600,14 +599,13 @@ namespace CalamityMod.CalPlayer
             // Apply all Calamity multipliers as a sum total to TML New Damage in a single step
             modifiers.SourceDamage *= totalDamageMult;
 
-            // 31MAY2024: Ozzatron: apply Yellow Candle "chip damage" in a different way, by adjusting FinalDamage.Base
-            // This is still gated by the old conditionals to ensure it doesn't apply to "near invincible" targets
-            // Calamity's DR is also implemented at the FinalDamage step as a multiplier so Yellow Candle doesn't ignore DR anymore (and has been buffed to compensate)
+            // 01JUN2024: Ozzatron: apply Yellow Candle "chip damage" as a dirty modifier
+            // The registration of the dirty modifier is conditional to ensure it doesn't apply to "near invincible" targets
             //
-            // FinalDamage.Flat would technically be closer to the intended implementation, but is heavily discouraged from use and would cause huge cross-mod issues
+            // FinalDamage cannot be used for the intended effect because there is no way to access the actual damage of the hit
             CalamityGlobalNPC cgn = target.Calamity();
             if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
-                modifiers.FinalDamage.Base *= 1f + CirrusYellowCandleBuff.ExtraChipDamageRatio;
+                modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
 
             // Stealth strike damage multipliers are applied here.
             // TODO -- stealth should be its own damage class and this should be applied as player StealthDamage *= XYZ
