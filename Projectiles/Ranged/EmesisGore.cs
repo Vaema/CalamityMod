@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -10,77 +11,50 @@ namespace CalamityMod.Projectiles.Ranged
     public class EmesisGore : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public int HurtCounter = 0;
-        public const int HurtTimeIncrement = 10;
+        public bool setStats = true;
+        public int rotDirection = 1;
         public override void SetDefaults()
         {
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.friendly = true;
-            Projectile.penetrate = 10;
-            Projectile.timeLeft = 600;
+            Projectile.penetrate = -1;
+            Projectile.tileCollide = false;
+            Projectile.extraUpdates = 4;
+            Projectile.timeLeft = 300;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 6;
-        }
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(HurtCounter);
-        }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            HurtCounter = reader.ReadInt32();
+            Projectile.localNPCHitCooldown = -1;
         }
         public override void AI()
         {
-            Projectile.StickyProjAI(15);
-
-            // Override the default DOT used in the method above.
-            if (Projectile.ai[0] == 1f)
+            if (setStats)
             {
-                Projectile.localAI[0] = 5f;
-                Projectile.velocity = Vector2.Zero;
-                HurtCounter++;
-                if (HurtCounter % HurtTimeIncrement == 0)
-                {
-                    Main.npc[(int)Projectile.ai[1]].HitEffect(0, 50.0);
-                }
+                rotDirection = (Main.rand.NextBool() ? -1 : 1);
+                Projectile.scale = Main.rand.NextFloat(0.75f, 1.2f);
+                setStats = false;
             }
-            else
+            Projectile.rotation += 0.009f * rotDirection * Projectile.scale * Utils.GetLerpValue(0, 300, Projectile.timeLeft);
+            Projectile.velocity *= 0.995f;
+            Projectile.alpha = (int)(Utils.Remap(Projectile.timeLeft, 70, 0, 0, 255, true));
+            if (Projectile.timeLeft > 70)
             {
-                Projectile.rotation += (Projectile.velocity.X > 0).ToDirectionInt() * MathHelper.ToRadians(8f);
-            }
-            if (Projectile.timeLeft % 12 == 11)
-            {
-                for (int i = 0; i < (Projectile.ai[0] == 1f ? 3 : 1); i++)
+                if (Projectile.timeLeft % 2 == 0)
                 {
-                    Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, DustID.Shadowflame);
-                    dust.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi);
-                    dust.noGravity = true;
+                    SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity * 2f, -Projectile.velocity * 0.05f, false, 7, Projectile.scale, Color.Lime * 0.135f);
+                    GeneralParticleHandler.SpawnParticle(spark);
                 }
             }
         }
-
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(8);
-
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (targetHitbox.Width > 8 && targetHitbox.Height > 8)
-            {
-                targetHitbox.Inflate(-targetHitbox.Width / 8, -targetHitbox.Height / 8);
-            }
-            return null;
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 60);
+            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 60);
+            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
         }
     }
 }
