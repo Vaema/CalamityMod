@@ -22,7 +22,7 @@ using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class SongOfParadiseDragon : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
+    public class SongOfParadiseDragon : ModProjectile, ILocalizedModType
     {
         public static SoundStyle CollideSound = new SoundStyle("CalamityMod/Sounds/Item/SongWyvernCollide");
         public override string Texture => "CalamityMod/Projectiles/Magic/Jimmy";
@@ -122,7 +122,7 @@ namespace CalamityMod.Projectiles.Magic
         {
 
         }
-        void IPixelatedPrimitiveRenderer.RenderPixelatedPrimitives(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
+        public override bool PreDraw(ref Color lightColor)
         {
             Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
             if (!Main.getGoodWorld)
@@ -151,10 +151,8 @@ namespace CalamityMod.Projectiles.Magic
             }
             GameShaders.Misc["CalamityMod:PrimitiveTexture"].Shader.Parameters["uPrimitiveSize"].SetValue(tex.Width());
             GameShaders.Misc["CalamityMod:PrimitiveTexture"].Shader.Parameters["flipVertically"].SetValue(true);
-            PrimitiveRenderer.RenderTrail(positions, new PrimitiveSettings(W => { return Width; }, C => { return Lighting.GetColor((positions[Math.Clamp((int)((float)C * (float)positions.Count), 0, positions.Count)] / 16).ToPoint()); }, O => { return Vector2.Zero; }, false, true, GameShaders.Misc["CalamityMod:PrimitiveTexture"]), 75);
-        }
-        public override bool PreDraw(ref Color lightColor)
-        {
+            PrimitiveRenderer.RenderTrail(positions, new PrimitiveSettings(W => { return Width; }, C => { return Lighting.GetColor((positions[Math.Clamp((int)((float)C * (float)positions.Count), 0, positions.Count)] / 16).ToPoint()); }, O => { return Vector2.Zero; }, true, false, GameShaders.Misc["CalamityMod:PrimitiveTexture"]), 75);
+
             return false;
         }
     }

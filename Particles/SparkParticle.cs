@@ -10,6 +10,7 @@ namespace CalamityMod.Particles
     {
         public Color InitialColor;
         public bool AffectedByGravity;
+        public bool AffectedByLight = false;
         public bool FadeIn = false;
         public float FadeInScale = 0f;
         public override bool SetLifetime => true;
@@ -18,11 +19,12 @@ namespace CalamityMod.Particles
 
         public override string Texture => "CalamityMod/Projectiles/StarProj";
 
-        public SparkParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, bool fadeIn = false)
+        public SparkParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, bool fadeIn = false, bool affectedByLight = false)
         {
             Position = relativePosition;
             Velocity = velocity;
             AffectedByGravity = affectedByGravity;
+            AffectedByLight = affectedByLight;
             Scale = scale;
             FadeInScale = scale;
             Lifetime = lifetime;
@@ -65,8 +67,15 @@ namespace CalamityMod.Particles
             Vector2 scale = new Vector2(0.5f, 1.6f) * Scale;
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.45f, 1f), 0, 0f);
+            Color col = Color;
+
+            if (AffectedByLight)
+            {
+                col = Lighting.GetColor((Position / 16).ToPoint()).MultiplyRGB(Color);
+            }
+
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, col, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, col, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.45f, 1f), 0, 0f);
         }
     }
 }

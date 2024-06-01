@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.Items.BaseItems;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
@@ -40,6 +41,15 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<GildedGathererHarpoon>();
             Item.scale = 1f;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<AerialiteBar>(8).
+                AddIngredient(ItemID.SunplateBlock, 3).
+                AddTile(TileID.SkyMill).
+                Register();
         }
     }
 }

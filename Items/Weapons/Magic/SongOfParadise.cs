@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.Items.BaseItems;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Ranged;
@@ -84,6 +85,15 @@ namespace CalamityMod.Items.Weapons.Magic
 
             if (RetunedToMelody) RetunedToMelody = false;
             else RetunedToMelody = true;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<AerialiteBar>(8).
+                AddIngredient(ItemID.SunplateBlock, 3).
+                AddTile(TileID.SkyMill).
+                Register();
         }
     }
 }

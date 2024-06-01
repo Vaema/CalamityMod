@@ -12,6 +12,7 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using FullSerializer.Internal;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -26,7 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
 {
     public class GildedGathererHarpoon : BaseCustomUseStyleProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
-        List<Vector2> positions = new List<Vector2>();
+        List<Vector2> LinePositions = new List<Vector2>();
         public override Vector2 HitboxSize => new Vector2(16, 16);
         public NPC npcToTarget = null;
         public Vector2 latchOffset;
@@ -101,7 +102,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center + (oldVelocity * 2), new Vector2(Main.rand.NextFloat(10), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-20, 20)) + MathHelper.ToRadians(180)), false, 12, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.White : Color.LightSteelBlue, true));
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center + (oldVelocity * 2), new Vector2(Main.rand.NextFloat(10), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-20, 20)) + MathHelper.ToRadians(180)), false, 12, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.White : Color.LightSteelBlue, true, true));
                 }
 
                 Player player = Main.player[Projectile.owner];
@@ -171,16 +172,16 @@ namespace CalamityMod.Projectiles.Ranged
                     for (int i = 0; i < 6; i++)
                     {
                         GeneralParticleHandler.SpawnParticle(
-                            new HeavySmokeParticle(player.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f)) * Main.rand.NextFloat(7, 15), Color.LightSkyBlue, 50, Main.rand.NextFloat(0.4f, 1f), 1f, Main.rand.NextFloat(-0.01f, 0.01f))
+                            new HeavySmokeParticle(player.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f)) * Main.rand.NextFloat(7, 15), Color.LightSkyBlue, 50, Main.rand.NextFloat(0.4f, 1f), 1f, Main.rand.NextFloat(-0.01f, 0.01f), affectedByLight: true)
                             );
                     }
                     for (int i = 0; i < 3; i++)
                     {
                         GeneralParticleHandler.SpawnParticle(
-                            new SparkParticle(player.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f) + MathHelper.ToRadians(90f)) * Main.rand.NextFloat(10, 20), false, 10, 1f, Color.LightSkyBlue)
+                            new SparkParticle(player.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f) + MathHelper.ToRadians(90f)) * Main.rand.NextFloat(10, 20), false, 10, 1f, Color.LightSkyBlue, affectedByLight: true)
                             );
                         GeneralParticleHandler.SpawnParticle(
-                            new SparkParticle(player.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f) + MathHelper.ToRadians(-90f)) * Main.rand.NextFloat(10, 20), false, 10, 1f, Color.LightSkyBlue)
+                            new SparkParticle(player.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f) + MathHelper.ToRadians(-90f)) * Main.rand.NextFloat(10, 20), false, 10, 1f, Color.LightSkyBlue, affectedByLight: true)
                             );
                     }
                 }
@@ -192,11 +193,11 @@ namespace CalamityMod.Projectiles.Ranged
 
                     for (int i = 0; i < 10; i++)
                     {
-                        GeneralParticleHandler.SpawnParticle(new SparkParticle(vec, new Vector2(Main.rand.NextFloat(15), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-20, 20))), false, 12, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.White : Color.LightSteelBlue, true));
+                        GeneralParticleHandler.SpawnParticle(new SparkParticle(vec, new Vector2(Main.rand.NextFloat(15), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-20, 20))), false, 12, Main.rand.NextFloat(0.5f, 1f), Main.rand.NextBool(4) ? Color.White : Color.LightSteelBlue, true, true));
                     }
                     for (int i = 0; i < 10; i++)
                     {
-                        GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(vec, new Vector2(Main.rand.NextFloat(5, 20), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-5, 5))), Color.CornflowerBlue, new Color(100, 100, 170), Main.rand.NextFloat(0.5f, 1f), 150f));
+                        GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(vec, new Vector2(Main.rand.NextFloat(5, 20), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-5, 5))), Color.White, Color.LightSkyBlue, Main.rand.NextFloat(0.5f, 1f), 150f, affectedByLight: true));
                     }
                     SoundEngine.PlaySound(SoundID.Item99.WithPitchOffset(-0.5f), Projectile.Center);
                     Projectile.ai[1] = 1;
@@ -207,7 +208,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     for (int i = 0; i < 25; i++)
                     {
-                        positions.Add(Projectile.Center);
+                        LinePositions.Add(Projectile.Center);
                     }
                 }
             }
@@ -234,19 +235,19 @@ namespace CalamityMod.Projectiles.Ranged
 
                     for (int i = 0; i < 23; i++)
                     {
-                        GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(Projectile.Center + new Vector2(7, 0).RotatedBy(Projectile.rotation), new Vector2(i, 0).RotatedBy(Projectile.rotation), Color.White, Color.LightBlue, 0.07f * i, 150f));
+                        GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(Projectile.Center + new Vector2(7, 0).RotatedBy(Projectile.rotation), new Vector2(i, 0).RotatedBy(Projectile.rotation), Color.White, Color.LightBlue, 0.07f * i, 150f, affectedByLight: true));
                     }
                     for (int i = 0; i < 6; i++)
                     {
-                        GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(Projectile.Center + new Vector2(7, 0).RotatedBy(Projectile.rotation), new Vector2(Main.rand.NextFloat(8), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-20f, 20f))), Color.White, Color.LightBlue, Main.rand.NextFloat(1f, 1.5f), 150f));
+                        GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(Projectile.Center + new Vector2(7, 0).RotatedBy(Projectile.rotation), new Vector2(Main.rand.NextFloat(8), 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(Main.rand.NextFloat(-20f, 20f))), Color.White, Color.LightBlue, Main.rand.NextFloat(1f, 1.5f), 150f, affectedByLight: true));
                     }
                     for (int i = 0; i < 3; i++)
                     {
                         GeneralParticleHandler.SpawnParticle(
-                            new SparkParticle(Projectile.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f) + MathHelper.ToRadians(90f)) * Main.rand.NextFloat(10, 20), false, 10, 1f, Color.LightSkyBlue)
+                            new SparkParticle(Projectile.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f) + MathHelper.ToRadians(90f)) * Main.rand.NextFloat(10, 20), false, 10, 1f, Color.LightSkyBlue, affectedByLight: true)
                             );
                         GeneralParticleHandler.SpawnParticle(
-                            new SparkParticle(Projectile.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f) + MathHelper.ToRadians(-90f)) * Main.rand.NextFloat(10, 20), false, 10, 1f, Color.LightSkyBlue)
+                            new SparkParticle(Projectile.Center, player.DirectionTo(mousePos).RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f) + MathHelper.ToRadians(-90f)) * Main.rand.NextFloat(10, 20), false, 10, 1f, Color.LightSkyBlue, affectedByLight: true)
                             );
                     }
                 }
@@ -335,7 +336,7 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                 case 3:
                     {
-                        GeneralParticleHandler.SpawnParticle(new SparkParticle(player.Center - (player.velocity) + new Vector2(Main.rand.NextFloat(5, 25), 0).RotatedByRandom(MathHelper.TwoPi), player.velocity, false, 8, Main.rand.NextFloat(0.2f, 1.2f), Color.White, true));
+                        GeneralParticleHandler.SpawnParticle(new SparkParticle(player.Center - (player.velocity) + new Vector2(Main.rand.NextFloat(5, 25), 0).RotatedByRandom(MathHelper.TwoPi), player.velocity, false, 8, Main.rand.NextFloat(0.2f, 1.2f), Color.White, true, true));
 
                         Vector2 v2 = mousePos - player.Center;
 
@@ -352,13 +353,13 @@ namespace CalamityMod.Projectiles.Ranged
                     }
             }
 
-            for (float i = 0; i < positions.Count; i++)
+            for (float i = 0; i < LinePositions.Count; i++)
             {
-                positions[(int)i] = Vector2.Lerp(positions[(int)i], Vector2.Lerp(AbsolutePosition + new Vector2(0, 6), player.Center + ArmOffset(), (i / (float)positions.Count)),
-                    MathHelper.Clamp(CalamityUtils.CircInEasing(i / (float)positions.Count, 1), 0f, 1f)
+                LinePositions[(int)i] = Vector2.Lerp(LinePositions[(int)i], Vector2.Lerp(AbsolutePosition + new Vector2(0, 6), player.Center + ArmOffset(), (i / (float)LinePositions.Count)),
+                    MathHelper.Clamp(CalamityUtils.CircInEasing(i / (float)LinePositions.Count, 1), 0f, 1f)
                     );
-                positions[(int)i] = Vector2.Lerp(positions[(int)i], Vector2.Lerp(AbsolutePosition + new Vector2(0, 6), player.Center + ArmOffset(), (i / (float)positions.Count)),
-                    MathHelper.Lerp(1f,0f,CalamityUtils.CircOutEasing(i / (float)positions.Count, 1))
+                LinePositions[(int)i] = Vector2.Lerp(LinePositions[(int)i], Vector2.Lerp(AbsolutePosition + new Vector2(0, 6), player.Center + ArmOffset(), (i / (float)LinePositions.Count)),
+                    MathHelper.Lerp(1f,0f,CalamityUtils.CircOutEasing(i / (float)LinePositions.Count, 1))
                     );
             }
 

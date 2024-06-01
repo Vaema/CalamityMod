@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.frameCounter == 0)
             {
                 GeneralParticleHandler.SpawnParticle(new SmallSmokeParticle(
-                Projectile.Center, new Vector2(2, 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi)), Color.White, Color.LightSkyBlue, (1f + Main.rand.NextFloat(0.3f)) * Projectile.scale, 50f));
+                Projectile.Center, new Vector2(2, 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi)), Color.White, Color.LightSkyBlue, (1f + Main.rand.NextFloat(0.3f)) * Projectile.scale, 50f, affectedByLight: true));
             }
             Projectile.ai[1]++;
             if (Projectile.ai[1] > 40)

@@ -12,8 +12,9 @@ namespace CalamityMod.Particles
         private Color ColorFire;
         private Color ColorFade;
         private float Spin;
+        private bool AffectedByLight = false;
 
-        public SmallSmokeParticle(Vector2 position, Vector2 velocity, Color colorFire, Color colorFade, float scale, float opacity, float rotationSpeed = 0f)
+        public SmallSmokeParticle(Vector2 position, Vector2 velocity, Color colorFire, Color colorFade, float scale, float opacity, float rotationSpeed = 0f, bool affectedByLight = false)
         {
             Position = position;
             Velocity = velocity;
@@ -23,6 +24,7 @@ namespace CalamityMod.Particles
             Opacity = opacity;
             Rotation = Main.rand.NextFloat(MathHelper.TwoPi);
             Spin = rotationSpeed;
+            AffectedByLight = affectedByLight;
         }
 
         public override void Update()
@@ -46,6 +48,7 @@ namespace CalamityMod.Particles
 
             Color = Color.Lerp(ColorFire, ColorFade, MathHelper.Clamp((float)((255 - Opacity) - 100) / 80, 0f, 1f)) * (Opacity / 255f);
 
+            if (AffectedByLight) Color = Lighting.GetColor((Position / 16).ToPoint()).MultiplyRGBA(Color);
         }
     }
 }
