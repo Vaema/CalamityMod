@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Ranged
             
             shootingTimer += revSpeed;
             revFrames++;
-            if (revFrames >= 300)
+            if (revFrames >= 300 && !isTired)
             {
                 Owner.Calamity().GeneralScreenShakePower = 6.5f;
                 OffsetLengthFromArm -= 35f;
@@ -86,11 +86,12 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(-0.025f * i) * (1 - i * 0.05f), ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner);
                 }
-                for (int i = 0; i <= 4; i++)
+                for (int j = 0; j <= 4; j++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(0.025f * i) * (1 - i * 0.05f), ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(0.025f * j) * (1 - j * 0.05f), ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner);
                 }
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner);
+                
                 for (int i = 0; i <= 18; i++)
                 {
                     Dust dust = Dust.NewDustPerfect(GunTipPosition, 66, shootVelocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 1.5f), 0, default, Main.rand.NextFloat(0.6f, 1.4f));

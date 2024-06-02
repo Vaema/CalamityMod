@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.extraUpdates = 4;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 800;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
@@ -36,18 +36,17 @@ namespace CalamityMod.Projectiles.Ranged
             if (setStats)
             {
                 rotDirection = (Main.rand.NextBool() ? -1 : 1);
-                Projectile.scale = Main.rand.NextFloat(0.7f, 1f);
                 Projectile.rotation = Main.rand.NextFloat(-20, 20);
                 setStats = false;
             }
-            Projectile.rotation += 0.01f * rotDirection * Projectile.scale * Utils.GetLerpValue(0, 600, Projectile.timeLeft);
+            Projectile.rotation += 0.01f * rotDirection * Utils.GetLerpValue(0, 800, Projectile.timeLeft);
             Projectile.velocity *= 0.9975f;
             Projectile.alpha = (int)(Utils.Remap(Projectile.timeLeft, 70, 0, 0, 255, true));
-            if (targetDist < 1400f && Projectile.timeLeft > 70)
+            if (targetDist < 1400f && Projectile.timeLeft > 70 && Projectile.timeLeft < 790)
             {
                 if (Projectile.timeLeft % 6 == 0)
                 {
-                    SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(20, 20), -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f), false, Main.rand.Next(9, 20 + 1), Projectile.scale * Main.rand.NextFloat(0.8f, 1.2f), Color.Chartreuse * Main.rand.NextFloat(0.15f, 0.5f));
+                    Particle spark = new LineParticle(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(20, 20), -Projectile.velocity * Main.rand.NextFloat(0.2f, 1.8f), false, Main.rand.Next(9, 20 + 1), Projectile.scale * Main.rand.NextFloat(0.8f, 1.2f), Color.Chartreuse * Main.rand.NextFloat(0.15f, 0.5f));
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
                 if (Main.rand.NextBool(6))
