@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             //make pretty dust
-            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 88);
+            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemSapphire);
             Main.dust[index2].noGravity = true;
 
             if (Projectile.velocity.X > -0.05f && Projectile.velocity.X < 0.05f &

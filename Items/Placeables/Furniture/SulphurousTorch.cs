@@ -11,9 +11,9 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-			ItemID.Sets.Torches[Item.type] = true;
-			ItemID.Sets.SingleUseInGamepad[Type] = true;
-			ItemID.Sets.WaterTorches[Item.type] = true;
+            ItemID.Sets.Torches[Item.type] = true;
+            ItemID.Sets.SingleUseInGamepad[Type] = true;
+            ItemID.Sets.WaterTorches[Item.type] = true;
             ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.ShimmerTorch;
         }
 
@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         {
             if (Main.rand.NextBool(player.itemAnimation > 0 ? 10 : 20))
             {
-                Dust.NewDust(new Vector2(player.itemLocation.X + 16f * player.direction, player.itemLocation.Y - 14f * player.gravDir), 4, 4, 78);
+                Dust.NewDust(new Vector2(player.itemLocation.X + 16f * player.direction, player.itemLocation.Y - 14f * player.gravDir), 4, 4, DustID.t_LivingWood);
             }
             Vector2 position = player.RotatedRelativePoint(new Vector2(player.itemLocation.X + 12f * player.direction + player.velocity.X, player.itemLocation.Y - 14f + player.velocity.Y), true);
             Lighting.AddLight(position, 0.9f, 1.2f, 0.3f);

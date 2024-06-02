@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -58,22 +58,22 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.ai[1] > 0f)
             {
-                bool eaterOfWorlds = Projectile.ai[1] == 2f;
                 int playerTracker = (int)Player.FindClosest(Projectile.Center, 1, 1);
                 Vector2 playerDirection = Main.player[playerTracker].Center - Projectile.Center;
                 Projectile.ai[0] += 1f;
                 if (Projectile.ai[0] >= 60f)
                 {
-                    if (Projectile.ai[0] < (eaterOfWorlds ? 120f : 240f))
+                    if (Projectile.ai[0] < 240f)
                     {
+                        float inertia = 25f;
                         float scaleFactor = Projectile.velocity.Length();
                         playerDirection.Normalize();
                         playerDirection *= scaleFactor;
-                        Projectile.velocity = (Projectile.velocity * 24f + playerDirection) / 25f;
+                        Projectile.velocity = (Projectile.velocity * (inertia - 1f) + playerDirection) / inertia;
                         Projectile.velocity.Normalize();
                         Projectile.velocity *= scaleFactor;
                     }
-                    else if (Projectile.velocity.Length() < (eaterOfWorlds ? 12f : 18f))
+                    else if (Projectile.velocity.Length() < 18f)
                     {
                         Projectile.tileCollide = true;
                         Projectile.velocity *= 1.02f;
@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Shadowflame>(), 180, true);
+            target.AddBuff(ModContent.BuffType<Shadowflame>(), 120, true);
         }
 
         public override void OnKill(int timeLeft)

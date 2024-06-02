@@ -17,14 +17,14 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Projectile.type] = 3;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 30;
+            Projectile.width = Projectile.height = 32;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 source = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                     source = source.RotatedBy((double)((float)(d - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
                     Vector2 dustVel = source - Projectile.Center;
-                    int dusty = Dust.NewDust(source + dustVel, 0, 0, 7, dustVel.X * 1.75f, dustVel.Y * 1.75f, 100, default, 1.1f);
+                    int dusty = Dust.NewDust(source + dustVel, 0, 0, DustID.WoodFurniture, dustVel.X * 1.75f, dustVel.Y * 1.75f, 100, default, 1.1f);
                     Main.dust[dusty].noGravity = true;
                     Main.dust[dusty].velocity = dustVel;
                 }
@@ -93,12 +93,12 @@ namespace CalamityMod.Projectiles.Summon
                     eaterCooldown--;
                 Projectile.ChargingMinionAI(640f, 1100f, 2400f, 150f, 0, 40f, 8f, 4f, new Vector2(0f, -60f), 40f, 8f, false, false);
                 Projectile.frameCounter++;
-                if (Projectile.frameCounter > 3)
+                if (Projectile.frameCounter > 4)
                 {
                     Projectile.frame++;
                     Projectile.frameCounter = 0;
                 }
-                if (Projectile.frame >= 4)
+                if (Projectile.frame >= 3)
                 {
                     Projectile.frame = 0;
                 }
@@ -146,11 +146,11 @@ namespace CalamityMod.Projectiles.Summon
                 if (Projectile.owner == Main.myPlayer)
                 {
                     if (eaterCooldown > 0)
-                        eaterCooldown -= Main.rand.Next(1,3);
+                        eaterCooldown -= Main.rand.Next(1, 3);
 
                     if (eaterCooldown <= 0)
                     {
-                        int projNumber = Main.rand.Next(1,3);
+                        int projNumber = Main.rand.Next(1, 3);
                         for (int index2 = 0; index2 < projNumber; index2++)
                         {
                             float xVector = (float)Main.rand.Next(-35, 36) * 0.02f;
@@ -261,7 +261,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int framing = texture.Height / Main.projFrames[Projectile.type];
             int y6 = framing * Projectile.frame;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);

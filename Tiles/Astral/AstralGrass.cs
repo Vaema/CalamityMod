@@ -14,7 +14,7 @@ namespace CalamityMod.Tiles.Astral
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileBrick[Type] = true;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Grass"]);
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Grass"]);
 
             CalamityUtils.SetMerge(Type, ModContent.TileType<AstralDirt>());
             CalamityUtils.SetMerge(Type, TileID.Grass);
@@ -47,7 +47,7 @@ namespace CalamityMod.Tiles.Astral
             Tile up = Main.tile[i, j - 1];
             Tile up2 = Main.tile[i, j - 2];
             //place Astral Wild Grass
-            if (WorldGen.genRand.Next(10) == 0 && !up.HasTile && !up2.HasTile && !(up.LiquidAmount > 0 && up2.LiquidAmount > 0) && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            if (WorldGen.genRand.NextBool(10)&& !up.HasTile && !up2.HasTile && !(up.LiquidAmount > 0 && up2.LiquidAmount > 0) && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
                 up.TileType = (ushort)ModContent.TileType<AstralTallPlants>();
                 up.HasTile = true;
@@ -63,7 +63,7 @@ namespace CalamityMod.Tiles.Astral
                 }
             }
             //place Astral Short Grass
-            if (WorldGen.genRand.Next(10) == 0 && !up.HasTile && !up2.HasTile && !(up.LiquidAmount > 0 && up2.LiquidAmount > 0) && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            if (WorldGen.genRand.NextBool(10)&& !up.HasTile && !up2.HasTile && !(up.LiquidAmount > 0 && up2.LiquidAmount > 0) && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
                 up.TileType = (ushort)ModContent.TileType<AstralShortPlants>();
                 up.HasTile = true;

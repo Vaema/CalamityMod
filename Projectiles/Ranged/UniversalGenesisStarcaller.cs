@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.rand.NextBool())
                 {
-                    int idx = Dust.NewDust(Projectile.position, 1, 1, 173, 0f, 0f, 0, default, 0.5f);
+                    int idx = Dust.NewDust(Projectile.position, 1, 1, DustID.ShadowbeamStaff, 0f, 0f, 0, default, 0.5f);
                     Main.dust[idx].alpha = Projectile.alpha;
                     Main.dust[idx].velocity *= 0f;
                     Main.dust[idx].noGravity = true;
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
-            SoundEngine.PlaySound(SoundID.Item11 with { PitchVariance = 0.05f } , Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Item11 with { PitchVariance = 0.05f }, Projectile.Center);
             return true;
         }
 
@@ -87,9 +87,8 @@ namespace CalamityMod.Projectiles.Ranged
             bool bossFound = false;
             int life = 0;
             Vector2 targetVec = Projectile.Center;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
                 if (bossFound && !npc.IsABoss())
                     continue;
                 if (npc.CanBeChasedBy(Projectile, false))
@@ -119,7 +118,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
             if (Main.netMode != NetmodeID.Server)
             {

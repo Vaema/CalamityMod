@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 5.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<GelWave>();
             Item.shootSpeed = 9f;
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(3))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 20);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.PurificationPowder);
             }
         }
 

@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
-    public class SubmarineShockerProj: BaseShortswordProjectile
+    public class SubmarineShockerProj : BaseShortswordProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<SubmarineShocker>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/SubmarineShocker";
@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
             Projectile.hide = true;
             Projectile.ownerHitCheck = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void SetVisualOffsets()

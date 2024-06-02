@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             Projectile.alpha = (int)Utils.Remap(Projectile.timeLeft, 30f, 0f, 0f, 255f);
 
-            Dust trailDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 109, Scale: Main.rand.NextFloat(0.5f, 0.8f), Alpha: 127);
+            Dust trailDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Asphalt, Scale: Main.rand.NextFloat(0.5f, 0.8f), Alpha: 127);
             trailDust.noGravity = true;
             trailDust.noLight = true;
             trailDust.alpha = (int)Utils.Remap(Projectile.timeLeft, 30f, 0f, 127f, 0f);
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

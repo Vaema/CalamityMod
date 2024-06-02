@@ -1,7 +1,9 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Environment
 {
     public class LavaChunk : ModProjectile, ILocalizedModType
@@ -53,11 +55,11 @@ namespace CalamityMod.Projectiles.Environment
                     {
                         dustYOffset = Projectile.velocity.Y * 0.5f;
                     }
-                    int lavaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 3f + dustYOffset) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 6, 0f, 0f, 100, default, Projectile.scale);
+                    int lavaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 3f + dustYOffset) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.Torch, 0f, 0f, 100, default, Projectile.scale);
                     Main.dust[lavaDust].scale *= 2f + (float)Main.rand.Next(10) * 0.1f;
                     Main.dust[lavaDust].velocity *= 0.2f;
                     Main.dust[lavaDust].noGravity = true;
-                    lavaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 3f + dustYOffset) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 31, 0f, 0f, 100, default, Projectile.scale * 0.5f);
+                    lavaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 3f + dustYOffset) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.Smoke, 0f, 0f, 100, default, Projectile.scale * 0.5f);
                     Main.dust[lavaDust].fadeIn = 1f + (float)Main.rand.Next(5) * 0.1f;
                     Main.dust[lavaDust].velocity *= 0.05f;
                 }
@@ -85,8 +87,8 @@ namespace CalamityMod.Projectiles.Environment
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y6 = framing * Projectile.frame;
             Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;

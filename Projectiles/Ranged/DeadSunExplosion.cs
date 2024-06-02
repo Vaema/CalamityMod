@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 offset = (Vector2.UnitX * Main.rand.NextFloat(ExplosionRadius * 0.2f, 3.1f)).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
                 Vector2 velOffset = (Vector2.UnitX * Main.rand.NextFloat(ExplosionRadius * 0.2f, 3.1f)).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
                 Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, Main.rand.NextBool(4) ? 263 : Projectile.ai[1] == 5 ? 278 : 66, velOffset);
-                dust.noGravity = dust.type == 278? false : true;
+                dust.noGravity = dust.type == 278 ? false : true;
                 dust.color = color1;
                 dust.velocity = velOffset;
                 dust.scale = dust.type == 278 ? Main.rand.NextFloat(0.7f, 1.3f) : Main.rand.NextFloat(1.6f, 2.2f);

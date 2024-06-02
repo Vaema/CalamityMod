@@ -1,11 +1,11 @@
-﻿using CalamityMod.CalPlayer;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (target != null) //target found
                 {
                     float projVel = 40f;
-                    Vector2 targetDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 targetDirection = Projectile.Center;
                     float targetX = target.Center.X - targetDirection.X;
                     float targetY = target.Center.Y - targetDirection.Y;
                     float targetDist = (float)Math.Sqrt((double)(targetX * targetX + targetY * targetY));
@@ -195,7 +195,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (circlingPlayer)
                 {
-                    float math = recharging == 0 ? 90f :(300 - recharging) / 3;
+                    float math = recharging == 0 ? 90f : (300 - recharging) / 3;
                     float regularDistance = math > 90f ? 90f : math;
                     Projectile.Center = player.Center + Projectile.ai[0].ToRotationVector2() * regularDistance;
                     Projectile.rotation = Projectile.ai[0] + (float)Math.Atan(90);
@@ -240,12 +240,12 @@ namespace CalamityMod.Projectiles.Summon
         {
             target.AddBuff(BuffID.Frostburn2, 300);
             int circlers = 0;
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Projectile.owner && Main.projectile[i].type == Projectile.type)
+                if (p.owner == Projectile.owner && p.type == Projectile.type)
                 {
-                    GlacialEmbracePointyThing pointy = (GlacialEmbracePointyThing)Main.projectile[i].ModProjectile;
-                    if (Main.projectile[i].ai[1] > 2f)
+                    GlacialEmbracePointyThing pointy = (GlacialEmbracePointyThing)p.ModProjectile;
+                    if (p.ai[1] > 2f)
                         circlers += Main.rand.Next(1, 4);
                 }
             }

@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,14 +22,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<Crushax>();
             Item.shootSpeed = 13.5f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 0.7f;
+        public override float StealthDamageMultiplier => 0.7f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -38,13 +38,13 @@ namespace CalamityMod.Items.Weapons.Rogue
                 int spread = 3;
                 for (int i = 0; i < 5; i++)
                 {
-                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-3,4), velocity.Y + Main.rand.Next(-3,4)).RotatedBy(MathHelper.ToRadians(spread));
+                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-3, 4), velocity.Y + Main.rand.Next(-3, 4)).RotatedBy(MathHelper.ToRadians(spread));
                     int proj = Projectile.NewProjectile(source, position, perturbedspeed, type, damage, knockback, player.whoAmI);
                     if (proj.WithinBounds(Main.maxProjectiles))
                     {
                         Main.projectile[proj].Calamity().stealthStrike = true;
                     }
-                    spread -= Main.rand.Next(1,4);
+                    spread -= Main.rand.Next(1, 4);
                 }
                 return false;
             }

@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.VanillaArmorChanges;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -13,8 +13,11 @@ namespace CalamityMod.Projectiles.Typeless
     public class ChlorophyteLifePulse : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
+
         public const int Lifetime = 60;
+
         public float LifetimeCompletion => 1f - Projectile.timeLeft / (float)Lifetime;
+
         public override void SetDefaults()
         {
             Projectile.width = 96;
@@ -29,6 +32,7 @@ namespace CalamityMod.Projectiles.Typeless
         }
 
         public override bool? CanHitNPC(NPC target) => !target.CountsAsACritter && !target.friendly && target.chaseable;
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Projectile.damage = (int)(Projectile.damage * 0.8f);
 
         public override void AI()
@@ -69,7 +73,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Color drawColor = Projectile.GetAlpha(lightColor) * 0.4f;
             for (int i = 0; i < 8; i++)
             {
@@ -80,10 +84,7 @@ namespace CalamityMod.Projectiles.Typeless
             return false;
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            return CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.scale * 48f, targetHitbox);
-        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.scale * 48f, targetHitbox);
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
     }

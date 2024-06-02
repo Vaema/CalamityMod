@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 15; i++)
                 {
-                    Dust rainbowDust = Dust.NewDustDirect(Projectile.Center + Main.rand.NextVector2Circular(5f, 5f), 40, 40, 261);
+                    Dust rainbowDust = Dust.NewDustDirect(Projectile.Center + Main.rand.NextVector2Circular(5f, 5f), 40, 40, DustID.AncientLight);
                     rainbowDust.color = ProjectileColor;
                     rainbowDust.noGravity = true;
                 }

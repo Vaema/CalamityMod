@@ -1,8 +1,8 @@
-﻿using Terraria.ModLoader;
-using Terraria.ID;
-using CalamityMod.Items.Materials;
-using CalamityMod.Tiles.DraedonSummoner;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.DraedonStructures;
+using CalamityMod.Tiles.DraedonSummoner;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.DraedonMisc
 {
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.DraedonMisc
             Item.autoReuse = true;
             Item.consumable = true;
             Item.maxStack = 9999;
-            Item.rare = ItemRarityID.Orange;
+            Item.rare = ItemRarityID.Green;
             Item.createTile = ModContent.TileType<CodebreakerTile>();
         }
 

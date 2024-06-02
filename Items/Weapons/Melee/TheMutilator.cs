@@ -16,7 +16,6 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 90;
             Item.height = 90;
-            Item.scale = 1.5f;
             Item.damage = 483;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 18;
@@ -28,13 +27,13 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.shootSpeed = 10f;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (target.life <= (target.lifeMax * 0.2f) && target.canGhostHeal)
+            if (target.life <= (target.lifeMax * 0.2f))
             {
                 if (!CalamityPlayer.areThereAnyDamnBosses || Main.rand.NextBool())
                 {
@@ -51,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 target.position.Y -= target.height / 2;
                 for (int i = 0; i < 30; i++)
                 {
-                    int bloodDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 5, 0f, 0f, 100, default, 2f);
+                    int bloodDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[bloodDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -61,10 +60,10 @@ namespace CalamityMod.Items.Weapons.Melee
                 }
                 for (int j = 0; j < 50; j++)
                 {
-                    int bloodDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 5, 0f, 0f, 100, default, 3f);
+                    int bloodDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.Blood, 0f, 0f, 100, default, 3f);
                     Main.dust[bloodDust2].noGravity = true;
                     Main.dust[bloodDust2].velocity *= 5f;
-                    bloodDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 5, 0f, 0f, 100, default, 2f);
+                    bloodDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[bloodDust2].velocity *= 2f;
                 }
             }

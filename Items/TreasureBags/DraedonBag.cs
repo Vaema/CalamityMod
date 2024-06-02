@@ -24,7 +24,7 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-			ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Item.type] = true;
         }
 
         public override void SetDefaults()
@@ -37,20 +37,20 @@ namespace CalamityMod.Items.TreasureBags
             Item.expert = true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+        }
 
         public override bool CanRightClick() => true;
 
-		public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
         public override void PostUpdate()
-		{
-			CalamityUtils.ForceItemIntoWorld(Item);
-			Item.TreasureBagLightAndDust();
-		}
+        {
+            CalamityUtils.ForceItemIntoWorld(Item);
+            Item.TreasureBagLightAndDust();
+        }
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
@@ -59,8 +59,8 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-			// Money
-			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Apollo>()));
+            // Money
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Apollo>()));
 
             // Originally, masks were 1/3.5, for whatever reason. Keeping it that way.
             Fraction maskFraction = new Fraction(2, 7);

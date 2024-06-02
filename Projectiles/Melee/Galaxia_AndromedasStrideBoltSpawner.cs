@@ -1,12 +1,12 @@
-﻿using CalamityMod.Particles;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Projectile.timeLeft < 29)
             {
-                if (Main.rand.Next(3) == 0)
+                if (Main.rand.NextBool(3))
                 {
                     Vector2 particleDirection = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2();
                     Vector2 flyDirection = particleDirection.RotatedBy(Main.rand.NextFloat(-MathHelper.PiOver4 / 2f, MathHelper.PiOver4 / 2f)) * Main.rand.NextFloat(15f, 35f);
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Melee
                     Particle smoke = new HeavySmokeParticle(Projectile.Center, flyDirection, Color.Lerp(Color.MidnightBlue, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.4f, 1.3f) * Projectile.scale, 0.8f, 0, false, 0, true);
                     GeneralParticleHandler.SpawnParticle(smoke);
 
-                    if (Main.rand.Next(3) == 0)
+                    if (Main.rand.NextBool(3))
                     {
                         Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, flyDirection, Color.Red, 20, Main.rand.NextFloat(0.1f, 0.7f) * Projectile.scale, 0.8f, 0, true, 0.01f, true);
                         GeneralParticleHandler.SpawnParticle(smokeGlow);
@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Melee
                     Particle smoke = new HeavySmokeParticle(Projectile.Center + hitPositionDisplace, flyDirection, Color.Lerp(Color.MidnightBlue, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(1.6f, 2.2f) * Projectile.scale, 0.8f, 0, false, 0, true);
                     GeneralParticleHandler.SpawnParticle(smoke);
 
-                    if (Main.rand.Next(3) == 0)
+                    if (Main.rand.NextBool(3))
                     {
                         Particle smokeGlow = new HeavySmokeParticle(Projectile.Center + hitPositionDisplace, flyDirection, Color.Red, 20, Main.rand.NextFloat(1.4f, 1.7f) * Projectile.scale, 0.8f, 0, true, 0.005f, true);
                         GeneralParticleHandler.SpawnParticle(smokeGlow);

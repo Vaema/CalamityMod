@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.frame = 0;
             }
-            int redDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 60, 0f, 0f, 0, default, 1f);
+            int redDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 1f);
             Dust dust = Main.dust[redDust];
             dust.velocity *= 0.1f;
             Main.dust[redDust].scale = 1.3f;
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 rotate = rotate.RotatedBy((double)((float)(i - (constant / 2 - 1)) * 6.28318548f / (float)constant), default) + Projectile.Center;
                 Vector2 faceDirection = rotate - Projectile.Center;
-                int dust = Dust.NewDust(rotate + faceDirection, 0, 0, 60, faceDirection.X * 1.5f, faceDirection.Y * 1.5f, 100, default, 2f);
+                int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.RedTorch, faceDirection.X * 1.5f, faceDirection.Y * 1.5f, 100, default, 2f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].noLight = true;
                 Main.dust[dust].velocity = faceDirection;

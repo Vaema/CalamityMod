@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
                             Vector2 rotate = Vector2.Normalize(Projectile.velocity) * 9f;
                             rotate = rotate.RotatedBy((i - (constant / 2 - 1)) * 6.28318548f / constant, default) + player.Center;
                             Vector2 faceDirection = rotate - player.Center;
-                            int dust = Dust.NewDust(rotate + faceDirection, 0, 0, 127, 0f, 0f, 0, default, 4f);
+                            int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.Flare, 0f, 0f, 0, default, 4f);
                             Main.dust[dust].noGravity = true;
                             Main.dust[dust].velocity = faceDirection;
                         }
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
                 timeToFire = true;
             }
 
-            bool canFire = player.channel && player.HasAmmo(player.ActiveItem()) && !player.noItems && !player.CCed;
+            bool canFire = !player.CantUseHoldout() && player.HasAmmo(player.ActiveItem());
 
             if (Projectile.soundDelay <= 0 && canFire)
             {

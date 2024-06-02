@@ -1,11 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -13,12 +11,6 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Items/Ammo/ElysianArrow";
-
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-        }
 
         public override void SetDefaults()
         {
@@ -28,119 +20,93 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.arrow = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 1200;
+            Projectile.extraUpdates = 2;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
         {
+            Projectile.localAI[0] += 1f;
+
+            Player Owner = Main.player[Projectile.owner];
+
+            if (Projectile.localAI[0] > 5)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 262 : 87, -Projectile.velocity * Main.rand.NextFloat(0.1f, 0.7f));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.4f, 1.1f);
+                dust.alpha = 235;
+            }
+
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
         }
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
-            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
-            return true;
-        }
-
         public override void OnKill(int timeLeft)
         {
-            Projectile.position = Projectile.Center;
-            Projectile.width = Projectile.height = 32;
-            Projectile.position.X = Projectile.position.X - (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-            for (int i = 0; i < 2; i++)
+            Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+
+            NPC target = Projectile.Center.ClosestNPCAt(2000);
+            Vector2 targetPosition = target == null ? Projectile.Center : target.Center;
+            Vector2 spawnSpot = (target == null ? Projectile.Center : target.Center) + new Vector2(Main.rand.NextFloat(-450, 450), Main.rand.NextFloat(-750, -950));
+
+            Vector2 velocity;
+            if (target == null)
+                velocity = (targetPosition - spawnSpot).SafeNormalize(Vector2.UnitX) * 20;
+            else
+                velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(spawnSpot, target, 20f, ElysianArrowRain.MaxUpdate);
+
+            if (targetDist < 1400f)
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
-                Main.dust[dust].velocity *= 3f;
-                if (Main.rand.NextBool())
+                int Dusts = 8;
+                float radians = MathHelper.TwoPi / Dusts;
+                Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
+                for (int i = 0; i < Dusts; i++)
                 {
-                    Main.dust[dust].scale = 0.5f;
-                    Main.dust[dust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                    Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i) * 3.5f;
+                    Dust dust = Dust.NewDustPerfect(spawnSpot, Main.rand.NextBool() ? 262 : 87, dustVelocity, 0, default, 0.9f);
+                    dust.noGravity = true;
+
+                    Dust dust2 = Dust.NewDustPerfect(spawnSpot, Main.rand.NextBool() ? 262 : 87, dustVelocity * 0.6f, 0, default, 1.2f);
+                    dust2.noGravity = true;
                 }
             }
-            for (int j = 0; j < 6; j++)
-            {
-                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 3f);
-                Main.dust[dust2].noGravity = true;
-                Main.dust[dust2].velocity *= 5f;
-                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
-                Main.dust[dust2].velocity *= 2f;
-            }
+
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, velocity, ModContent.ProjectileType<ElysianArrowRain>(), (int)(Projectile.damage * 0.4f), 0f, Projectile.owner, 0f, 0f);
+
+            SoundStyle onKill = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastShoot");
+            SoundEngine.PlaySound(onKill with { Volume = 0.4f, Pitch = 0.4f }, Projectile.position);
 
             if (Main.netMode != NetmodeID.Server)
             {
-                Vector2 goreSource = Projectile.Center;
-                int goreAmt = 3;
-                Vector2 source = new Vector2(goreSource.X - 24f, goreSource.Y - 24f);
-                for (int goreIndex = 0; goreIndex < goreAmt; goreIndex++)
+                for (int k = 0; k < 7; k++)
                 {
-                    float velocityMult = 0.33f;
-                    if (goreIndex < (goreAmt / 3))
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 262 : 87, Projectile.velocity.RotatedByRandom(0.4) * Main.rand.NextFloat(0.5f, 1.5f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.7f, 1.25f);
+                    dust.alpha = 235;
+                    if (Main.rand.NextBool())
                     {
-                        velocityMult = 0.66f;
+                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 303, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f));
+                        dust2.noGravity = true;
+                        dust2.scale = Main.rand.NextFloat(0.8f, 1.5f);
+                        dust2.alpha = 70;
                     }
-                    if (goreIndex >= (2 * goreAmt / 3))
-                    {
-                        velocityMult = 1f;
-                    }
-                    Mod mod = ModContent.GetInstance<CalamityMod>();
-                    int type = Main.rand.Next(61, 64);
-                    int smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    Gore gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y -= 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y -= 1f;
                 }
-            }
-
-            float x = Projectile.position.X + Main.rand.Next(-400, 400);
-            float y = Projectile.position.Y - Main.rand.Next(500, 800);
-            Vector2 landSpot = new Vector2(x, y);
-            float meteorSpawnX = Projectile.position.X + (Projectile.width / 2) - landSpot.X;
-            float meteorSpawnY = Projectile.position.Y + (Projectile.height / 2) - landSpot.Y;
-            meteorSpawnX += Main.rand.Next(-100, 101);
-            float meteorSpawnAdjust = (float)Math.Sqrt(meteorSpawnX * meteorSpawnX + meteorSpawnY * meteorSpawnY);
-            meteorSpawnAdjust = 25 / meteorSpawnAdjust;
-            meteorSpawnX *= meteorSpawnAdjust;
-            meteorSpawnY *= meteorSpawnAdjust;
-            if (Projectile.owner == Main.myPlayer)
-            {
-                int meteor = Projectile.NewProjectile(Projectile.GetSource_FromThis(), x, y, meteorSpawnX, meteorSpawnY, ModContent.ProjectileType<SkyFlareFriendly>(), Projectile.damage / 2, 5f, Projectile.owner, 0f, 0f);
-                Main.projectile[meteor].ai[1] = Projectile.position.Y;
+                for (int k = 0; k < 2; k++)
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, Projectile.velocity.RotatedByRandom(0.4) * Main.rand.NextFloat(0.5f, 1.5f));
+                    dust.noGravity = false;
+                    dust.scale = Main.rand.NextFloat(0.85f, 1f);
+                    dust.color = Main.rand.NextBool() ? Color.Orange : Color.Khaki;
+                }
             }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
-            return false;
         }
     }
 }

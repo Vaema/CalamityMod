@@ -1,9 +1,10 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -52,6 +53,10 @@ namespace CalamityMod.NPCs.Providence
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void FindFrame(int frameHeight)
@@ -137,7 +142,7 @@ namespace CalamityMod.NPCs.Providence
             vector43 += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, vector43, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedGuardianDefenderGlow").Value;
+            texture2D15 = ProfanedGuardianDefender.Texture_Glow.Value;
             Color yellowLerp = Color.Lerp(Color.White, Color.Yellow, 0.5f);
 
             if (CalamityConfig.Instance.Afterimages)

@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Melee;
@@ -6,8 +8,6 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public const int CrippleTime = 360; // 6 seconds
         public override void SetStaticDefaults()
         {
-           
+
             if (Main.netMode != NetmodeID.Server)
             {
                 int equipSlotHead = EquipLoader.GetEquipSlot(Mod, "HeadlessEquipTexture", EquipType.Head);
@@ -83,7 +83,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
                         if (!visuals)
                             return false;
-                            
+
                         Dust warningDust = Dust.NewDustPerfect(pos.ToVector2() * 16f + Vector2.One * 8f, 127, Scale: 1.2f);
 
                         warningDust = Dust.NewDustPerfect(pos.ToVector2() * 16f + Vector2.One * 8f, 114, Vector2.Zero, Scale: 1.4f);
@@ -122,13 +122,12 @@ namespace CalamityMod.Items.Weapons.Summon
             // If the player has any robots, kill them all.
             if (player.ownedProjectileCounts[Item.shoot] > 0)
             {
-                for (int i = 0; i < Main.projectile.Length; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].active &&
-                        Main.projectile[i].type == Item.shoot &&
-                        Main.projectile[i].owner == player.whoAmI)
+                    if (p.type == Item.shoot &&
+                        p.owner == player.whoAmI)
                     {
-                        Main.projectile[i].Kill();
+                        p.Kill();
                     }
                 }
                 if (CalamityPlayer.areThereAnyDamnBosses)
@@ -151,13 +150,12 @@ namespace CalamityMod.Items.Weapons.Summon
 
             int robotIndex = -1;
 
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active &&
-                    Main.projectile[i].type == ModContent.ProjectileType<GiantIbanRobotOfDoom>() &&
-                    Main.projectile[i].owner == player.whoAmI)
+                if (p.type == ModContent.ProjectileType<GiantIbanRobotOfDoom>() &&
+                    p.owner == player.whoAmI)
                 {
-                    robotIndex = i;
+                    robotIndex = p.whoAmI;
                     break;
                 }
             }

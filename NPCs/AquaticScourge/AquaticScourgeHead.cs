@@ -1,7 +1,9 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
@@ -12,22 +14,21 @@ using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.NPCs.AcidRain;
+using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Armor.Vanity;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
-using CalamityMod.NPCs.AcidRain;
 
 namespace CalamityMod.NPCs.AquaticScourge
 {
@@ -37,7 +38,7 @@ namespace CalamityMod.NPCs.AquaticScourge
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.6f,
                 PortraitScale = 0.6f,
@@ -46,7 +47,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             value.Position.X += 40f;
             value.Position.Y += 20f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-			NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
         public override void SetDefaults()
@@ -97,10 +98,10 @@ namespace CalamityMod.NPCs.AquaticScourge
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[Type], quickUnlock: true);
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new BossBestiaryInfoElement(),
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AquaticScourge")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AquaticScourge")
             });
         }
 
@@ -128,7 +129,7 @@ namespace CalamityMod.NPCs.AquaticScourge
 
         public override void AI()
         {
-            CalamityAI.AquaticScourgeAI(NPC, Mod, true);
+            AquaticScourgeAI.VanillaAquaticScourgeAI(NPC, Mod, true);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -228,7 +229,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
             {
                 // Weapons
-                int[] weapons = new int[] 
+                int[] weapons = new int[]
                 {
                     ModContent.ItemType<SubmarineShocker>(),
                     ModContent.ItemType<Barinautical>(),
@@ -245,14 +246,13 @@ namespace CalamityMod.NPCs.AquaticScourge
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AquaticEmblem>()));
                 normalOnly.Add(ModContent.ItemType<CorrosiveSpine>(), DropHelper.NormalWeaponDropRateFraction);
-                normalOnly.Add(ModContent.ItemType<DeepDiver>(), 10);
                 normalOnly.Add(ModContent.ItemType<SeasSearing>(), 10);
 
                 // Fishing
                 normalOnly.Add(ModContent.ItemType<BleachedAnglingKit>());
             }
 
-			npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ItemID.GreaterHealingPotion, 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary
+            npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ItemID.GreaterHealingPotion, 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary
             npcLoot.Add(ModContent.ItemType<AquaticScourgeTrophy>(), 10);
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<AquaticScourgeRelic>());
 
@@ -262,7 +262,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             // Lore
             bool firstASKill() => !DownedBossSystem.downedAquaticScourge;
             npcLoot.AddConditionalPerPlayer(firstASKill, ModContent.ItemType<LoreAquaticScourge>(), desc: DropHelper.FirstKillText);
-            npcLoot.AddConditionalPerPlayer(firstASKill, ModContent.ItemType<LoreSulphurSea>(), desc: DropHelper.FirstKillText);            
+            npcLoot.AddConditionalPerPlayer(firstASKill, ModContent.ItemType<LoreSulphurSea>(), desc: DropHelper.FirstKillText);
         }
 
         public override void OnKill()
@@ -293,7 +293,7 @@ namespace CalamityMod.NPCs.AquaticScourge
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 

@@ -1,15 +1,15 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -47,6 +47,12 @@ namespace CalamityMod.Projectiles.Boss
                 return;
             }
 
+            if (Projectile.ai[2] > 0f)
+            {
+                if (Projectile.timeLeft > Projectile.ai[2])
+                    Projectile.timeLeft = (int)Projectile.ai[2];
+            }
+
             Player proviTarget = Main.player[Main.npc[CalamityGlobalNPC.holyBoss].target];
 
             Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
@@ -74,7 +80,7 @@ namespace CalamityMod.Projectiles.Boss
                 Color BaseColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0);
                 float Brightness = 0.8f;
                 Color DustColor = Color.Lerp(BaseColor, Color.White, Brightness);
-                Dust crystalDust = Main.dust[Dust.NewDust(Projectile.Top, 0, 0, 267, 0f, 0f, 100, DustColor, 1f)];
+                Dust crystalDust = Main.dust[Dust.NewDust(Projectile.Top, 0, 0, DustID.RainbowMk2, 0f, 0f, 100, DustColor, 1f)];
                 crystalDust.velocity.X = 0f;
                 crystalDust.noGravity = true;
                 crystalDust.fadeIn = 1f;
@@ -128,7 +134,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             Color colorArea = Lighting.GetColor((int)(Projectile.position.X + Projectile.width * 0.5) / 16, (int)((Projectile.position.Y + Projectile.height * 0.5) / 16.0));
             Vector2 drawArea = Projectile.position + new Vector2(Projectile.width, Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D34 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle textureRect = texture2D34.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Color colorAlpha = Projectile.GetAlpha(colorArea);
             Vector2 halfRect = textureRect.Size() / 2f;

@@ -1,10 +1,10 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Materials;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.Fishing.FishingRods
 {
@@ -22,19 +22,23 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 40;
             Item.shootSpeed = 16f;
             Item.shoot = ModContent.ProjectileType<FeralDoubleBobber>();
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int index = 0; index < 2; ++index)
+            for (int i = 0; i < 2; i++)
             {
-                float SpeedX = velocity.X + Main.rand.NextFloat(-3.75f, 3.75f);
-                float SpeedY = velocity.Y + Main.rand.NextFloat(-3.75f, 3.75f);
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, 0, 0f, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(MathHelper.ToRadians(18f)), type, 0, 0f, player.whoAmI);
             }
             return false;
+        }
+
+        public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
+        {
+            lineOriginOffset = new Vector2(43f, -29f);
+            lineColor = new Color(220, 20, 60, 100);
         }
 
         public override void AddRecipes()

@@ -1,5 +1,9 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
+using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
@@ -13,22 +17,20 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.World;
-using System;
-using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using ReLogic.Utilities;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Dusts;
-using Terraria.GameContent.ItemDropRules;
-using CalamityMod.Events;
-using Terraria.Audio;
-using ReLogic.Utilities;
 
 namespace CalamityMod.NPCs.OldDuke
 {
@@ -39,20 +41,26 @@ namespace CalamityMod.NPCs.OldDuke
         public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/OldDukeRoar");
         public static readonly SoundStyle VomitSound = new("CalamityMod/Sounds/Custom/OldDukeVomit");
 
-        public SlotId RoarSoundSlot; 
+        public SlotId RoarSoundSlot;
+
+        public static Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 7;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1,
                 Scale = 0.45f
             };
             value.Position.X += 14f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -86,7 +94,7 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.OldDuke")
             });
@@ -114,21 +122,19 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void AI()
         {
-            CalamityAI.OldDukeAI(NPC, Mod);
+            OldDukeAI.VanillaOldDukeAI(NPC, Mod);
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void ModifyTypeName(ref string typeName)
         {
             if (Main.zenithWorld)
-            {
                 typeName = CalamityUtils.GetTextValue("NPCs.BoomerDuke");
-            }
         }
 
         public override void FindFrame(int frameHeight)
@@ -138,9 +144,8 @@ namespace CalamityMod.NPCs.OldDuke
             {
                 int frameChangeFrequency = tired ? 14 : 7;
                 if (NPC.ai[0] == 5f || NPC.ai[0] == 12f)
-                {
                     frameChangeFrequency = tired ? 12 : 6;
-                }
+
                 NPC.frameCounter += 1D;
                 if (NPC.frameCounter > frameChangeFrequency)
                 {
@@ -148,18 +153,15 @@ namespace CalamityMod.NPCs.OldDuke
                     NPC.frame.Y += frameHeight;
                 }
                 if (NPC.frame.Y >= frameHeight * 6)
-                {
                     NPC.frame.Y = 0;
-                }
             }
+
             if (NPC.ai[0] == 1f || NPC.ai[0] == 6f || NPC.ai[0] == 11f)
-            {
                 NPC.frame.Y = frameHeight * 2;
-            }
+
             if (NPC.ai[0] == 2f || NPC.ai[0] == 7f || NPC.ai[0] == 14f)
-            {
                 NPC.frame.Y = frameHeight * 6;
-            }
+
             if (NPC.ai[0] == 3f || NPC.ai[0] == 8f || NPC.ai[0] == 13f || NPC.ai[0] == -1f)
             {
                 int frameChangeGateValue = 120;
@@ -172,19 +174,16 @@ namespace CalamityMod.NPCs.OldDuke
                         NPC.frame.Y += frameHeight;
                     }
                     if (NPC.frame.Y >= frameHeight * 6)
-                    {
                         NPC.frame.Y = 0;
-                    }
                 }
                 else
                 {
                     NPC.frame.Y = frameHeight * 5;
                     if (NPC.ai[2] > (frameChangeGateValue - 40) && NPC.ai[2] < (frameChangeGateValue - 15))
-                    {
                         NPC.frame.Y = frameHeight * 6;
-                    }
                 }
             }
+
             if (NPC.ai[0] == 4f || NPC.ai[0] == 9f)
             {
                 int secondFrameChangeGateValue = 180;
@@ -197,17 +196,13 @@ namespace CalamityMod.NPCs.OldDuke
                         NPC.frame.Y += frameHeight;
                     }
                     if (NPC.frame.Y >= frameHeight * 6)
-                    {
                         NPC.frame.Y = 0;
-                    }
                 }
                 else
                 {
                     NPC.frame.Y = frameHeight * 5;
                     if (NPC.ai[2] > (secondFrameChangeGateValue - 50) && NPC.ai[2] < (secondFrameChangeGateValue - 25))
-                    {
                         NPC.frame.Y = frameHeight * 6;
-                    }
                 }
             }
         }
@@ -339,7 +334,7 @@ namespace CalamityMod.NPCs.OldDuke
 
             if (NPC.ai[0] >= 4f && NPC.Calamity().newAI[1] != 1f)
             {
-                texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/OldDuke/OldDukeGlow").Value;
+                texture2D15 = GlowTexture.Value;
                 Color yellowLerpColor = Color.Lerp(Color.White, Color.Yellow, 0.5f);
                 drawLerpColor = Color.Yellow;
 
@@ -487,7 +482,7 @@ namespace CalamityMod.NPCs.OldDuke
                 int onHitDust = 0;
                 while (onHitDust < hit.Damage / NPC.lifeMax * 100.0)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                     onHitDust++;
                 }
             }
@@ -495,7 +490,7 @@ namespace CalamityMod.NPCs.OldDuke
             {
                 for (int r = 0; r < 150; r++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, 2 * hit.HitDirection, -2f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, 2 * hit.HitDirection, -2f, 0, default, 1f);
                 }
 
                 if (Main.netMode != NetmodeID.Server)

@@ -1,4 +1,4 @@
-using CalamityMod.NPCs.Polterghast;
+﻿using CalamityMod.NPCs.Polterghast;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

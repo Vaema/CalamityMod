@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Metadata;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Abyss
@@ -15,6 +15,7 @@ namespace CalamityMod.Tiles.Abyss
             Main.tileBlockLight[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileNoFail[Type] = true;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
             AddMapEntry(new Color(0, 50, 0));
             HitSound = SoundID.Grass;
             DustType = 2;
@@ -26,22 +27,18 @@ namespace CalamityMod.Tiles.Abyss
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-		{
-			Tile tileAbove = Framing.GetTileSafely(i, j - 1);
-			int type = -1;
-			if (tileAbove.HasTile && !tileAbove.BottomSlope) 
+        {
+            if (WorldGen.loadSuccess)
             {
-				type = tileAbove.TileType;
-			}
-
-			if (type == ModContent.TileType<PlantyMush>() || type == Type) 
-            {
-				return true;
-			}
-
-			WorldGen.KillTile(i, j);
-			return true;
-		}
+                Tile tileAbove = Framing.GetTileSafely(i, j - 1);
+                if (!tileAbove.HasTile)
+                {
+                    WorldGen.KillTile(i, j);
+                    return true;
+                }
+            }
+            return true;
+        }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {

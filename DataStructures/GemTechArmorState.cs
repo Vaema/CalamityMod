@@ -1,15 +1,15 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.GemTech;
+using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Armor.GemTech;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Items.Accessories;
-using CalamityMod.CalPlayer;
 
 namespace CalamityMod.DataStructures
 {

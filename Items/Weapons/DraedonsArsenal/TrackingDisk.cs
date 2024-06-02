@@ -1,11 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 30;
             Item.height = 34;
-            Item.damage = 16;
+            Item.damage = 19;
             Item.DamageType = RogueDamageClass.Instance;
             Item.useTime = 40;
             Item.useAnimation = 40;
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.useTurn = false;
             Item.knockBack = 3f;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
 
             Item.noUseGraphic = true;

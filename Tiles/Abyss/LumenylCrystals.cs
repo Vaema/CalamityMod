@@ -65,7 +65,7 @@ namespace CalamityMod.Tiles.Abyss
                 Main.tile[i, j].TileFrameY = 36;
             else if (leftTile.Slope == SlopeType.Solid && !leftTile.IsHalfBlock && leftTile.HasTile && leftTile.IsTileSolid())
                 Main.tile[i, j].TileFrameY = 54;
-            
+
             Main.tile[i, j].TileFrameX = (short)(WorldGen.genRand.Next(18) * 18);
         }
     }

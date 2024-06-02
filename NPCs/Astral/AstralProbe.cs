@@ -1,24 +1,35 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.Astral
 {
     public class AstralProbe : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
+
+        public override void SetStaticDefaults()
+        {
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
+        }
+
         public override void SetDefaults()
         {
             NPC.damage = 20;
@@ -45,14 +56,18 @@ namespace CalamityMod.NPCs.Astral
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AstralProbe")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AstralProbe")
             });
         }
 
@@ -149,6 +164,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.localAI[0] = 0f;
                 if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                 {
+                    // These are already nerfed in Master Mode via the global scaling code
                     int projDamage = Main.expertMode ? 14 : 18;
                     if (DownedBossSystem.downedAstrumAureus)
                         projDamage += 6;
@@ -235,7 +251,7 @@ namespace CalamityMod.NPCs.Astral
 
             spriteBatch.Draw(texture2D15, drawPosition, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstralProbeGlow").Value;
+            texture2D15 = GlowTexture.Value;
 
             spriteBatch.Draw(texture2D15, drawPosition, NPC.frame, Color.White * 0.6f, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
@@ -322,7 +338,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Stardust>(), 2, 1, 2, 1, 3));
+            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 2, 1, 2, 1, 3));
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)

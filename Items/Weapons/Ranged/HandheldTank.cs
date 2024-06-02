@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.UseSound = UseSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
 
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position+player.DirectionTo(Main.MouseWorld)*48f, velocity, ModContent.ProjectileType<HandheldTankShell>(), damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position + player.DirectionTo(Main.MouseWorld) * 48f, velocity, ModContent.ProjectileType<HandheldTankShell>(), damage, knockback, player.whoAmI, 0f, 0f);
             return false;
         }
 

@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Turret
 {
@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Turret
             {
                 Projectile.velocity.Y = -0.6f * Projectile.oldVelocity.Y;
                 Projectile.velocity.X *= 0.975f; //ground friction
-            }   
+            }
             else if (Projectile.velocity.X == 0f) //bounce off walls
             {
                 Projectile.velocity.X = -0.6f * Projectile.oldVelocity.X;
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Turret
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<IceExplosion>(), (int)(Projectile.damage * 0.25f), Projectile.knockBack, Main.myPlayer);
-            } 
+            }
         }
     }
 }

@@ -1,16 +1,16 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.BrimstoneElemental
 {
@@ -36,10 +36,9 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPC.defense = 0;
             NPC.DR_NERD(normalDR);
             NPC.lifeMax = 1000;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit23;
             NPC.DeathSound = SoundID.NPCDeath39;
             if (BossRushEvent.BossRushActive)
@@ -62,7 +61,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             int associatedNPCType = ModContent.NPCType<BrimstoneElemental>();
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
 
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Brimling")
             });
@@ -159,7 +158,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     float projectileVelocity = 5f;
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
                     int damage = NPC.GetProjectileDamage(type);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Center - NPC.Center) * projectileVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Center - NPC.Center) * projectileVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocity * 3f);
                 }
             }
             else
@@ -196,24 +195,21 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
             // Push away from other Brimlings
             float pushVelocity = 0.5f;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active)
+                if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                 {
-                    if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
+                    if (Vector2.Distance(NPC.Center, n.Center) < 40f * NPC.scale)
                     {
-                        if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < 40f * NPC.scale)
-                        {
-                            if (NPC.position.X < Main.npc[i].position.X)
-                                NPC.velocity.X -= pushVelocity;
-                            else
-                                NPC.velocity.X += pushVelocity;
+                        if (NPC.position.X < n.position.X)
+                            NPC.velocity.X -= pushVelocity;
+                        else
+                            NPC.velocity.X += pushVelocity;
 
-                            if (NPC.position.Y < Main.npc[i].position.Y)
-                                NPC.velocity.Y -= pushVelocity;
-                            else
-                                NPC.velocity.Y += pushVelocity;
-                        }
+                        if (NPC.position.Y < n.position.Y)
+                            NPC.velocity.Y -= pushVelocity;
+                        else
+                            NPC.velocity.Y += pushVelocity;
                     }
                 }
             }
@@ -223,7 +219,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    int deepRedDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 235, 0f, 0f, 100, Color.Transparent, 1f);
+                    int deepRedDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.LifeDrain, 0f, 0f, 100, Color.Transparent, 1f);
                     Dust dust = Main.dust[deepRedDust];
                     dust.velocity *= 3f;
                     Main.dust[deepRedDust].noGravity = true;
@@ -240,7 +236,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
                 for (int j = 0; j < 20; j++)
                 {
-                    int deepRedDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, 235, 0f, 0f, 100, Color.Transparent, 1f);
+                    int deepRedDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.LifeDrain, 0f, 0f, 100, Color.Transparent, 1f);
                     Dust dust = Main.dust[deepRedDust2];
                     dust.velocity *= 3f;
                     Main.dust[deepRedDust2].noGravity = true;

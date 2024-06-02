@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ModLoader;
@@ -24,9 +24,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public virtual ShortswordType ShortswordAIType => ShortswordType.TypicalShortsword;
         #endregion
 
-    public float CollisionWidth => 4f * Projectile.scale;
-    public float FullUse => Timer / 14f;
-    public Player Owner => Main.player[Projectile.owner];
+        public float CollisionWidth => 4f * Projectile.scale;
+        public float FullUse => Timer / 14f;
+        public Player Owner => Main.player[Projectile.owner];
 
 
         public int Timer

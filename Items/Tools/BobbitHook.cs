@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Tools
             Item.height = 32;
             Item.shootSpeed = BobbitHead.LaunchSpeed; // How quickly the hook is shot.
             Item.shoot = ProjectileType<BobbitHead>();
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
     }

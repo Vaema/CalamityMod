@@ -13,8 +13,8 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-                    NPCID.Sets.MPAllowedEnemies[NPCID.Plantera] = true;
-            ItemID.Sets.SortingPriorityBossSpawns[Type] = 11; // Truffle Worm
+            NPCID.Sets.MPAllowedEnemies[NPCID.Plantera] = true;
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 11; // Pirate Map (1 above Mechanical Skull)
         }
 
         public override void SetDefaults()

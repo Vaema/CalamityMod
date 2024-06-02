@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Enemy
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item111, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item111, Projectile.Center);
             }
 
             if (Projectile.velocity.X < 0f)
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Enemy
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
 
             if (Projectile.ai[0] >= 480f)

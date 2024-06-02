@@ -1,17 +1,17 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Graphics.Shaders;
-using ReLogic.Content;
 
 namespace CalamityMod.Items.Dyes
 {
     public class DragonSoulDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/DragonSoulDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass");
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/DragonSoulDyeShader"), "DyePass");
         public override void SafeSetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;

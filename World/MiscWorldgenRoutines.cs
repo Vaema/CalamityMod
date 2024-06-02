@@ -1,4 +1,7 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Rogue;
@@ -10,16 +13,13 @@ using CalamityMod.Tiles.FurnitureAncient;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
-using System;
-using System.Reflection;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using Terraria.GameContent.Generation;
 
 namespace CalamityMod.World
 {
@@ -77,7 +77,7 @@ namespace CalamityMod.World
             // Astral Chest has completely different loot in it
             if (type == ModContent.TileType<AstralChestLocked>())
             {
-                PutItemInChest(ref chest, ModContent.ItemType<Stardust>(), 30, 80);
+                PutItemInChest(ref chest, ModContent.ItemType<StarblightSoot>(), 30, 80);
                 PutItemInChest(ref chest, ModContent.ItemType<AureusCell>(), 10, 14);
                 PutItemInChest(ref chest, ModContent.ItemType<ZergPotion>(), 8);
                 PutItemInChest(ref chest, ModContent.ItemType<ZenPotion>(), 3, 5);
@@ -217,17 +217,17 @@ namespace CalamityMod.World
                     chasmWidth += WorldGen.genRand.Next(10);
                     chasmWidth -= WorldGen.genRand.Next(10);
                     float smallHoleLimit = 790f; //small
-                    
+
                     if (Main.maxTilesY > 1500)
-                    { 
-                        smallHoleLimit = 1360f; 
-                        
-                        if (Main.maxTilesY > 2100) 
-                        { 
-                            smallHoleLimit = 1950f; 
-                        } 
+                    {
+                        smallHoleLimit = 1360f;
+
+                        if (Main.maxTilesY > 2100)
+                        {
+                            smallHoleLimit = 1950f;
+                        }
                     }
-                    
+
                     if (ocean && maxChasmSize > smallHoleLimit)
                     {
                         if (chasmWidth < 7.0) //min width
@@ -427,7 +427,7 @@ namespace CalamityMod.World
         #region Smart Gem Gen
         public static void SmartGemGen()
         {
-            double oneThirdOfUnderground = (Main.maxTilesY - 200 - Main.worldSurface) / 3D;
+            double oneThirdOfUnderground = (Main.UnderworldLayer - Main.worldSurface) / 3D;
             double verticalStartFactor_Layer1 = Main.worldSurface;
             double verticalStartFactor_Layer2 = verticalStartFactor_Layer1 + oneThirdOfUnderground;
             double verticalStartFactor_Layer3 = verticalStartFactor_Layer1 + oneThirdOfUnderground * 2D;

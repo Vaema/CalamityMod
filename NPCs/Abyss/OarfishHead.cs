@@ -1,10 +1,10 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -25,7 +25,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/Oarfish_Bestiary",
                 PortraitPositionYOverride = 20
@@ -59,6 +59,10 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[2] { ModContent.GetInstance<AbyssLayer2Biome>().Type, ModContent.GetInstance<AbyssLayer3Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -93,7 +97,7 @@ namespace CalamityMod.NPCs.Abyss
             {
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 204, 0f, 0f, 150, default(Color), 0.3f);
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.TreasureSparkle, 0f, 0f, 150, default(Color), 0.3f);
                     dust.fadeIn = 0.75f;
                     dust.velocity *= 0.1f;
                     dust.noLight = true;
@@ -151,7 +155,11 @@ namespace CalamityMod.NPCs.Abyss
                 NPC.alpha = 0;
 
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
-                NPC.active = false;
+            {
+                NPC.TargetClosest(false);
+                if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
+                    NPC.active = false;
+            }
 
             float currentSpeed = speed;
             float currentTurnSpeed = turnSpeed;
@@ -330,8 +338,8 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 3, 5, 4, 7));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 3, 5, 4, 7));
         }
 
         public override void HitEffect(NPC.HitInfo hit)

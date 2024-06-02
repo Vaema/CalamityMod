@@ -1,11 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -17,10 +17,9 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
     public class TeslaCannon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
-        private int BaseDamage = 1220;
 
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/TeslaCannonFire");
-        
+
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
@@ -28,7 +27,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 78;
             Item.height = 28;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = BaseDamage;
+            Item.damage = 1220;
             Item.knockBack = 10f;
             Item.useTime = 90;
             Item.useAnimation = 90;
@@ -39,7 +38,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = FireSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
 
             Item.shoot = ModContent.ProjectileType<TeslaCannonShot>();

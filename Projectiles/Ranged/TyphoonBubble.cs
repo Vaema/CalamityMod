@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class TyphoonBubble : ModProjectile, ILocalizedModType
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
                             Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                             rotate = rotate.RotatedBy((double)(i - (six / 2 - 1)) * 3.1415926535897931 / (double)(float)six, default) + Projectile.Center;
                             Vector2 dustPos = ((float)(Main.rand.NextDouble() * 3.1415927410125732) - 1.57079637f).ToRotationVector2() * (float)Main.rand.Next(3, 8);
-                            int typhoonDust = Dust.NewDust(rotate + dustPos, 0, 0, 172, dustPos.X * 2f, dustPos.Y * 2f, 100, default, 1.4f);
+                            int typhoonDust = Dust.NewDust(rotate + dustPos, 0, 0, DustID.DungeonWater, dustPos.X * 2f, dustPos.Y * 2f, 100, default, 1.4f);
                             Main.dust[typhoonDust].noGravity = true;
                             Main.dust[typhoonDust].noLight = true;
                             Main.dust[typhoonDust].velocity /= 4f;
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 rotate = rotate.RotatedBy((double)((float)(j - (constant / 2 - 1)) * 6.28318548f / (float)constant), default) + Projectile.Center;
                 Vector2 faceDirection = rotate - Projectile.Center;
-                int waterDust = Dust.NewDust(rotate + faceDirection, 0, 0, 172, faceDirection.X * 2f, faceDirection.Y * 2f, 100, default, 1.4f);
+                int waterDust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.DungeonWater, faceDirection.X * 2f, faceDirection.Y * 2f, 100, default, 1.4f);
                 Main.dust[waterDust].noGravity = true;
                 Main.dust[waterDust].noLight = true;
                 Main.dust[waterDust].velocity = faceDirection;

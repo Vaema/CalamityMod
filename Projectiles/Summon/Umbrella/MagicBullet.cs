@@ -1,7 +1,7 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Graphics;
 using Terraria.Graphics.Shaders;
@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
         {
             Projectile.width = 6;
             Projectile.height = 6;
-			Projectile.extraUpdates = 7;
+            Projectile.extraUpdates = 7;
             Projectile.light = 0.5f;
             Projectile.scale = 1.18f;
             Projectile.friendly = true;
@@ -33,15 +33,15 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
             Projectile.timeLeft = 600;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Summon;
-			Projectile.alpha = 255;
+            Projectile.alpha = 255;
         }
 
-		public override void AI()
-		{
-			Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-			if (Projectile.ai[0]++ > 2f)
-				Projectile.alpha = 0;
-		}
+        public override void AI()
+        {
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            if (Projectile.ai[0]++ > 2f)
+                Projectile.alpha = 0;
+        }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
@@ -65,23 +65,23 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
         }
 
-		public override Color? GetAlpha(Color lightColor) => Color.White;
+        public override Color? GetAlpha(Color lightColor) => Color.White;
 
         public override bool PreDraw(ref Color lightColor)
         {
-			if (Projectile.alpha != 0)
-				return false;
+            if (Projectile.alpha != 0)
+                return false;
 
-			Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-			Rectangle frame = texture.Frame(1, 1, 0, 0);
-			Vector2 origin = frame.Size() * 0.5f;
-			Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Rectangle frame = texture.Frame(1, 1, 0, 0);
+            Vector2 origin = frame.Size() * 0.5f;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
 
             // Draw the bullet.
-			Main.spriteBatch.Draw(texture, drawPosition, frame, Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(texture, drawPosition, frame, Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
-			// Draw Afterimages
-			CalamityUtils.DrawAfterimagesFromEdge(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            // Draw Afterimages
+            CalamityUtils.DrawAfterimagesFromEdge(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
             return false;
         }
     }

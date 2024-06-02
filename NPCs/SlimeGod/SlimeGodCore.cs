@@ -1,4 +1,8 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
@@ -18,17 +22,14 @@ using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CalamityMod.NPCs.SlimeGod
 {
@@ -43,10 +44,16 @@ namespace CalamityMod.NPCs.SlimeGod
         public static readonly SoundStyle ShotSound = new("CalamityMod/Sounds/Custom/SlimeGodShot", 2);
         public static readonly SoundStyle BigShotSound = new("CalamityMod/Sounds/Custom/SlimeGodBigShot", 2);
 
+        public static Asset<Texture2D> EyeTexture;
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-			NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                EyeTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/SlimeGodEyes", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -83,16 +90,17 @@ namespace CalamityMod.NPCs.SlimeGod
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCorruption,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCrimson,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SlimeGodCore")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SlimeGodCore")
             });
         }
 
         public override void SendExtraAI(BinaryWriter writer)
         {
+            writer.Write(slimesSpawned);
             writer.Write(buffedSlime);
             writer.Write(NPC.Opacity);
             for (int i = 0; i < 4; i++)
@@ -101,6 +109,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
+            slimesSpawned = reader.ReadBoolean();
             buffedSlime = reader.ReadInt32();
             NPC.Opacity = reader.ReadSingle();
             for (int i = 0; i < 4; i++)
@@ -128,15 +137,15 @@ namespace CalamityMod.NPCs.SlimeGod
 
             Player player = Main.player[NPC.target];
 
-            if (Main.netMode != NetmodeID.MultiplayerClient && !slimesSpawned)
+            if (!slimesSpawned)
             {
                 slimesSpawned = true;
-                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<EbonianPaladin>());
-                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<CrimulanPaladin>());
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<EbonianPaladin>());
+                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<CrimulanPaladin>());
+                }
             }
-
-            // Set damage
-            NPC.damage = NPC.defDamage;
 
             // Enrage based on large slimes
             bool purpleSlimeAlive = false;
@@ -154,6 +163,9 @@ namespace CalamityMod.NPCs.SlimeGod
                     calamityGlobalNPC.newAI[0] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.X;
                     calamityGlobalNPC.newAI[1] = Main.npc[CalamityGlobalNPC.slimeGodPurple].Center.Y;
 
+                    // Despawn check
+                    calamityGlobalNPC.newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodPurple].ai[0] == 4f ? 1f : 0f;
+
                     purpleSlimeAlive = true;
                 }
             }
@@ -169,6 +181,9 @@ namespace CalamityMod.NPCs.SlimeGod
 
                     NPC.ai[1] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.X;
                     NPC.ai[2] = Main.npc[CalamityGlobalNPC.slimeGodRed].Center.Y;
+                    
+                    // Despawn check
+                    calamityGlobalNPC.newAI[3] = Main.npc[CalamityGlobalNPC.slimeGodRed].ai[0] == 3f ? 1f : 0f;
 
                     redSlimeAlive = true;
                 }
@@ -178,8 +193,11 @@ namespace CalamityMod.NPCs.SlimeGod
             bool phase2 = !purpleSlimeAlive || !redSlimeAlive;
 
             // Vanish phase
-            if (!purpleSlimeAlive && !redSlimeAlive)
+            if ((!purpleSlimeAlive && !redSlimeAlive) || calamityGlobalNPC.newAI[3] == 1f || NPC.ai[3] == 1f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 // Make sure Opacity is set to 0.8f if it's below that when the vanish phase starts
                 if (NPC.ai[3] == 0f)
                 {
@@ -197,7 +215,7 @@ namespace CalamityMod.NPCs.SlimeGod
                     {
                         Color color = Main.rand.NextBool() ? Color.Lavender : Color.Crimson;
                         color.A = 150;
-                        Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, 0f, 0f, NPC.alpha, color, 1f);
+                        Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, 0f, 0f, NPC.alpha, color, 1f);
                     }
                 }
 
@@ -225,7 +243,7 @@ namespace CalamityMod.NPCs.SlimeGod
                     {
                         Color color = Main.rand.NextBool() ? Color.Lavender : Color.Crimson;
                         color.A = 150;
-                        int slimyDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 4, 0f, 0f, NPC.alpha, color, 2f);
+                        int slimyDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, 0f, 0f, NPC.alpha, color, 2f);
                         Main.dust[slimyDust].velocity *= 3f;
                         if (Main.rand.NextBool())
                         {
@@ -237,31 +255,49 @@ namespace CalamityMod.NPCs.SlimeGod
                     {
                         Color color = Main.rand.NextBool() ? Color.Lavender : Color.Crimson;
                         color.A = 150;
-                        int slimyDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 4, 0f, 0f, NPC.alpha, color, 3f);
+                        int slimyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, 0f, 0f, NPC.alpha, color, 3f);
                         Main.dust[slimyDust2].noGravity = true;
                         Main.dust[slimyDust2].velocity *= 5f;
-                        slimyDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 4, 0f, 0f, NPC.alpha, color, 2f);
+                        slimyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, 0f, 0f, NPC.alpha, color, 2f);
                         Main.dust[slimyDust2].velocity *= 2f;
                     }
 
-                    // Let the player know that the Slime God isn't dead fr
-                    if (!DownedBossSystem.downedSlimeGod)
+                    if (calamityGlobalNPC.newAI[3] != 1f)
                     {
-                        string key = "Mods.CalamityMod.Status.Boss.SlimeGodRun";
-                        Color messageColor = Color.Magenta;
+                        // Let the player know that the Slime God isn't dead fr
+                        if (!DownedBossSystem.downedSlimeGod)
+                        {
+                            string key = "Mods.CalamityMod.Status.Boss.SlimeGodRun";
+                            Color messageColor = Color.Magenta;
 
-                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+                            CalamityUtils.DisplayLocalizedText(key, messageColor);
+                        }
+
+                        // Set Slime God to have interacted with all players
+                        for (int i = Main.maxPlayers - 1; i >= 0; i--)
+                            NPC.ApplyInteraction(i);
+
+                        NPC.active = false;
+                        NPC.HitEffect();
+                        NPC.NPCLoot();
+                        NPC.netUpdate = true;
                     }
-
-                    // Set Slime God to have interacted with all players
-                    for (int i = Main.maxPlayers - 1; i >= 0; i--)
+                    else
                     {
-                        NPC.ApplyInteraction(i);
+                        for (int x = 0; x < Main.maxNPCs; x++)
+                        {
+                            if (Main.npc[x].type == ModContent.NPCType<EbonianPaladin>() || Main.npc[x].type == ModContent.NPCType<SplitEbonianPaladin>() ||
+                                Main.npc[x].type == ModContent.NPCType<CrimulanPaladin>() || Main.npc[x].type == ModContent.NPCType<SplitCrimulanPaladin>())
+                            {
+                                Main.npc[x].active = false;
+                                Main.npc[x].netUpdate = true;
+                            }
+                        }
+
+                        NPC.active = false;
+                        NPC.HitEffect();
+                        NPC.netUpdate = true;
                     }
-                    NPC.active = false;
-                    NPC.HitEffect();
-                    NPC.NPCLoot();
-                    NPC.netUpdate = true;
                 }
 
                 return;
@@ -365,7 +401,7 @@ namespace CalamityMod.NPCs.SlimeGod
                     {
                         Color color = Main.rand.NextBool() ? Color.Lavender : Color.Crimson;
                         color.A = 150;
-                        int dust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 4, 0f, 0f, NPC.alpha, color, 2f);
+                        int dust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, 0f, 0f, NPC.alpha, color, 2f);
                         Main.dust[dust2].velocity *= 3f;
                         if (Main.rand.NextBool())
                         {
@@ -377,17 +413,21 @@ namespace CalamityMod.NPCs.SlimeGod
                     {
                         Color color = Main.rand.NextBool() ? Color.Lavender : Color.Crimson;
                         color.A = 150;
-                        int dust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 4, 0f, 0f, NPC.alpha, color, 3f);
+                        int dust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, 0f, 0f, NPC.alpha, color, 3f);
                         Main.dust[dust2].noGravity = true;
                         Main.dust[dust2].velocity *= 5f;
-                        dust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 4, 0f, 0f, NPC.alpha, color, 2f);
+                        dust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, 0f, 0f, NPC.alpha, color, 2f);
                         Main.dust[dust2].velocity *= 2f;
                     }
                 }
 
                 return;
             }
-            else if (expertMode)
+
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
+            if (expertMode)
             {
                 float divisor = bossRush ? 90f : death ? 180f : revenge ? 240f : 300f;
                 if (phase2)
@@ -421,7 +461,7 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.Opacity += 0.2f;
             if (NPC.Opacity > 0.8f)
                 NPC.Opacity = 0.8f;
-            
+
             buffedSlime = 0;
 
             float flySpeed = death ? 15f : revenge ? 13.5f : expertMode ? 12f : 9f;
@@ -441,6 +481,9 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.ai[0] -= 1f;
             if (distanceFromFlyDestination < 200f || NPC.ai[0] > 0f)
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
                 if (distanceFromFlyDestination < 200f)
                     NPC.ai[0] = 20f;
 
@@ -486,19 +529,16 @@ namespace CalamityMod.NPCs.SlimeGod
             float ignoreAllSlimesDistanceThreshold = 3200f;
 
             // Find all slimes within a generous area.
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                int npcType = Main.npc[i].type;
+                int npcType = n.type;
                 if (npcType != largeCrimulanPaladin && npcType != splitCrimulanPaladin && npcType != largeEbonianPaladin && npcType != splitEbonianPaladin)
                     continue;
 
-                if (!Main.npc[i].active)
+                if (!NPC.WithinRange(n.Center, ignoreAllSlimesDistanceThreshold))
                     continue;
 
-                if (!NPC.WithinRange(Main.npc[i].Center, ignoreAllSlimesDistanceThreshold))
-                    continue;
-
-                largeSlimes.Add(Main.npc[i]);
+                largeSlimes.Add(n);
             }
 
             // If no slimes were found, don't bother doing any more calculations. Just use the player's center.
@@ -542,7 +582,7 @@ namespace CalamityMod.NPCs.SlimeGod
             Color drawColorAlpha = NPC.GetAlpha(drawColor);
             Color colorLightingArea = Lighting.GetColor((int)((double)NPC.position.X + (double)NPC.width * 0.5) / 16, (int)(((double)NPC.position.Y + (double)NPC.height * 0.5) / 16.0));
             Texture2D texture2D3 = TextureAssets.Npc[NPC.type].Value;
-            Texture2D pog = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/SlimeGodEyes").Value;
+            Texture2D pog = EyeTexture.Value;
             int frameTexture = TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type];
             int y3 = frameTexture * (int)NPC.frameCounter;
             Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, frameTexture);
@@ -561,10 +601,10 @@ namespace CalamityMod.NPCs.SlimeGod
                     {
                         goto IL_6899;
                     }
-                    IL_6881:
+IL_6881:
                     coreID += twoConst;
                     continue;
-                    IL_6899:
+IL_6899:
                     float trailLengthMult = (float)(8 - coreID);
                     if (twoConst < 0)
                     {
@@ -647,7 +687,7 @@ namespace CalamityMod.NPCs.SlimeGod
             {
                 Color color = Main.rand.NextBool() ? Color.Lavender : Color.Crimson;
                 color.A = 150;
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, NPC.alpha, color, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, NPC.alpha, color, 1f);
             }
         }
 
@@ -659,7 +699,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 target.AddBuff(debufftype, 180, true);
                 target.AddBuff(BuffID.Weak, 180, true);
                 target.AddBuff(BuffID.Darkness, 180, true);
-			}
+            }
         }
     }
 }

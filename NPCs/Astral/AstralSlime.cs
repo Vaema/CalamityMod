@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.aiStyle = NPCAIStyleID.Slime;
             NPC.defense = 8;
             NPC.lifeMax = 200;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.6f;
             NPC.value = Item.buyPrice(0, 0, 10, 0);
             NPC.alpha = 60;
             NPC.HitSound = SoundID.NPCHit1;
@@ -44,15 +44,24 @@ namespace CalamityMod.NPCs.Astral
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<AstralInfectionBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AstralSlime")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AstralSlime")
             });
+        }
+
+        public override void AI()
+        {
+            NPC.damage = (NPC.velocity.Y == 0f || NPC.velocity.Length() < 3f) ? 0 : NPC.defDamage;
         }
 
         public override void FindFrame(int frameHeight)
@@ -91,7 +100,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Stardust>(), 2, 1, 2, 1, 3));
+            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 2, 1, 2, 1, 3));
             npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<AbandonedSlimeStaff>(), 7);
 
             var postDeus = npcLoot.DefineConditionalDropSet(() => DownedBossSystem.downedAstrumDeus);

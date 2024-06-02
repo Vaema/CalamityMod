@@ -15,18 +15,13 @@ namespace CalamityMod.Items.Weapons.Ranged
 {
     public class Animosity : ModItem, ILocalizedModType
     {
-        public static readonly SoundStyle ShootAndReloadSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFireAndReload") { PitchVariance = 0.25f }; 
-        // Very cool sound and it would be a shame for it to not be used elsewhere, would be even better if a new sound is made in the future
-        
+        public static readonly SoundStyle ShootAndReloadSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFireAndReload") { PitchVariance = 0.25f };
+        // Very cool sound and it would be a shame for it to not be used elsewhere, would be even better if a new sound is made in the future, but for now this is good enough
+
         public float SniperDmgMult = 8f;
-        public float SniperCritMult = 1.2f;
+        public float SniperCritMult = Main.zenithWorld ? 7f : 1.35f;
         public float SniperVelocityMult = 2f;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-
-        //ITS MY REWORK SO I CAN PUT A REFERENCE: Shotgun full of hate, returns Animosity otherwise
-
-        public override LocalizedText DisplayName => Main.zenithWorld ? CalamityUtils.GetText("Items.Weapons.Ranged.Animosity.DisplayNameGfb") : CalamityUtils.GetText("Items.Weapons.Ranged.Animosity.DisplayName");
-        public override LocalizedText Tooltip => Main.zenithWorld ? CalamityUtils.GetText("Items.Weapons.Ranged.Animosity.TooltipGfb") : CalamityUtils.GetText("Items.Weapons.Ranged.Animosity.Tooltip");
 
         public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
 
@@ -34,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 70;
             Item.height = 18;
-            Item.damage = 47;
+            Item.damage = 45;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 70;
             Item.height = 18;
@@ -45,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = null;
             Item.autoReuse = true;
@@ -58,8 +53,16 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void UpdateInventory(Player player)
         {
+            //ITS MY REWORK SO I CAN PUT A REFERENCE: Shotgun full of hate, returns Animosity otherwise
             if (Main.zenithWorld)
-                Item.SetNameOverride(this.GetLocalizedValue("DisplayNameGfb"));
+                Item.SetNameOverride(this.GetLocalizedValue("GFBName"));
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            string tooltip = Main.zenithWorld ? this.GetLocalizedValue("TooltipGFB") : this.GetLocalizedValue("TooltipNormal");
+            list.FindAndReplace("[GFB]", tooltip);
+            //Distortion wind do whisper one truth...
         }
 
         public override Vector2? HoldoutOffset()
@@ -75,7 +78,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override float UseSpeedMultiplier(Player player)
         {
             if (player.altFunctionUse == 2)
-                return 1/2f;
+                return 1 / 2f;
 
             return 1f;
         }
@@ -83,9 +86,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool CanUseItem(Player player)
         {
             if (player.altFunctionUse == 2)
-               Item.reuseDelay = 5;
+                Item.reuseDelay = 5;
             else
-               Item.reuseDelay = 10;
+                Item.reuseDelay = 10;
 
             return base.CanUseItem(player);
         }
@@ -94,31 +97,29 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             //It should feel powerful but also not too much given feedback
-            
+
             if (player.altFunctionUse == 2)
             {
                 player.Calamity().GeneralScreenShakePower = 2f;
                 SoundEngine.PlaySound(ShootAndReloadSound with { PitchVariance = 0.3f }, position);
+
+                if (Main.zenithWorld) // Why only shotgun full of hate, why not Hexagun too? (See AnimosityBullet for more)
+                {
+                    SoundEngine.PlaySound(SoundID.Item9, position);
+                    SoundEngine.PlaySound(SoundID.Item25, position);
+                }
                 //Shoot from muzzle
-                Vector2 nuzzlePos = player.MountedCenter + velocity*4f;
+                Vector2 nuzzlePos = player.MountedCenter + velocity * 4f;
 
                 //The dmg mult has to be applied here otherwise the left click gets it instead (for one shot), and the crit needs to be applied down here too cuz otherwise it never affects the weapon
-                int p = Projectile.NewProjectile(source, nuzzlePos, velocity*SniperVelocityMult, ModContent.ProjectileType<AnimosityBullet>(), (int)(damage*SniperDmgMult), knockback, player.whoAmI);
+                int p = Projectile.NewProjectile(source, nuzzlePos, velocity * SniperVelocityMult, ModContent.ProjectileType<AnimosityBullet>(), (int)(damage * SniperDmgMult), knockback, player.whoAmI);
                 Main.projectile[p].CritChance = (int)(Main.projectile[p].CritChance * SniperCritMult); //To support crit mults with decimals
-                if (Main.netMode != NetmodeID.Server)
-                {
-                    // TO DO: Replace with actual bullet shells or used casings
-                    Gore.NewGore(source, position, velocity.RotatedBy(2f * -player.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>("Polt5").Type);
-                }
-
-                // Why only shotgun full of hate, why not Hexagun too? (see: AnimosityBullet)
-
             }
             else
             {
-                SoundEngine.PlaySound(SoundID.Item38 with { Volume = 0.8f, Pitch = 0.5f, PitchVariance = 0.3f}, position);
+                SoundEngine.PlaySound(SoundID.Item38 with { Volume = 0.8f, Pitch = 0.5f, PitchVariance = 0.3f }, position);
                 //Shoot from muzzle
-                Vector2 nuzzlePos = player.MountedCenter + velocity*4f;
+                Vector2 nuzzlePos = player.MountedCenter + velocity * 4f;
 
                 // Fire a shotgun spread of bullets.
                 for (int i = 0; i < 6; ++i)
@@ -144,7 +145,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                         for (int k = 0; k < 3; k++)
                         {
                             Vector2 skullVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(k * 2f));
-                            Projectile skullHate = Projectile.NewProjectileDirect(source, nuzzlePos, skullVelocity, ProjectileID.BookOfSkullsSkull, damage, knockback, player.whoAmI);
+                            Projectile skullHate = Projectile.NewProjectileDirect(source, nuzzlePos, skullVelocity, ProjectileID.BookOfSkullsSkull, damage / 4, knockback, player.whoAmI);
                             skullHate.DamageType = DamageClass.Ranged;
                             skullHate.extraUpdates += 1;
                             skullHate.penetrate = 1;
@@ -156,7 +157,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                         for (int n = 0; n < 3; n++)
                         {
                             Vector2 nailVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(n * 2f));
-                            Projectile nailHate = Projectile.NewProjectileDirect(source, nuzzlePos, nailVelocity, ProjectileID.NailFriendly, damage, knockback, player.whoAmI);
+                            Projectile nailHate = Projectile.NewProjectileDirect(source, nuzzlePos, nailVelocity, ProjectileID.NailFriendly, damage / 4, knockback, player.whoAmI);
                             nailHate.DamageType = DamageClass.Ranged;
                             nailHate.extraUpdates += 1;
                         }
@@ -167,13 +168,19 @@ namespace CalamityMod.Items.Weapons.Ranged
                         for (int p = 0; p < 3; p++)
                         {
                             Vector2 poisonVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(p * 2f));
-                            Projectile poisonHate = Projectile.NewProjectileDirect(source, nuzzlePos, poisonVelocity, ModContent.ProjectileType<AcidicSaxBubble>(), damage, knockback, player.whoAmI);
+                            Projectile poisonHate = Projectile.NewProjectileDirect(source, nuzzlePos, poisonVelocity, ModContent.ProjectileType<AcidicSaxBubble>(), damage / 2, knockback, player.whoAmI, 0f, 0f, 1f);
                             poisonHate.DamageType = DamageClass.Ranged;
                             poisonHate.extraUpdates += 1;
                             poisonHate.penetrate = 1;
                         }
                     }
                 }
+            }
+            //shell
+            if (Main.netMode != NetmodeID.Server)
+            {
+                string goreType = Main.rand.NextBool() ? "EmptyAnimosityShell" : "EmptyAnimosityShell2";
+                Gore.NewGore(source, position, velocity.RotatedBy(2f * -player.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);
             }
             return false;
         }
@@ -191,10 +198,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Vector2 itemSize = new Vector2(Item.width, Item.height);
             Vector2 itemOrigin = new Vector2(-5, 6);
 
-            
+
             //Sniper's horizontal recoil; can be a bit subtle but it is noticeable
             if (player.altFunctionUse == 2)
-            { 
+            {
                 //Recoil:
                 int anim = 0;
                 for (int r = 0; r < Item.useAnimation; ++r)
@@ -227,10 +234,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
             float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             if (animProgress < 0.5)
-                rotation += (player.altFunctionUse == 2 ? -1f : -0.45f) * (float)Math.Pow((0.5f - animProgress)/0.5f, 2) * player.direction;
+                rotation += (player.altFunctionUse == 2 ? -1f : -0.45f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation); //must be here otherwise it will vibrate
 
-            
+
             //Reloads the gun 
             if (animProgress > 0.5f)
             {
@@ -239,7 +246,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Player.CompositeArmStretchAmount stretch = ((float)Math.Sin(MathHelper.Pi * (animProgress - 0.5f) / 0.36f)).ToStretchAmount();
                 player.SetCompositeArmBack(true, stretch, backArmRotation);
             }
-            
+
         }
         #endregion
     }

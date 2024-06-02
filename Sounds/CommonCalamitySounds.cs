@@ -3,7 +3,7 @@
 namespace CalamityMod.Sounds
 {
     public static class CommonCalamitySounds
-	{
+    {
         public static readonly SoundStyle ExoHitSound = new("CalamityMod/Sounds/NPCHit/ExoHit", 4) { Volume = 0.4f };
 
         public static readonly SoundStyle ExoDeathSound = new("CalamityMod/Sounds/NPCKilled/ExoDeath") { MaxInstances = 1 };

@@ -1,7 +1,7 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using static Terraria.ModLoader.ModContent;
@@ -345,7 +345,7 @@ namespace CalamityMod
             projectile.rotation = projectile.velocity.X * tiltFloat;
         }
 
-        public static void HealingProjectile(this Projectile projectile, int healing, int playerToHeal, float homingVelocity, float N, bool autoHomes = true, int timeCheck = 120)
+        public static void HealingProjectile(this Projectile projectile, int healing, int playerToHeal, float homingVelocity, float inertia, bool autoHomes = true, int timeCheck = 120)
         {
             int target = playerToHeal;
             Player player = Main.player[target];
@@ -375,16 +375,16 @@ namespace CalamityMod
                 playerDist = homingSpeed / playerDist;
                 playerVector.X *= playerDist;
                 playerVector.Y *= playerDist;
-                projectile.velocity.X = (projectile.velocity.X * N + playerVector.X) / (N + 1f);
-                projectile.velocity.Y = (projectile.velocity.Y * N + playerVector.Y) / (N + 1f);
+                projectile.velocity.X = (projectile.velocity.X * inertia + playerVector.X) / (inertia + 1f);
+                projectile.velocity.Y = (projectile.velocity.Y * inertia + playerVector.Y) / (inertia + 1f);
             }
             else if (player.lifeMagnet && projectile.timeLeft < timeCheck)
             {
                 playerDist = homingVelocity / playerDist;
                 playerVector.X *= playerDist;
                 playerVector.Y *= playerDist;
-                projectile.velocity.X = (projectile.velocity.X * N + playerVector.X) / (N + 1f);
-                projectile.velocity.Y = (projectile.velocity.Y * N + playerVector.Y) / (N + 1f);
+                projectile.velocity.X = (projectile.velocity.X * inertia + playerVector.X) / (inertia + 1f);
+                projectile.velocity.Y = (projectile.velocity.Y * inertia + playerVector.Y) / (inertia + 1f);
             }
         }
 

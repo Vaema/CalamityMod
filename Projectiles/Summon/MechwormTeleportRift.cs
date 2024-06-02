@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Summon
 
             if (Projectile.Opacity == 1f && Main.rand.NextBool(15))
             {
-                Dust dust = Dust.NewDustDirect(Projectile.Center, 0, 0, 267, 0f, 0f, 100, new Color(150, 100, 255, 255), 1f);
+                Dust dust = Dust.NewDustDirect(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 100, new Color(150, 100, 255, 255), 1f);
                 dust.velocity.X = 0f;
                 dust.noGravity = true;
                 dust.position = Projectile.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(4f, 20f);
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Summon
             float currentFade = Utils.GetLerpValue(0f, 5f, Projectile.timeLeft, true) * Utils.GetLerpValue(Projectile.ai[0], Projectile.ai[0] - 5f, Projectile.timeLeft, true);
             currentFade *= (1f + 0.2f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 30f * MathHelper.Pi * 3f)) * 0.8f;
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Color baseColor = new Color(150, 100, 255, 255) * Projectile.Opacity;
             baseColor *= 0.5f;

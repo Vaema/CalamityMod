@@ -19,13 +19,15 @@ namespace CalamityMod.Skies
         {
             if (CalamityGlobalNPC.draedon != -1 && Draedon.ExoMechIsPresent)
                 UseTargetPosition(Main.npc[CalamityGlobalNPC.draedon].Center);
+            if (Main.LocalPlayer.Calamity().monolithExoShader > 0)
+                UseTargetPosition(Main.LocalPlayer.Center);
 
             base.Apply();
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (!ExoMechsSky.CanSkyBeActive)
+            if (!ExoMechsSky.CanSkyBeActive && Main.LocalPlayer.Calamity().monolithExoShader <= 0)
                 Filters.Scene["CalamityMod:ExoMechs"].Deactivate(Array.Empty<object>());
         }
     }

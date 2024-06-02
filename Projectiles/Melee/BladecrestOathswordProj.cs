@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Projectiles.BaseProjectiles;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
 using CalamityMod.Effects;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.BaseProjectiles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Melee
             DecideCurrentState();
 
             Direction = Owner.direction;
-            
+
             //Set the owner's arm to rotate with the blade
             if (Owner.itemAnimation > 0)
             {
@@ -137,7 +137,7 @@ namespace CalamityMod.Projectiles.Melee
 
             // Offset the blade so that the handle is attached to the owner's hand.
             Vector2 bladeOffset = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * Projectile.width * 0.65f;
-            bladeOffset +=  Vector2.UnitY * Owner.gfxOffY;
+            bladeOffset += Vector2.UnitY * Owner.gfxOffY;
             Projectile.position += bladeOffset;
 
             // Create demon magic dust along the blade when swinging, as well as demon blood scythes.
@@ -186,7 +186,7 @@ namespace CalamityMod.Projectiles.Melee
                 CurrentState = SwingState.Default;
             }
         }
-        
+
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.EnterShaderRegion();
@@ -206,14 +206,14 @@ namespace CalamityMod.Projectiles.Melee
             GameShaders.Misc["CalamityMod:LinearTransformation"].Apply();
 
             CalamityUtils.DrawAfterimagesCentered(Projectile, 2, lightColor);
-            
+
             Main.spriteBatch.ExitShaderRegion();
-            
+
             CalamityUtils.CalculatePerspectiveMatricies(out var view, out var proj);
             CalamityShaders.PrimitiveClearShader.Parameters["uWorldViewProjection"].SetValue(view * proj);
             CalamityShaders.PrimitiveClearShader.CurrentTechnique.Passes[0].Apply();
             Filters.Scene["CalamityMod:PrimitiveClearShader"].GetShader().Shader.CurrentTechnique.Passes[0].Apply();
-            
+
             return false;
         }
 

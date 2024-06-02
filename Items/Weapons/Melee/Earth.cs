@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,7 +17,6 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 92;
             Item.height = 104;
-            Item.scale = 1.5f;
             Item.damage = 170;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 16;
@@ -28,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -85,12 +84,15 @@ namespace CalamityMod.Items.Weapons.Melee
             if (target.Calamity().miscDefenseLoss < target.defense)
                 target.Calamity().miscDefenseLoss += 1;
 
-            if (!target.canGhostHeal || player.moonLeech)
+            if (player.moonLeech || player.lifeSteal <= 0f || target.lifeMax <= 5)
                 return;
 
-            int heal = Main.rand.Next(1, 69);
+            int heal = Main.rand.Next(1, 70);
+            player.lifeSteal -= heal;
             player.statLife += heal;
             player.HealEffect(heal);
+            if (player.statLife > player.statLifeMax2)
+                player.statLife = player.statLifeMax2;
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
@@ -141,12 +143,15 @@ namespace CalamityMod.Items.Weapons.Melee
                 Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, ModContent.ProjectileType<EarthProj>(), earthDamage, Item.knockBack, player.whoAmI, 0f, (float)Main.rand.Next(10));
             }
 
-            if (player.moonLeech)
+            if (player.moonLeech || player.lifeSteal <= 0f)
                 return;
 
-            int heal = Main.rand.Next(1, 69);
+            int heal = Main.rand.Next(1, 70);
+            player.lifeSteal -= heal;
             player.statLife += heal;
             player.HealEffect(heal);
+            if (player.statLife > player.statLifeMax2)
+                player.statLife = player.statLifeMax2;
         }
 
         public override void AddRecipes()

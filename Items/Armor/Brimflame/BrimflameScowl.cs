@@ -3,9 +3,9 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Armor.Brimflame
 {

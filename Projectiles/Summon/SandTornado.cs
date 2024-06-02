@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class SandTornado : ModProjectile, ILocalizedModType
@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Summon
             Vector2 sizeModdingPos = new Vector2(0f, sizeModdingVector2.Y - sizeModdingVector.Y);
             sizeModdingPos.X = sizeModdingPos.Y * vectorMult;
             new Vector2(sizeModdingVector.X - sizeModdingPos.X / 2f, sizeModdingVector.Y);
-            Texture2D texture2D23 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D23 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle drawRectangle = texture2D23.Frame(1, 1, 0, 0);
             Vector2 smallRect = drawRectangle.Size() / 2f;
             float aiTrackMult = -0.06283186f * aiTracker;

@@ -1,6 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,6 +19,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 3;
             Projectile.timeLeft = 120;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -45,7 +47,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 Projectile.ai[0] += 1f;
                 int dustType = DustID.Blood;
-                int blood = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100, default, 1f);
+                int blood = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100, default, 1f);
                 Dust dust = Main.dust[blood];
                 if (Main.rand.NextBool(3))
                 {
@@ -62,7 +64,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.ai[0] += 1f;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) - MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BurningBlood>(), 120);

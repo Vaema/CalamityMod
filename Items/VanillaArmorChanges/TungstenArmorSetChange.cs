@@ -33,7 +33,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
             Player player = Main.LocalPlayer;
             float kb = player.GetWeaponKnockback(player.ActiveItem());
             float bonus = MathHelper.Clamp(kb, 0f, MaxKnockbackCritConversion);
-            
+
             string bonusText = bonus.ToString("n2");
             string kbText = kb.ToString("n2");
             setBonusText += $"\n{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(bonusText, kbText)}";

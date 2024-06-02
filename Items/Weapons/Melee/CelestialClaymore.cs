@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using System;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 5.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<CosmicSpiritBomb1>();
             Item.shootSpeed = 0.1f;

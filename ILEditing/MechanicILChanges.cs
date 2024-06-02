@@ -9,7 +9,9 @@ using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.ForegroundDrawing;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Dyes;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
@@ -29,16 +31,20 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.GameContent.Achievements;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.Liquid;
+using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;
 using Terraria.Graphics;
 using Terraria.Graphics.Light;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.IO;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.UI.Gamepad;
 
 namespace CalamityMod.ILEditing
@@ -78,7 +84,8 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
 
             // Emit a delegate which calls the Calamity utility to consistently provide iframes.
-            cursor.EmitDelegate<Action<Player, int>>((p, frames) => CalamityUtils.GiveIFrames(p, frames, false));
+            // 17APR2024: Ozzatron: Consistent shield slam iframes are not boosted by Cross Necklace at all and are fixed.
+            cursor.EmitDelegate<Action<Player, int>>((p, frames) => CalamityUtils.GiveUniversalIFrames(p, frames, false));
         }
 
         private static readonly Func<Player, int> CalamityDashEquipped = (Player p) => p.Calamity().HasCustomDash ? 1 : 0;
@@ -284,7 +291,7 @@ namespace CalamityMod.ILEditing
         #region Allow Empress to Enrage in Boss Rush
         private static bool AllowEmpressToEnrageInBossRush(Terraria.On_NPC.orig_ShouldEmpressBeEnraged orig)
         {
-            if (Main.dayTime || BossRushEvent.BossRushActive)
+            if (BossRushEvent.BossRushActive)
                 return true;
 
             return orig();
@@ -512,13 +519,15 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            // Load the player onto the stack for use in the following delegate.
+            // Load the player and the healing potion used onto the stack for use in the following delegate.
             cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldarg_1);
 
             // Insert a delegate which applies Chalice of the Blood God's function as appropriate.
-            cursor.EmitDelegate<Action<Player>>(player =>
+            cursor.EmitDelegate<Action<Player, Item>>((player, potion) =>
             {
-                if (!player.active || player.dead)
+                // If the consumed item heals 0 health, don't bother.
+                if (!player.active || player.dead || potion.healLife <= 0)
                     return;
 
                 CalamityPlayer modPlayer = player.Calamity();
@@ -527,10 +536,13 @@ namespace CalamityMod.ILEditing
 
                 if (modPlayer.chaliceOfTheBloodGod && modPlayer.chaliceBleedoutBuffer > 0D)
                 {
-                    int amountOfBleedToClear = (int)(modPlayer.chaliceBleedoutBuffer * (1f - ChaliceOfTheBloodGod.HealingPotionBufferClear));
+                    // 20FEB2024: Ozzatron: to prevent abuse, buffer clearing is now 50% of the potion instead of 50% of your buffer
+                    float amountOfBleedToClear = ChaliceOfTheBloodGod.HealingPotionRatioForBufferClear * player.GetHealLife(potion, true);
+
+                    // Actually clear the buffer
                     modPlayer.chaliceBleedoutBuffer -= amountOfBleedToClear;
 
-                    // Display text indicating that damage was transferred to bleedout.
+                    // Display text indicating that healing was applied to the bleedout buffer.
                     if (Main.netMode != NetmodeID.Server)
                     {
                         string text = $"(+{amountOfBleedToClear})";
@@ -724,22 +736,16 @@ namespace CalamityMod.ILEditing
                 Main.spriteBatch.SetBlendState(BlendState.Additive);
 
                 // Draw Projectiles.
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (!Main.projectile[i].active)
-                        continue;
-
-                    if (Main.projectile[i].ModProjectile is IAdditiveDrawer d)
+                    if (p.ModProjectile is IAdditiveDrawer d)
                         d.AdditiveDraw(Main.spriteBatch);
                 }
 
                 // Draw NPCs.
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (!Main.npc[i].active)
-                        continue;
-
-                    if (Main.npc[i].ModNPC is IAdditiveDrawer d)
+                    if (n.ModNPC is IAdditiveDrawer d)
                         d.AdditiveDraw(Main.spriteBatch);
                 }
 
@@ -785,7 +791,7 @@ namespace CalamityMod.ILEditing
             cachedLavaStyle = default;
             orig(self);
         }
-        
+
         private static void DrawCustomLava(Terraria.GameContent.Drawing.On_TileDrawing.orig_DrawPartialLiquid orig, TileDrawing self, bool behindBlocks, Tile tileCache, ref Vector2 position, ref Rectangle liquidSize, int liquidType, ref VertexColors colors)
         {
             if (liquidType != 1)
@@ -856,7 +862,7 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldloc, 8);
             cursor.Emit(OpCodes.Ldloc, 3);
             cursor.Emit(OpCodes.Ldloc, 4);
-            
+
             // Caching these values can save a LOT of overhead at runtime.
             ModWaterStyle basaltWater = ModContent.GetInstance<BasaltGullyWater>();
             ModWaterStyle burrowsWater = ModContent.GetInstance<SunkenSeaBurrowsWater>();
@@ -868,7 +874,7 @@ namespace CalamityMod.ILEditing
             ModWaterStyle upperAbyssWater = ModContent.GetInstance<UpperAbyssWater>();
             ModWaterStyle middleAbyssWater = ModContent.GetInstance<MiddleAbyssWater>();
             ModWaterStyle voidWater = ModContent.GetInstance<VoidWater>();
-            
+
             cursor.EmitDelegate<Func<VertexColors, Texture2D, int, int, int, VertexColors>>((initialColor, initialTexture, liquidType, x, y) =>
             {
                 // Don't bother changing the color if the cached drawing style is null.
@@ -1386,6 +1392,70 @@ namespace CalamityMod.ILEditing
             cursor.EmitDelegate<Func<bool, bool>>((x) => !x);
 
             // The next (untouched) instruction stores this value into Player.scope.
+        }
+        #endregion
+
+        #region Custom world selection difficulties
+        internal static void GetDifficultyOverride(Terraria.GameContent.UI.Elements.On_AWorldListItem.orig_GetDifficulty orig, AWorldListItem self, out string expertText, out Color gameModeColor)
+        {
+            // Run the original code and pull out the original text and text color
+            orig(self, out expertText, out gameModeColor);
+
+            string difficultyText = expertText;
+            Color difficultyColor = gameModeColor;
+
+            // Journey Mode takes ultimate priority
+            if (difficultyColor == Main.creativeModeColor)
+            {
+                return;
+            }
+            
+            // Go through the World Selection Difficulty System's World Difficulty list backwards and choose the latest difficulty that applies
+            for (int i = WorldSelectionDifficultySystem.WorldDifficulties.Count - 1; i >= 0; i--)
+            {
+                WorldSelectionDifficultySystem.WorldDifficulty d = WorldSelectionDifficultySystem.WorldDifficulties[i];
+                {
+                    if (d.function(self))
+                    {
+                        difficultyText = d.name;
+                        difficultyColor = d.color;
+                        break;
+                    }
+                }
+            }
+
+            // Set the text and text color
+            expertText = difficultyText;
+            gameModeColor = difficultyColor;
+        }
+        #endregion
+
+        #region Shimmer effect edits
+        public static void ShimmerEffectEdits(Terraria.On_Item.orig_GetShimmered orig, Item self)
+        {
+            // Don't keep the original stack amount when shimmering Fabsol's Vodka into Crystal Heart Vodka
+            if (self.type == ModContent.ItemType<FabsolsVodka>())
+            {
+                self.SetDefaults(ModContent.ItemType<CrystalHeartVodka>());
+                self.shimmered = true;
+                self.shimmerWet = true;
+                self.wet = true;
+                self.velocity *= 0.1f;
+                if (Main.netMode == 0)
+                {
+                    Item.ShimmerEffect(self.Center);
+                }
+                else
+                {
+                    NetMessage.SendData(146, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
+                    NetMessage.SendData(145, -1, -1, null, self.whoAmI, 1f);
+                }
+                AchievementsHelper.NotifyProgressionEvent(27);
+            }
+            else
+            {
+                orig(self);
+            }
         }
         #endregion
     }

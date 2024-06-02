@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Potions
         {
             CreateRecipe(15).
                 AddIngredient(ItemID.BottledWater, 15).
-                AddIngredient<Stardust>(4).
+                AddIngredient<StarblightSoot>(4).
                 AddIngredient<AureusCell>().
                 AddTile(TileID.AlchemyTable).
                 AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).

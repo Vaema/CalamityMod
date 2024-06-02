@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 92; // Shroomite Bar
+            ItemID.Sets.SortingPriorityMaterials[Type] = 92; // Shroomite Bar
         }
 
         public override void SetDefaults()

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 dustVel = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
                     dustVel += -Vector2.UnitY.RotatedBy((double)((float)l * MathHelper.Pi / 6f), default) * new Vector2(8f, 16f);
                     dustVel = dustVel.RotatedBy((double)(Projectile.rotation - MathHelper.PiOver2), default);
-                    int dust = Dust.NewDust(Projectile.Center, 0, 0, 221, 0f, 0f, 160, default, 1f);
+                    int dust = Dust.NewDust(Projectile.Center, 0, 0, DustID.FireworkFountain_Blue, 0f, 0f, 160, default, 1f);
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].position = Projectile.Center + dustVel;
                     Main.dust[dust].velocity = Projectile.velocity * 0.1f;
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.rand.NextBool(16))
             {
                 Vector2 extraDustVel = Vector2.UnitX.RotatedByRandom(MathHelper.PiOver2).RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                int extraDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 221, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1f);
+                int extraDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.FireworkFountain_Blue, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1f);
                 Main.dust[extraDust].velocity = extraDustVel * 0.66f;
                 Main.dust[extraDust].position = Projectile.Center + extraDustVel * 12f;
             }
@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.light = 0.9f;
                 if (Main.rand.NextBool(10))
-                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 221, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1f);
+                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.FireworkFountain_Blue, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1f);
                 if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
                     Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), Main.rand.Next(16, 18), 1f);
             }

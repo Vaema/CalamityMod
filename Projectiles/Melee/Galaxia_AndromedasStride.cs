@@ -1,17 +1,17 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
-using Terraria.Graphics.Shaders;
+using CalamityMod.Particles;
+using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
-using CalamityMod.Tiles.Astral;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -27,15 +27,11 @@ namespace CalamityMod.Projectiles.Melee
         public ref float CurrentIndicator => ref Projectile.localAI[0]; //What "indicator" stage are you on.
         public ref float OverCharge => ref Projectile.localAI[1];
 
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
         const float MaxCharge = 360;
 
         public Vector2 lastDisplacement;
         public float dashDuration;
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -79,7 +75,7 @@ namespace CalamityMod.Projectiles.Melee
                 initialized = true;
             }
 
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 if (State == 0f)
                 {
@@ -138,7 +134,7 @@ namespace CalamityMod.Projectiles.Melee
                         Particle smoke = new HeavySmokeParticle(Projectile.Center + direction * 50f, smokeSpeed + Owner.velocity, Color.Lerp(Color.Purple, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.6f, 1.2f), 0.8f, 0, false, 0, true);
                         GeneralParticleHandler.SpawnParticle(smoke);
 
-                        if (Main.rand.Next(3) == 0)
+                        if (Main.rand.NextBool(3))
                         {
                             Particle smokeGlow = new HeavySmokeParticle(Projectile.Center + direction * 50f, smokeSpeed + Owner.velocity, Main.hslToRgb(0.85f, 1, 0.8f), 20, Main.rand.NextFloat(0.4f, 0.7f), 0.8f, 0, true, 0.01f, true);
                             GeneralParticleHandler.SpawnParticle(smokeGlow);
@@ -202,7 +198,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
 
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
@@ -265,7 +261,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Owner.GiveIFrames(FourSeasonsGalaxia.AndromedaAttunement_DashHitIFrames);
+            // 17APR2024: Ozzatron: Galaxia's dash gives iframes when striking enemies in a similar manner to a ram dash.
+            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+            Owner.GiveUniversalIFrames(FourSeasonsGalaxia.AndromedaAttunement_DashHitIFrames);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

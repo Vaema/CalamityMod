@@ -1,9 +1,10 @@
-﻿using CalamityMod.Dusts;
+﻿using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -16,12 +17,20 @@ namespace CalamityMod.NPCs.StormWeaver
     {
         private int invinceTime = 180;
 
+        public static Asset<Texture2D> Phase2Texture;
+        public static Asset<Texture2D> GlowTexture;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.StormWeaverHead.DisplayName");
 
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                Phase2Texture = ModContent.Request<Texture2D>(Texture + "Naked", AssetRequestMode.AsyncLoad);
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -36,7 +45,7 @@ namespace CalamityMod.NPCs.StormWeaver
             // Phase one settings
             NPC.takenDamageMultiplier = 2f;
             NPC.HitSound = SoundID.NPCHit53;
-            NPC.DeathSound = SoundID.NPCDeath14;
+            NPC.DeathSound = StormWeaverHead.DeathSound;
 
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
@@ -48,7 +57,6 @@ namespace CalamityMod.NPCs.StormWeaver
             NPC.noGravity = true;
             NPC.boss = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
@@ -105,6 +113,8 @@ namespace CalamityMod.NPCs.StormWeaver
                 NPC.life = Main.npc[(int)NPC.ai[1]].life;
 
             bool bossRush = BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || bossRush;
+            bool revenge = CalamityWorld.revenge || bossRush;
 
             // Shed armor
             bool phase2 = NPC.life / (float)NPC.lifeMax < 0.8f;
@@ -130,7 +140,6 @@ namespace CalamityMod.NPCs.StormWeaver
                     global.DR = 0.4f;
                     NPC.takenDamageMultiplier = 1f;
                     NPC.HitSound = SoundID.NPCHit13;
-                    NPC.DeathSound = SoundID.NPCDeath13;
                     NPC.frame = new Rectangle(0, 0, 42, 68);
                 }
             }
@@ -150,15 +159,7 @@ namespace CalamityMod.NPCs.StormWeaver
             }
 
             // Check if other segments are still alive, if not, die
-            bool shouldDespawn = true;
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<StormWeaverHead>())
-                {
-                    shouldDespawn = false;
-                    break;
-                }
-            }
+            bool shouldDespawn = !NPC.AnyNPCs(ModContent.NPCType<StormWeaverHead>());
             if (!shouldDespawn)
             {
                 if (NPC.ai[1] <= 0f)
@@ -180,7 +181,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        int redDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 182, 0f, 0f, 100, default, 2f);
+                        int redDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TheDestroyer, 0f, 0f, 100, default, 2f);
                         Main.dust[redDust].noGravity = true;
                         Main.dust[redDust].noLight = true;
                     }
@@ -191,7 +192,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     NPC.alpha = 0;
             }
 
-            Vector2 segmentLocation = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+            Vector2 segmentLocation = NPC.Center;
             float targetX = Main.player[NPC.target].position.X + (Main.player[NPC.target].width / 2);
             float targetY = Main.player[NPC.target].position.Y + (Main.player[NPC.target].height / 2);
             targetX = (int)(targetX / 16f) * 16;
@@ -206,10 +207,11 @@ namespace CalamityMod.NPCs.StormWeaver
             {
                 try
                 {
-                    segmentLocation = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+                    segmentLocation = NPC.Center;
                     targetX = Main.npc[(int)NPC.ai[1]].position.X + (Main.npc[(int)NPC.ai[1]].width / 2) - segmentLocation.X;
                     targetY = Main.npc[(int)NPC.ai[1]].position.Y + (Main.npc[(int)NPC.ai[1]].height / 2) - segmentLocation.Y;
-                } catch
+                }
+                catch
                 {
                 }
 
@@ -227,6 +229,21 @@ namespace CalamityMod.NPCs.StormWeaver
                     NPC.spriteDirection = -1;
                 else if (targetX > 0f)
                     NPC.spriteDirection = 1;
+            }
+
+            // Calculate contact damage based on velocity
+            float velocity = (phase2 ? 12f : 10f) + (bossRush ? 3f : revenge ? 1.5f : expertMode ? 1f : 0f);
+            float minimalContactDamageVelocity = velocity * 0.25f;
+            float minimalDamageVelocity = velocity * 0.5f;
+            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            {
+                NPC.damage = 0;
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
             }
         }
 
@@ -254,7 +271,7 @@ namespace CalamityMod.NPCs.StormWeaver
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
-            Texture2D texture = phase2 ? ModContent.Request<Texture2D>("CalamityMod/NPCs/StormWeaver/StormWeaverTailNaked").Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = phase2 ? Phase2Texture.Value : TextureAssets.Npc[NPC.type].Value;
             Vector2 halfSizeTexture = new Vector2(texture.Width / 2, texture.Height / 2);
             float chargeTelegraphTime = 120f;
             float chargeTelegraphGateValue = chargePhaseGateValue - chargeTelegraphTime;
@@ -273,7 +290,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
             if (!phase2)
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/StormWeaver/StormWeaverTailGlow").Value;
+                texture = GlowTexture.Value;
                 Color rainbowBecauseWhyTheFuckNot = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
                 Color drawColorAlpha37 = Color.Lerp(Color.White, rainbowBecauseWhyTheFuckNot, 0.5f);
                 spriteBatch.Draw(texture, drawLocation, NPC.frame, drawColorAlpha37, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
@@ -325,7 +342,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
                 for (int i = 0; i < 20; i++)
                 {
-                    int cosmiliteDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    int cosmiliteDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[cosmiliteDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -336,10 +353,10 @@ namespace CalamityMod.NPCs.StormWeaver
 
                 for (int j = 0; j < 40; j++)
                 {
-                    int cosmiliteDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
+                    int cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
                     Main.dust[cosmiliteDust2].noGravity = true;
                     Main.dust[cosmiliteDust2].velocity *= 5f;
-                    cosmiliteDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[cosmiliteDust2].velocity *= 2f;
                 }
             }
@@ -352,7 +369,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }

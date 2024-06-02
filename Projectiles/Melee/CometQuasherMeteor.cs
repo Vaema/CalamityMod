@@ -1,14 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
+
 namespace CalamityMod.Projectiles.Melee
 {
     public class CometQuasherMeteor : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
@@ -27,9 +29,17 @@ namespace CalamityMod.Projectiles.Melee
             AIType = ProjectileID.Meteor1;
         }
 
+        public override void AI()
+        {
+            if (Projectile.Center.Y > Projectile.ai[2])
+                Projectile.tileCollide = true;
+            else
+                Projectile.tileCollide = false;
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (Projectile.Calamity().lineColor == 1)
                 tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/CometQuasherMeteor2").Value;
             if (Projectile.Calamity().lineColor == 2)
@@ -42,20 +52,24 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item89, Projectile.position);
+
             Projectile.ExpandHitboxBy((int)(128f * Projectile.scale));
+
             for (int i = 0; i < 8; ++i)
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 31, 0.0f, 0.0f, 100, new Color(), 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0.0f, 0.0f, 100, new Color(), 1.5f);
+
             for (int j = 0; j < 32; ++j)
             {
-                int fieryDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 6, 0.0f, 0.0f, 100, new Color(), 2.5f);
+                int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 2.5f);
                 Dust dust1 = Main.dust[fieryDust];
                 dust1.noGravity = true;
                 dust1.velocity *= 3f;
-                int fieryDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 6, 0.0f, 0.0f, 100, new Color(), 1.5f);
+                int fieryDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 1.5f);
                 Dust dust2 = Main.dust[fieryDust2];
                 dust2.velocity *= 2f;
                 dust2.noGravity = true;
             }
+
             if (Main.netMode != NetmodeID.Server)
             {
                 for (int j = 0; j < 2; ++j)
@@ -67,6 +81,7 @@ namespace CalamityMod.Projectiles.Melee
                     gore.velocity.Y += (float)Main.rand.Next(-10, 11) * 0.05f;
                 }
             }
+
             if (Projectile.owner == Main.myPlayer)
             {
                 Projectile.usesLocalNPCImmunity = true;
@@ -75,9 +90,10 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.maxPenetrate = 0;
                 Projectile.Damage();
             }
+
             for (int j = 0; j < 5; ++j)
             {
-                int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Utils.SelectRandom<int>(Main.rand, new int[3]{ 6, 259, 158 }), 2.5f * (float) Projectile.direction, -2.5f, 0, new Color(), 1f);
+                int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Utils.SelectRandom<int>(Main.rand, new int[3] { 6, 259, 158 }), 2.5f * (float)Projectile.direction, -2.5f, 0, new Color(), 1f);
                 Dust dust1 = Main.dust[fieryDust];
                 dust1.alpha = 200;
                 dust1.velocity *= 2.4f;

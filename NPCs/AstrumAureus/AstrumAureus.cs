@@ -1,4 +1,6 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.IO;
+using System.Threading;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
@@ -10,24 +12,24 @@ using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using System.Threading;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
 
 namespace CalamityMod.NPCs.AstrumAureus
 {
@@ -42,6 +44,15 @@ namespace CalamityMod.NPCs.AstrumAureus
         public static readonly SoundStyle JumpSound = new("CalamityMod/Sounds/Custom/AstrumAureus/AureusJump");
         public static readonly SoundStyle TeleportSound = new("CalamityMod/Sounds/Custom/AstrumAureus/AureusTeleport");
 
+        public static Asset<Texture2D> JumpTexture;
+        public static Asset<Texture2D> RechargeTexture;
+        public static Asset<Texture2D> StompTexture;
+        public static Asset<Texture2D> WalkTexture;
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> JumpTexture_Glow;
+        public static Asset<Texture2D> StompTexture_Glow;
+        public static Asset<Texture2D> WalkTexture_Glow;
+
         private bool stomping = false;
         public int slimeProjCounter = 0;
         public int slimePhase = 0;
@@ -51,7 +62,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             Main.npcFrameCount[NPC.type] = 6;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.27f,
                 PortraitScale = 0.45f,
@@ -59,7 +70,18 @@ namespace CalamityMod.NPCs.AstrumAureus
             };
             value.Position.Y -= 20f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-			NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                JumpTexture = ModContent.Request<Texture2D>(Texture + "Jump", AssetRequestMode.AsyncLoad);
+                RechargeTexture = ModContent.Request<Texture2D>(Texture + "Recharge", AssetRequestMode.AsyncLoad);
+                StompTexture = ModContent.Request<Texture2D>(Texture + "Stomp", AssetRequestMode.AsyncLoad);
+                WalkTexture = ModContent.Request<Texture2D>(Texture + "Walk", AssetRequestMode.AsyncLoad);
+                JumpTexture_Glow = ModContent.Request<Texture2D>(Texture + "JumpGlow", AssetRequestMode.AsyncLoad);
+                StompTexture_Glow = ModContent.Request<Texture2D>(Texture + "StompGlow", AssetRequestMode.AsyncLoad);
+                WalkTexture_Glow = ModContent.Request<Texture2D>(Texture + "WalkGlow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -84,7 +106,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
 
             if (Main.getGoodWorld)
                 NPC.scale *= 0.8f;
@@ -94,10 +116,10 @@ namespace CalamityMod.NPCs.AstrumAureus
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.NightTime,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AstrumAureus")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AstrumAureus")
             });
         }
 
@@ -127,7 +149,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
         public override void AI()
         {
-            CalamityAI.AstrumAureusAI(NPC, Mod);
+            AstrumAureusAI.VanillaAstrumAureusAI(NPC, Mod);
         }
 
         public override void FindFrame(int frameHeight)
@@ -236,33 +258,33 @@ namespace CalamityMod.NPCs.AstrumAureus
             if (NPC.ai[0] == 0f || (slimePhaseHP && Main.zenithWorld))
             {
                 NPCTexture = TextureAssets.Npc[NPC.type].Value;
-                GlowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusGlow").Value;
+                GlowMaskTexture = Texture_Glow.Value;
             }
             else if (NPC.ai[0] == 1f) //nothing special done here
             {
-                NPCTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusRecharge").Value;
+                NPCTexture = RechargeTexture.Value;
             }
             else if (NPC.ai[0] == 2f) //nothing special done here
             {
-                NPCTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusWalk").Value;
-                GlowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusWalkGlow").Value;
+                NPCTexture = WalkTexture.Value;
+                GlowMaskTexture = WalkTexture_Glow.Value;
             }
             else if (NPC.ai[0] == 3f || NPC.ai[0] == 4f) //needs to have an in-air frame
             {
                 if (NPC.velocity.Y == 0f && NPC.ai[1] >= 0f && NPC.ai[0] == 3f) //idle before jump
                 {
                     NPCTexture = TextureAssets.Npc[NPC.type].Value; //idle frames
-                    GlowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusGlow").Value;
+                    GlowMaskTexture = Texture_Glow.Value;
                 }
                 else if (NPC.velocity.Y <= 0f || NPC.ai[1] < 0f) //jump frames if flying upward or if about to jump
                 {
-                    NPCTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusJump").Value;
-                    GlowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusJumpGlow").Value;
+                    NPCTexture = JumpTexture.Value;
+                    GlowMaskTexture = JumpTexture_Glow.Value;
                 }
                 else //stomping
                 {
-                    NPCTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusStomp").Value;
-                    GlowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusStompGlow").Value;
+                    NPCTexture = StompTexture.Value;
+                    GlowMaskTexture = StompTexture_Glow.Value;
                 }
             }
             else if (NPC.ai[0] >= 5f) //needs to have an in-air frame
@@ -270,12 +292,12 @@ namespace CalamityMod.NPCs.AstrumAureus
                 if (NPC.velocity.Y == 0f) //idle before teleport
                 {
                     NPCTexture = TextureAssets.Npc[NPC.type].Value; //idle frames
-                    GlowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusGlow").Value;
+                    GlowMaskTexture = Texture_Glow.Value;
                 }
                 else //in-air frames
                 {
-                    NPCTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusJump").Value;
-                    GlowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AstrumAureusJumpGlow").Value;
+                    NPCTexture = JumpTexture.Value;
+                    GlowMaskTexture = JumpTexture_Glow.Value;
                 }
             }
 
@@ -417,7 +439,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             }
 
             // Drop an Astral Meteor if applicable
-            ThreadPool.QueueUserWorkItem(_ => AstralBiome.PlaceAstralMeteor());
+            ThreadPool.QueueUserWorkItem(_ => World.AstralBiome.PlaceAstralMeteor());
 
             // Mark Astrum Aureus as dead
             DownedBossSystem.downedAstrumAureus = true;
@@ -446,7 +468,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int r = 0; r < 50; r++)
                 {
-                    int aureusDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    int aureusDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[aureusDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -456,10 +478,10 @@ namespace CalamityMod.NPCs.AstrumAureus
                 }
                 for (int s = 0; s < 100; s++)
                 {
-                    int aureusDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 3f);
+                    int aureusDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 3f);
                     Main.dust[aureusDust2].noGravity = true;
                     Main.dust[aureusDust2].velocity *= 5f;
-                    aureusDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
+                    aureusDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 2f);
                     Main.dust[aureusDust2].velocity *= 2f;
                 }
             }
@@ -467,7 +489,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 

@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Main.myPlayer == Projectile.owner)
             {
-                if (!player.channel || player.noItems || player.CCed)
+                if (player.CantUseHoldout())
                 {
                     AttemptExecuteAttacks(player);
                     Projectile.Kill();
@@ -156,9 +156,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnProjectile_Glow").Value;
-            int height = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            int height = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int yStart = height * Projectile.frame;
             Main.spriteBatch.Draw(scytheTexture,
                                   Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,

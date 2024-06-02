@@ -1,15 +1,14 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
+using Terraria.DataStructures;
 using Terraria.ID;
-using CalamityMod.Projectiles.Rogue;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
     public class TheSyringe : RogueWeapon
     {
-        public static int BaseDamage = 60;
         public static float Knockback = 5f;
         public static float Speed = 15f;
 
@@ -17,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 14;
             Item.height = 50;
-            Item.damage = BaseDamage;
+            Item.damage = 60;
             Item.knockBack = Knockback;
             Item.autoReuse = true;
             Item.useTime = 15;
@@ -28,12 +27,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noUseGraphic = true;
             Item.shoot = ModContent.ProjectileType<TheSyringeProj>();
             Item.shootSpeed = Speed;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 1.2f;
+        public override float StealthDamageMultiplier => 1.2f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

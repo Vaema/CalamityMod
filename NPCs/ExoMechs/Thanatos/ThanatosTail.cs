@@ -1,12 +1,13 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -47,11 +48,18 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
         private const float timeToOpenAndFireLasers = 36f;
 
         private const float segmentCloseTimerDecrement = 0.2f;
+
+        public static Asset<Texture2D> GlowTexture;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.ThanatosHead.DisplayName");
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 5;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -71,7 +79,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.Opacity = 0f;
-            NPC.canGhostHeal = false;
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -139,15 +146,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             bool expertMode = Main.expertMode || bossRush;
 
             // Check if other segments are still alive, if not, die
-            bool shouldDespawn = true;
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<ThanatosHead>())
-                {
-                    shouldDespawn = false;
-                    break;
-                }
-            }
+            bool shouldDespawn = !NPC.AnyNPCs(ModContent.NPCType<ThanatosHead>());
             if (!shouldDespawn)
             {
                 if (NPC.ai[1] <= 0f)
@@ -167,7 +166,8 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             // Set vulnerable to false by default
             vulnerable = false;
 
-            CalamityGlobalNPC calamityGlobalNPC_Head = Main.npc[(int)NPC.ai[2]].Calamity();
+            NPC head = Main.npc[(int)NPC.ai[2]];
+            CalamityGlobalNPC calamityGlobalNPC_Head = head.Calamity();
 
             bool invisiblePhase = calamityGlobalNPC_Head.newAI[1] == (float)ThanatosHead.SecondaryPhase.PassiveAndImmune;
             NPC.dontTakeDamage = Main.npc[(int)NPC.ai[2]].dontTakeDamage;
@@ -281,16 +281,16 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                                 int numProjectiles = 0;
                                 float maxDistance = 2400f;
 
-                                for (int i = 0; i < Main.maxPlayers; i++)
+                                foreach (Player plr in Main.ActivePlayers)
                                 {
-                                    if (!Main.player[i].active || Main.player[i].dead)
+                                    if (plr.dead)
                                         continue;
 
-                                    Vector2 playerCenter = Main.player[i].Center;
+                                    Vector2 playerCenter = plr.Center;
                                     float distance = Vector2.Distance(playerCenter, NPC.Center);
                                     if (distance < maxDistance)
                                     {
-                                        whoAmIArray[numProjectiles] = i;
+                                        whoAmIArray[numProjectiles] = plr.whoAmI;
                                         targetCenterArray[numProjectiles] = playerCenter;
                                         int projectileLimit = numProjectiles + 1;
                                         numProjectiles = projectileLimit;
@@ -345,16 +345,16 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                                 int numProjectiles = 0;
                                 float maxDistance = 2400f;
 
-                                for (int i = 0; i < Main.maxPlayers; i++)
+                                foreach (Player plr in Main.ActivePlayers)
                                 {
-                                    if (!Main.player[i].active || Main.player[i].dead)
+                                    if (plr.dead)
                                         continue;
 
-                                    Vector2 playerCenter = Main.player[i].Center;
+                                    Vector2 playerCenter = plr.Center;
                                     float distance = Vector2.Distance(playerCenter, NPC.Center);
                                     if (distance < maxDistance)
                                     {
-                                        whoAmIArray[numProjectiles] = i;
+                                        whoAmIArray[numProjectiles] = plr.whoAmI;
                                         targetCenterArray[numProjectiles] = playerCenter;
                                         int projectileLimit = numProjectiles + 1;
                                         numProjectiles = projectileLimit;
@@ -468,7 +468,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
 
             SmokeDrawer.Update();
 
-            Player player = Main.player[Main.npc[CalamityGlobalNPC.draedonExoMechWorm].target];
+            Player player = Main.player[head.target];
 
             Vector2 npcCenter = NPC.Center;
             float targetCenterX = player.Center.X;
@@ -480,32 +480,73 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             targetCenterX -= npcCenter.X;
             targetCenterY -= npcCenter.Y;
 
-            float distanceFromTarget = (float)Math.Sqrt(targetCenterX * targetCenterX + targetCenterY * targetCenterY);
+            float newPosition = (float)Math.Sqrt(targetCenterX * targetCenterX + targetCenterY * targetCenterY);
             if (NPC.ai[1] > 0f && NPC.ai[1] < Main.npc.Length)
             {
                 try
                 {
-                    npcCenter = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
-                    targetCenterX = Main.npc[(int)NPC.ai[1]].position.X + (Main.npc[(int)NPC.ai[1]].width / 2) - npcCenter.X;
-                    targetCenterY = Main.npc[(int)NPC.ai[1]].position.Y + (Main.npc[(int)NPC.ai[1]].height / 2) - npcCenter.Y;
+                    npcCenter = NPC.Center;
+                    targetCenterX = Main.npc[(int)NPC.ai[1]].Center.X - npcCenter.X;
+                    targetCenterY = Main.npc[(int)NPC.ai[1]].Center.Y - npcCenter.Y;
                 }
                 catch
                 {
                 }
 
                 NPC.rotation = (float)Math.Atan2(targetCenterY, targetCenterX) + MathHelper.PiOver2;
-                distanceFromTarget = (float)Math.Sqrt(targetCenterX * targetCenterX + targetCenterY * targetCenterY);
-                distanceFromTarget = (distanceFromTarget - NPC.width) / distanceFromTarget;
-                targetCenterX *= distanceFromTarget;
-                targetCenterY *= distanceFromTarget;
+                newPosition = (float)Math.Sqrt(targetCenterX * targetCenterX + targetCenterY * targetCenterY);
+                newPosition = (newPosition - NPC.width) / newPosition;
+                targetCenterX *= newPosition;
+                targetCenterY *= newPosition;
                 NPC.velocity = Vector2.Zero;
-                NPC.position.X = NPC.position.X + targetCenterX;
-                NPC.position.Y = NPC.position.Y + targetCenterY;
+                NPC.position.X += targetCenterX;
+                NPC.position.Y += targetCenterY;
 
                 if (targetCenterX < 0f)
                     NPC.spriteDirection = -1;
                 else if (targetCenterX > 0f)
                     NPC.spriteDirection = 1;
+            }
+
+            bool speedUp = head.localAI[3] < 180f;
+
+            // Distance from target
+            float distanceFromTarget = Vector2.Distance(head.Center, speedUp ? (player.Center + new Vector2(0f, 2400f)) : player.Center);
+
+            // Increase speed if too far from target
+            float increaseSpeedMult = 1f;
+            float increaseSpeedGateValue = 600f;
+            if (distanceFromTarget > increaseSpeedGateValue)
+            {
+                float distanceAmount = MathHelper.Clamp((distanceFromTarget - increaseSpeedGateValue) / (CalamityGlobalNPC.CatchUpDistance350Tiles - increaseSpeedGateValue), 0f, 1f);
+                increaseSpeedMult = MathHelper.Lerp(1f, 3.5f, distanceAmount);
+            }
+
+            // Velocity and turn speed values
+            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.15f : 0f) + (bossRush ? 1.25f : death ? 1.2f : revenge ? 1.175f : expertMode ? 1.15f : 1.1f);
+            float baseVelocity = 10f * baseVelocityMult;
+
+            // Increase top velocity if target is dead or if Thanatos is uncoiling
+            if (player.dead || speedUp)
+                baseVelocity *= 4f;
+            else
+                baseVelocity *= increaseSpeedMult;
+
+            if (Main.getGoodWorld)
+                baseVelocity *= 1.15f;
+
+            // Calculate contact damage based on velocity
+            float minimalContactDamageVelocity = baseVelocity * 0.25f;
+            float minimalDamageVelocity = baseVelocity * 0.5f;
+            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            {
+                NPC.damage = 0;
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
             }
         }
 
@@ -584,7 +625,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Thanatos/ThanatosTailGlow").Value;
+            texture = GlowTexture.Value;
             spriteBatch.Draw(texture, center, NPC.frame, Color.White * NPC.Opacity, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
             SmokeDrawer.DrawSet(NPC.Center);
@@ -626,20 +667,20 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
 
             int baseDust = vulnerable ? 3 : 1;
             for (int k = 0; k < baseDust; k++)
-                Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1f);
 
             if (NPC.life <= 0)
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int plasmaDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
+                    int plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TerraBlade, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
                     Main.dust[plasmaDust].noGravity = true;
                     Main.dust[plasmaDust].velocity *= 3f;
-                    plasmaDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                    plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                     Main.dust[plasmaDust].velocity *= 2f;
                     Main.dust[plasmaDust].noGravity = true;
                 }
@@ -656,7 +697,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }

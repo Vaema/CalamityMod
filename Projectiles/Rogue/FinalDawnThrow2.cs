@@ -3,9 +3,9 @@ using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -44,9 +44,9 @@ namespace CalamityMod.Projectiles.Rogue
             Player player = Main.player[Projectile.owner];
             //Give iframes to the player
             if (player.immuneTime <= 30)
-            { 
-            player.immuneNoBlink = true;
-            player.immuneTime = 30;
+            {
+                player.immuneNoBlink = true;
+                player.immuneTime = 30;
             }
 
             // Spawn homing flames that chase the HIT enemy only. This is also limited to one burst
@@ -77,11 +77,9 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             // Kill any hooks from the projectile owner.
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-
-                if (!proj.active || proj.owner != player.whoAmI || proj.aiStyle != ProjAIStyleID.Hook)
+                if (proj.owner != player.whoAmI || proj.aiStyle != ProjAIStyleID.Hook)
                     continue;
 
                 if (proj.aiStyle == ProjAIStyleID.Hook)
@@ -102,12 +100,12 @@ namespace CalamityMod.Projectiles.Rogue
             bool worldEdge = Projectile.Center.X < 1000 || Projectile.Center.Y < 1000 || Projectile.Center.X > Main.maxTilesX * 16 - 1000 || Projectile.Center.Y > Main.maxTilesY * 16 - 1000;
 
             Projectile.ai[0]++;
-            if(Projectile.ai[0] >= 60 || worldEdge)
+            if (Projectile.ai[0] >= 60 || worldEdge)
             {
                 Projectile.Kill();
             }
 
-            int idx = Dust.NewDust(Projectile.position, Projectile.width , Projectile.height, ModContent.DustType<FinalFlame>(), 0f, 0f, 0, default, 2.5f);
+            int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<FinalFlame>(), 0f, 0f, 0, default, 2.5f);
             Main.dust[idx].velocity = Projectile.velocity * -0.5f;
             Main.dust[idx].noGravity = true;
             Main.dust[idx].noLight = false;
@@ -117,9 +115,9 @@ namespace CalamityMod.Projectiles.Rogue
             Player player = Main.player[Projectile.owner];
             float scytheRotation = player.fullRotation;
 
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowScytheTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnThrow2_Glow").Value;
-            int num214 = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            int num214 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y6 = num214 * Projectile.frame;
 
             Vector2 origin = new Vector2(scytheTexture.Width / 2f + 40f * player.direction, num214 * 1.1f);

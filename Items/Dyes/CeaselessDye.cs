@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Dyes
 {
     public class CeaselessDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/CeaselessDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass");
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/CeaselessDyeShader"), "DyePass");
         public override void SafeSetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;

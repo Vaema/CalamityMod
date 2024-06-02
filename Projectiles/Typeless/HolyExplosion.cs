@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Typeless
 {
     public class HolyExplosion : ModProjectile, ILocalizedModType
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 20; i++)
             {
-                int holyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 2f);
+                int holyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[holyDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -44,10 +44,10 @@ namespace CalamityMod.Projectiles.Typeless
             }
             for (int j = 0; j < 40; j++)
             {
-                int holyDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 3f);
+                int holyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 3f);
                 Main.dust[holyDust2].noGravity = true;
                 Main.dust[holyDust2].velocity *= 5f;
-                holyDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 2f);
+                holyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[holyDust2].velocity *= 2f;
             }
         }

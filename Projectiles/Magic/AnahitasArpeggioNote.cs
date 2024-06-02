@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.ai[1] = 1f;
                 Main.musicPitch = Projectile.ai[0];
-                SoundEngine.PlaySound(SoundID.Item26, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item26, Projectile.Center);
             }
 
             Lighting.AddLight(Projectile.Center, 0f, 0f, 1.2f);

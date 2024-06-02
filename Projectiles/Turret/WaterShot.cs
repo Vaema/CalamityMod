@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Turret
 {
@@ -61,9 +61,9 @@ namespace CalamityMod.Projectiles.Turret
                 Projectile.velocity.Y = fallSpeedCap;
             Projectile.velocity.X *= 0.995f;
         }
-        
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Wet, 240);
-        
+
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Wet, 240);
 
         public override bool PreDraw(ref Color lightColor)

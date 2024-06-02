@@ -1,4 +1,4 @@
-using CalamityMod.Items.Placeables.FurnitureExo;
+﻿using CalamityMod.Items.Placeables.FurnitureExo;
 using CalamityMod.Walls;
 using Terraria.ID;
 using Terraria.ModLoader;

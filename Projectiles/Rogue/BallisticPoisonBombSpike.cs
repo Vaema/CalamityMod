@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.localAI[1] += 1f;
             if (Projectile.localAI[1] > 4f)
             {
-                int dustt = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 14, 0f, 0f, 100, default, 0.75f);
+                int dustt = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 100, default, 0.75f);
                 Main.dust[dustt].noGravity = true;
                 Main.dust[dustt].velocity *= 0f;
             }
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 2; i++)
             {
-                int smoke = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 14, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
+                int smoke = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
                 Main.dust[smoke].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -68,10 +68,10 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int j = 0; j < 2; j++)
             {
-                int fire = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 6, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
                 Main.dust[fire].noGravity = true;
                 Main.dust[fire].velocity *= 5f;
-                fire = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 6, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
+                fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
                 Main.dust[fire].velocity *= 2f;
             }
         }

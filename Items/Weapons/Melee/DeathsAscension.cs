@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<DeathsAscensionSwing>();
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
         }

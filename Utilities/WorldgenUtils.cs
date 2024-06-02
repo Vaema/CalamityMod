@@ -52,7 +52,7 @@ namespace CalamityMod
                 {
                     finished = true;
                 }
-                
+
                 if (numVines <= 1)
                 {
                     finished = true;
@@ -85,7 +85,7 @@ namespace CalamityMod
                     double liquidDifferencePercentage = (maxLiquid - Liquid.numLiquid - LiquidBuffer.numLiquidBuffer) / (double)maxLiquid;
                     if (Liquid.numLiquid + LiquidBuffer.numLiquidBuffer > maxLiquid)
                         maxLiquid = Liquid.numLiquid + LiquidBuffer.numLiquidBuffer;
-                    
+
                     if (liquidDifferencePercentage > maxLiquidDifferencePercentage)
                         maxLiquidDifferencePercentage = liquidDifferencePercentage;
 
@@ -215,7 +215,7 @@ namespace CalamityMod
                         {
                             continue;
                         }
-                        
+
                         ChangeTile(Main.tile[i, j]);
                     }
                 }

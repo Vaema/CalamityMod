@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnKill (int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Projectile.owner != Main.myPlayer)
                 return;

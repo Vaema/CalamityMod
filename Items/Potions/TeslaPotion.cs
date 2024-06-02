@@ -13,11 +13,11 @@ namespace CalamityMod.Items.Potions
     {
         public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
-	{
-	    Item.ResearchUnlockCount = 20;
-	    Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 14));
+        {
+            Item.ResearchUnlockCount = 20;
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 14));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-	}
+        }
 
         public override void SetDefaults()
         {
@@ -45,6 +45,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<PearlShard>().
                 AddIngredient<StormlionMandible>().
                 AddTile(TileID.Bottles).
+                AddDecraftCondition(CalamityConditions.DownedHiveMindOrPerforator).
                 Register();
 
             CreateRecipe().

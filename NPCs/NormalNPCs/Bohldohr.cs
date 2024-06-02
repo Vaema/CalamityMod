@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.SummonItems;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.NPCs.Other;
 using CalamityMod.World;
 using Terraria;
@@ -31,20 +32,24 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<BohldohrBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheTemple,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bohldohr")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bohldohr")
             });
         }
 
         public override void AI()
         {
-            CalamityAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
+            CalamityRegularEnemyAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -60,13 +65,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 155, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ambient_DarkBrown, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 155, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ambient_DarkBrown, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

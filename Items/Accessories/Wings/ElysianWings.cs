@@ -19,9 +19,9 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void SetDefaults()
         {
-            Item.width = 36;
-            Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.width = 48;
+            Item.height = 50;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.accessory = true;
         }

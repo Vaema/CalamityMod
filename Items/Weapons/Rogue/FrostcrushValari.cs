@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 89;
             Item.knockBack = 12;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.useTime = 21;
             Item.useAnimation = 21;
@@ -56,12 +56,12 @@ namespace CalamityMod.Items.Weapons.Rogue
                     spread -= 10;
                 }
                 int spread2 = 3;
-                int icicleAmt = Main.rand.Next(6,11);
+                int icicleAmt = Main.rand.Next(6, 11);
                 for (int i = 0; i < icicleAmt; i++)
                 {
-                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-3,4), velocity.Y + Main.rand.Next(-3,4)).RotatedBy(MathHelper.ToRadians(spread2));
+                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-3, 4), velocity.Y + Main.rand.Next(-3, 4)).RotatedBy(MathHelper.ToRadians(spread2));
                     Projectile.NewProjectile(source, position, perturbedspeed, (Main.rand.NextBool() ? ModContent.ProjectileType<Valaricicle>() : ModContent.ProjectileType<Valaricicle2>()), damage, 0f, player.whoAmI, 0f, 0f);
-                    spread2 -= Main.rand.Next(1,4);
+                    spread2 -= Main.rand.Next(1, 4);
                 }
                 return false;
             }

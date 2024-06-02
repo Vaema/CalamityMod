@@ -12,16 +12,15 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 72;
             Item.height = 72;
-            Item.scale = 1.2f;
             Item.damage = 152;
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = Item.useTime = 16;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -30,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.shootSpeed = 14f;
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 
@@ -43,24 +42,19 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (player.altFunctionUse == 2)
             {
+                Item.DamageType = DamageClass.Melee;
                 Item.noMelee = true;
                 Item.UseSound = SoundID.Item73;
                 Item.shoot = ModContent.ProjectileType<AegisBeam>();
             }
             else
             {
+                Item.DamageType = TrueMeleeDamageClass.Instance;
                 Item.noMelee = false;
                 Item.UseSound = SoundID.Item1;
                 Item.shoot = ProjectileID.None;
             }
             return base.CanUseItem(player);
-        }
-
-        public override float UseSpeedMultiplier(Player player)
-        {
-            if (player.altFunctionUse != 2)
-                return 1.8f;
-            return 1f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -72,7 +66,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 246, 0f, 0f, 0, new Color(255, Main.DiscoG, 53));
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.GoldCoin, 0f, 0f, 0, new Color(255, Main.DiscoG, 53));
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)

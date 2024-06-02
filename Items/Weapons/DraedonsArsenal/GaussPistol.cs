@@ -1,12 +1,12 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using System;
-using System.Collections.Generic;
+using CalamityMod.Sounds;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = CommonCalamitySounds.GaussWeaponFire;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
 
             Item.shoot = ModContent.ProjectileType<GaussPistolShot>();

@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Armor.GodSlayer
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 35;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

@@ -1,8 +1,8 @@
 ﻿using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class GleamingBolt : ModProjectile, ILocalizedModType
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<GleamingBolt2>(), (int)(Projectile.damage * 0.75), Projectile.knockBack, Projectile.owner, 0f, 0f);
                 }
             }
-            SoundEngine.PlaySound(SoundID.Item105, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item105, Projectile.Center);
         }
     }
 }

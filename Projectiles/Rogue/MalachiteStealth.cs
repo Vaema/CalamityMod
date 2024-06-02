@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     for (int k = 0; k < 3; k++)
                     {
-                        int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 0.75f);
+                        int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 0.75f);
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].velocity *= 0f;
                     }
@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             for (int i = 0; i < 7; i++)
             {
-                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
                 Main.dust[dusty].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -99,10 +99,10 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int j = 0; j < 15; j++)
             {
-                int green = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
+                int green = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
                 Main.dust[green].noGravity = true;
                 Main.dust[green].velocity *= 5f;
-                green = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
+                green = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
                 Main.dust[green].velocity *= 2f;
             }
             Projectile.Damage();
@@ -127,15 +127,15 @@ namespace CalamityMod.Projectiles.Rogue
             int kunaiFound = 0;
             int oldestKunai = -1;
             int oldestKunaiTimeLeft = lifeSpan;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].type == Projectile.type && i != Projectile.whoAmI && Main.projectile[i].ai[1] == target.whoAmI)
+                if (p.owner == Main.myPlayer && p.type == Projectile.type && p.whoAmI != Projectile.whoAmI && p.ai[1] == target.whoAmI)
                 {
                     kunaiFound++;
-                    if (Main.projectile[i].timeLeft < oldestKunaiTimeLeft)
+                    if (p.timeLeft < oldestKunaiTimeLeft)
                     {
-                        oldestKunaiTimeLeft = Main.projectile[i].timeLeft;
-                        oldestKunai = Main.projectile[i].whoAmI;
+                        oldestKunaiTimeLeft = p.timeLeft;
+                        oldestKunai = p.whoAmI;
                     }
                     if (kunaiFound >= maxKunai)
                         break;

@@ -28,7 +28,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             base.SetStaticDefaults();
         }
 
-        public override void KillMultiTile(int i, int j, int frameX, int frameY) 
+        public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
             //explode when broken (troll!)
             //also instakill players in for the worthy
@@ -94,11 +94,11 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             base.SetStaticDefaults();
         }
 
-        public override void KillMultiTile(int i, int j, int frameX, int frameY) 
+        public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
             if (Main.rand.NextBool())
                 Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 32, ItemID.GoldCoin, Main.rand.Next(1, 2));
-            
+
             Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 32, ItemID.SilverCoin, Main.rand.Next(45, 75));
         }
 

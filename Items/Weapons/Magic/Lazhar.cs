@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.UseSound = SoundID.Item12;
             Item.autoReuse = true;
@@ -31,11 +31,11 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
 
-		public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-		{
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+        {
             velocity.X += (float)Main.rand.Next(-15, 16) * 0.05f;
             velocity.Y += (float)Main.rand.Next(-15, 16) * 0.05f;
-		}
+        }
 
         public override void AddRecipes()
         {

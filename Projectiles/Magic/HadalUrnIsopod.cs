@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -24,6 +24,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 240;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.ignoreWater = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -56,12 +58,12 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             //Black Anurian bubble dust
             int inc;
             for (int i = 0; i < 25; i = inc + 1)
             {
-                int hadalDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 14, 0f, 0f, 0, default, 1f);
+                int hadalDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 0, default, 1f);
                 Main.dust[hadalDust].position = (Main.dust[hadalDust].position + Projectile.position) / 2f;
                 Main.dust[hadalDust].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
                 Main.dust[hadalDust].velocity.Normalize();

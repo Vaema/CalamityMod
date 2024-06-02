@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Summon
             if (targetedNPC != null && targetedNPC.CanBeChasedBy(Projectile, false))
             {
                 float distToEnemy = Vector2.Distance(targetedNPC.Center, Projectile.Center);
-                if (((double) Vector2.Distance(Projectile.Center, objectivePos) > (double) distToEnemy && (double) distToEnemy < (double) minDist || !enemyFound) && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, targetedNPC.position, targetedNPC.width, targetedNPC.height))
+                if (((double)Vector2.Distance(Projectile.Center, objectivePos) > (double)distToEnemy && (double)distToEnemy < (double)minDist || !enemyFound) && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, targetedNPC.position, targetedNPC.width, targetedNPC.height))
                 {
                     minDist = distToEnemy;
                     objectivePos = targetedNPC.Center;
@@ -128,7 +128,7 @@ namespace CalamityMod.Projectiles.Summon
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         float distToEnemy = Vector2.Distance(npc.Center, Projectile.Center);
-                        if (((double) Vector2.Distance(Projectile.Center, objectivePos) > (double) distToEnemy && (double) distToEnemy < (double) minDist || !enemyFound) && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
+                        if (((double)Vector2.Distance(Projectile.Center, objectivePos) > (double)distToEnemy && (double)distToEnemy < (double)minDist || !enemyFound) && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
                         {
                             minDist = distToEnemy;
                             objectivePos = npc.Center;

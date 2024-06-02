@@ -1,11 +1,11 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using Terraria;
-using Terraria.ModLoader;
-using CalamityMod.Particles;
-using Microsoft.Xna.Framework;
-using Terraria.Audio;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle orb = new GenericBloom(Projectile.Center + Main.rand.NextVector2Circular(10, 10), Projectile.velocity * Main.rand.NextFloat(0.05f, 0.5f), Color.Black, Main.rand.NextFloat(0.2f, 0.45f), Main.rand.Next(9, 12), true, false);
                 GeneralParticleHandler.SpawnParticle(orb);
             }
-            
+
             if (Projectile.timeLeft % 3 == 0 && Time > 12f && targetDist < 1400f)
             {
                 LineParticle spark2 = new LineParticle(Projectile.Center, -Projectile.velocity * 0.05f, false, 17, 1.7f, InnerColor);
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle orb2 = new GenericBloom(Projectile.Center + Main.rand.NextVector2Circular(5, 5), Projectile.velocity * Main.rand.NextFloat(0.05f, 0.5f), InnerColor, Main.rand.NextFloat(0.05f, 0.3f), Main.rand.Next(9, 12), true);
                 GeneralParticleHandler.SpawnParticle(orb2);
             }
-            
+
             if (Time == 7f)
             {
                 for (int i = 0; i <= 18; i++)

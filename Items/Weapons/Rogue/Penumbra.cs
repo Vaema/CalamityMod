@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                     mouseYDist = 0f;
                 }
                 realPlayerPos += new Vector2(mouseXDist, mouseYDist);
-                int proj = Projectile.NewProjectile(source, realPlayerPos, new Vector2(0f,-0.5f), ModContent.ProjectileType<PenumbraBomb>(), damage, knockback, player.whoAmI, 0f, 1f);
+                int proj = Projectile.NewProjectile(source, realPlayerPos, new Vector2(0f, -0.5f), ModContent.ProjectileType<PenumbraBomb>(), damage, knockback, player.whoAmI, 0f, 1f);
                 if (proj.WithinBounds(Main.maxProjectiles))
                     Main.projectile[proj].Calamity().stealthStrike = true;
                 return false;

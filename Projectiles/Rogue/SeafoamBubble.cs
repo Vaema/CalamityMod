@@ -1,8 +1,8 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Rogue
             int inc;
             for (int i = 0; i < 25; i = inc + 1)
             {
-                int waterDust = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 154, 0f, 0f, 0, default, 1f);
+                int waterDust = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Rain, 0f, 0f, 0, default, 1f);
                 Main.dust[waterDust].position = (Main.dust[waterDust].position + Projectile.position) / 2f;
                 Main.dust[waterDust].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
                 Main.dust[waterDust].velocity.Normalize();

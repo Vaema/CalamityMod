@@ -1,4 +1,4 @@
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
     public class NightOrb : ModProjectile, ILocalizedModType

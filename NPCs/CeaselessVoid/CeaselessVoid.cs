@@ -1,4 +1,5 @@
-﻿using CalamityMod.Dusts;
+﻿using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
@@ -10,19 +11,20 @@ using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
+using CalamityMod.Sounds;
 using CalamityMod.UI.VanillaBossBars;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.IO;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
-using CalamityMod.Sounds;
-using CalamityMod.World;
 
 namespace CalamityMod.NPCs.CeaselessVoid
 {
@@ -32,6 +34,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/CeaselessVoidDeath");
         public static readonly SoundStyle BuildupSound = new("CalamityMod/Sounds/Custom/CeaselessVoidDeathBuild");
 
+        public static Asset<Texture2D> GlowTexture;
+
         public bool playedbuildsound = false;
 
         public override void SetStaticDefaults()
@@ -39,12 +43,16 @@ namespace CalamityMod.NPCs.CeaselessVoid
             Main.npcFrameCount[NPC.type] = 6;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.55f,
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -74,7 +82,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheDungeon,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CeaselessVoid")
@@ -115,7 +123,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override void AI()
         {
-            CalamityAI.CeaselessVoidAI(NPC, Mod);
+            CeaselessVoidAI.VanillaCeaselessVoidAI(NPC, Mod);
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -136,6 +144,12 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 minDist = hitboxBotRight;
 
             return minDist <= 50f;
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        {
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.VortexDebuff, 60, true);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -168,7 +182,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/CeaselessVoid/CeaselessVoidGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color cyanLerp = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
             if (CalamityConfig.Instance.Afterimages)
@@ -246,7 +260,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
         }
 
         public override void BossLoot(ref string name, ref int potionType)
@@ -264,7 +278,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 {
                     pitchVar = Main.rand.Next(-60, 41) * 0.01f;
                 }
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + pitchVar}, NPC.Center);
+                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + pitchVar }, NPC.Center);
             }
 
             for (int k = 0; k < 5; k++)
@@ -283,7 +297,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int purpleDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    int purpleDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[purpleDust].velocity *= 3f;
                     Main.dust[purpleDust].noGravity = true;
                     if (Main.rand.NextBool())
@@ -294,10 +308,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 }
                 for (int j = 0; j < 70; j++)
                 {
-                    int purpleDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
+                    int purpleDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
                     Main.dust[purpleDust2].noGravity = true;
                     Main.dust[purpleDust2].velocity *= 5f;
-                    purpleDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    purpleDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[purpleDust2].noGravity = true;
                     Main.dust[purpleDust2].velocity *= 2f;
                 }

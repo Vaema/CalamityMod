@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Armor.Reaver
         public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetStaticDefaults()
         {
-           
+
             if (Main.netMode == NetmodeID.Server)
                 return;
 

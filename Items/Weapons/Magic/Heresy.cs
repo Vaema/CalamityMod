@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.UseSound = SoundID.DD2_EtherianPortalDryadTouch;
             Item.knockBack = 0f;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
 
             Item.autoReuse = true;

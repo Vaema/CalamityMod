@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Projectiles.Typeless;
-using Terraria.ID;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Magic
                     Vector2 projPos = Projectile.position;
                     projPos -= Projectile.velocity * ((float)i * 0.25f);
                     Projectile.alpha = 255;
-                    int heatGold = Dust.NewDust(projPos, 1, 1, 246, 0f, 0f, 0, default, 1f);
+                    int heatGold = Dust.NewDust(projPos, 1, 1, DustID.GoldCoin, 0f, 0f, 0, default, 1f);
                     Main.dust[heatGold].position = projPos;
                     Main.dust[heatGold].scale = (float)Main.rand.Next(70, 110) * 0.013f;
                     Main.dust[heatGold].velocity *= 0.2f;

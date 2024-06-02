@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = 2;
             Projectile.timeLeft = 300;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -39,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
             if (variant == -1)
                 variant = Main.rand.Next(3);
 
-            if (Main.rand.Next(15) == 0 && Projectile.alpha <= 140) //only try to spawn your particles if you're not close to dying
+            if (Main.rand.NextBool(15)&& Projectile.alpha <= 140) //only try to spawn your particles if you're not close to dying
             {
                 Vector2 particlePosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width * Projectile.scale * 0.5f, Projectile.height * Projectile.scale * 0.5f);
                 Particle snowflake = new SnowflakeSparkle(particlePosition, Vector2.Zero, Color.White, new Color(75, 177, 250), Main.rand.NextFloat(0.3f, 1.5f), 40, 0.5f);

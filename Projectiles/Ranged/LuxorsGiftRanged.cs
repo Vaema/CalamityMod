@@ -1,8 +1,8 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 offset = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
                     offset += -Vector2.UnitY.RotatedBy((double)(l * MathHelper.Pi / 6f), default) * new Vector2(8f, 16f);
                     offset = offset.RotatedBy((double)(Projectile.rotation - MathHelper.PiOver2), default);
-                    int electric = Dust.NewDust(Projectile.Center, 0, 0, 135, 0f, 0f, 160, default, 1f);
+                    int electric = Dust.NewDust(Projectile.Center, 0, 0, DustID.IceTorch, 0f, 0f, 160, default, 1f);
                     Main.dust[electric].scale = 1.1f;
                     Main.dust[electric].noGravity = true;
                     Main.dust[electric].position = Projectile.Center + offset;
@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Ranged
             int dustAmt = Main.rand.Next(10, 20);
             for (int d = 0; d < dustAmt; d++)
             {
-                int electric = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, 135, 0f, 0f, 100, default, 2f);
+                int electric = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, DustID.IceTorch, 0f, 0f, 100, default, 2f);
                 Main.dust[electric].velocity *= 2f;
                 Main.dust[electric].noGravity = true;
             }

@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Enemy
 {
     public class EarthRockBig : ModProjectile, ILocalizedModType
@@ -43,14 +43,14 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.NPCDeath14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.NPCDeath14, Projectile.Center);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
             Projectile.width = 60;
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 15; i++)
             {
-                int earthyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 8, 0f, 0f, 100, default, 1.2f);
+                int earthyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Iron, 0f, 0f, 100, default, 1.2f);
                 Main.dust[earthyDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -69,10 +69,10 @@ namespace CalamityMod.Projectiles.Enemy
             }
             for (int j = 0; j < 30; j++)
             {
-                int earthyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 1, 0f, 0f, 100, default, 1.7f);
+                int earthyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Stone, 0f, 0f, 100, default, 1.7f);
                 Main.dust[earthyDust2].noGravity = true;
                 Main.dust[earthyDust2].velocity *= 5f;
-                earthyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 8, 0f, 0f, 100, default, 1f);
+                earthyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Iron, 0f, 0f, 100, default, 1f);
                 Main.dust[earthyDust2].velocity *= 2f;
             }
 

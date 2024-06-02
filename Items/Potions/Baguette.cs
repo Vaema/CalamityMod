@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Potions
         public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-                       Item.ResearchUnlockCount = 5;
+            Item.ResearchUnlockCount = 5;
         }
 
         public override void SetDefaults()
@@ -33,10 +33,10 @@ namespace CalamityMod.Items.Potions
             Item.buffTime = CalamityUtils.SecondsToFrames(300f);
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Food;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Food;
+        }
 
         public override void OnConsumeItem(Player player)
         {

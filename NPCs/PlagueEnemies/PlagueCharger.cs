@@ -2,26 +2,33 @@
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.PlagueEnemies
 {
     public class PlagueCharger : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 4;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -34,7 +41,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.lifeMax = 200;
             NPC.aiStyle = NPCAIStyleID.Flying;
             AIType = NPCID.Bee;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.4f;
             AnimationType = NPCID.Bee;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.HitSound = SoundID.NPCHit4;
@@ -44,11 +51,15 @@ namespace CalamityMod.NPCs.PlagueEnemies
             BannerItem = ModContent.ItemType<PlagueChargerBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Jungle,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundJungle,
@@ -86,7 +97,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/PlagueEnemies/PlagueChargerGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color redEyeColor = Color.Lerp(Color.White, Color.Red, 0.5f);
 
             if (CalamityConfig.Instance.Afterimages)

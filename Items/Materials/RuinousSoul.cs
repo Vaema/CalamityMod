@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 25;
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 111;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 111;
         }
 
         public override void SetDefaults()

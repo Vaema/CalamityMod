@@ -15,11 +15,11 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetStaticDefaults()
         {
-           
+
             if (Main.netMode != NetmodeID.Server)
             {
                 int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Face);
-				ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
+                ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
             }
         }
 
@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 46;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.accessory = true;
         }

@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff } )]
+    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff })]
     public class ElementalGauntlet : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 22;
             Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

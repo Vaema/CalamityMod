@@ -1,4 +1,4 @@
-using CalamityMod.Items.Placeables.FurnitureSacrilegious;
+﻿using CalamityMod.Items.Placeables.FurnitureSacrilegious;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

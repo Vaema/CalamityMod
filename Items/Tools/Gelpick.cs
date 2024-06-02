@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Tools
 
             Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Tools
         {
             if (Main.rand.NextBool(4))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 20);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.PurificationPowder);
             }
         }
 

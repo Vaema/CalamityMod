@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff } )]
+    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff })]
     public class ElectriciansGlove : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 24;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Pink;
         }

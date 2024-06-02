@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override float InitialSpeed => 3f;
         public override float ReelbackSpeed => 2.4f;
-        public override float ForwardSpeed => 0.95f;
+        public override float ForwardSpeed => 0.7f;
         public override void ExtraBehavior()
         {
             if (Main.rand.NextBool(4))

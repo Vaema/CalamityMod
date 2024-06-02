@@ -1,11 +1,12 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -17,28 +18,29 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
     public class PulseRifle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
-        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/PulseRifleFire");
+        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/PulseRifleFire") { Volume = 0.8f };
 
-        private int BaseDamage = 1200;
+        private int BaseDamage = 990;
+        public int FiringTimer = 30;
 
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
 
-            Item.width = 62;
-            Item.height = 22;
+            Item.width = 100;
+            Item.height = 32;
             Item.DamageType = DamageClass.Ranged;
             Item.damage = BaseDamage;
             Item.knockBack = 0f;
-            Item.useTime = 35;
-            Item.useAnimation = 35;
+            Item.useTime = 55;
+            Item.useAnimation = 55;
             Item.autoReuse = true;
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = FireSound;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
 
             Item.shoot = ModContent.ProjectileType<PulseRifleShot>();
@@ -51,20 +53,16 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (velocity.Length() > 5f)
-            {
-                velocity.Normalize();
-                velocity *= 5f;
-            }
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<PulseRifleShot>(), damage, knockback, player.whoAmI, 0f, 0f);
 
-            float SpeedX = velocity.X + (float)Main.rand.Next(-1, 2) * 0.05f;
-            float SpeedY = velocity.Y + (float)Main.rand.Next(-1, 2) * 0.05f;
-
-            Projectile.NewProjectile(source, position, new Vector2(SpeedX, SpeedY), ModContent.ProjectileType<PulseRifleShot>(), damage, knockback, player.whoAmI, 0f, 0f);
             return false;
         }
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/PulseRifleGlow").Value);
+        }
 
-        public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
+        public override Vector2? HoldoutOffset() => new Vector2(-15, 0);
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 5);
 

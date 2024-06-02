@@ -1,7 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -12,9 +12,9 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 34;
             Item.height = 56;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 10;
+            Item.defense = 4; // This should have less defense due to the regen it provides
             Item.accessory = true;
         }
 
@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Accessories
             //No lifesteal, no regen, no healing pots
             if (player.statLife >= (int)(player.statLifeMax2 * 0.5f))
             {
-                player.statLife = (int)(player.statLifeMax2 * 0.5f);    
+                player.statLife = (int)(player.statLifeMax2 * 0.5f);
                 player.moonLeech = true;
                 modPlayer.healingPotionMultiplier = 0;
 

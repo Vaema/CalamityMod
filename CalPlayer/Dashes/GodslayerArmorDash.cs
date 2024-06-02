@@ -27,7 +27,7 @@ namespace CalamityMod.CalPlayer.Dashes
         public override DashCollisionType CollisionType => DashCollisionType.ShieldSlam;
 
         public override bool IsOmnidirectional => true;
-        
+
         public int Time = 0;
         public float Size = 2.2f;
         public bool SoundOnce = true;

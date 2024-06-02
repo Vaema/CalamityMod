@@ -1,9 +1,9 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Typeless;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Items.Potions.Alcohol;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }

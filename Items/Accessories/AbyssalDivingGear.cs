@@ -15,8 +15,8 @@ namespace CalamityMod.Items.Accessories
             if (Main.netMode != NetmodeID.Server)
             {
                 int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Face);
-				ArmorIDs.Face.Sets.PreventHairDraw[equipSlot] = true;
-				ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
+                ArmorIDs.Face.Sets.PreventHairDraw[equipSlot] = true;
+                ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
             }
         }
 
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }

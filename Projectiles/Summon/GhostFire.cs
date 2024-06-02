@@ -1,7 +1,7 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public void KillTheThing(NPC npc)
         {
-            Projectile.velocity = Projectile.SuperhomeTowardsTarget(npc, 50f/(Projectile.extraUpdates+1), 60f / (Projectile.extraUpdates + 1), 1f / (Projectile.extraUpdates + 1)); //predictionStrength is lessened to account for extra updates, otherwise the projectile tends to copy fast NPC movement 1:1. Not Cool.
+            Projectile.velocity = Projectile.SuperhomeTowardsTarget(npc, 50f / (Projectile.extraUpdates + 1), 60f / (Projectile.extraUpdates + 1), 1f / (Projectile.extraUpdates + 1)); //predictionStrength is lessened to account for extra updates, otherwise the projectile tends to copy fast NPC movement 1:1. Not Cool.
         }
         public override bool PreDraw(ref Color lightColor) //photoviscerator ball drawcode, slightly edited
         {
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Summon
                 float colorInterpolation = (float)Math.Cos(Projectile.timeLeft / 32f + Main.GlobalTimeWrappedHourly / 20f + i / (float)Projectile.oldPos.Length * MathHelper.Pi) * 0.5f + 0.5f;
                 Color color = Color.Lerp(Color.Cyan, Color.LightBlue, colorInterpolation) * 0.4f;
                 color.A = 0;
-                Vector2 drawPosition = Projectile.oldPos[i] + lightTexture.Size() * 0.5f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY) + new Vector2 (-28f, -28f); //Last vector is to offset the circle so that it is displayed where the hitbox actually is, instead of a bit down and to the right.
+                Vector2 drawPosition = Projectile.oldPos[i] + lightTexture.Size() * 0.5f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY) + new Vector2(-28f, -28f); //Last vector is to offset the circle so that it is displayed where the hitbox actually is, instead of a bit down and to the right.
                 Color outerColor = color;
                 Color innerColor = color * 0.5f;
                 float intensity = 0.9f + 0.15f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 60f * MathHelper.TwoPi);

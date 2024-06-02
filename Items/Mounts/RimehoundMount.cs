@@ -1,6 +1,6 @@
-﻿using CalamityMod.Buffs.Mounts;
+﻿using System;
+using CalamityMod.Buffs.Mounts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -83,7 +83,7 @@ namespace CalamityMod.Items.Mounts
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust expr_631 = Main.dust[Dust.NewDust(mountedPlayer.BottomLeft, mountedPlayer.width, 6, 192, 0f, 0f, 0, default, 1f)];
+                    Dust expr_631 = Main.dust[Dust.NewDust(mountedPlayer.BottomLeft, mountedPlayer.width, 6, DustID.Ghost, 0f, 0f, 0, default, 1f)];
                     expr_631.velocity = new Vector2(velocity.X * 0.15f, Main.rand.NextFloat() * -2f);
                     expr_631.noLight = true;
                     expr_631.scale = 0.2f + Main.rand.NextFloat() * 0.8f;
@@ -101,7 +101,7 @@ namespace CalamityMod.Items.Mounts
             {
                 for (int j = 0; j < (int)(3f * mountedPlayer.basiliskCharge); j++)
                 {
-                    Dust dust = Main.dust[Dust.NewDust(mountedPlayer.BottomLeft, mountedPlayer.width, 6, 67, 0f, 0f, 0, default, 1f)];
+                    Dust dust = Main.dust[Dust.NewDust(mountedPlayer.BottomLeft, mountedPlayer.width, 6, DustID.IceRod, 0f, 0f, 0, default, 1f)];
                     Vector2 dustVel = mountedPlayer.Center + new Vector2(direction * dustXOffset, dustYOffset);
                     dust.position = mountedPlayer.Center + new Vector2(direction * (dustXOffset - 2f), dustYOffset - 6f + Main.rand.NextFloat() * 12f);
                     dust.velocity = (dust.position - dustVel).SafeNormalize(Vector2.Zero) * (3.5f + Main.rand.NextFloat() * 0.5f);

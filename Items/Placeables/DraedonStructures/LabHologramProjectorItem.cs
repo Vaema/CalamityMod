@@ -1,4 +1,4 @@
-using CalamityMod.Items.DraedonMisc;
+﻿using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.DraedonStructures;

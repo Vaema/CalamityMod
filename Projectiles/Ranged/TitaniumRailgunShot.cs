@@ -1,11 +1,11 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ModLoader;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.timeLeft == 15)
             {
-                
+
                 Vector2 beamVector = Projectile.velocity;
                 float beamLength = DetermineLaserLength_CollideWithTiles(12);
 

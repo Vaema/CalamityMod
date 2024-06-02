@@ -5,12 +5,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
-
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -31,8 +29,8 @@ namespace CalamityMod.Items.Accessories
             Item.height = 26;
             Item.accessory = true;
 
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.rare = ItemRarityID.LightRed;
             Item.Calamity().donorItem = true;
         }
 

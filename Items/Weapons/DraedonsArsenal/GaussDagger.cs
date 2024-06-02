@@ -1,8 +1,8 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,14 +20,13 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.height = 26;
             Item.damage = 25;
             Item.DamageType = DamageClass.Melee;
-            Item.scale = 1.5f;
             Item.useTime = 24;
             Item.useAnimation = 24;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
             Item.knockBack = 7f;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
 
             Item.UseSound = SoundID.Item1;

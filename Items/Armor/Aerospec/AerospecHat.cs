@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Armor.Aerospec
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.defense = 3; //15
         }
@@ -36,6 +36,7 @@ namespace CalamityMod.Items.Armor.Aerospec
             modPlayer.aeroSet = true;
             player.noFallDmg = true;
             player.moveSpeed += 0.05f;
+            player.manaCost -= 0.08f;
             player.GetCritChance<MagicDamageClass>() += 5;
         }
 

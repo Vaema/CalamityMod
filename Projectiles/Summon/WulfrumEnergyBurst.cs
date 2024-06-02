@@ -1,15 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Graphics.Effects;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using CalamityMod.Particles;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Graphics.Shaders;
-using Terraria.Graphics.Effects;
-using ReLogic.Content;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -39,7 +40,6 @@ namespace CalamityMod.Projectiles.Summon
         public static float HomingRange = 350;
         public static float HomingAngle = MathHelper.PiOver4 * 1f;
 
-        internal PrimitiveTrail TrailDrawer;
         internal Color PrimColorMult = Color.White;
 
         public override void SetStaticDefaults()
@@ -65,10 +65,8 @@ namespace CalamityMod.Projectiles.Summon
             float bestScore = 0;
             NPC bestTarget = null;
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC potentialTarget in Main.ActiveNPCs)
             {
-                NPC potentialTarget = Main.npc[i];
-
                 if (!potentialTarget.CanBeChasedBy(null, false))
                     continue;
 
@@ -180,22 +178,18 @@ namespace CalamityMod.Projectiles.Summon
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ZapTrail"));
 
             CalamityUtils.DrawChromaticAberration(Vector2.UnitX, 1.5f, delegate (Vector2 offset, Color colorMod)
             {
                 PrimColorMult = colorMod;
-
-                TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition + offset, 30);
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
             });
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float stretchy = MathHelper.Clamp((Projectile.velocity.Length() - 6f) / 16f, 0f, 1f);
             Vector2 scale = new Vector2(1f + stretchy * -0.2f, stretchy * 0.5f + 1f);
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation + MathHelper.PiOver2, tex.Size() / 2f, Projectile.scale * scale, SpriteEffects.None, 0);

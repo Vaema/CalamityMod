@@ -1,15 +1,15 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -19,7 +19,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/ArmoredDigger_Bestiary",
                 PortraitPositionXOverride = 40,
@@ -54,14 +54,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<ArmoredDiggerBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Caverns,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ArmoredDigger")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ArmoredDigger")
             });
         }
 
@@ -74,7 +78,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 204, 0f, 0f, 150, default(Color), 0.3f);
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.TreasureSparkle, 0f, 0f, 150, default(Color), 0.3f);
                     dust.fadeIn = 0.75f;
                     dust.velocity *= 0.1f;
                     dust.noLight = true;
@@ -165,16 +169,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                 bool outsideNoFlyZone = true;
                 if (NPC.position.Y > Main.player[NPC.target].position.Y)
                 {
-                    for (int m = 0; m < 255; m++)
+                    foreach (Player player in Main.ActivePlayers)
                     {
-                        if (Main.player[m].active)
+                        Rectangle noFlyArea = new Rectangle((int)player.position.X - noFlyZone, (int)player.position.Y - noFlyZone, noFlyZone * 2, noFlyZone * 2);
+                        if (rectangle.Intersects(noFlyArea))
                         {
-                            Rectangle noFlyArea = new Rectangle((int)Main.player[m].position.X - noFlyZone, (int)Main.player[m].position.Y - noFlyZone, noFlyZone * 2, noFlyZone * 2);
-                            if (rectangle.Intersects(noFlyArea))
-                            {
-                                outsideNoFlyZone = false;
-                                break;
-                            }
+                            outsideNoFlyZone = false;
+                            break;
                         }
                     }
                     if (outsideNoFlyZone)
@@ -187,7 +188,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 NPC.localAI[1] = 0f;
             }
-            float fallSpeed = death ? 13.5f : 10f;
+            float maxChaseSpeed = death ? 13.5f : 10f;
             if (Main.player[NPC.target].dead || (!Main.zenithWorld && (double)Main.player[NPC.target].position.Y < Main.rockLayer * 16.0))
             {
                 flying = false;
@@ -195,9 +196,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if ((double)NPC.position.Y > Main.rockLayer * 16.0)
                 {
                     NPC.velocity.Y = NPC.velocity.Y + 1f;
-                    fallSpeed = death ? 27f : 20f;
+                    maxChaseSpeed *= 2f;
                 }
-                if ((double)NPC.position.Y > (double)((Main.maxTilesY - 200) * 16))
+                if ((double)NPC.position.Y > (double)(Main.UnderworldLayer * 16))
                 {
                     for (int a = 0; a < Main.maxNPCs; a++)
                     {
@@ -225,11 +226,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 NPC.TargetClosest(true);
                 NPC.velocity.Y = NPC.velocity.Y + 0.15f;
-                if (NPC.velocity.Y > fallSpeed)
+                if (NPC.velocity.Y > maxChaseSpeed)
                 {
-                    NPC.velocity.Y = fallSpeed;
+                    NPC.velocity.Y = maxChaseSpeed;
                 }
-                if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)fallSpeed * 0.4)
+                if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)maxChaseSpeed * 0.4)
                 {
                     if (NPC.velocity.X < 0f)
                     {
@@ -240,7 +241,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         NPC.velocity.X = NPC.velocity.X + acceleration * 1.1f;
                     }
                 }
-                else if (NPC.velocity.Y == fallSpeed)
+                else if (NPC.velocity.Y == maxChaseSpeed)
                 {
                     if (NPC.velocity.X < targetXDist)
                     {
@@ -282,7 +283,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 targetDistance = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
                 float absoluteTargetX = Math.Abs(targetXDist);
                 float absoluteTargetY = Math.Abs(targetYDist);
-                float timeToReachTarget = fallSpeed / targetDistance;
+                float timeToReachTarget = maxChaseSpeed / targetDistance;
                 targetXDist *= timeToReachTarget;
                 targetYDist *= timeToReachTarget;
                 if (((NPC.velocity.X > 0f && targetXDist > 0f) || (NPC.velocity.X < 0f && targetXDist < 0f)) && ((NPC.velocity.Y > 0f && targetYDist > 0f) || (NPC.velocity.Y < 0f && targetYDist < 0f)))
@@ -322,7 +323,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.velocity.Y = NPC.velocity.Y - acceleration;
                     }
-                    if ((double)Math.Abs(targetYDist) < (double)fallSpeed * 0.2 && ((NPC.velocity.X > 0f && targetXDist < 0f) || (NPC.velocity.X < 0f && targetXDist > 0f)))
+                    if ((double)Math.Abs(targetYDist) < (double)maxChaseSpeed * 0.2 && ((NPC.velocity.X > 0f && targetXDist < 0f) || (NPC.velocity.X < 0f && targetXDist > 0f)))
                     {
                         if (NPC.velocity.Y > 0f)
                         {
@@ -333,7 +334,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                             NPC.velocity.Y = NPC.velocity.Y - acceleration * 2f;
                         }
                     }
-                    if ((double)Math.Abs(targetXDist) < (double)fallSpeed * 0.2 && ((NPC.velocity.Y > 0f && targetYDist < 0f) || (NPC.velocity.Y < 0f && targetYDist > 0f)))
+                    if ((double)Math.Abs(targetXDist) < (double)maxChaseSpeed * 0.2 && ((NPC.velocity.Y > 0f && targetYDist < 0f) || (NPC.velocity.Y < 0f && targetYDist > 0f)))
                     {
                         if (NPC.velocity.X > 0f)
                         {
@@ -355,7 +356,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.velocity.X = NPC.velocity.X - acceleration * 1.1f;
                     }
-                    if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)fallSpeed * 0.5)
+                    if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)maxChaseSpeed * 0.5)
                     {
                         if (NPC.velocity.Y > 0f)
                         {
@@ -377,7 +378,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.velocity.Y = NPC.velocity.Y - acceleration * 1.1f;
                     }
-                    if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)fallSpeed * 0.5)
+                    if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)maxChaseSpeed * 0.5)
                     {
                         if (NPC.velocity.X > 0f)
                         {
@@ -390,7 +391,22 @@ namespace CalamityMod.NPCs.NormalNPCs
                     }
                 }
             }
+
+            // Calculate contact damage based on velocity
+            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
+            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
+            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
+            {
+                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
+            }
+
             NPC.rotation = (float)Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + 1.57f;
+
             if (flying)
             {
                 if (NPC.localAI[0] != 1f)
@@ -427,13 +443,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 6, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 10; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 6, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

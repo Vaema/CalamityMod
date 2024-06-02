@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 return false;
             }
-            Texture2D texture2D19 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D19 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D texture2D20 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BrimstoneRayMid", AssetRequestMode.ImmediateLoad).Value;
             Texture2D texture2D21 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BrimstoneRayEnd", AssetRequestMode.ImmediateLoad).Value;
             float rayDrawLength = Projectile.localAI[1]; //length of laser

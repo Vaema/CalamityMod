@@ -1,6 +1,8 @@
 ﻿using CalamityMod.World;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Typeless
 {
     public class AstralSpray : ModProjectile, ILocalizedModType
@@ -58,7 +60,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.ai[0]++;
                 for (int i = 0; i < 1; i++)
                 {
-                    int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 118, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
+                    int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Ice_Purple, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
                     Main.dust[d].noGravity = true;
                     Main.dust[d].scale *= 1.75f * scalar;
                     Main.dust[d].velocity.X *= 2f;

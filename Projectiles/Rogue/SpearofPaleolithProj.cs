@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Main.rand.NextBool(4))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 159, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Teleporter, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f);
             if (Projectile.timeLeft % 3 == 0)
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i <= 10; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 159, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Teleporter, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
 

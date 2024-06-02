@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             Item.width = 22;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
         }
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Accessories.Wings
                 {
                     dustXOffset = -40;
                 }
-                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, 173, 0f, 0f, 100, default, 2.4f);
+                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2.4f);
                 Main.dust[flightDust].noGravity = true;
                 Main.dust[flightDust].velocity *= 0.3f;
                 if (Main.rand.NextBool(10))

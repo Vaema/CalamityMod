@@ -1,8 +1,8 @@
-﻿using Terraria;
-using Microsoft.Xna.Framework;
-using Terraria.ModLoader;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Typeless;
-using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {

@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -14,7 +14,6 @@ namespace CalamityMod.Particles
         public override bool UseCustomDraw => true;
         public override bool SetLifetime => true;
 
-        private float Spin;
         private float opacity;
         private bool Big;
         private bool EmitsLight;

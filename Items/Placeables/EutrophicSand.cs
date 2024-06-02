@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Items.Placeables.Walls;
 using CalamityMod.Projectiles.Typeless;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
@@ -13,6 +13,9 @@ namespace CalamityMod.Items.Placeables
         {
             Item.ResearchUnlockCount = 100;
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Navystone>();
+
+            // +5 flat damage, equal to other sand variants
+            ItemID.Sets.SandgunAmmoProjectileData[Type] = new(ModContent.ProjectileType<EutrophicSandBallGun>(), 5);
         }
 
         public override void SetDefaults()

@@ -1,10 +1,10 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Pets
 {
@@ -72,18 +72,16 @@ namespace CalamityMod.Projectiles.Pets
                     SoundEngine.PlaySound(SoundID.Zombie15, Projectile.position); //mouse squeak sound
 
                     float radius = 240f; // 15 blocks
-                    for (int j = 0; j < Main.maxNPCs; j++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[j];
-                        if (npc.active && !npc.dontTakeDamage && Vector2.Distance(Projectile.Center, npc.Center) <= radius)
+                        if (!npc.dontTakeDamage && Vector2.Distance(Projectile.Center, npc.Center) <= radius)
                         {
                             if (npc.Calamity().ladHearts <= 0)
                                 npc.Calamity().ladHearts = CalamityUtils.SecondsToFrames(9f);
                         }
                     }
-                    for (int k = 0; k < Main.maxPlayers; k++)
+                    foreach (Player players in Main.ActivePlayers)
                     {
-                        Player players = Main.player[k];
                         if (!players.dead && Vector2.Distance(Projectile.Center, players.Center) <= radius)
                         {
                             if (players.Calamity().ladHearts <= 0)

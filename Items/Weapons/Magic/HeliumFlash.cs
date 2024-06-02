@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-                       Item.staff[Item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()
@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item73;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
 
             Item.shoot = ModContent.ProjectileType<VolatileStarcore>();
@@ -91,7 +91,7 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             return true;
         }
-        
+
 
         public override void AddRecipes()
         {

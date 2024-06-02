@@ -1,10 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Graphics.Metaballs;
-using CalamityMod.World;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Metaballs;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
@@ -15,18 +16,17 @@ namespace CalamityMod.Projectiles.Magic
     public class RancorLaserbeam : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public PrimitiveTrail RayDrawer = null;
         public Player Owner => Main.player[Projectile.owner];
         public Projectile MagicCircle
         {
             get
             {
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].identity != Projectile.ai[0] || !Main.projectile[i].active || Main.projectile[i].owner != Projectile.owner)
+                    if (p.identity != Projectile.ai[0] || p.owner != Projectile.owner)
                         continue;
 
-                    return Main.projectile[i];
+                    return p;
                 }
                 return null;
             }
@@ -162,16 +162,13 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            RayDrawer ??= new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, specialShader: GameShaders.Misc["CalamityMod:Flame"]);
-
             GameShaders.Misc["CalamityMod:Flame"].UseImage1("Images/Misc/Perlin");
 
             Vector2[] basePoints = new Vector2[24];
             for (int i = 0; i < basePoints.Length; i++)
                 basePoints[i] = Projectile.Center + Projectile.velocity * i / (basePoints.Length - 1f) * LaserLength;
 
-            Vector2 overallOffset = -Main.screenPosition;
-            RayDrawer.Draw(basePoints, overallOffset, 92);
+            PrimitiveRenderer.RenderTrail(basePoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, shader: GameShaders.Misc["CalamityMod:Flame"]), 92);
             return false;
         }
 

@@ -1,4 +1,4 @@
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureStratus
 {

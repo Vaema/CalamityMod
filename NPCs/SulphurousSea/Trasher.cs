@@ -1,11 +1,11 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -20,7 +20,7 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 8;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1,
                 Scale = 0.65f,
@@ -44,7 +44,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.value = Item.buyPrice(0, 0, 3, 0);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath5;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.15f;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<TrasherBanner>();
             NPC.Calamity().VulnerableToHeat = false;
@@ -52,13 +52,17 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SulphurousSeaBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Trasher")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Trasher")
             });
         }
 

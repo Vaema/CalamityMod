@@ -1,13 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Graphics.Metaballs;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using System.Collections.Generic;
-using CalamityMod.Graphics.Metaballs;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -30,13 +30,13 @@ namespace CalamityMod.Projectiles.Magic
         {
             get
             {
-                float movementSpeed = 9f;
+                float movementSpeed = 10f;
 
                 // Make speed gradually build up over time, with growths at certain points.
                 movementSpeed += MathHelper.SmoothStep(0f, 2.2f, Utils.GetLerpValue(0.18f, 0.3f, CurrentPower, true));
                 movementSpeed += MathHelper.SmoothStep(0f, 4f, Utils.GetLerpValue(0.4f, 0.52f, CurrentPower, true));
                 movementSpeed += MathHelper.SmoothStep(0f, 5f, Utils.GetLerpValue(0.6f, 0.72f, CurrentPower, true));
-                movementSpeed += MathHelper.SmoothStep(0f, 6f, Utils.GetLerpValue(0.8f, 0.92f, CurrentPower, true));
+                movementSpeed += MathHelper.SmoothStep(0f, 6f, Utils.GetLerpValue(0.8f, 1.2f, CurrentPower, true));
 
                 return movementSpeed;
             }
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 12;
+            Projectile.localNPCHitCooldown = 11;
             Projectile.timeLeft = 90000;
             Projectile.hide = true;
         }
@@ -273,7 +273,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (CurrentPower > LargeMouthPowerLowerBound)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBig").Value;
 

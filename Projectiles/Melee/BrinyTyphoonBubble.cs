@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
                             Vector2 dustRotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                             dustRotate = dustRotate.RotatedBy((double)(i - (dustAmt / 2 - 1)) * 3.1415926535897931 / (double)(float)dustAmt, default) + Projectile.Center;
                             Vector2 faceDirection = ((float)(Main.rand.NextDouble() * 3.1415927410125732) - 1.57079637f).ToRotationVector2() * (float)Main.rand.Next(3, 8);
-                            int bluishDust = Dust.NewDust(dustRotate + faceDirection, 0, 0, 187, faceDirection.X * 2f, faceDirection.Y * 2f, 100, new Color(53, Main.DiscoG, 255), 1.4f);
+                            int bluishDust = Dust.NewDust(dustRotate + faceDirection, 0, 0, DustID.Flare_Blue, faceDirection.X * 2f, faceDirection.Y * 2f, 100, new Color(53, Main.DiscoG, 255), 1.4f);
                             Main.dust[bluishDust].noGravity = true;
                             Main.dust[bluishDust].noLight = true;
                             Main.dust[bluishDust].velocity /= 4f;
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 rotate = rotate.RotatedBy((double)((float)(j - (moreDustAmt / 2 - 1)) * 6.28318548f / (float)moreDustAmt), default) + Projectile.Center;
                 Vector2 facingDirection = rotate - Projectile.Center;
-                int killDust = Dust.NewDust(rotate + facingDirection, 0, 0, 187, facingDirection.X * 2f, facingDirection.Y * 2f, 100, new Color(53, Main.DiscoG, 255), 1.4f);
+                int killDust = Dust.NewDust(rotate + facingDirection, 0, 0, DustID.Flare_Blue, facingDirection.X * 2f, facingDirection.Y * 2f, 100, new Color(53, Main.DiscoG, 255), 1.4f);
                 Main.dust[killDust].noGravity = true;
                 Main.dust[killDust].noLight = true;
                 Main.dust[killDust].velocity = facingDirection;

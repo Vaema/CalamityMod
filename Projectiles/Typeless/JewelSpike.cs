@@ -6,8 +6,8 @@ namespace CalamityMod.Projectiles.Typeless
     public class JewelSpike : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
-		public ref float RealPenetrate => ref Projectile.ai[0];
-		public const int MaxPenetrate = 2;
+        public ref float RealPenetrate => ref Projectile.ai[0];
+        public const int MaxPenetrate = 2;
 
         public override void SetStaticDefaults()
         {
@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (Main.rand.NextBool(5) && Projectile.frame < 3)
             {
-                int crystalDust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 87, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                int crystalDust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GemTopaz, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
                 Main.dust[crystalDust].noGravity = true;
             }
 

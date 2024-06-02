@@ -28,7 +28,7 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-			ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Item.type] = true;
         }
 
         public override void SetDefaults()
@@ -41,14 +41,14 @@ namespace CalamityMod.Items.TreasureBags
             Item.rare = ItemRarityID.Cyan;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+        }
 
         public override bool CanRightClick() => true;
 
-		public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
         public override void PostUpdate() => Item.TreasureBagLightAndDust();
 
@@ -59,12 +59,12 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-			// Money
-			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<AstrumAureus>()));
+            // Money
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<AstrumAureus>()));
 
             // Materials
             itemLoot.Add(ModContent.ItemType<AureusCell>(), 1, 12, 16);
-            itemLoot.Add(ModContent.ItemType<Stardust>(), 1, 30, 40);
+            itemLoot.Add(ModContent.ItemType<StarblightSoot>(), 1, 30, 40);
             itemLoot.Add(ItemID.FallenStar, 1, 20, 30);
 
             // Weapons

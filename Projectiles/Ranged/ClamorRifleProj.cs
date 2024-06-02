@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Lighting.AddLight(Projectile.Center, new Vector3(44, 191, 232) * (1.3f / 255));
                 for (int i = 0; i < 2; i++)
                 {
-                    int blueDust = Dust.NewDust(new Vector2(Projectile.Center.X, Projectile.Center.Y), Projectile.width - 28, Projectile.height - 28, 68, 0f, 0f, 100, default, 1f);
+                    int blueDust = Dust.NewDust(new Vector2(Projectile.Center.X, Projectile.Center.Y), Projectile.width - 28, Projectile.height - 28, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1f);
                     Main.dust[blueDust].noGravity = true;
                     Main.dust[blueDust].velocity *= 0.1f;
                     Main.dust[blueDust].velocity += Projectile.velocity * 0.5f;

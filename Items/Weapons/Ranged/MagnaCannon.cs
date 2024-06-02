@@ -21,6 +21,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static int FullChargeFrames = 138; //126 frames is durration of charge sound
 
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public override void SetStaticDefaults() => ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+
         public override void SetDefaults()
         {
             Item.width = 56;
@@ -33,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.knockBack = 2.5f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = null;
             Item.autoReuse = false;
@@ -43,6 +46,15 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter);
+            Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter), ModContent.ProjectileType<MagnaCannonHoldout>(), damage, knockback, player.whoAmI);
+            return false;
+        }
 
         public override void AddRecipes()
         {

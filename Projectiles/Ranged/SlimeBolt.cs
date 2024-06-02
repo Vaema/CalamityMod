@@ -1,9 +1,9 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Ranged
         public static float Fadetime => 225f;
         public static float EmpowerTime => 135f;
         public static float DamageFalloff => 0.85f;
-        public static Color SlimeColor => new Color (133, 133, 224);
+        public static Color SlimeColor => new Color(133, 133, 224);
 
         public ref float Time => ref Projectile.ai[0];
         public bool Empowered => Projectile.ai[0] >= EmpowerTime;
@@ -143,7 +143,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Main.spriteBatch.SetBlendState(BlendState.Additive);
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Main.EntitySpriteDraw(texture, drawPosition, null, SlimeColor, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
 

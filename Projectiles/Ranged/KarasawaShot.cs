@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class KarasawaShot : ModProjectile, ILocalizedModType
@@ -89,14 +89,14 @@ namespace CalamityMod.Projectiles.Ranged
                     dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
                     int randomDustType = Main.rand.NextBool() ? dust1 : dust2;
 
-                    int newDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 1.7f);
+                    int newDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 1.7f);
                     Dust dust = Main.dust[newDust];
                     dust.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                     dust.noGravity = true;
 
                     dust.velocity *= randomDustType == dust2 ? 2f : 4f;
 
-                    newDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 0.8f);
+                    newDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 0.8f);
                     dust.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
 
                     dust.velocity *= randomDustType == dust2 ? 1.33f : 2.66f;
@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Ranged
                     dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
                     int randomDustType = Main.rand.NextBool() ? dust1 : dust2;
 
-                    int newDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 2f);
+                    int newDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 2f);
                     Dust dust = Main.dust[newDust2];
                     dust.position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 3f;
                     dust.noGravity = true;

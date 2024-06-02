@@ -1,5 +1,5 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Accessories;
+﻿using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Potions;
@@ -10,10 +10,9 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using Terraria;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent.ItemDropRules;
-
 using CrateTile = CalamityMod.Tiles.Abyss.SulphurousCrateTile;
 
 namespace CalamityMod.Items.Fishing.SulphurCatches
@@ -44,10 +43,10 @@ namespace CalamityMod.Items.Fishing.SulphurCatches
             Item.useStyle = ItemUseStyleID.Swing;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Crates;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Crates;
+        }
 
         public override bool CanRightClick() => true;
         public override void ModifyItemLoot(ItemLoot itemLoot)

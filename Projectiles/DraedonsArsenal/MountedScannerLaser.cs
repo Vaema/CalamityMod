@@ -1,9 +1,9 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using System.Linq;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.projectile[OwnerIndex].localAI[0] == 0f)
                 Projectile.Kill();
         }
-        
+
         public override bool ShouldUpdatePosition() => false;
 
         public override void ExtraBehavior()

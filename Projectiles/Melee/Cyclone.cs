@@ -63,19 +63,20 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.ai[1] = 0;
                 }
             }
-            float projX = Projectile.Center.X;
-            float projY = Projectile.Center.Y;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            float num472 = Projectile.Center.X;
+            float num473 = Projectile.Center.Y;
+            float num474 = 600f;
+            for (int num475 = 0; num475 < Main.maxNPCs; num475++)
             {
-                NPC npc = Main.npc[i];
+                NPC npc = Main.npc[num475];
                 if (npc.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, npc.Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
                 {
                     float npcCenterX = npc.position.X + (float)(npc.width / 2);
                     float npcCenterY = npc.position.Y + (float)(npc.height / 2);
-                    float npcDistance = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcCenterY);
-                    if (npcDistance < 600f)
+                    float num478 = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcCenterY);
+                    if (num478 < num474)
                     {
-                        if (npc.position.X < projX)
+                        if (npc.position.X < num472)
                         {
                             npc.velocity.X += 0.05f;
                         }
@@ -83,7 +84,7 @@ namespace CalamityMod.Projectiles.Melee
                         {
                             npc.velocity.X -= 0.05f;
                         }
-                        if (npc.position.Y < projY)
+                        if (npc.position.Y < num473)
                         {
                             npc.velocity.Y += 0.05f;
                         }
@@ -109,7 +110,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item60 with { Volume = SoundID.Item60.Volume * 0.6f}, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Item60 with { Volume = SoundID.Item60.Volume * 0.6f }, Projectile.Center);
 
             for (int i = 0; i <= 360; i += 3)
             {

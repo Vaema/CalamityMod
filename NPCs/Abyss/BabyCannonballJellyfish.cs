@@ -1,29 +1,30 @@
-﻿using CalamityMod.BiomeManagers;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
-using Terraria.DataStructures;
 
 namespace CalamityMod.NPCs.Abyss
 {
     public class BabyCannonballJellyfish : ModNPC
     {
         public bool hasBeenHit = false;
+        public int explosionDamage;
 
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 7;
-            //Main.npcCatchable[NPC.type] = true;
+            Main.npcCatchable[NPC.type] = true;
             NPCID.Sets.CountsAsCritter[NPC.type] = true;
         }
 
@@ -34,7 +35,8 @@ namespace CalamityMod.NPCs.Abyss
             NPC.chaseable = false;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 30;
+            NPC.damage = 0;
+            explosionDamage = 30;
             NPC.width = 28;
             NPC.height = 36;
             NPC.defense = 0;
@@ -51,11 +53,15 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer1Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BabyCannonballJellyfish")
             });
@@ -136,10 +142,10 @@ namespace CalamityMod.NPCs.Abyss
             Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
             Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
             Vector2 vector = center - screenPos;
-            vector -= new Vector2((float)ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/BabyCannonballJellyfishGlow").Value.Width, (float)(ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/BabyCannonballJellyfishGlow").Value.Height / Main.npcFrameCount[NPC.type])) * 1f / 2f;
+            vector -= new Vector2((float)TextureAssets.Npc[NPC.type].Value.Width, (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type])) * 1f / 2f;
             vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
             Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(new Color(67, 218, 166));
-            Main.spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/BabyCannonballJellyfishGlow").Value, vector,
+            Main.spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, vector,
                 new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
         }
 
@@ -156,8 +162,13 @@ namespace CalamityMod.NPCs.Abyss
             NPC.height = (int)(NPC.height * 3f);
             NPC.position -= NPC.Size * 0.5f; //hitbox expansion + adjustments
             SoundEngine.PlaySound(SoundID.Item14, NPC.Center); //bomb sound
-            foreach (Player player in Main.player.Where(player => player.active && !player.dead && NPC.Hitbox.Intersects(player.Hitbox)))
-                player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage, NPC.direction);
+            foreach (Player player in Main.ActivePlayers)
+            {
+                if (player.dead || !NPC.Hitbox.Intersects(player.Hitbox))
+                    continue;
+
+                player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), explosionDamage, NPC.direction);
+            }
             for (int k = 0; k < 8; k++)
             {
                 int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.MoonBoulder, 0f, -1f, 0, default, 1f);
@@ -168,8 +179,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.NPCLoot();
             NPC.netUpdate = true;
         }
-
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => NPC.life <= 0;
 
         public override void HitEffect(NPC.HitInfo hit)
         {

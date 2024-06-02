@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<AstralScytheProjectile>();
             Item.shootSpeed = 5f;

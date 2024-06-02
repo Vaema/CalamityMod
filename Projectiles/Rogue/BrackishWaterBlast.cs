@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Rogue
                 randomAdjust = random3 / randomAdjust;
                 random1 *= randomAdjust;
                 random2 *= randomAdjust;
-                int water = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 0.5f);
+                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 0.5f);
                 Dust dust = Main.dust[water];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using System;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Summon
         public ref float TimerForCharging => ref Projectile.ai[0];
 
         public ref float TypeOfFlowerOrb => ref Projectile.ai[1];
-        
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
@@ -82,9 +82,9 @@ namespace CalamityMod.Projectiles.Summon
                 TimerForCharging += 0.001f;
                 TimerForCharging = (TimerForCharging > 1f) ? 1f : TimerForCharging;
             }
-            Projectile.netUpdate= true;
+            Projectile.netUpdate = true;
         }
-        
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             DustFlowerOnHit(); // Makes a dust effect that looks like a flower.
@@ -94,8 +94,8 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public void DustFlowerOnHit()
-            // Copied code from Frost Beam, from the Frost Blossom Staff.
-            // Modified to have a different color correspondent on the type of flower.
+        // Copied code from Frost Beam, from the Frost Blossom Staff.
+        // Modified to have a different color correspondent on the type of flower.
         {
             int flowerPetalCount = Main.rand.Next(3, 5 + 1);
             float thetaDelta = Projectile.velocity.ToRotation();

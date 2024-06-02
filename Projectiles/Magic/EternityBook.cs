@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.NPCs.Providence;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Localization;
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Magic
             Player player = Main.player[Projectile.owner];
 
             // If the player is no longer able to hold the book, kill it (and by extension the other projectiles).
-            if (!player.channel || player.noItems || player.CCed)
+            if (player.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;

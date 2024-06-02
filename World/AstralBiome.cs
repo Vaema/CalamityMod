@@ -1,4 +1,7 @@
-﻿using CalamityMod.Schematics;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Schematics;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -6,9 +9,6 @@ using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -83,13 +83,10 @@ namespace CalamityMod.World
             // Clients in multiplayer don't drop meteors.
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
-            for (int i = 0; i < 255; i++)
+            foreach (Player _ in Main.ActivePlayers)
             {
-                if (Main.player[i].active)
-                {
-                    meteorDropped = false;
-                    break;
-                }
+                meteorDropped = false;
+                break;
             }
 
             // Check whether there is already too much ore.
@@ -119,7 +116,11 @@ namespace CalamityMod.World
                     "Depthice",
                 };
                 foreach (string tileName in aaTileNames)
-                    aaTilesToAvoid.Add(ancientsAwakened.Find<ModTile>(tileName).Type);
+                {
+                    //Defensive coding
+                    if (ancientsAwakened.TryFind(tileName, out ModTile value))
+                        aaTilesToAvoid.Add(value.Type);
+                }
             }
 
             while (!meteorDropped)
@@ -225,11 +226,23 @@ namespace CalamityMod.World
             IList<ushort> MSTilesToAvoid = new List<ushort>(16);
             if (magicStorage is not null)
             {
+                //yes I added the combined stations and fake altars due to them having tiles (despite no one actually placing em since MS Crafting UI exists)
+                //also thank fuck MS makes all Storage Units the same tile cuz otherwise the list would be massive
+                //decrafter may or may not exist by the time I added the new tiles, saw it while snooping around the MS github repo
+                //Idk what the TE tiles are for and they dont seem to have a tile
                 string[] MSTileNames = new string[]
                 {
+                    "CombinedFurnitureStations1Tile",
+                    "CombinedFurnitureStations2Tile",
+                    "CombinedStations1Tile",
+                    "CombinedStations2Tile",
+                    "CombinedStations3Tile",
+                    "CombinedStations4Tile",
                     "CraftingAccess",
                     "CreativeStorageUnit",
+                    "DecraftingAccess",
                     "EnvironmentAccess",
+                    "EvilAltarTile",
                     "RemoteAccess",
                     "StorageAccess",
                     "StorageComponent",
@@ -238,7 +251,11 @@ namespace CalamityMod.World
                     "StorageUnit",
                 };
                 foreach (string tileName in MSTileNames)
-                    MSTilesToAvoid.Add(magicStorage.Find<ModTile>(tileName).Type);
+                {
+                    //Defensive coding
+                    if (magicStorage.TryFind(tileName, out ModTile value))
+                        MSTilesToAvoid.Add(value.Type);
+                }
             }
 
             UnifiedRandom rand = WorldGen.genRand;
@@ -257,11 +274,11 @@ namespace CalamityMod.World
             }
             int avoidRectangleSize = 35;
             Rectangle rectangle = new Rectangle((i - avoidRectangleSize) * 16, (j - avoidRectangleSize) * 16, avoidRectangleSize * 2 * 16, avoidRectangleSize * 2 * 16);
-            for (int k = 0; k < Main.maxPlayers; k++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                if (Main.player[k].active)
+                if (player.active)
                 {
-                    Rectangle value = new Rectangle((int)(Main.player[k].position.X + (float)(Main.player[k].width / 2) - (float)(NPC.sWidth / 2) - (float)NPC.safeRangeX), (int)(Main.player[k].position.Y + (float)(Main.player[k].height / 2) - (float)(NPC.sHeight / 2) - (float)NPC.safeRangeY), NPC.sWidth + NPC.safeRangeX * 2, NPC.sHeight + NPC.safeRangeY * 2);
+                    Rectangle value = new Rectangle((int)(player.position.X + (float)(player.width / 2) - (float)(NPC.sWidth / 2) - (float)NPC.safeRangeX), (int)(player.position.Y + (float)(player.height / 2) - (float)(NPC.sHeight / 2) - (float)NPC.safeRangeY), NPC.sWidth + NPC.safeRangeX * 2, NPC.sHeight + NPC.safeRangeY * 2);
                     if (rectangle.Intersects(value))
                     {
                         return false;
@@ -453,7 +470,7 @@ namespace CalamityMod.World
                             y += 5;
                         }
 
-                        if (Main.tile[x, y].HasTile || Main.tile[x, y].WallType > 0 && !TileID.Sets.Torch[Main.tile[x,y].TileType] && !TileID.Sets.IsAContainer[Main.tile[x, y].TileType] 
+                        if (Main.tile[x, y].HasTile || Main.tile[x, y].WallType > 0 && !TileID.Sets.Torch[Main.tile[x, y].TileType] && !TileID.Sets.IsAContainer[Main.tile[x, y].TileType]
                             && (magicStorage is not null && MSTilesToAvoid.Contains(Main.tile[x, y].TileType))) //AVOID HOUSES
                         {
                             bool place = true;

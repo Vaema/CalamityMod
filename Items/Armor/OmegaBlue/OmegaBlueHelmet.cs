@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 19;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
@@ -79,7 +79,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
             var hasOmegaBlueCooldown = mp.cooldowns.TryGetValue(Cooldowns.OmegaBlue.ID, out var cd);
             if (hasOmegaBlueCooldown && cd.timeLeft > 1500)
             {
-                var d = Dust.NewDust(player.position, player.width, player.height, 20, 0, 0, 100, Color.Transparent, 1.6f);
+                var d = Dust.NewDust(player.position, player.width, player.height, DustID.PurificationPowder, 0, 0, 100, Color.Transparent, 1.6f);
                 Main.dust[d].noGravity = true;
                 Main.dust[d].noLight = true;
                 Main.dust[d].fadeIn = 1f;
@@ -90,7 +90,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ReaperTooth>(8).
+                AddIngredient<ReaperTooth>(3).
                 AddIngredient<DepthCells>(12).
                 AddIngredient<RuinousSoul>().
                 AddTile(TileID.LunarCraftingStation).

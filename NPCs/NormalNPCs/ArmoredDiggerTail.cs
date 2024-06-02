@@ -39,6 +39,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<ArmoredDiggerBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
@@ -88,7 +92,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
                     targetXDist = Main.npc[(int)NPC.ai[1]].position.X + (float)(Main.npc[(int)NPC.ai[1]].width / 2) - segmentPosition.X;
                     targetYDist = Main.npc[(int)NPC.ai[1]].position.Y + (float)(Main.npc[(int)NPC.ai[1]].height / 2) - segmentPosition.Y;
-                } catch
+                }
+                catch
                 {
                 }
                 NPC.rotation = (float)Math.Atan2((double)targetYDist, (double)targetXDist) + 1.57f;
@@ -101,6 +106,21 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.position.X = NPC.position.X + targetXDist;
                 NPC.position.Y = NPC.position.Y + targetYDist;
             }
+
+            // Calculate contact damage based on velocity
+            float maxChaseSpeed = CalamityWorld.death ? 13.5f : 10f;
+            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
+            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
+            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            {
+                NPC.damage = 0;
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
+            }
         }
 
         public override bool CheckActive()
@@ -112,13 +132,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 6, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 10; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 6, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

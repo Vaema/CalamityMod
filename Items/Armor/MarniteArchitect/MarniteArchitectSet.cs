@@ -1,4 +1,7 @@
-﻿using CalamityMod.Buffs.Mounts;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Buffs.Mounts;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Accessories.Vanity;
@@ -8,15 +11,12 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameInput;
 using static Microsoft.Xna.Framework.Input.Keys;
 using static Terraria.ModLoader.ModContent;
 
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
         public static readonly SoundStyle LiftSpawnSound = new("CalamityMod/Sounds/Item/MarniteLiftSummon");
         public static readonly SoundStyle LiftGoAwaySound = new("CalamityMod/Sounds/Item/MarniteLiftUnsummon");
-        public static readonly SoundStyle LiftHummSound = new("CalamityMod/Sounds/Item/MarniteLiftHumm") { IsLooped = true};
+        public static readonly SoundStyle LiftHummSound = new("CalamityMod/Sounds/Item/MarniteLiftHumm") { IsLooped = true };
 
         public static float LiftRaiseSpeed = 2f;
         public static float MaxLiftHeight = 138f;
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 0;
         }
@@ -153,7 +153,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 1;
         }
@@ -292,7 +292,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
                 if (distanceToGround >= 0)
                 {
-                    float newVelocity;  
+                    float newVelocity;
 
                     if (Player.controlUp || Player.controlJump)
                     {
@@ -382,7 +382,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
                 if (Main.rand.NextFloat() > (centerDistance / MarniteArchitectHeadgear.MaxLiftHeight) * 0.6f && Main.rand.NextBool())
                 {
                     float scale = 1.2f - (centerDistance / MarniteArchitectHeadgear.MaxLiftHeight) * 0.7f;
-                    Dust dust = Dust.NewDustPerfect(player.Bottom + Vector2.UnitY * centerDistance + Vector2.UnitX * Main.rand.Next(-16, 16), 31, new Vector2((Main.rand.NextFloat(-8, 8) * scale) - player.velocity.X, Main.rand.NextFloat(-1, 1)), 120, Scale : scale * 1.5f);
+                    Dust dust = Dust.NewDustPerfect(player.Bottom + Vector2.UnitY * centerDistance + Vector2.UnitX * Main.rand.Next(-16, 16), 31, new Vector2((Main.rand.NextFloat(-8, 8) * scale) - player.velocity.X, Main.rand.NextFloat(-1, 1)), 120, Scale: scale * 1.5f);
                 }
             }
 
@@ -425,7 +425,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
         public override bool Draw(List<DrawData> playerDrawData, int drawType, Player drawPlayer, ref Texture2D texture, ref Texture2D glowTexture, ref Vector2 drawPosition, ref Rectangle frame, ref Color drawColor, ref Color glowColor, ref float rotation, ref SpriteEffects spriteEffects, ref Vector2 drawOrigin, ref float drawScale, float shadow)
         {
-            rotation = MathHelper.Clamp(drawPlayer.velocity.X * 0.03f, - MathHelper.ToRadians(7f), MathHelper.ToRadians(7f));
+            rotation = MathHelper.Clamp(drawPlayer.velocity.X * 0.03f, -MathHelper.ToRadians(7f), MathHelper.ToRadians(7f));
             drawPlayer.fullRotation = rotation;
 
             // Draw is called for each mount texture we provide, so we check drawType to avoid duplicate draws.
@@ -447,7 +447,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
                     playerDrawData.Add(new DrawData(fireTex, drawPosition + new Vector2(0, 8), new Rectangle(0, 0, fireTex.Width, fireTex.Height), fireColor, drawPlayer.fullRotation, fireOrigin, fireScale * drawScale, SpriteEffects.None, 0));
                 }
-                    
+
                 playerDrawData.Add(new DrawData(platformTex, drawPosition, new Rectangle(0, 0, platformTex.Width, platformTex.Height), drawColor, drawPlayer.fullRotation, platformTex.Size() / 2f, drawScale, SpriteEffects.None, 0));
             }
 

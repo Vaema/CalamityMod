@@ -1,9 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -46,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.rand.NextBool(16))
                 {
-                    Dust dust = Dust.NewDustDirect(Projectile.Center + Main.rand.NextVector2Circular(60f, 60f) * Utils.Remap(Time, 0f, Fadetime, 0.5f, 1f), 4, 4, 295, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
+                    Dust dust = Dust.NewDustDirect(Projectile.Center + Main.rand.NextVector2Circular(60f, 60f) * Utils.Remap(Time, 0f, Fadetime, 0.5f, 1f), 4, 4, DustID.CorruptTorch, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
                     if (Main.rand.NextBool(5))
                     {
                         dust.noGravity = true;
@@ -95,7 +96,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D fire = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
 
             // The conga line of colors to sift through

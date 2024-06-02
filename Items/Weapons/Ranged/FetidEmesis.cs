@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().canFirePointBlankShots = true;
         }
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     ModContent.ProjectileType<EmesisGore>(), damage, knockback, player.whoAmI);
                 for (int i = 0; i < 5; i++)
                 {
-                    Dust dust = Dust.NewDustDirect(position, 10, 10, 27);
+                    Dust dust = Dust.NewDustDirect(position, 10, 10, DustID.Shadowflame);
                     dust.velocity = Vector2.Normalize(velocity).RotatedByRandom(MathHelper.ToRadians(15f));
                     dust.noGravity = true;
                 }

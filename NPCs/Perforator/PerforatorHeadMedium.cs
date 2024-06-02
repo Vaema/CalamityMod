@@ -1,16 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Perforator
 {
@@ -19,6 +20,8 @@ namespace CalamityMod.NPCs.Perforator
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PerfMediumHit", 3);
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfMediumDeath");
+
+        public static Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
@@ -34,6 +37,10 @@ namespace CalamityMod.NPCs.Perforator
             value.Position.X += 60;
             value.Position.Y += 40;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -45,7 +52,11 @@ namespace CalamityMod.NPCs.Perforator
             NPC.width = 58;
             NPC.height = 68;
             NPC.defense = 2;
+
             NPC.LifeMaxNERB(180, 216, 7000);
+            if (Main.zenithWorld)
+                NPC.lifeMax *= 4;
+
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
@@ -73,6 +84,10 @@ namespace CalamityMod.NPCs.Perforator
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -80,11 +95,11 @@ namespace CalamityMod.NPCs.Perforator
             int associatedNPCType = ModContent.NPCType<PerforatorHive>();
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
 
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCrimson,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundCrimson,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Perforator")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Perforator")
             });
         }
 
@@ -94,19 +109,6 @@ namespace CalamityMod.NPCs.Perforator
             bool expertMode = Main.expertMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
-
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = 4f;
-            float minimalDamageVelocity = 8f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)(NPC.defDamage * 0.5f);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(NPC.defDamage * 0.5f, NPC.defDamage, velocityDamageScalar);
-            }
 
             float enrageScale = bossRush ? 1f : 0f;
             if ((NPC.position.Y / 16f) < Main.worldSurface || bossRush)
@@ -150,7 +152,7 @@ namespace CalamityMod.NPCs.Perforator
                 {
                     int totalSegments = death ? 14 : revenge ? 13 : expertMode ? 12 : 10;
                     NPC.ai[2] = totalSegments;
-                    NPC.ai[0] = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.position.X + (NPC.width / 2)), (int)(NPC.position.Y + NPC.height), ModContent.NPCType<PerforatorBodyMedium>(), NPC.whoAmI, 0f, 0f, 0f, 0f, 255);
+                    NPC.ai[0] = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.position.X + (NPC.width / 2)), (int)(NPC.position.Y + NPC.height), ModContent.NPCType<PerforatorBodyMedium>(), NPC.whoAmI);
                     Main.npc[(int)NPC.ai[0]].ai[1] = NPC.whoAmI;
                     Main.npc[(int)NPC.ai[0]].ai[2] = NPC.ai[2] - 1f;
                     NPC.netUpdate = true;
@@ -209,18 +211,17 @@ namespace CalamityMod.NPCs.Perforator
                             {
                                 shouldFly = true;
                                 if (Main.rand.NextBool(100) && Main.tile[i, j].HasUnactuatedTile)
-                                {
                                     WorldGen.KillTile(i, j, true, true, false);
-                                }
                             }
                         }
                     }
                 }
             }
+
             if (!shouldFly)
             {
                 Rectangle rectangle = new Rectangle((int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height);
-                int stopFlyingRadius = death ? 160 : revenge ? 200 : expertMode ? 240 : 300;
+                int stopFlyingRadius = death ? 320 : revenge ? 400 : expertMode ? 480 : 600;
                 bool outsideFlyRadius = true;
                 for (int k = 0; k < Main.maxPlayers; k++)
                 {
@@ -234,29 +235,29 @@ namespace CalamityMod.NPCs.Perforator
                         }
                     }
                 }
+
                 if (outsideFlyRadius)
                     shouldFly = true;
             }
 
-            float fallSpeed = 16f;
+            float maxChargeSpeed = 16f;
             if (player.dead || CalamityGlobalNPC.perfHive < 0 || !Main.npc[CalamityGlobalNPC.perfHive].active)
             {
                 NPC.TargetClosest(false);
                 shouldFly = false;
                 NPC.velocity.Y += 1f;
-                if (NPC.position.Y > Main.worldSurface * 16.0)
+                if (NPC.position.Y > Main.worldSurface * 16D)
                 {
                     NPC.velocity.Y += 1f;
-                    fallSpeed = 32f;
+                    maxChargeSpeed *= 2f;
                 }
-                if (NPC.position.Y > Main.rockLayer * 16.0)
+
+                if (NPC.position.Y > Main.rockLayer * 16D)
                 {
                     for (int p = 0; p < Main.maxNPCs; p++)
                     {
                         if (Main.npc[p].type == NPC.type || Main.npc[p].type == ModContent.NPCType<PerforatorBodyMedium>() || Main.npc[p].type == ModContent.NPCType<PerforatorTailMedium>())
-                        {
                             Main.npc[p].active = false;
-                        }
                     }
                 }
             }
@@ -289,29 +290,41 @@ namespace CalamityMod.NPCs.Perforator
             if (!shouldFly)
             {
                 NPC.velocity.Y += 0.15f;
-                if (NPC.velocity.Y > fallSpeed)
-                    NPC.velocity.Y = fallSpeed;
+                if (NPC.velocity.Y > maxChargeSpeed)
+                    NPC.velocity.Y = maxChargeSpeed;
 
-                if ((Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < fallSpeed * 0.4)
+                // This bool exists to stop the strange wiggle behavior when worms are falling down
+                bool slowXVelocity = Math.Abs(NPC.velocity.X) > turnSpeedCopy;
+                if ((Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < maxChargeSpeed * 0.4)
                 {
                     if (NPC.velocity.X < 0f)
                         NPC.velocity.X -= turnSpeedCopy * 1.1f;
                     else
                         NPC.velocity.X += turnSpeedCopy * 1.1f;
                 }
-                else if (NPC.velocity.Y == fallSpeed)
+                else if (NPC.velocity.Y == maxChargeSpeed)
                 {
-                    if (NPC.velocity.X < targetX)
-                        NPC.velocity.X += turnSpeedCopy;
-                    else if (NPC.velocity.X > targetX)
-                        NPC.velocity.X -= turnSpeedCopy;
+                    if (slowXVelocity)
+                    {
+                        if (NPC.velocity.X < targetX)
+                            NPC.velocity.X += turnSpeedCopy;
+                        else if (NPC.velocity.X > targetX)
+                            NPC.velocity.X -= turnSpeedCopy;
+                    }
+                    else
+                        NPC.velocity.X = 0f;
                 }
                 else if (NPC.velocity.Y > 4f)
                 {
-                    if (NPC.velocity.X < 0f)
-                        NPC.velocity.X += turnSpeedCopy * 0.9f;
+                    if (slowXVelocity)
+                    {
+                        if (NPC.velocity.X < 0f)
+                            NPC.velocity.X += turnSpeedCopy * 0.9f;
+                        else
+                            NPC.velocity.X -= turnSpeedCopy * 0.9f;
+                    }
                     else
-                        NPC.velocity.X -= turnSpeedCopy * 0.9f;
+                        NPC.velocity.X = 0f;
                 }
             }
             else
@@ -332,7 +345,7 @@ namespace CalamityMod.NPCs.Perforator
                 targetDistance = (float)Math.Sqrt(targetX * targetX + targetY * targetY);
                 float absoluteTargetX = Math.Abs(targetX);
                 float absoluteTargetY = Math.Abs(targetY);
-                float timeToReachTarget = fallSpeed / targetDistance;
+                float timeToReachTarget = maxChargeSpeed / targetDistance;
                 targetX *= timeToReachTarget;
                 targetY *= timeToReachTarget;
 
@@ -361,7 +374,7 @@ namespace CalamityMod.NPCs.Perforator
                     else if (NPC.velocity.Y > targetY)
                         NPC.velocity.Y -= speedCopy;
 
-                    if (Math.Abs(targetY) < fallSpeed * 0.2 && ((NPC.velocity.X > 0f && targetX < 0f) || (NPC.velocity.X < 0f && targetX > 0f)))
+                    if (Math.Abs(targetY) < maxChargeSpeed * 0.2 && ((NPC.velocity.X > 0f && targetX < 0f) || (NPC.velocity.X < 0f && targetX > 0f)))
                     {
                         if (NPC.velocity.Y > 0f)
                             NPC.velocity.Y += speedCopy * 2f;
@@ -369,7 +382,7 @@ namespace CalamityMod.NPCs.Perforator
                             NPC.velocity.Y -= speedCopy * 2f;
                     }
 
-                    if (Math.Abs(targetX) < fallSpeed * 0.2 && ((NPC.velocity.Y > 0f && targetY < 0f) || (NPC.velocity.Y < 0f && targetY > 0f)))
+                    if (Math.Abs(targetX) < maxChargeSpeed * 0.2 && ((NPC.velocity.Y > 0f && targetY < 0f) || (NPC.velocity.Y < 0f && targetY > 0f)))
                     {
                         if (NPC.velocity.X > 0f)
                             NPC.velocity.X += speedCopy * 2f;
@@ -384,7 +397,7 @@ namespace CalamityMod.NPCs.Perforator
                     else if (NPC.velocity.X > targetX)
                         NPC.velocity.X -= speedCopy * 1.1f;
 
-                    if ((Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < fallSpeed * 0.5)
+                    if ((Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < maxChargeSpeed * 0.5)
                     {
                         if (NPC.velocity.Y > 0f)
                             NPC.velocity.Y += speedCopy;
@@ -399,7 +412,7 @@ namespace CalamityMod.NPCs.Perforator
                     else if (NPC.velocity.Y > targetY)
                         NPC.velocity.Y -= speedCopy * 1.1f;
 
-                    if ((Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < fallSpeed * 0.5)
+                    if ((Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < maxChargeSpeed * 0.5)
                     {
                         if (NPC.velocity.X > 0f)
                             NPC.velocity.X += speedCopy;
@@ -407,6 +420,19 @@ namespace CalamityMod.NPCs.Perforator
                             NPC.velocity.X -= speedCopy;
                     }
                 }
+            }
+
+            // Calculate contact damage based on velocity
+            float minimalContactDamageVelocity = maxChargeSpeed * 0.25f;
+            float minimalDamageVelocity = maxChargeSpeed * 0.5f;
+            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
+            {
+                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
             }
 
             NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
@@ -425,6 +451,7 @@ namespace CalamityMod.NPCs.Perforator
 
                 NPC.localAI[0] = 0f;
             }
+
             if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
                 NPC.netUpdate = true;
         }
@@ -446,7 +473,7 @@ namespace CalamityMod.NPCs.Perforator
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Perforator/PerforatorHeadMediumGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color glowmaskColor = Color.Lerp(Color.White, Color.Yellow, 0.5f);
 
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
@@ -500,11 +527,12 @@ namespace CalamityMod.NPCs.Perforator
                 }
             }
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            // ????
+            /*for (int i = 0; i < Main.maxNPCs; i++)
             {
                 if (i != NPC.whoAmI && Main.npc[i].active && (Main.npc[i].type == NPC.type || Main.npc[i].type == ModContent.NPCType<PerforatorBodyMedium>() || Main.npc[i].type == ModContent.NPCType<PerforatorTailMedium>()))
                     return;
-            }
+            }*/
         }
 
         public override void BossLoot(ref string name, ref int potionType)

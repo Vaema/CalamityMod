@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.defense = 20;
         }

@@ -75,17 +75,17 @@ namespace CalamityMod.CalPlayer.Dashes
                 Dust dust = Dust.NewDustPerfect(npc.Center, 296, velocity * 3f, 0, default, 2.5f);
                 dust.noGravity = true;
                 dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
-                
+
                 Dust dust2 = Dust.NewDustPerfect(npc.Center, 158, velocity * 5f, 0, default, 2.2f);
                 dust2.noGravity = true;
                 dust2.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
                 dust2.color = Color.Salmon;
-                
+
                 Dust dust3 = Dust.NewDustPerfect(npc.Center, 169, velocity * 7f, 0, default, 1.9f);
                 dust3.noGravity = true;
                 dust3.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
                 dust3.color = Color.SandyBrown;
-                
+
             }
             for (int k = 0; k < 5; k++)
             {
@@ -93,7 +93,7 @@ namespace CalamityMod.CalPlayer.Dashes
                 dust.noGravity = false;
                 dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
             }
-            SoundEngine.PlaySound(SoundID.Item62 with { Volume = 0.6f, PitchVariance = 0.3f }, npc.position);
+            SoundEngine.PlaySound(SoundID.Item62 with { Volume = 0.6f, PitchVariance = 0.3f }, npc.Center);
         }
     }
 }

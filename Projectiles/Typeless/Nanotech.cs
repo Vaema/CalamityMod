@@ -1,5 +1,6 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
@@ -60,7 +61,7 @@ namespace CalamityMod.Projectiles.Typeless
             for (int i = 0; i < 2; i = inc + 1)
             {
                 int dustScale = (int)(10f * Projectile.scale);
-                int greenDust = Dust.NewDust(Projectile.Center - Vector2.One * (float)dustScale, dustScale * 2, dustScale * 2, 107, 0f, 0f, 0, default, 1f);
+                int greenDust = Dust.NewDust(Projectile.Center - Vector2.One * (float)dustScale, dustScale * 2, dustScale * 2, DustID.TerraBlade, 0f, 0f, 0, default, 1f);
                 Dust nanoDust = Main.dust[greenDust];
                 Vector2 dustDirection = Vector2.Normalize(nanoDust.position - Projectile.Center);
                 nanoDust.position = Projectile.Center + dustDirection * (float)dustScale * Projectile.scale;

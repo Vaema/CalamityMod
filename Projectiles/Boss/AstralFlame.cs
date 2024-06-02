@@ -1,13 +1,13 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using System;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
 using CalamityMod.Events;
 using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Boss
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
 
             Lighting.AddLight(Projectile.Center, 0.3f, 0.5f, 0.1f);
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] > 15f)
             {
-                int astralDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 0.8f);
+                int astralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 0.8f);
                 Main.dust[astralDust].noGravity = true;
                 Main.dust[astralDust].velocity *= 0f;
             }
@@ -162,14 +162,14 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 2; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 50, default, 1f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 50, default, 1f);
             }
             for (int j = 0; j < 20; j++)
             {
-                int deathAstralDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 1.5f);
+                int deathAstralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 1.5f);
                 Main.dust[deathAstralDust].noGravity = true;
                 Main.dust[deathAstralDust].velocity *= 3f;
-                deathAstralDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 50, default, 1f);
+                deathAstralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 50, default, 1f);
                 Main.dust[deathAstralDust].velocity *= 2f;
                 Main.dust[deathAstralDust].noGravity = true;
             }

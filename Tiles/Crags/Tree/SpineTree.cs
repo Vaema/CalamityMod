@@ -49,14 +49,14 @@ namespace CalamityMod.Tiles.Crags.Tree
             return false;
         }
 
-        public static bool SolidTile(int i, int j) 
+        public static bool SolidTile(int i, int j)
         {
             return Framing.GetTileSafely(i, j).HasTile && Main.tileSolid[Framing.GetTileSafely(i, j).TileType];
         }
 
-        public static bool SolidTopTile(int i, int j) 
+        public static bool SolidTopTile(int i, int j)
         {
-            return Framing.GetTileSafely(i, j).HasTile && (Main.tileSolidTop[Framing.GetTileSafely(i, j).TileType] || 
+            return Framing.GetTileSafely(i, j).HasTile && (Main.tileSolidTop[Framing.GetTileSafely(i, j).TileType] ||
             Main.tileSolid[Framing.GetTileSafely(i, j).TileType]);
         }
 
@@ -80,7 +80,7 @@ namespace CalamityMod.Tiles.Crags.Tree
                 }
             }
 
-            if (height < minSize) 
+            if (height < minSize)
             {
                 return false;
             }

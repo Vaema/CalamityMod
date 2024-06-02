@@ -22,10 +22,10 @@ namespace CalamityMod.Items.Armor
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/CirrusDress_Legs", EquipType.Legs, this);
             }
         }
-        
+
         public override void SetStaticDefaults()
         {
-           
+
             if (Main.netMode == NetmodeID.Server)
                 return;
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Armor
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
             Item.defense = 8;

@@ -1,9 +1,9 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -30,6 +30,10 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DashCooldown / 60);
 
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+        }
         public override void SetDefaults()
         {
             Item.width = 52;
@@ -40,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.25f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = Shot;
             Item.autoReuse = true;
@@ -51,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool AltFunctionUse(Player player) => true;
         public override bool CanUseItem(Player player)
         {
-            if (player.Calamity().SpeedBlasterDashDelayCooldown > 0 && player.altFunctionUse == 2)
+            if (player.HasCooldown(Cooldowns.SpeedBlasterBoost.ID) && player.altFunctionUse == 2)
             {
                 SoundEngine.PlaySound(Empty, player.Center);
                 return false;
@@ -63,14 +67,14 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override Vector2? HoldoutOffset() => new Vector2(-1, -6);
 
         // Increased fire rate after dashing
-        public override float UseSpeedMultiplier(Player player) => player.Calamity().SpeedBlasterDashDelayCooldown > 0 ? FireRatePowerup : 1f;
+        public override float UseSpeedMultiplier(Player player) => player.HasCooldown(Cooldowns.SpeedBlasterBoost.ID) ? FireRatePowerup : 1f;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             // Reposition all shots to the gun's tip
             Vector2 newPos = position + new Vector2(38f, player.direction * (Math.Abs(velocity.SafeNormalize(Vector2.Zero).X) < 0.02f ? -2f : -8f)).RotatedBy(velocity.ToRotation());
 
             // Big dashing shot
-            if (player.altFunctionUse == 2 && player.Calamity().SpeedBlasterDashDelayCooldown == 0)
+            if (player.altFunctionUse == 2 && !(player.HasCooldown(Cooldowns.SpeedBlasterBoost.ID)))
             {
                 // Switches the color of the next shots, including this one
                 if (ColorValue >= 4f)
@@ -81,7 +85,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Projectile.NewProjectile(source, newPos, velocity, type, (int)(damage * DashShotDamageMult), knockback, player.whoAmI, ColorValue, 3f);
 
                 // Activate the dash and cooldown
-                player.Calamity().SpeedBlasterDashDelayCooldown = DashCooldown;
+                player.AddCooldown(Cooldowns.SpeedBlasterBoost.ID, DashCooldown);
                 player.Calamity().sBlasterDashActivated = true;
 
                 // If moving, emit particles to signal the dash
@@ -98,8 +102,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
 
             // Add inaccuracy to regular shots; powered up shots are more accurate
-            Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(player.Calamity().SpeedBlasterDashDelayCooldown > 0 ? 3f : 15f));
-            float ShotMode = player.Calamity().SpeedBlasterDashDelayCooldown > 0 ? 2f : 0f;
+            Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(player.HasCooldown(Cooldowns.SpeedBlasterBoost.ID) ? 3f : 15f));
+            float ShotMode = player.HasCooldown(Cooldowns.SpeedBlasterBoost.ID) ? 2f : 0f;
             Projectile.NewProjectile(source, newPos, newVel, type, damage, knockback, player.whoAmI, ColorValue, ShotMode);
             return false;
         }

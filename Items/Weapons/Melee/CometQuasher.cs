@@ -1,6 +1,7 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,12 +11,16 @@ namespace CalamityMod.Items.Weapons.Melee
     public class CometQuasher : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        internal const float ShootSpeed = 9f;
+
+        internal const int TotalMeteors = 2;
+
         public override void SetDefaults()
         {
             Item.width = 46;
             Item.height = 62;
-            Item.scale = 1.5f;
-            Item.damage = 160;
+            Item.damage = 134;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -24,106 +29,52 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.75f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
-            Item.shootSpeed = 9f;
+            Item.shootSpeed = ShootSpeed;
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            var source = player.GetSource_ItemUse(Item);
-            float cometSpeed = Item.shootSpeed;
-            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-            if (player.gravDir == -1f)
-            {
-                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
-            }
-            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
-            {
-                mouseXDist = (float)player.direction;
-                mouseYDist = 0f;
-                mouseDistance = cometSpeed;
-            }
-            else
-            {
-                mouseDistance = cometSpeed / mouseDistance;
-            }
+            Vector2 destination = target.Center;
+            Vector2 position = destination - (Vector2.UnitY * (destination.Y - Main.screenPosition.Y + 80f));
+            Vector2 cachedPosition = position;
 
-            for (int i = 0; i < 2; i++)
+            Vector2 velocity = (destination - position).SafeNormalize(Vector2.UnitY) * ShootSpeed;
+            Vector2 cachedVelocity = velocity;
+
+            int meteorDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.5));
+            float meteorKnockback = Item.knockBack * 0.5f;
+            for (int i = 0; i < TotalMeteors; i++)
             {
-                realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                realPlayerPos.Y -= (float)(100 * i);
-                mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X + (float)Main.rand.Next(-40, 41) * 0.03f;
-                mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-                if (mouseYDist < 0f)
-                {
-                    mouseYDist *= -1f;
-                }
-                if (mouseYDist < 20f)
-                {
-                    mouseYDist = 20f;
-                }
-                mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-                mouseDistance = cometSpeed / mouseDistance;
-                mouseXDist *= mouseDistance;
-                mouseYDist *= mouseDistance;
-                float cometSpawnXOffset = mouseXDist;
-                float cometSpawnYOffset = mouseYDist + (float)Main.rand.Next(-40, 41) * 0.02f;
-                int proj = Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, cometSpawnXOffset * 0.75f, cometSpawnYOffset * 0.75f, ModContent.ProjectileType<CometQuasherMeteor>(), (int)(Item.damage * 0.5f), Item.knockBack, player.whoAmI, 0f, 0.5f + (float)Main.rand.NextDouble() * 0.3f);
+                position += Vector2.UnitX * Main.rand.Next(-320, 321);
+                velocity = (destination - position).SafeNormalize(Vector2.UnitY) * ShootSpeed * Main.rand.NextFloat(0.9f, 1.1f);
+                int proj = Projectile.NewProjectile(player.GetSource_ItemUse(Item), position, velocity, ModContent.ProjectileType<CometQuasherMeteor>(), meteorDamage, meteorKnockback, player.whoAmI, 0f, 0.5f + Main.rand.NextFloat() * 0.3f, target.Center.Y);
                 Main.projectile[proj].Calamity().lineColor = Main.rand.Next(3);
+                position = cachedPosition;
+                velocity = cachedVelocity;
             }
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            var source = player.GetSource_ItemUse(Item);
-            float cometSpeed = Item.shootSpeed;
-            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-            if (player.gravDir == -1f)
-            {
-                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
-            }
-            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
-            {
-                mouseXDist = (float)player.direction;
-                mouseYDist = 0f;
-                mouseDistance = cometSpeed;
-            }
-            else
-            {
-                mouseDistance = cometSpeed / mouseDistance;
-            }
+            Vector2 destination = target.Center;
+            Vector2 position = destination - (Vector2.UnitY * (destination.Y - Main.screenPosition.Y + 80f));
+            Vector2 cachedPosition = position;
 
-            for (int i = 0; i < 2; i++)
+            Vector2 velocity = (destination - position).SafeNormalize(Vector2.UnitY) * ShootSpeed;
+            Vector2 cachedVelocity = velocity;
+
+            int meteorDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.5));
+            float meteorKnockback = Item.knockBack * 0.5f;
+            for (int i = 0; i < TotalMeteors; i++)
             {
-                realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                realPlayerPos.Y -= (float)(100 * i);
-                mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X + (float)Main.rand.Next(-40, 41) * 0.03f;
-                mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-                if (mouseYDist < 0f)
-                {
-                    mouseYDist *= -1f;
-                }
-                if (mouseYDist < 20f)
-                {
-                    mouseYDist = 20f;
-                }
-                mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-                mouseDistance = cometSpeed / mouseDistance;
-                mouseXDist *= mouseDistance;
-                mouseYDist *= mouseDistance;
-                float cometSpawnXOffset = mouseXDist;
-                float cometSpawnYOffset = mouseYDist + (float)Main.rand.Next(-40, 41) * 0.02f;
-                int proj = Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, cometSpawnXOffset * 0.75f, cometSpawnYOffset * 0.75f, ModContent.ProjectileType<CometQuasherMeteor>(), (int)(Item.damage * 0.5f), Item.knockBack, player.whoAmI, 0f, 0.5f + (float)Main.rand.NextDouble() * 0.3f);
+                position += Vector2.UnitX * Main.rand.Next(-320, 321);
+                velocity *= Main.rand.NextFloat(0.9f, 1.1f);
+                int proj = Projectile.NewProjectile(player.GetSource_ItemUse(Item), position, velocity, ModContent.ProjectileType<CometQuasherMeteor>(), meteorDamage, meteorKnockback, player.whoAmI, 0f, 0.5f + Main.rand.NextFloat() * 0.3f, target.Center.Y);
                 Main.projectile[proj].Calamity().lineColor = Main.rand.Next(3);
+                position = cachedPosition;
+                velocity = cachedVelocity;
             }
         }
 
@@ -131,7 +82,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 6);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, Main.rand.NextBool() ? DustID.Torch : (int)CalamityDusts.Ectoplasm, 0f, 0f, 0, default, Main.rand.NextFloat(1.5f, 2.5f));
+                Main.dust[dust].noGravity = true;
             }
         }
 

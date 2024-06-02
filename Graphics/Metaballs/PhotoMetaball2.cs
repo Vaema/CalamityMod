@@ -55,7 +55,7 @@ namespace CalamityMod.Graphics.Metaballs
         }
 
         public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
-        
+
         public Color sparkColor;
         public int Time;
         public override Color EdgeColor => sparkColor * 5;

@@ -18,11 +18,10 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 11;
             Item.mana = 10;
             Item.useTime = Item.useAnimation = 35;
-            Item.scale = 0.75f;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = Stormlion.DeathSound;
             Item.autoReuse = true;

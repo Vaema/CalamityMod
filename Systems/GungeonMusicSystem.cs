@@ -50,7 +50,7 @@ namespace CalamityMod.Systems
                         return;
                     }
 
-                    float newVolume = MathHelper.Clamp(remainingPlaytime / DefaultMusicTime, 0f, 1f);
+                    float newVolume = MathHelper.Clamp(remainingPlaytime / DefaultMusicTime, 0f, 0.8f);
                     activeSound.Volume = newVolume;
                     activeSound.Update();
                 }

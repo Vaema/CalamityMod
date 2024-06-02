@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Armor.Prismatic
             Item.height = 18;
             Item.defense = 21;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }

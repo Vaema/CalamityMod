@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.BaseProjectiles;
 
 namespace CalamityMod.Projectiles.Melee
 {

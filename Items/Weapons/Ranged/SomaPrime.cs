@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 94;
             Item.height = 34;
-            Item.damage = 370;
+            Item.damage = 400;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 5;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 9f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
             Item.Calamity().canFirePointBlankShots = true;
@@ -44,7 +44,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (type == ProjectileID.Bullet) {
+            if (type == ProjectileID.Bullet)
+            {
                 type = ProjectileID.BulletHighVelocity;
                 damage += 4; // in 1.4, HVBs deal 11 damage and Musket Balls deal 7
             }
@@ -54,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Vector2 vel = velocity;
             Projectile shot = Projectile.NewProjectileDirect(source, position, vel, type, damage, knockback, player.whoAmI);
             CalamityGlobalProjectile cgp = shot.Calamity();
-            cgp.supercritHits  = -1;
+            cgp.supercritHits = -1;
             cgp.appliesSomaShred = true;
             return false;
         }

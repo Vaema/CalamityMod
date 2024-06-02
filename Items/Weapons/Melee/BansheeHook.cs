@@ -1,8 +1,8 @@
-﻿using CalamityMod.Projectiles.Melee.Spears;
+﻿using System;
+using CalamityMod.Projectiles.Melee.Spears;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<BansheeHookProj>();
             Item.shootSpeed = 42f;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

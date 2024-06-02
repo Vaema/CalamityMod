@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
     public class Spark : ModProjectile, ILocalizedModType
@@ -50,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity.Y = Projectile.velocity.Y + 0.2f;
             }
             Projectile.rotation += Projectile.velocity.X * 0.1f;
-            int sparky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 206, 0f, 0f, 100, default, 1f);
+            int sparky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, default, 1f);
             Dust expr_8976_cp_0 = Main.dust[sparky];
             expr_8976_cp_0.position.X -= 2f;
             Dust expr_8994_cp_0 = Main.dust[sparky];
@@ -61,7 +63,7 @@ namespace CalamityMod.Projectiles.Melee
             expr_89E7_cp_0.velocity.Y -= 2f;
             if (Main.rand.NextBool())
             {
-                int sparkier = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 206, 0f, 0f, 100, default, 1f);
+                int sparkier = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, default, 1f);
                 Dust expr_8A4E_cp_0 = Main.dust[sparkier];
                 expr_8A4E_cp_0.position.X -= 2f;
                 Dust expr_8A6C_cp_0 = Main.dust[sparkier];

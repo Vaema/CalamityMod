@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int i = 0; i < 20; i++)
             {
-                int dust = Dust.NewDust(current, Projectile.width, Projectile.height, 20, 0, 0);
+                int dust = Dust.NewDust(current, Projectile.width, Projectile.height, DustID.PurificationPowder, 0, 0);
                 Main.dust[dust].velocity = new Vector2(0);
                 current += move / 20f;
             }

@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             for (int i = 0; i < 3; i++)
             {
-                int fiery = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 174, 0f, 0f, 100, default, 0.75f);
+                int fiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 100, default, Main.rand.NextFloat(1.5f, 2.5f));
                 Main.dust[fiery].noGravity = true;
                 Main.dust[fiery].velocity *= 0f;
             }

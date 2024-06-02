@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -60,7 +60,7 @@ namespace CalamityMod.Particles
             }
 
             // Update and increment the time of all particles, alongside modifying their offset based on their velocity.
-            foreach(Particle particle in Particles)
+            foreach (Particle particle in Particles)
             {
                 particle.RelativeOffset += particle.Velocity;
                 particle.Time++;

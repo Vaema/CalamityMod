@@ -13,12 +13,12 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-           
+
             if (Main.netMode != NetmodeID.Server)
             {
                 int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Face);
-				ArmorIDs.Face.Sets.PreventHairDraw[equipSlot] = true;
-				ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
+                ArmorIDs.Face.Sets.PreventHairDraw[equipSlot] = true;
+                ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
             }
         }
 
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Accessories
             Item.height = 62;
             Item.defense = 5;
             Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
         }
 

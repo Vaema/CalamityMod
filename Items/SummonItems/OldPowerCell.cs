@@ -14,8 +14,8 @@ namespace CalamityMod.Items.SummonItems
 
         public override void SetStaticDefaults()
         {
-           			NPCID.Sets.MPAllowedEnemies[NPCID.Golem] = true;
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 15; // Lihzahrd Power Cell
+            NPCID.Sets.MPAllowedEnemies[NPCID.Golem] = true;
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 16; // Lihzahrd Power Cell
         }
 
         public override void SetDefaults()
@@ -29,10 +29,10 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {

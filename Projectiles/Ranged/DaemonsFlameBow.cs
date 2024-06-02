@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
                 fullSpeed = true;
                 int arg_1EF4_0 = (int)Projectile.ai[0] / (delayCompare - fireSpeedCompare * fireSpeed);
             }
-            bool canUseItem = player.channel && player.HasAmmo(player.ActiveItem()) && !player.noItems && !player.CCed;
+            bool canUseItem = !player.CantUseHoldout() && player.HasAmmo(player.ActiveItem());
             if (Projectile.localAI[0] > 0f)
             {
                 Projectile.localAI[0] -= 1f;
@@ -156,8 +156,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y6 = framing * Projectile.frame;
             Vector2 origin = new Vector2(27f, 58f);
             SpriteEffects spriteEffects = SpriteEffects.None;

@@ -1,7 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Placeables.FurnitureAbyss;
-using CalamityMod.World;
 using CalamityMod.Systems;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -42,7 +42,7 @@ namespace CalamityMod.BiomeManagers
             if (Main.remixWorld)
                 return !player.lavaWet && !player.honeyWet && abyssPosX && playerYTileCoords < abyssStartHeight;
 
-            return !player.lavaWet && !player.honeyWet && abyssPosX && playerYTileCoords >= abyssStartHeight && playerYTileCoords <= Main.maxTilesY - 200;
+            return !player.lavaWet && !player.honeyWet && abyssPosX && playerYTileCoords >= abyssStartHeight && playerYTileCoords <= Main.UnderworldLayer;
         }
 
         // Temporarily use sulphur for now

@@ -1,11 +1,11 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
     public class ScavengerNuke : ModProjectile, ILocalizedModType
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.Damage();
             for (int i = 0; i < 30; i++)
             {
-                int nukeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                int nukeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[nukeDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -101,10 +101,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int j = 0; j < 40; j++)
             {
-                int nukeDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 3f);
+                int nukeDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 3f);
                 Main.dust[nukeDust2].noGravity = true;
                 Main.dust[nukeDust2].velocity *= 5f;
-                nukeDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                nukeDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[nukeDust2].velocity *= 2f;
             }
 

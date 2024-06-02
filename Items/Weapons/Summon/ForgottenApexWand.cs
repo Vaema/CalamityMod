@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.UseSound = SoundID.Item89;
             Item.noMelee = true;
             Item.rare = ItemRarityID.Pink;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.autoReuse = true;
 
             Item.knockBack = 4f;
@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                player.itemTime = Item.useTime;
                 Vector2 vector2 = player.RotatedRelativePoint(player.MountedCenter, true);
                 vector2.X = Main.mouseX + Main.screenPosition.X;
                 vector2.Y = Main.mouseY + Main.screenPosition.Y;

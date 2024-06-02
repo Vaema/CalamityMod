@@ -1,12 +1,12 @@
-﻿using CalamityMod.Projectiles.Melee.Shortswords;
+﻿using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
-using CalamityMod.Projectiles.Melee;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6f;
             Item.UseSound = null;
             Item.channel = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
         }
         public override bool AltFunctionUse(Player player) => true;

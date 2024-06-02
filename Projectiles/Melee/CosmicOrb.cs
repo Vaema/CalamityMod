@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -49,7 +49,8 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 6f, 8f, 5, ModContent.ProjectileType<CosmicBolt>());
+            if (Main.rand.NextBool(2))
+                CalamityUtils.MagnetSphereHitscan(Projectile, 500f, 6f, 8f, 5, ModContent.ProjectileType<CosmicBolt>());
         }
 
         public override void OnKill(int timeLeft)
@@ -58,7 +59,7 @@ namespace CalamityMod.Projectiles.Melee
             for (int i = 0; i < 10; i++)
             {
                 int dustScale = (int)(10f * Projectile.scale);
-                int d = Dust.NewDust(Projectile.Center - Vector2.One * (float)dustScale, dustScale * 2, dustScale * 2, 242, 0f, 0f, 0, default, 1f);
+                int d = Dust.NewDust(Projectile.Center - Vector2.One * (float)dustScale, dustScale * 2, dustScale * 2, DustID.PinkTorch, 0f, 0f, 0, default, 1f);
                 Dust dust = Main.dust[d];
                 Vector2 offset = Vector2.Normalize(dust.position - Projectile.Center);
                 dust.position = Projectile.Center + offset * (float)dustScale * Projectile.scale;

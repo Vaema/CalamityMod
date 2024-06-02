@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Magic
             Player player = Main.player[Projectile.owner];
             float rotoffset = MathHelper.PiOver2;
             Vector2 playerpos = player.RotatedRelativePoint(player.MountedCenter, true);
-            bool shouldBeHeld = player.channel && !player.noItems && !player.CCed;
+            bool shouldBeHeld = !player.CantUseHoldout();
             Projectile.damage = player.ActiveItem() is null ? 0 : player.GetWeaponDamage(player.ActiveItem());
             if (Projectile.ai[0] > 0f)
             {
@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Magic
                         bool manaCostPaid = player.CheckMana(player.ActiveItem(), -1, true, false);
                         if (manaCostPaid)
                         {
-                            SoundEngine.PlaySound(SoundID.Item111, Projectile.position);
+                            SoundEngine.PlaySound(SoundID.Item111, Projectile.Center);
                             int projcount = 3;
                             for (int i = 0; i < projcount; ++i)
                             {
@@ -111,14 +111,14 @@ namespace CalamityMod.Projectiles.Magic
                         }
                         else
                         {
-                            SoundEngine.PlaySound(UrnSound, Projectile.position);
+                            SoundEngine.PlaySound(UrnSound, Projectile.Center);
                             Projectile.Kill();
                         }
                     }
                 }
                 else
                 {
-                    SoundEngine.PlaySound(UrnSound, Projectile.position);
+                    SoundEngine.PlaySound(UrnSound, Projectile.Center);
                     Projectile.Kill();
                 }
             }

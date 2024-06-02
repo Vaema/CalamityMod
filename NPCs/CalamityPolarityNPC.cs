@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Particles;
-using CalamityMod.Items.Weapons.Ranged;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.NPCs
 {
@@ -45,7 +45,7 @@ namespace CalamityMod.NPCs
             //Round the polarity to avoid ending up with a polarity that's got decimals which will cause it to forever alternate between positive and negative.
             CurPolarity = (float)Math.Round(update);
             Color pulseColor = AdamantiteParticleAccelerator.LightColors[update < 0 ? 1 : 0];
-            pulses.Add(new AuraPulseRing(pulseColor, new Vector2(Math.Max(npc.width / 156f * 1.1f, 0.25f) , 0.3f), new Vector2(Math.Max(npc.width / 156f * 1.5f, 0.4f), 0.01f), 40, npc));
+            pulses.Add(new AuraPulseRing(pulseColor, new Vector2(Math.Max(npc.width / 156f * 1.1f, 0.25f), 0.3f), new Vector2(Math.Max(npc.width / 156f * 1.5f, 0.4f), 0.01f), 40, npc));
         }
 
         public override GlobalNPC Clone(NPC npc, NPC npcClone)

@@ -1,16 +1,16 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.CalPlayer;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System.Collections.Generic;
-using System.Linq;
 using static CalamityMod.CalamityUtils;
-using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 24;
             Item.height = 30;
             Item.rare = ItemRarityID.Blue;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.accessory = true;
             Item.defense = 2;
         }
@@ -127,7 +127,7 @@ namespace CalamityMod.Items.Accessories
         }
 
         public override bool? CanHitNPC(NPC target)
-        { 
+        {
             //Only enemies that are behind the player (shouldn't happen but just in case
             if (Math.Sign((Owner.Center - target.Center).X) != Owner.direction)
                 return false;

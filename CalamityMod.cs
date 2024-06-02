@@ -5,8 +5,6 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using CalamityMod.Balancing;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
@@ -14,6 +12,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Effects;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items;
 using CalamityMod.Items.Dyes.HairDye;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -34,7 +33,6 @@ using CalamityMod.NPCs.ExoMechs.Artemis;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.NPCs.HiveMind;
 using CalamityMod.NPCs.Leviathan;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlaguebringerGoliath;
@@ -86,8 +84,37 @@ namespace CalamityMod
 
         public static Asset<Texture2D> carpetOriginal;
 
-        //Astral Sky/BG
+        // Astral Sky/BG
         public static Texture2D AstralSky;
+        public static Texture2D AstralSurfaceFront;
+        public static Texture2D AstralSurfaceFrontGlow;
+        public static Texture2D AstralSurfaceClose;
+        public static Texture2D AstralSurfaceCloseGlow;
+        public static Texture2D AstralSurfaceMiddle;
+        public static Texture2D AstralSurfaceMiddleGlow;
+
+        // Astral Desert Sky/BG
+        public static Texture2D AstralDesertSurfaceClose;
+        public static Texture2D AstralDesertSurfaceMiddle;
+
+        // Astral Snow Sky/BG
+        public static Texture2D AstralSnowSurfaceMiddle;
+
+        // Sulpher Sea Sky/BG
+        public static Texture2D SulphurSeaSky;
+        public static Texture2D SulphurSeaSkyFront;
+        public static Texture2D SulphurSeaSurface;
+
+        // Destroyer glowmasks
+        public static Asset<Texture2D>[] DestroyerGlowmasks = new Asset<Texture2D>[3];
+
+        // Wall of Flesh glowmasks
+        public static Asset<Texture2D> WallOfFleshEyeGlowmask;
+        public static Asset<Texture2D> WallOfFleshDemonSickleTexture;
+
+        // Master Rev+ Skeletron Prime
+        public static Asset<Texture2D> ChadPrime;
+        public static Asset<Texture2D> ChadPrimeEyeGlowmask;
 
         // DR data structure
         public static SortedDictionary<int, float> DRValues;
@@ -95,17 +122,20 @@ namespace CalamityMod
         // Boss Kill Time data structure
         public static SortedDictionary<int, int> bossKillTimes;
 
-        // Life steal cap
-        public const int lifeStealCap = 10;
-
         // Speedrun timer
         internal static Stopwatch SpeedrunTimer = new Stopwatch();
+
+        // External flag to disable non-Revengeance boss AI edits
+        // This can be edited by other mods using reflection to prevent compatibility issues
+        public static bool ExternalFlag_DisableNonRevBossAI = false;
 
         internal static CalamityMod Instance;
 
         // TODO -- Mod references should be contained in a ModSystem (example name "ModLoadedChecker")
-        internal Mod musicMod = null; // This is Calamity's official music mod, CalamityModMusic
-        internal bool MusicAvailable => !(musicMod is null);
+
+        // This is Calamity's official music mod, CalamityModMusic. It is now a hard dependency.
+        internal Mod musicMod = null;
+        internal bool MusicAvailable => musicMod is not null;
 
         // Please keep this in alphabetical order so it's easy to read
         internal Mod ancientsAwakened = null;
@@ -114,6 +144,7 @@ namespace CalamityMod
         internal Mod crouchMod = null;
         internal Mod dialogueTweak = null;
         internal Mod fargos = null;
+        internal Mod luminance = null;
         internal Mod magicStorage = null;
         internal Mod overhaul = null;
         internal Mod redemption = null;
@@ -149,6 +180,8 @@ namespace CalamityMod
             ModLoader.TryGetMod("DialogueTweak", out dialogueTweak);
             fargos = null;
             ModLoader.TryGetMod("Fargowiltas", out fargos);
+            luminance = null;
+            ModLoader.TryGetMod("Luminance", out luminance);
             magicStorage = null;
             ModLoader.TryGetMod("MagicStorage", out magicStorage);
             overhaul = null;
@@ -186,14 +219,15 @@ namespace CalamityMod
             Mount.drillPickPower = 225;
 
             // Make Graveyard biomes require more Gravestones
-            SceneMetrics.GraveyardTileMax = 88;
-            SceneMetrics.GraveyardTileMin = 68;
-            SceneMetrics.GraveyardTileThreshold = 80;
+            SceneMetrics.GraveyardTileMax = 60;
+            SceneMetrics.GraveyardTileMin = 40;
+            SceneMetrics.GraveyardTileThreshold = 52;
 
             if (!Main.dedServ)
             {
                 LoadClient();
                 GeneralParticleHandler.Load();
+                PrimitiveRenderer.Initialize();
                 ForegroundDrawing.ForegroundManager.Load();
 
                 // Wikithis support
@@ -225,8 +259,39 @@ namespace CalamityMod
 
         private void LoadClient()
         {
-            //Astral Sky/BG
+            // Astral Sky/BG
             AstralSky = ModContent.Request<Texture2D>("CalamityMod/Skies/AstralSky", AssetRequestMode.ImmediateLoad).Value;
+            AstralSurfaceFront = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceFront", AssetRequestMode.ImmediateLoad).Value;
+            AstralSurfaceFrontGlow = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceFrontGlow", AssetRequestMode.ImmediateLoad).Value;
+            AstralSurfaceClose = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceClose", AssetRequestMode.ImmediateLoad).Value;
+            AstralSurfaceCloseGlow = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceCloseGlow", AssetRequestMode.ImmediateLoad).Value;
+            AstralSurfaceMiddle = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceMiddle", AssetRequestMode.ImmediateLoad).Value;
+            AstralSurfaceMiddleGlow = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSurfaceMiddleGlow", AssetRequestMode.ImmediateLoad).Value;
+
+            //Astral Desert Sky/BG
+            AstralDesertSurfaceClose = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralDesertSurfaceClose", AssetRequestMode.ImmediateLoad).Value;
+            AstralDesertSurfaceMiddle = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralDesertSurfaceMiddle", AssetRequestMode.ImmediateLoad).Value;
+
+            //Astral Snow Sky/BG
+            AstralSnowSurfaceMiddle = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/AstralSnowSurfaceMiddle", AssetRequestMode.ImmediateLoad).Value;
+
+            // Sulpher Sea Sky/BG
+            SulphurSeaSky = ModContent.Request<Texture2D>("CalamityMod/Skies/SulphurSeaSky", AssetRequestMode.ImmediateLoad).Value;
+            SulphurSeaSkyFront = ModContent.Request<Texture2D>("CalamityMod/Skies/SulphurSeaSkyFront", AssetRequestMode.ImmediateLoad).Value;
+            SulphurSeaSurface = ModContent.Request<Texture2D>("CalamityMod/Skies/SulphurSeaSurface", AssetRequestMode.ImmediateLoad).Value;
+
+            // Destroyer glowmasks
+            DestroyerGlowmasks[0] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerHeadGlow", AssetRequestMode.AsyncLoad);
+            DestroyerGlowmasks[1] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerBodyGlow", AssetRequestMode.AsyncLoad);
+            DestroyerGlowmasks[2] = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerTailGlow", AssetRequestMode.AsyncLoad);
+
+            // Wall of Flesh glowmasks
+            WallOfFleshEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/WallOfFleshEyeTelegraphGlow", AssetRequestMode.AsyncLoad);
+            WallOfFleshDemonSickleTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ForbiddenOathbladeProjectile", AssetRequestMode.AsyncLoad);
+
+            // Master Rev+ Skeletron Prime textures
+            ChadPrime = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ChadPrime", AssetRequestMode.AsyncLoad);
+            ChadPrimeEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ChadPrimeHeadGlow", AssetRequestMode.AsyncLoad);
 
             // TODO -- Sky shaders should probably be loaded in a ModSystem
             Filters.Scene["CalamityMod:DevourerofGodsHead"] = new Filter(new DoGScreenShaderData("FilterMiniTower").UseColor(0.4f, 0.1f, 1.0f).UseOpacity(0.5f), EffectPriority.VeryHigh);
@@ -244,7 +309,7 @@ namespace CalamityMod
             Filters.Scene["CalamityMod:Leviathan"] = new Filter(new LevScreenShaderData("FilterMiniTower").UseColor(0f, 0f, 0.5f).UseOpacity(0.5f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityMod:Leviathan"] = new LevSky();
 
-            Filters.Scene["CalamityMod:SupremeCalamitas"] = new Filter(new SCalScreenShaderData("FilterMiniTower").UseColor(1.1f, 0.3f, 0.3f).UseOpacity(0.65f), EffectPriority.VeryHigh);
+            Filters.Scene["CalamityMod:SupremeCalamitas"] = new Filter(new SCalScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityMod:SupremeCalamitas"] = new SCalSky();
 
             Filters.Scene["CalamityMod:Signus"] = new Filter(new SignusScreenShaderData("FilterMiniTower").UseColor(0.35f, 0.1f, 0.55f).UseOpacity(0.35f), EffectPriority.VeryHigh);
@@ -267,6 +332,7 @@ namespace CalamityMod
             SkyManager.Instance["CalamityMod:BrimstoneCrag"] = new BrimstoneCragSky();
 
             SkyManager.Instance["CalamityMod:Astral"] = new AstralSky();
+            SkyManager.Instance["CalamityMod:SulphurSea"] = new SulphurSeaSky();
             SkyManager.Instance["CalamityMod:Cryogen"] = new CryogenSky();
             SkyManager.Instance["CalamityMod:StormWeaverFlash"] = new StormWeaverFlashSky();
 
@@ -339,6 +405,7 @@ namespace CalamityMod
             crouchMod = null;
             dialogueTweak = null;
             fargos = null;
+            luminance = null;
             magicStorage = null;
             overhaul = null;
             redemption = null;

@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Events;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {

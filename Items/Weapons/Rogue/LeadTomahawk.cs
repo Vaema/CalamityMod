@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-                       Item.ResearchUnlockCount = 99;
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
@@ -42,10 +42,10 @@ namespace CalamityMod.Items.Weapons.Rogue
             {
                 int p = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, 1f);
                 if (p.WithinBounds(Main.maxProjectiles))
-				{
+                {
                     Main.projectile[p].Calamity().stealthStrike = true;
                     Main.projectile[p].penetrate = 7;
-				}
+                }
                 return false;
             }
             return true;

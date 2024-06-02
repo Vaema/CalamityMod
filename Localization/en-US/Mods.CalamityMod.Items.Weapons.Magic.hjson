@@ -27,15 +27,6 @@ AethersWhisper: {
 		'''
 }
 
-AlphaRay: {
-	DisplayName: Alpha Ray
-	Tooltip:
-		'''
-		Disintegrates everything with a tri-beam of energy and lasers
-		Press <right> to fire a Y-shaped beam of destructive energy and a spread of lasers
-		'''
-}
-
 AlulaAustralis: {
 	DisplayName: Alula Australis
 	Tooltip: Fires a beautiful aurora trailed by a star shower
@@ -156,12 +147,15 @@ BurningSea: {
 	Tooltip: Fires a bouncing brimstone fireball that splits into homing fireballs upon collision with water
 }
 
-CarnageRay: {
-	DisplayName: Carnage Ray
+ChronomancersScythe: {
+	DisplayName: Chronomancer's Scythe
 	Tooltip:
 		'''
-		Fires a wretched, bloody ray
-		The farther along the ray hit enemies are, the more damage they take
+		Rapidly fires icicles
+		Press <right> to swing the scythe around you, creating a clock pattern of homing icicles
+		Direct hits with the scythe have a chance to spawn clocks
+		Collecting the clocks increases movement speed and acceleration by 5% for each clock collected
+		This stacks up to 3 times and each level wears off after 5 seconds
 		'''
 }
 
@@ -332,7 +326,7 @@ FlareBolt: {
 
 ForbiddenSun: {
 	DisplayName: Forbidden Sun
-	Tooltip: Casts a fire orb that emits a gigantic explosion on death
+	Tooltip: Casts a fire orb that emits a gigantic explosion on hit
 }
 
 FrigidflashBolt: {
@@ -345,9 +339,14 @@ FrostBolt: {
 	Tooltip: Casts a slow-moving ball of frost
 }
 
-Genisis: {
-	DisplayName: Genisis
-	Tooltip: Fires a Y-shaped beam of destructive energy and a spread of lasers
+Genesis: {
+	DisplayName: Genesis
+	Tooltip:
+		'''
+		Fire an array of lasers that decreases in spread for each shot
+		Every sixth shot fires a splitting Genesis Beam and resets the spread of the weapon
+		Hitting an enemy before the Genesis Beam splits deals increased damage
+		'''
 }
 
 GhastlyVisage: {
@@ -391,11 +390,6 @@ HadalUrn: {
 		Fires a random assortment of ocean creatures
 		'There's no telling how long it was down there... or what lurks inside'
 		'''
-}
-
-HarvestStaff: {
-	DisplayName: Harvest Staff
-	Tooltip: Casts flaming pumpkins
 }
 
 HeliumFlash: {
@@ -548,6 +542,17 @@ NuclearFury: {
 	Tooltip: Casts a torrent of cosmic typhoons
 }
 
+Omicron: {
+	DisplayName: Omicron
+	Tooltip:
+		'''
+		Fires a continuous array of lasers and spawns two Wingmen which orbit you and fire lasers at your cursor
+		Press <right> when firing to shoot an Omicron Beam that splits upon hitting an enemy
+		After firing an Omicron Beam your Wingmen will launch a pair of grenades
+		Hitting an enemy with an Omicron Beam right as it is fired will increase the damage done substantially and stop it from splitting
+		'''
+}
+
 ParasiticSceptor: {
 	DisplayName: Parasitic Scepter
 	Tooltip: Fires a spread of radioactive water leeches that latch onto enemies, increasing damage over time per leech
@@ -564,6 +569,15 @@ PhoenixFlameBarrage: {
 		'''
 		Casts a barrage of fire from the sky
 		'Baptism by draconic fire'
+		'''
+}
+
+Photosynthesis: {
+	DisplayName: Photosynthesis
+	Tooltip:
+		'''
+		Casts a brilliant ray that dissolves into energy on enemy hits
+		More energy is created the farther along the ray the hit enemy is
 		'''
 }
 
@@ -677,7 +691,7 @@ Serpentine: {
 
 ShadecrystalBarrage: {
 	DisplayName: Shadecrystal Barrage
-	Tooltip: Summons rapid fire shadecrystals, can shoot two crystals at once
+	Tooltip: Summons bursts of shadecrystals that can home in on enemies
 }
 
 ShaderainStaff: {
@@ -737,7 +751,7 @@ StaffofBlushie: {
 
 StarShower: {
 	DisplayName: Star Shower
-	Tooltip: Casts a spread of astral stars at the mouse cursor
+	Tooltip: Casts a spread of astral stars from the sky that converge at the cursor
 }
 
 SubsumingVortex: {
@@ -766,15 +780,6 @@ TearsofHeaven: {
 	Tooltip: Casts slow-moving homing balls of heavenly light
 }
 
-TerraRay: {
-	DisplayName: Terra Ray
-	Tooltip:
-		'''
-		Casts a brilliant ray that dissolves into energy on enemy hits
-		More energy is created the farther along the ray the hit enemy is
-		'''
-}
-
 Teslastaff: {
 	DisplayName: Teslastaff
 	Tooltip:
@@ -784,6 +789,16 @@ Teslastaff: {
 		Each successive hit on the same enemy increases damage per hit
 		The damage increases 10% per hit to a maximum of 500% damage
 		This damage will rapidly decrease after the enemy stops being hit
+		'''
+}
+
+TheCauldron: {
+	DisplayName: The Cauldron
+	Tooltip:
+		'''
+		Launches lava bombs which explode into more lava bombs
+		80% reduced mana usage while submerged in lava or while in the underworld
+		'Believe it or not, its original wielder was only a few centimeters tall!'
 		'''
 }
 
@@ -851,11 +866,7 @@ Tradewinds: {
 
 UltraLiquidator: {
 	DisplayName: Ultra Liquidator
-	Tooltip:
-		'''
-		Summons liquidation blades that summon more blades on enemy hits
-		The blades inflict ichor, cursed inferno and brimstone flames
-		'''
+	Tooltip: Summons liquidation blades that summon more blades on enemy hits
 }
 
 UndinesRetribution: {
@@ -900,8 +911,9 @@ Viscera: {
 	DisplayName: Viscera
 	Tooltip:
 		'''
-		Fires a blood beam that heals you on enemy hits
-		The more tiles and enemies the beam bounces off of or travels through the more healing the beam does
+		Fires a rapid barrage of piercing blood beams that heal you on enemy hit
+		Each successive beam in the barrage deals more damage
+		The last beam of the barrage instead explodes upon hitting an enemy
 		'''
 }
 
@@ -923,12 +935,12 @@ VividClarity: {
 
 VoidVortex: {
 	DisplayName: Void Vortex
-	Tooltip: Conjures a swirling vortex of supercharged magnet spheres around the cursor
+	Tooltip: Conjures a swirling vortex of supercharged magnet spheres around the cursor that explodes into a storm of homing mini spheres
 }
 
 VoltaicClimax: {
 	DisplayName: Voltaic Climax
-	Tooltip: Conjures an octagon of supercharged magnet spheres around the cursor
+	Tooltip: Conjures a ring of supercharged magnet spheres around the cursor
 }
 
 Waywasher: {
@@ -938,7 +950,12 @@ Waywasher: {
 
 Wingman: {
 	DisplayName: Wingman
-	Tooltip: Fires a concentrated laser beam
+	Tooltip:
+		'''
+		Spawns two Wingmen which orbit you and fire lasers at your cursor
+		Press <right> while firing to order the Wingmen to launch grenades
+		Grenades have a cooldown which is shortened if the Wingmen are fully revved up
+		'''
 }
 
 WintersFury: {

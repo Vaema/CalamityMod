@@ -1,11 +1,11 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.Reflection.Metadata;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil;
-using System;
-using System.Reflection.Metadata;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Rogue
 {
     public class RealityRuptureStealth : ModProjectile, ILocalizedModType
     {
-        public static readonly SoundStyle Hitsound = new("CalamityMod/Sounds/Item/RealityRuptureStealthHit") { Volume = 1.2f, PitchVariance = 0.3f};
+        public static readonly SoundStyle Hitsound = new("CalamityMod/Sounds/Item/RealityRuptureStealthHit") { Volume = 1.2f, PitchVariance = 0.3f };
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/RealityRupture";
         public bool posthit = false;
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int frameY = frameHeight * Projectile.frame;
@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 sparkVelocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.6f, 1.5f);
                 Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity, 272, sparkVelocity.RotatedByRandom(0.1f), 0, default, Main.rand.NextFloat(1.2f, 1.5f));
                 dust.noGravity = true;
-                
+
                 int sparkLifetime = Main.rand.Next(43, 48);
                 float sparkScale = Main.rand.NextFloat(2.2f, 3f);
                 Color sparkColor = Color.Plum * 0.8f;

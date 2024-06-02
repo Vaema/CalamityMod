@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useTurn = false;
             Item.DamageType = DamageClass.Magic;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
 
@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.SapphireStaff).
-                AddIngredient<Polterplasm>(10).
+                AddIngredient<Necroplasm>(10).
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();

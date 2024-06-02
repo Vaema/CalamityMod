@@ -26,14 +26,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useAnimation = 33;
             Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.shoot = ModContent.ProjectileType<EradicatorProjectile>();
             Item.shootSpeed = Speed;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 0.6f;
+        public override float StealthDamageMultiplier => 0.6f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

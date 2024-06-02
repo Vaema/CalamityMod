@@ -1,12 +1,12 @@
-﻿using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -66,11 +66,11 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 float halfX = Projectile.velocity.X * 0.5f;
                 float halfY = Projectile.velocity.Y * 0.5f;
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 244, 0f, 0f, 100, default, 1f);
+                int dust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
                 Main.dust[dust].scale *= 2f + (float)Main.rand.Next(10) * 0.1f;
                 Main.dust[dust].velocity *= 0.2f;
                 Main.dust[dust].noGravity = true;
-                dust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 244, 0f, 0f, 100, default, 0.5f);
+                dust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.CopperCoin, 0f, 0f, 100, default, 0.5f);
                 Main.dust[dust].fadeIn = 1f + (float)Main.rand.Next(5) * 0.1f;
                 Main.dust[dust].velocity *= 0.05f;
             }
@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             for (int i = 0; i < 40; i++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -116,10 +116,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int i = 0; i < 60; i++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 3f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 3f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 5f;
-                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].velocity *= 2f;
             }
 

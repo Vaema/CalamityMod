@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             else if (randomDust == 2)
             {
-                randomDust = (int)CalamityDusts.SulfurousSeaAcid;
+                randomDust = (int)CalamityDusts.SulphurousSeaAcid;
             }
             else
             {
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             for (int i = 0; i < (Main.rand.NextBool() ? 1 : 2); i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 1f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 1f);
                 if (randomDust == 89)
                 {
                     Main.dust[dust].scale *= 0.35f;

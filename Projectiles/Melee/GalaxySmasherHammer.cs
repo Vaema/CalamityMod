@@ -1,13 +1,13 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Particles;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
             Player player = Main.player[Projectile.owner];
             Projectile.direction = Projectile.spriteDirection = Projectile.velocity.X > 0f ? 1 : -1;
             Projectile.rotation += MathHelper.ToRadians(rotatehammer) * Projectile.direction;
-            
+
             if (EmpoweredHammer >= 8)
                 EmpoweredHammer = 0;
 
@@ -242,11 +242,11 @@ namespace CalamityMod.Projectiles.Melee
                 returnhammer = 1;
             }
             if (PulseCooldown >= 15)
-            { 
+            {
                 Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Violet, new Vector2(0.5f, 0.5f), Main.rand.NextFloat(12f, 25f), 0.2f, 1.4f + (EmpoweredHammer * 0.1f), 14);
                 GeneralParticleHandler.SpawnParticle(pulse);
                 PulseCooldown = 0;
-            }   
+            }
             SoundEngine.PlaySound(SoundID.Item14 with { Volume = 0.22f }, Projectile.Center);
             Projectile.ai[1] = target.whoAmI;
         }

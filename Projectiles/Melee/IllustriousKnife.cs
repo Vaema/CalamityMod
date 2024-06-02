@@ -1,7 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Balancing;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -45,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 300f, 12f, 20f);
             if (Main.rand.NextBool(6))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 20, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.PurificationPowder, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
         }
 
         //Give it a custom hitbox shape so it may remain rectangular and elongated
@@ -64,7 +65,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             for (int i = 0; i < 3; i++)
             {
-                int illustrious = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 20, 0f, 0f, 100, default, 0.8f);
+                int illustrious = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100, default, 0.8f);
                 Main.dust[illustrious].noGravity = true;
                 Main.dust[illustrious].velocity *= 1.2f;
                 Main.dust[illustrious].velocity -= Projectile.oldVelocity * 0.3f;
@@ -75,34 +76,28 @@ namespace CalamityMod.Projectiles.Melee
         {
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
-            float healAmt = hit.Damage * 0.015f;
-            if ((int)healAmt == 0)
+            int heal = (int)Math.Round(hit.Damage * 0.015);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (healAmt > CalamityMod.lifeStealCap)
-                healAmt = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], healAmt, ModContent.ProjectileType<RoyalHeal>(), 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<RoyalHeal>(), BalancingConstants.LifeStealRange);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
-            float healAmt = info.Damage * 0.015f;
-            if ((int)healAmt == 0)
+            int heal = (int)Math.Round(info.Damage * 0.015);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (healAmt > CalamityMod.lifeStealCap)
-                healAmt = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], healAmt, ModContent.ProjectileType<RoyalHeal>(), 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<RoyalHeal>(), BalancingConstants.LifeStealRange);
         }
 
         public override bool PreDraw(ref Color lightColor)

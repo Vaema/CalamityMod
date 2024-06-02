@@ -1,7 +1,8 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using CalamityMod.Graphics.Primitives;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,7 +12,6 @@ namespace CalamityMod.Projectiles.Summon
     public class DaedalusLightning : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        internal PrimitiveTrail LightningDrawer;
 
         public const int MaximumBranchingIterations = 3;
         public const float LightningTurnRandomnessFactor = 1.7f;
@@ -137,10 +137,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            if (LightningDrawer is null)
-                LightningDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction);
-
-            LightningDrawer.Draw(Projectile.oldPos.Where(oldPos => oldPos != Vector2.Zero), Projectile.Size * 0.5f - Main.screenPosition, 300);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, false), 90);
             return false;
         }
         #endregion

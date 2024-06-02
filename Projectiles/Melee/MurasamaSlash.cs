@@ -1,10 +1,10 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -47,8 +47,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.frameCounter <= 1)
                 return false;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY:Projectile.frame);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             SpriteEffects spriteEffects = Projectile.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + (Projectile.velocity * 0.3f) + new Vector2(0, -32).RotatedBy(Projectile.rotation), frame, Color.White, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 playerRotatedPoint = player.RotatedRelativePoint(player.MountedCenter, true);
             if (Main.myPlayer == Projectile.owner)
             {
-                if (player.channel && !player.noItems && !player.CCed)
+                if (!player.CantUseHoldout())
                     HandleChannelMovement(player, playerRotatedPoint);
                 else
                 {

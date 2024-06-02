@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
     public class TumbleweedRolling : ModProjectile, ILocalizedModType
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.NPCDeath15, Projectile.position);
             for (int i = 0; i < 20; i++)
             {
-                int tumbleDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 32, 0f, 0f, 100, default, 1.2f);
+                int tumbleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Sand, 0f, 0f, 100, default, 1.2f);
                 Main.dust[tumbleDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -57,10 +57,10 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int j = 0; j < 30; j++)
             {
-                int tumbleDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1.7f);
+                int tumbleDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1.7f);
                 Main.dust[tumbleDust2].noGravity = true;
                 Main.dust[tumbleDust2].velocity *= 5f;
-                tumbleDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1f);
+                tumbleDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
                 Main.dust[tumbleDust2].velocity *= 2f;
             }
         }

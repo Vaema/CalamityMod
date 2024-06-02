@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -48,11 +48,11 @@ namespace CalamityMod.Projectiles.Summon
             int dust_splash = 0;
             while (dust_splash < 9)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 225, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 120, default, 1f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Coralstone, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.15f, 120, default, 1f);
                 dust_splash += 1;
             }
             int split = 0;
-            int shardAmt = Main.rand.Next(1,5);
+            int shardAmt = Main.rand.Next(1, 5);
             while (split < shardAmt)
             {
                 //Calculate the velocity of the projectile

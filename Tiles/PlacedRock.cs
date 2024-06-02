@@ -1,4 +1,4 @@
-using CalamityMod.Items;
+﻿using CalamityMod.Items;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

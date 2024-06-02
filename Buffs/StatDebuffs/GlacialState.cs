@@ -38,7 +38,7 @@ namespace CalamityMod.Buffs.StatDebuffs
 
             if (Main.rand.NextBool(4))
             {
-                Dust d = Dust.NewDustDirect(Player.Center - 10 * Vector2.One, 20, 20, 137);
+                Dust d = Dust.NewDustDirect(Player.Center - 10 * Vector2.One, 20, 20, DustID.IcyMerman);
                 d.noGravity = Main.rand.NextBool();
                 d.noLight = false;
                 d.velocity *= 0.2f;

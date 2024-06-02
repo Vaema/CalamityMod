@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Rogue
             Lighting.AddLight(Projectile.Center, 0f, 0.25f, 0f);
 
             if (Main.rand.NextBool(5))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 44, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.JungleSpore, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
 
             if (Projectile.Calamity().stealthStrike)
             {
@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.timeLeft < 240)
                     Projectile.Kill();
 
-                Projectile.localAI[0] += Main.rand.Next(0,3);
+                Projectile.localAI[0] += Main.rand.Next(0, 3);
                 if (Projectile.localAI[0] >= 10f)
                 {
                     Projectile.localAI[0] = 0f;
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

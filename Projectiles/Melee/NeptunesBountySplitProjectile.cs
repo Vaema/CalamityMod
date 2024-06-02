@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee
             dust.noGravity = true;
             if (dust.type == dustType1)
                 dust.alpha = 180;
-            
+
             if (Projectile.timeLeft == 20)
             {
                 WaterFlavoredParticle spark = new WaterFlavoredParticle(Projectile.Center, -Projectile.velocity * 0.05f, false, 25, 0.85f + Time * 0.013f, WaterColor * 0.35f);

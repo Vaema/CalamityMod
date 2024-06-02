@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public static readonly SoundStyle Shoot = new("CalamityMod/Sounds/Item/HalleysInfernoShoot") { Volume = 0.68f };
+        public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/HalleysInfernoShoot") { Volume = 0.68f };
         public static readonly SoundStyle Hit = new("CalamityMod/Sounds/Item/HalleysInfernoHit") { Volume = 0.75f };
         public override void SetDefaults()
         {
@@ -37,8 +37,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.UseSound = Shoot;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.UseSound = ShootSound;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.NPCDeath14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.NPCDeath14, Projectile.Center);
             Projectile.ExpandHitboxBy(60);
 
             for (int i = 0; i < 15; i++)
@@ -111,6 +111,6 @@ namespace CalamityMod.Projectiles.Enemy
                 return;
 
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45);
-		}
+        }
     }
 }

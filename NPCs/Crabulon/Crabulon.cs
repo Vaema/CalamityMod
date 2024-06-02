@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
@@ -6,6 +8,7 @@ using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -16,16 +19,14 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
-using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.NPCs.Crabulon
 {
@@ -34,6 +35,12 @@ namespace CalamityMod.NPCs.Crabulon
     {
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private bool stomping = false;
+
+        public static Asset<Texture2D> AltTexture;
+        public static Asset<Texture2D> AttackTexture;
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> AltTexture_Glow;
+        public static Asset<Texture2D> AttackTexture_Glow;
 
         public override void SetStaticDefaults()
         {
@@ -47,7 +54,15 @@ namespace CalamityMod.NPCs.Crabulon
             };
             value.Position.Y += 80f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-			NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                AltTexture = ModContent.Request<Texture2D>(Texture + "Alt", AssetRequestMode.AsyncLoad);
+                AttackTexture = ModContent.Request<Texture2D>(Texture + "Attack", AssetRequestMode.AsyncLoad);
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                AltTexture_Glow = ModContent.Request<Texture2D>(Texture + "AltGlow", AssetRequestMode.AsyncLoad);
+                AttackTexture_Glow = ModContent.Request<Texture2D>(Texture + "AttackGlow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -83,7 +98,7 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundMushroom,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Crabulon")
@@ -112,6 +127,7 @@ namespace CalamityMod.NPCs.Crabulon
             bool death = CalamityWorld.death || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
 
             NPC.spriteDirection = NPC.direction;
 
@@ -124,10 +140,6 @@ namespace CalamityMod.NPCs.Crabulon
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
-                NPC.TargetClosest();
-
-            // Despawn safety, make sure to target another player if the current player target is too far away
-            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
@@ -243,6 +255,10 @@ namespace CalamityMod.NPCs.Crabulon
                     NPC.ai[1] += 1f;
                 if (phase3)
                     NPC.ai[1] += 2f;
+                if (NPC.justHit)
+                    NPC.ai[1] += masterMode ? 7f : expertMode ? 5f : 3f;
+                if (NPC.Distance(player.Center) < 160f)
+                    NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
 
                 float idleTime = death ? 30f : expertMode ? 60f : 120f;
                 if (NPC.ai[1] >= idleTime)
@@ -336,10 +352,12 @@ namespace CalamityMod.NPCs.Crabulon
                 }
 
                 NPC.ai[1] += 1f;
+                if (NPC.Distance(player.Center) < 160f)
+                    NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
+
                 float stompPhaseGateValue = (revenge ? 150f : expertMode ? 240f : 360f) - (death ? 120f * (1f - lifeRatio) : 0f);
                 if (NPC.ai[1] >= stompPhaseGateValue)
                 {
-                    NPC.TargetClosest();
                     NPC.noGravity = false;
                     NPC.noTileCollide = false;
                     NPC.ai[0] = 2f;
@@ -490,8 +508,6 @@ namespace CalamityMod.NPCs.Crabulon
                         }
                     }
 
-                    NPC.TargetClosest();
-
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] >= (phase2 ? 4f : 3f))
                     {
@@ -540,7 +556,7 @@ namespace CalamityMod.NPCs.Crabulon
                     {
                         for (int k = 0; k < 4; k++)
                         {
-                            int stompDust = Dust.NewDust(new Vector2(NPC.position.X - 20f, NPC.position.Y + NPC.height), NPC.width + 20, 4, 56, 0f, 0f, 100, default, 1.5f);
+                            int stompDust = Dust.NewDust(new Vector2(NPC.position.X - 20f, NPC.position.Y + NPC.height), NPC.width + 20, 4, DustID.BlueFairy, 0f, 0f, 100, default, 1.5f);
                             Main.dust[stompDust].velocity *= 0.2f;
                         }
 
@@ -769,11 +785,11 @@ namespace CalamityMod.NPCs.Crabulon
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D textureIdle = TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowIdle = ModContent.Request<Texture2D>("CalamityMod/NPCs/Crabulon/CrabulonGlow").Value;
-            Texture2D textureWalk = ModContent.Request<Texture2D>("CalamityMod/NPCs/Crabulon/CrabulonAlt").Value;
-            Texture2D glowWalk = ModContent.Request<Texture2D>("CalamityMod/NPCs/Crabulon/CrabulonAltGlow").Value;
-            Texture2D textureAttack = ModContent.Request<Texture2D>("CalamityMod/NPCs/Crabulon/CrabulonAttack").Value;
-            Texture2D glowAttack = ModContent.Request<Texture2D>("CalamityMod/NPCs/Crabulon/CrabulonAttackGlow").Value;
+            Texture2D glowIdle = Texture_Glow.Value;
+            Texture2D textureWalk = AltTexture.Value;
+            Texture2D glowWalk = AltTexture_Glow.Value;
+            Texture2D textureAttack = AttackTexture.Value;
+            Texture2D glowAttack = AttackTexture_Glow.Value;
             Color colorToShift = Main.zenithWorld ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : Color.Cyan;
             Color glowColor = Color.Lerp(Color.White, colorToShift, 0.5f);
 
@@ -871,7 +887,7 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
@@ -879,7 +895,7 @@ namespace CalamityMod.NPCs.Crabulon
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 56, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueFairy, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
@@ -891,7 +907,7 @@ namespace CalamityMod.NPCs.Crabulon
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int j = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 56, 0f, 0f, 100, default, 2f);
+                    int j = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueFairy, 0f, 0f, 100, default, 2f);
                     Main.dust[j].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -901,10 +917,10 @@ namespace CalamityMod.NPCs.Crabulon
                 }
                 for (int k = 0; k < 70; k++)
                 {
-                    int stompDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 56, 0f, 0f, 100, default, 3f);
+                    int stompDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueFairy, 0f, 0f, 100, default, 3f);
                     Main.dust[stompDust].noGravity = true;
                     Main.dust[stompDust].velocity *= 5f;
-                    stompDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 56, 0f, 0f, 100, default, 2f);
+                    stompDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueFairy, 0f, 0f, 100, default, 2f);
                     Main.dust[stompDust].velocity *= 2f;
                 }
                 if (Main.netMode != NetmodeID.Server)

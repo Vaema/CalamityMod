@@ -1,12 +1,12 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Rogue;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.Items.Armor.PlagueReaper
 {
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Armor.PlagueReaper
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.defense = 9; //35
         }

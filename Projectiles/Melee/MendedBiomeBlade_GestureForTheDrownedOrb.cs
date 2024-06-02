@@ -1,15 +1,15 @@
-﻿using CalamityMod.Particles;
-using CalamityMod.Items.Weapons.Melee;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -98,11 +98,11 @@ namespace CalamityMod.Projectiles.Melee
 
                 for (int i = 0; i <= 4; i++)
                 {
-                    Dust waterTrail = Main.dust[Dust.NewDust(Projectile.Center + Main.rand.NextVector2Circular(10f, 10f), 23, 0, 33, -3.7f * Math.Sign(Projectile.velocity.X), -6f, 0, new Color(255, 255, 255), Main.rand.NextFloat(1f, 3f))];
+                    Dust waterTrail = Main.dust[Dust.NewDust(Projectile.Center + Main.rand.NextVector2Circular(10f, 10f), 23, 0, DustID.Water, -3.7f * Math.Sign(Projectile.velocity.X), -6f, 0, new Color(255, 255, 255), Main.rand.NextFloat(1f, 3f))];
                     waterTrail.fadeIn = 3f;
                 }
 
-                Dust foamDust = Main.dust[Dust.NewDust(Projectile.Center + Main.rand.NextVector2Circular(10f, 10f), 9, 0, 16, 2.7f * Math.Sign(Projectile.velocity.X), -3f, 0, new Color(255, 255, 255), 1.4f)];
+                Dust foamDust = Main.dust[Dust.NewDust(Projectile.Center + Main.rand.NextVector2Circular(10f, 10f), 9, 0, DustID.Cloud, 2.7f * Math.Sign(Projectile.velocity.X), -3f, 0, new Color(255, 255, 255), 1.4f)];
                 foamDust.noGravity = true;
 
                 if (Main.rand.NextBool())
@@ -141,15 +141,15 @@ namespace CalamityMod.Projectiles.Melee
                 if (TimeSinceLanding > 10)
                 {
                     //Trailing water!! Dust spam!!!
-                    Dust waterTrail = Main.dust[Dust.NewDust(Projectile.Top + Vector2.UnitY * groundOffset, 23, 0, 33, -3.7f * Math.Sign(Projectile.velocity.X), -6f, 0, new Color(255, 255, 255), Main.rand.NextFloat(1f, 3f))];
+                    Dust waterTrail = Main.dust[Dust.NewDust(Projectile.Top + Vector2.UnitY * groundOffset, 23, 0, DustID.Water, -3.7f * Math.Sign(Projectile.velocity.X), -6f, 0, new Color(255, 255, 255), Main.rand.NextFloat(1f, 3f))];
                     waterTrail.fadeIn = 3f;
-                    waterTrail = Main.dust[Dust.NewDust(Projectile.TopRight + Vector2.UnitY * groundOffset + Main.rand.NextVector2Circular(16f, 16f) + Vector2.UnitX * Projectile.velocity.X * 4f, 23, 0, 33, -3.7f * Math.Sign(Projectile.velocity.X), -6f, 0, new Color(255, 255, 255), Main.rand.NextFloat(1f, 3f))];
+                    waterTrail = Main.dust[Dust.NewDust(Projectile.TopRight + Vector2.UnitY * groundOffset + Main.rand.NextVector2Circular(16f, 16f) + Vector2.UnitX * Projectile.velocity.X * 4f, 23, 0, DustID.Water, -3.7f * Math.Sign(Projectile.velocity.X), -6f, 0, new Color(255, 255, 255), Main.rand.NextFloat(1f, 3f))];
                     waterTrail.fadeIn = 3f;
-                    waterTrail = Main.dust[Dust.NewDust(Projectile.TopLeft + Vector2.UnitY * groundOffset + Main.rand.NextVector2Circular(16f, 16f) + Vector2.UnitX * Projectile.velocity.X * 4f, 23, 0, 33, -3.7f * Math.Sign(Projectile.velocity.X), -6f, 0, new Color(255, 255, 255), Main.rand.NextFloat(1f, 3f))];
+                    waterTrail = Main.dust[Dust.NewDust(Projectile.TopLeft + Vector2.UnitY * groundOffset + Main.rand.NextVector2Circular(16f, 16f) + Vector2.UnitX * Projectile.velocity.X * 4f, 23, 0, DustID.Water, -3.7f * Math.Sign(Projectile.velocity.X), -6f, 0, new Color(255, 255, 255), Main.rand.NextFloat(1f, 3f))];
                     waterTrail.fadeIn = 3f;
 
 
-                    Dust foamDust = Main.dust[Dust.NewDust(Projectile.Top + Vector2.UnitY * groundOffset + Vector2.UnitX * 16 * Math.Sign(Projectile.velocity.X), 9, 0, 16, 2.7f * Math.Sign(Projectile.velocity.X), -3f, 0, new Color(255, 255, 255), 1.4f)];
+                    Dust foamDust = Main.dust[Dust.NewDust(Projectile.Top + Vector2.UnitY * groundOffset + Vector2.UnitX * 16 * Math.Sign(Projectile.velocity.X), 9, 0, DustID.Cloud, 2.7f * Math.Sign(Projectile.velocity.X), -3f, 0, new Color(255, 255, 255), 1.4f)];
                     foamDust.noGravity = true;
 
                     //Foam
@@ -158,7 +158,7 @@ namespace CalamityMod.Projectiles.Melee
                     Particle foamSmall = new FakeGlowDust(origin, Projectile.velocity / 2f, Color.LightSlateGray, Main.rand.NextFloat(1f, 2f), 25, 0.1f, bigSize: true, gravity: (-Projectile.velocity + Vector2.UnitY) * 0.1f);
                     GeneralParticleHandler.SpawnParticle(foamSmall);
 
-                    if (Main.rand.Next(5) == 0)
+                    if (Main.rand.NextBool(5))
                     {
                         Particle foamLarge = new MediumMistParticle(origin, Projectile.velocity / 2f, Color.LightSlateGray, Color.LightBlue, Main.rand.NextFloat(1f, 2f), 245 - Main.rand.Next(50), 0.1f);
                         GeneralParticleHandler.SpawnParticle(foamLarge);
@@ -209,7 +209,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Splash with { PitchVariance = 2f}, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Splash with { PitchVariance = 2f }, Projectile.Center);
 
             for (int i = 0; i < 4; i++)
             {

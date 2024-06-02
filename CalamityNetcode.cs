@@ -1,14 +1,15 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Systems;
 using CalamityMod.TileEntities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -52,6 +53,19 @@ namespace CalamityMod
                     // Syncs for specific bosses or entities
                     //
 
+                    case CalamityModMessageType.SyncDestroyerLaserColor:
+                        byte npcIdx3 = reader.ReadByte();
+                        int laserColor = reader.ReadInt32();
+
+                        // If the NPC in question isn't valid, don't do anything.
+                        NPC npc3 = Main.npc[npcIdx3];
+                        if (!npc3.active)
+                            break;
+
+                        CalamityGlobalNPC cgn3 = npc3.Calamity();
+                        cgn3.destroyerLaserColor = laserColor;
+                        break;
+
                     // This code has been edited to fail gracefully when trying to provide data for an invalid NPC.
                     case CalamityModMessageType.SyncCalamityNPCAIArray:
                         // Read the entire packet regardless of anything
@@ -72,6 +86,7 @@ namespace CalamityMod
                         cgn.newAI[2] = ai2;
                         cgn.newAI[3] = ai3;
                         break;
+
                     case CalamityModMessageType.SyncVanillaNPCLocalAIArray:
                         // Read the entire packet regardless of anything
                         byte npcIdx2 = reader.ReadByte();
@@ -90,6 +105,7 @@ namespace CalamityMod
                         npc2.localAI[2] = localAI2;
                         npc2.localAI[3] = localAI3;
                         break;
+
                     case CalamityModMessageType.SpawnSuperDummy:
                         int x = reader.ReadInt32();
                         int y = reader.ReadInt32();
@@ -97,16 +113,19 @@ namespace CalamityMod
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                             NPC.NewNPC(new EntitySource_WorldEvent(), x, y, ModContent.NPCType<SuperDummyNPC>());
                         break;
+
                     case CalamityModMessageType.DeleteAllSuperDummies:
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                             SuperDummy.DeleteDummies();
                         break;
+
                     case CalamityModMessageType.SyncAndroombaSolution:
                         int index = reader.ReadInt32();
                         int solType = reader.ReadInt32();
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                             AndroombaFriendly.SwapSolution(index, solType);
                         break;
+
                     case CalamityModMessageType.SyncAndroombaAI:
                         {
                             int idx = reader.ReadInt32();
@@ -115,6 +134,7 @@ namespace CalamityMod
                                 AndroombaFriendly.ChangeAI(idx, phase);
                         }
                         break;
+
                     case CalamityModMessageType.SyncSlabCrabAI:
                         {
                             int idx = reader.ReadInt32();
@@ -123,18 +143,22 @@ namespace CalamityMod
                                 AndroombaFriendly.ChangeAI(idx, phase);
                         }
                         break;
+
                     case CalamityModMessageType.ServersideSpawnOldDuke:
                         byte playerIndex2 = reader.ReadByte();
                         CalamityUtils.SpawnOldDuke(playerIndex2);
                         break;
+
                     case CalamityModMessageType.ArmoredDiggerCountdownSync:
                         int countdown5 = reader.ReadInt32();
                         CalamityWorld.ArmoredDiggerSpawnCooldown = countdown5;
                         break;
+
                     case CalamityModMessageType.ProvidenceDyeConditionSync:
                         byte npcIndex3 = reader.ReadByte();
                         (Main.npc[npcIndex3].ModNPC as Providence).hasTakenDaytimeDamage = reader.ReadBoolean();
                         break;
+
                     case CalamityModMessageType.PSCChallengeSync:
                         byte npcIndex4 = reader.ReadByte();
                         (Main.npc[npcIndex4].ModNPC as Providence).challenge = reader.ReadBoolean();
@@ -156,6 +180,7 @@ namespace CalamityMod
                             NetMessage.SendData(MessageID.SyncNPC, -1, player, null, spawnedNPC);
                         }
                         break;
+
                     case CalamityModMessageType.SyncNPCMotionDataToServer:
                         int npcIndex = reader.ReadInt32();
                         Vector2 center = reader.ReadVector2();
@@ -277,6 +302,17 @@ namespace CalamityMod
                         break;
 
                     //
+                    // Music event syncs
+                    //
+                    case CalamityModMessageType.MusicEventSyncRequest:
+                        MusicEventSystem.FulfillSyncRequest(whoAmI);
+                        break;
+
+                    case CalamityModMessageType.MusicEventSyncResponse:
+                        MusicEventSystem.ReceiveSyncResponse(reader);
+                        break;
+
+                    //
                     // Default case: with no idea how long the packet is, we can't safely read data.
                     // Throw an exception now instead of allowing the network stream to corrupt.
                     //
@@ -348,6 +384,7 @@ namespace CalamityMod
         SyncCooldownDictionary,
 
         // Syncs for specific bosses or entities
+        SyncDestroyerLaserColor,
         SyncCalamityNPCAIArray,
         SyncVanillaNPCLocalAIArray,
         SpawnSuperDummy,
@@ -396,6 +433,10 @@ namespace CalamityMod
         MousePositionSync,
 
         // World state sync
-        SyncDifficulties
+        SyncDifficulties,
+
+        // Music events
+        MusicEventSyncRequest,
+        MusicEventSyncResponse
     }
 }

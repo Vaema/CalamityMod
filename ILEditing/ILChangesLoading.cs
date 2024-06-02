@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureExo;
 using CalamityMod.Walls;
@@ -13,6 +11,7 @@ using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.GameContent.Liquid;
+using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
 using Terraria.Graphics.Light;
 using Terraria.Map;
@@ -84,6 +83,8 @@ namespace CalamityMod.ILEditing
             On_NPC.Collision_DecideFallThroughPlatforms += EnableCalamityBossPlatformCollision;
             IL_Wiring.HitWireSingle += AddTwinklersToStatue;
             On_Player.UpdateItemDye += FindCalamityItemDyeShader;
+            On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
+            On_Item.GetShimmered += ShimmerEffectEdits;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
@@ -97,23 +98,30 @@ namespace CalamityMod.ILEditing
             // Damage and health balance
             On_Main.DamageVar_float_int_float += AdjustDamageVariance;
             IL_NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
-            IL_Projectile.AI_001 += AdjustChlorophyteBullets;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
             IL_Player.UpdateBuffs += NerfSharpeningStation;
+            IL_Player.UpdateBuffs += NerfBeetleScaleMail;
+            IL_Player.UpdateBuffs += NerfNebulaArmorBaseLifeRegenAndDamage;
+            IL_Player.ApplyVanillaHurtEffectModifiers += RemoveBeetleAndSolarFlareMultiplicativeDR;
 
             // Movement speed balance
             IL_Player.UpdateJumpHeight += FixJumpHeightBoosts;
             IL_Player.Update += BaseJumpHeightAdjustment;
             IL_Player.Update += RunSpeedAdjustments;
-            IL_Player.Update += NerfSoaringInsigniaRunAcceleration;
+            IL_Player.Update += NerfOverpoweredRunAccelerationSources; // Soaring Insignia, Magiluminescence, and Shadow Armor
             IL_Player.WingMovement += RemoveSoaringInsigniaInfiniteWingTime;
 
             // Life regen balance
             IL_Player.UpdateLifeRegen += PreventWellFedFromBeingRequiredInExpertModeForFullLifeRegen;
+            IL_Player.UpdateLifeRegen += RemoveNebulaLifeBoosterDoTImmunity;
 
             // Mana regen balance
             IL_Player.Update += ManaRegenDelayAdjustment;
             IL_Player.UpdateManaRegen += ManaRegenAdjustment;
+            IL_Player.UpdateManaRegen += NerfNebulaArmorManaRegen;
+
+            // Item prefix changes
+            On_Player.GrantPrefixBenefits += PrefixChanges;
 
             // Debuff balancing
             IL_Projectile.StatusPlayer += RemoveFrozenInflictionFromDeerclopsIceSpikes;
@@ -138,8 +146,6 @@ namespace CalamityMod.ILEditing
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
 
-            // TODO -- Beat Lava Slimes once and for all
-            // IL.Terraria.NPC.VanillaHitEffect += RemoveLavaDropsFromExpertLavaSlimes;
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
             IL_Main.UpdateWindyDayState += MakeWindyDayMusicPlayLessOften;
             IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;
@@ -149,12 +155,19 @@ namespace CalamityMod.ILEditing
 
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;
+            On_NPC.PlayerInteraction += FixSplittingWormInteraction;
 
             // Let Sunken Sea BG walls appear even when covered with water.
             IL_MapHelper.CreateMapTile += ShowSunkenSeaBGWallsThroughWater;
             
             // Fix vanilla not accounting for spritebatch modification in held projectile drawing
             On_PlayerDrawLayers.DrawHeldProj += FixHeldProjectileBlendState;
+
+            // Fix vanilla not accounting for multiple bobbers when fishing with truffle worm
+            IL_Player.ItemCheck_CheckFishingBobbers += FixTruffleWormFishing;
+            
+            // Allow specified walls to be visible through water on the map
+            IL_MapHelper.CreateMapTile += UseVisibleThroughWaterMapTile;
 
             //Additional detours that are in their own item files given they are only relevant to these specific items:
             //Rover drive detours on Player.DrawInfernoRings to draw its shield

@@ -1,4 +1,7 @@
-﻿using CalamityMod.Balancing;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using CalamityMod.Balancing;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
@@ -8,9 +11,6 @@ using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -138,26 +138,6 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_R4, 0f);
         }
         #endregion
-
-        #region Disabling of Lava Slime Lava Creation
-        private static void RemoveLavaDropsFromExpertLavaSlimes(ILContext il)
-        {
-            // Prevent Lava Slimes from dropping lava.
-            var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<WorldGen>("SquareTileFrame"))) // The only SquareTileFrame call in HitEffect.
-            {
-                LogFailure("Remove Lava Drops From Expert Lava Slimes", "Could not locate the SquareTileFrame function call.");
-                return;
-            }
-            if (!cursor.TryGotoPrev(MoveType.Before, i => i.MatchLdcI4(NPCID.LavaSlime))) // The ID of Lava Slimes.
-            {
-                LogFailure("Remove Lava Drops From Expert Lava Slimes", "Could not locate the Lava Slime ID variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, 0); // Change to an impossible scenario.
-        }
-        #endregion Disabling of Lava Slime Lava Creation
 
         #region Make Meteorite Explodable
         private static void MakeMeteoriteExplodable(ILContext il)
@@ -291,7 +271,7 @@ namespace CalamityMod.ILEditing
 
             // Sync the color changes.
             if (colorWasChanged)
-                NetMessage.SendData(MessageID.ItemTweaker, -1, -1, null, itemID, 1f);
+                NetMessage.SendData(MessageID.ItemTweaker, -1, -1, null, itemIndex, 1f);
         }
         #endregion Color Blighted Gel
 
@@ -921,61 +901,60 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Map Colors
-        private static void ShowSunkenSeaBGWallsThroughWater(ILContext context)
+        #region Render Special Map Colors
+        private static void UseVisibleThroughWaterMapTile(ILContext il)
         {
-            var cursor = new ILCursor(context);
+            var c = new ILCursor(il);
 
-            // Find the tile.active method which will place the cursor right before the code for using the tile's map entry
-            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCall<Tile>("active")))
+            if (!c.TryGotoNext(x => x.MatchCall<Tilemap>("get_Item")))
             {
-                LogFailure("Show Sunken Sea BG Walls Through Water", "Could not locate the tile.active method.");
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not locate call to Terraria.Map.TileMap::get_Item.");
+                return;
+            }
+            
+            int tileIndex = -1;
+            if (!c.TryGotoNext(x => x.MatchStloc(out tileIndex)) || tileIndex == -1)
+            {
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not determine the local variable index tile is pushed to.");
                 return;
             }
 
-            // Find the MapHelper.GetTileBaseOption method which will place the cursor right after the code for using the tile's map entry
-            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCall(typeof(MapHelper), "GetTileBaseOption")))
+            if (!c.TryGotoNext(x => x.MatchCall<Tile>("liquidType")))
             {
-                LogFailure("Show Sunken Sea BG Walls Through Water", "Could not locate the MapHelper.GetTileBaseOption method.");
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not locate call to Terraria.Tile::liquidType.");
                 return;
             }
 
-            // Find the tile.invisibleWall method which will place the cursor right before the code for using the tile's wall map entry
-            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCall<Tile>("invisibleWall")))
+            int liquidTypeIndex = -1;
+            if (!c.TryGotoNext(x => x.MatchStloc(out liquidTypeIndex)) || liquidTypeIndex == -1)
             {
-                LogFailure("Show Sunken Sea BG Walls Through Water", "Could not locate the tile.invisibleWall method.");
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not determine the local variable index liquidType is pushed to.");
                 return;
             }
 
-            // Find the tile.liquidType method which will place the cursor right before the code for using the water's map entry
-            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCall<Tile>("liquidType")))
+            int relativeMapTypeIndex = -1;
+            if (!c.TryGotoNext(MoveType.After, x => x.MatchStloc(out relativeMapTypeIndex)) || relativeMapTypeIndex == -1)
             {
-                LogFailure("Show Sunken Sea BG Walls Through Water", "Could not locate the tile.liquidType method.");
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not determine the local variable index of the relative map type.");
                 return;
             }
 
-            var localVariableIndex = cursor.Instrs[cursor.Index].Operand;
-
-            // Move to after it updates the map tile to the water map entry
-            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchStloc3()))
-            {
-                LogFailure("Show Sunken Sea BG Walls Through Water", "Could not locate to where it replaces the map entry with the water map entry");
-                return;
-            }
-
-            cursor.Emit(OpCodes.Ldloc, 0);
-            cursor.Emit(OpCodes.Ldloc, 3);
-            cursor.Emit(OpCodes.Ldloc, localVariableIndex);
-            cursor.EmitDelegate<Func<Tile, int, int, int>>((tile, mapEntry, liquidType) => 
-            { 
-                if (WallLoader.GetWall(tile.WallType) is WallVisibleThroughWater visibleThroughWater && liquidType == LiquidID.Water)
+            c.Emit(OpCodes.Ldloc_0);
+            c.Emit(OpCodes.Ldloc, relativeMapTypeIndex);
+            c.Emit(OpCodes.Ldloc, liquidTypeIndex);
+            c.EmitDelegate(
+                (Tile tile, int relativeMapType, int liquidType) =>
                 {
-                    return visibleThroughWater.WaterMapEntry;
-                }
+                    if (liquidType != LiquidID.Water)
+                        return relativeMapType;
 
-                return mapEntry;
-            });
-            cursor.Emit(OpCodes.Stloc_3);
+                    if (WallLoader.GetWall(tile.WallType) is IVisibleThroughWater visibleThroughWater)
+                        return visibleThroughWater.WaterMapEntry;
+
+                    return relativeMapType;
+                }
+            );
+            c.Emit(OpCodes.Stloc, relativeMapTypeIndex);
         }
         #endregion
     }

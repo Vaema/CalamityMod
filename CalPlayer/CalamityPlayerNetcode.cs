@@ -1,6 +1,6 @@
-﻿using CalamityMod.Cooldowns;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Cooldowns;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

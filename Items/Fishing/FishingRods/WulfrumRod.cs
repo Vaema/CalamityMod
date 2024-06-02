@@ -1,8 +1,9 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Materials;
 
 namespace CalamityMod.Items.Fishing.FishingRods
 {
@@ -21,7 +22,13 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.fishingPole = 10;
             Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<WulfrumBobber>();
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+        }
+
+        public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
+        {
+            lineOriginOffset = new Vector2(35f, -27f);
+            lineColor = new Color(200, 200, 200, 100);
         }
 
         public override void AddRecipes()

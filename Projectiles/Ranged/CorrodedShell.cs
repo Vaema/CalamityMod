@@ -4,9 +4,9 @@ using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class CorrodedShell : ModProjectile, ILocalizedModType
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
             int count = Main.rand.Next(6, 15);
             for (int i = 0; i < count; i++)
             {
-                int idx = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 100, default, 2f);
+                int idx = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].velocity *= 2f;
                 Main.dust[idx].noGravity = true;
             }

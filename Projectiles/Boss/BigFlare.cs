@@ -1,11 +1,11 @@
-﻿using CalamityMod.Events;
+﻿using System.IO;
+using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Boss
                             Vector2 dustRotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                             dustRotate = dustRotate.RotatedBy((double)(i - (dustAmt / 2 - 1)) * 3.1415926535897931 / (double)(float)dustAmt, default) + Projectile.Center;
                             Vector2 randomDustPos = ((float)(Main.rand.NextDouble() * 3.1415927410125732) - 1.57079637f).ToRotationVector2() * (float)Main.rand.Next(3, 8);
-                            int flareDust = Dust.NewDust(dustRotate + randomDustPos, 0, 0, 244, randomDustPos.X * 2f, randomDustPos.Y * 2f, 100, default, 1.4f);
+                            int flareDust = Dust.NewDust(dustRotate + randomDustPos, 0, 0, DustID.CopperCoin, randomDustPos.X * 2f, randomDustPos.Y * 2f, 100, default, 1.4f);
                             Main.dust[flareDust].noGravity = true;
                             Main.dust[flareDust].noLight = true;
                             Main.dust[flareDust].velocity /= 4f;
@@ -120,7 +120,7 @@ namespace CalamityMod.Projectiles.Boss
                 Vector2 rotation = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 rotation = rotation.RotatedBy((double)((float)(j - (dustAmtKill / 2 - 1)) * 6.28318548f / (float)dustAmtKill), default) + Projectile.Center;
                 Vector2 faceDirection = rotation - Projectile.Center;
-                int flareDeath = Dust.NewDust(rotation + faceDirection, 0, 0, 244, faceDirection.X * 2f, faceDirection.Y * 2f, 100, default, 1.4f);
+                int flareDeath = Dust.NewDust(rotation + faceDirection, 0, 0, DustID.CopperCoin, faceDirection.X * 2f, faceDirection.Y * 2f, 100, default, 1.4f);
                 Main.dust[flareDeath].noGravity = true;
                 Main.dust[flareDeath].noLight = true;
                 Main.dust[flareDeath].velocity = faceDirection;

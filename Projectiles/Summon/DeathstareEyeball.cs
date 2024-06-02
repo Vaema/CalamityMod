@@ -1,8 +1,8 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Summon
                 Initialize(Owner);
                 Projectile.ai[0] = 1f;
             }
-            
+
             if (Target is null)
                 DoHoveringAI();
             else
@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D eyeTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D eyeTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = eyeTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             SpriteEffects spriteEffects = Owner.gravDir == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
             Main.EntitySpriteDraw(eyeTexture, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);

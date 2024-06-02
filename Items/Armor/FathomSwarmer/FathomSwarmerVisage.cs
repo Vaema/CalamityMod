@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 10; //47 +10 underwater
+            Item.defense = 8; //41 +10 underwater
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -40,14 +40,17 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
             player.GetDamage<SummonDamageClass>() += 0.1f;
             if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
             {
-                player.GetDamage<SummonDamageClass>() += 0.3f;
+                player.GetDamage<SummonDamageClass>() += 0.2f;
+                player.statDefense += 10;
+                player.lifeRegen += 5;
             }
         }
 
         public override void UpdateEquip(Player player)
         {
             var modPlayer = player.Calamity();
-            player.GetDamage<SummonDamageClass>() += 0.05f;
+            player.GetDamage<SummonDamageClass>() += 0.08f;
+            player.maxMinions += 1;
             if (player.breath <= player.breathMax + 2 && !modPlayer.ZoneAbyss)
             {
                 player.breath = player.breathMax + 3;

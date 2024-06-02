@@ -1,10 +1,10 @@
 ﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {

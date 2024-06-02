@@ -1,16 +1,16 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Particles;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.DataStructures;
-using CalamityMod.Items.Accessories.Vanity;
-using CalamityMod.Cooldowns;
-using Terraria.Audio;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Cooldowns;
+using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Materials;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
+using Terraria.ModLoader;
 using static Microsoft.Xna.Framework.Input.Keys;
 using static Terraria.ModLoader.ModContent;
 
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         {
             if (Main.netMode != NetmodeID.Server)
             {
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Wulfrum/WulfrumHat_FemaleHead", EquipType.Head, name : "WulfrumHatFemale");
+                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Wulfrum/WulfrumHat_FemaleHead", EquipType.Head, name: "WulfrumHatFemale");
             }
 
             Terraria.On_Player.KeyDoubleTap += ActivateSetBonus;
@@ -116,11 +116,11 @@ namespace CalamityMod.Items.Armor.Wulfrum
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs) =>  body.type == ItemType<WulfrumJacket>() && legs.type == ItemType<WulfrumOveralls>();
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ItemType<WulfrumJacket>() && legs.type == ItemType<WulfrumOveralls>();
         public static bool HasArmorSet(Player player) => player.armor[0].type == ItemType<WulfrumHat>() && player.armor[1].type == ItemType<WulfrumJacket>() && player.armor[2].type == ItemType<WulfrumOveralls>();
         public bool IsPartOfSet(Item item) => item.type == ItemType<WulfrumHat>() ||
                 item.type == ItemType<WulfrumJacket>() ||
@@ -147,7 +147,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 player.endurance += 0.05f; //10% Dr in total with the chestplate
 
                 //Can't account for previous fullbody transformations but at this point, whatever.
-                Item headItem = player.armor[10].type != 0 ? player.armor[10] : player.armor[0];
+                Item headItem = player.armor[10].type != ItemID.None ? player.armor[10] : player.armor[0];
                 bool hatVisible = !transformationPlayer.transformationActive && headItem.type == ItemType<WulfrumHat>();
 
                 //Spawn the hat
@@ -286,7 +286,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 2;
         }
@@ -314,7 +314,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.defense = 1;
 
@@ -348,7 +348,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         public static int BastionShootTime = 10;
 
         public bool wulfrumSet = false;
-        
+
         public override void ResetEffects()
         {
             wulfrumSet = false;

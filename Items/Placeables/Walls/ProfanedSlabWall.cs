@@ -1,4 +1,4 @@
-using CalamityMod.Items.Placeables.FurnitureProfaned;
+﻿using CalamityMod.Items.Placeables.FurnitureProfaned;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;

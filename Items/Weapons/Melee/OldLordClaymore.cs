@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
         }
 

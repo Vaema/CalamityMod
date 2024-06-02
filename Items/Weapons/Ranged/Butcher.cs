@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAnimation = 40;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 1f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item38;
             Item.noMelee = true;
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ButcherGun>(), damage, knockback, player.whoAmI, 0f, 0f);
             return false;
         }
-        
+
         public override void AddRecipes()
         {
             CreateRecipe().

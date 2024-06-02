@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 28;
             Item.height = 30;
-            Item.damage = 80;
+            Item.damage = 36;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 15;
             Item.useTime = 22;
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item8;
             Item.autoReuse = true;
@@ -38,7 +38,12 @@ namespace CalamityMod.Items.Weapons.Magic
                 Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
                 int proj = Projectile.NewProjectile(source, position, perturbedSpeed, type, damage, knockback, player.whoAmI);
                 if (proj.WithinBounds(Main.maxProjectiles))
+                {
                     Main.projectile[proj].DamageType = DamageClass.Magic;
+                    Main.projectile[proj].penetrate = 3;
+                    Main.projectile[proj].usesLocalNPCImmunity = true;
+                    Main.projectile[proj].localNPCHitCooldown = -1;
+                }
             }
             return false;
         }

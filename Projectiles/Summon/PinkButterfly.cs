@@ -1,12 +1,12 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class PinkButterfly : ModProjectile, ILocalizedModType
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.5f;
                     rotate = rotate.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
                     Vector2 faceDirection = rotate - Projectile.Center;
-                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, 73, faceDirection.X, faceDirection.Y, 100, default, 1.1f);
+                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.PinkFairy, faceDirection.X, faceDirection.Y, 100, default, 1.1f);
                     Main.dust[dust].noGravity = true;
                 }
                 Projectile.localAI[0] += 1f;
@@ -106,10 +106,9 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (!canAttack)
             {
-                for (int j = 0; j < Main.maxNPCs; j++)
+                foreach (NPC nPC2 in Main.ActiveNPCs)
                 {
-                    NPC nPC2 = Main.npc[j];
-                    if ((nPC2.CanBeChasedBy(Projectile, false) || nPC2.type == NPCID.DukeFishron) && nPC2.active)
+                    if (nPC2.CanBeChasedBy(Projectile, false) || nPC2.type == NPCID.DukeFishron)
                     {
                         float targetDist = Vector2.Distance(nPC2.Center, Projectile.Center);
                         if (!canAttack && targetDist < attackRange)
@@ -117,7 +116,7 @@ namespace CalamityMod.Projectiles.Summon
                             attackRange = targetDist;
                             projPos = nPC2.Center;
                             canAttack = true;
-                            targetIndex = j;
+                            targetIndex = nPC2.whoAmI;
                         }
                     }
                 }
@@ -194,7 +193,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // Projectile fire timer
             if (Projectile.ai[1] > 0f)
-                Projectile.ai[1] += (float)Main.rand.Next(1, 2+1);
+                Projectile.ai[1] += (float)Main.rand.Next(1, 2 + 1);
 
             // Reset timer
             if (Projectile.ai[1] > 240f)
@@ -226,7 +225,7 @@ namespace CalamityMod.Projectiles.Summon
                         for (int i = 0; i < numProj; i++)
                         {
                             Vector2 perturbedSpeed = projDirectionAgain.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numProj - 1)));
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, projectileType, (int)(Projectile.damage * 0.8f), Projectile.knockBack * 0.5f, Projectile.owner, targetIndex, 0f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, projectileType, (int)(Projectile.damage * 0.85f), Projectile.knockBack * 0.5f, Projectile.owner, targetIndex, 0f);
                         }
                         Projectile.netUpdate = true;
                     }
@@ -237,8 +236,8 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y6 = framing * Projectile.frame;
             Main.EntitySpriteDraw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, spriteEffects, 0);
             return false;

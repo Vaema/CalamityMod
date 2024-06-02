@@ -38,11 +38,11 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f);
             if (Projectile.spriteDirection == -1)
             {
-                Projectile.rotation -= 1.57f;
+                Projectile.rotation -= MathHelper.PiOver2;
             }
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 62, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.PurpleTorch, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             if (Projectile.timeLeft % 12 == 0)
             {

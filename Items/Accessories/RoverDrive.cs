@@ -1,10 +1,12 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
@@ -36,10 +38,9 @@ namespace CalamityMod.Items.Accessories
             get
             {
                 bool result = false;
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    Player player = Main.player[i];
-                    if (player is null || !player.active || player.outOfRange || player.dead)
+                    if (player.outOfRange || player.dead)
                        continue;
 
                     CalamityPlayer modPlayer = player.Calamity();
@@ -61,7 +62,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 38;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
             Item.MakeUsableWithChlorophyteExtractinator();
@@ -80,6 +81,12 @@ namespace CalamityMod.Items.Accessories
 
         // In vanity, provides a visual shield but no actual functionality
         public override void UpdateVanity(Player player) => player.Calamity().roverDriveShieldVisible = true;
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            string adrenTooltip = CalamityWorld.revenge ? this.GetLocalizedValue("ShieldAdren") : "";
+            tooltips.FindAndReplace("[ADREN]", adrenTooltip);
+        }
 
         // Scrappable for 3-5 wulfrum scrap or a 20% chance to get an energy core
         public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
@@ -104,10 +111,9 @@ namespace CalamityMod.Items.Accessories
             // Visibility is not net synced, for example.
             bool alreadyDrawnShieldForPlayer = false;
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active || player.outOfRange || player.dead)
+                if (player.outOfRange || player.dead)
                     continue;
 
                 CalamityPlayer modPlayer = player.Calamity();
@@ -119,7 +125,7 @@ namespace CalamityMod.Items.Accessories
                     continue;
 
                 // The shield very gently grows and shrinks
-                float scale = 0.15f + 0.03f * (0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.5f + i * 0.2f));
+                float scale = 0.15f + 0.03f * (0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.5f + player.whoAmI * 0.2f));
 
                 if (!alreadyDrawnShieldForPlayer)
                 {
@@ -154,7 +160,7 @@ namespace CalamityMod.Items.Accessories
                     Color wulfGreen = new Color(194, 255, 67) * 0.8f;
                     Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, blueTint, cyanTint, wulfGreen);
                     Color shieldColor = blueTint;
-                    
+
 
                     // Define shader parameters for shield color
                     shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());

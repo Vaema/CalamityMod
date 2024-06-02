@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 rotate = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
                     rotate += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
                     rotate = rotate.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
-                    int blueDust = Dust.NewDust(Projectile.Center, 0, 0, 221, 0f, 0f, 160, default, 1f);
+                    int blueDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.FireworkFountain_Blue, 0f, 0f, 160, default, 1f);
                     Main.dust[blueDust].scale = 1.1f;
                     Main.dust[blueDust].noGravity = true;
                     Main.dust[blueDust].position = Projectile.Center + rotate;
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Ranged
             int rando = Main.rand.Next(4, 8);
             for (int i = 0; i < rando; i++)
             {
-                int dust = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, 135, 0f, 0f, 100, default, 2f);
+                int dust = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, DustID.IceTorch, 0f, 0f, 100, default, 2f);
                 Main.dust[dust].velocity *= 2f;
                 Main.dust[dust].noGravity = true;
             }

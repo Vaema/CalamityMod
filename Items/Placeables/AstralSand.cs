@@ -10,6 +10,9 @@ namespace CalamityMod.Items.Placeables
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
+
+            // +5 flat damage, equal to other sand variants
+            ItemID.Sets.SandgunAmmoProjectileData[Type] = new(ModContent.ProjectileType<AstralSandBallGun>(), 5);
         }
 
         public override void SetDefaults()

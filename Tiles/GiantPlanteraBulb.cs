@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -30,6 +31,8 @@ namespace CalamityMod.Tiles
             Main.tileLighted[Type] = true;
 
             Main.tileFrameImportant[Type] = true;
+
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
 
             // Various data sets to protect this tile from premature death
             TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
@@ -192,9 +195,9 @@ namespace CalamityMod.Tiles
         {
             if (Main.hardMode)
             {
-                r = 243f / 500f; // ~123
-                g = 82f / 500f; // ~41
-                b = 171f / 500f; // ~87
+                r = 0.486f;
+                g = 0.164f;
+                b = 0.342f;
             }
         }
 
@@ -203,9 +206,9 @@ namespace CalamityMod.Tiles
             var tile = Main.tile[i, j];
 
             spriteBatch.Draw(
-                Glow.Value, 
-                new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + CalamityUtils.TileDrawOffset, 
-                new Rectangle(tile.TileFrameX, tile.TileFrameY + AnimationFrameHeight * Main.tileFrame[Type], 16, 16), 
+                Glow.Value,
+                new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + CalamityUtils.TileDrawOffset,
+                new Rectangle(tile.TileFrameX, tile.TileFrameY + AnimationFrameHeight * Main.tileFrame[Type], 16, 16),
                 Color.Yellow
             );
         }

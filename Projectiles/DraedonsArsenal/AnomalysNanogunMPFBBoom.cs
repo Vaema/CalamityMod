@@ -27,6 +27,16 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.DamageType = DamageClass.Ranged;
         }
 
-        public override void PostAI() => Lighting.AddLight(Projectile.Center, 0, Projectile.Opacity * 0.7f / 255f, Projectile.Opacity);
+        public override void PostAI()
+        {
+            Lighting.AddLight(Projectile.Center, 0, Projectile.Opacity * 0.7f / 255f, Projectile.Opacity);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.6f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
+        }
     }
 }

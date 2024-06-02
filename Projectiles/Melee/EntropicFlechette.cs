@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee
                 for (int i = 0; i < 2; i++)
                 {
                     Vector2 dustRotate = -Vector2.UnitY.RotatedBy((double)(Projectile.localAI[0] * 0.1308997f + (float)i * 3.14159274f), default) * rotateVector;
-                    int darkDust = Dust.NewDust(Projectile.Center, 0, 0, 27, 0f, 0f, 160, default, 1f);
+                    int darkDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.Shadowflame, 0f, 0f, 160, default, 1f);
                     Main.dust[darkDust].scale = 1f;
                     Main.dust[darkDust].noGravity = true;
                     Main.dust[darkDust].position = Projectile.Center + dustRotate;
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            int darkestDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 27, 0f, 0f, 100, default, 0.8f);
+            int darkestDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame, 0f, 0f, 100, default, 0.8f);
             Main.dust[darkestDust].noGravity = true;
             Main.dust[darkestDust].velocity *= 0f;
 

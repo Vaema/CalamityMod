@@ -1,5 +1,5 @@
-﻿using CalamityMod.Rarities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CalamityMod.Rarities;
 using Terraria.ID;
 using Terraria.ModLoader;
 

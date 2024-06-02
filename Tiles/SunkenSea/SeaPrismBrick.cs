@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
-    
+
     public class SeaPrismBrick : ModTile
     {
         private static int sheetWidth = 216;

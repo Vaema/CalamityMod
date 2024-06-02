@@ -1,5 +1,5 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Armor.Victide;
+﻿using CalamityMod.Items.Armor.Victide;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 24;
             Item.height = 28;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.defense = 2;
             Item.accessory = true;

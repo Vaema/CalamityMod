@@ -16,7 +16,7 @@ namespace CalamityMod.Particles
         public float ShakePower;
         public float Opacity;
         public Projectile AttachedProjectile;
-        public float  DisplacementFromProjectile;
+        public float DisplacementFromProjectile;
 
         public ThunderBoltVFX(Vector2 position, Color color, float rotation, float scale, Vector2 squish, float opacity = 1f, float shakePower = 20f, Projectile projectileToFollow = null, float displacementFromProjectile = 0f)
         {

@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -41,9 +41,8 @@ namespace CalamityMod.Projectiles.Rogue
                 float projY = Projectile.Center.Y;
                 float homeRange = Projectile.Calamity().stealthStrike ? 1800f : 600f;
                 float homingSpeed = 0.25f;
-                for (int i = 0; i < Main.npc.Length; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, npc.Center, 1, 1) && !npc.boss)
                     {
                         float npcX = npc.position.X + (float)(npc.width / 2);

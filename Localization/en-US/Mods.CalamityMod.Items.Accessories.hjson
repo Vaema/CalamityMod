@@ -60,7 +60,9 @@ AbyssalMirror: {
 		Significantly reduces enemy aggression, even in the abyss
 		Stealth generates 25% faster when standing still and 12% faster while moving
 		Grants the ability to evade attacks, releasing a cloud of lumenyl fluid which damages and stuns nearby enemies
-		Evading an attack grants a lot of stealth but has a 90 second cooldown
+		Attacks that deal less than 5% of your max life in damage will not be evaded
+		The evade has a cooldown that ranges between 15 and 90 seconds depending on the evaded attack's damage
+		Evading an attack grants a lot of stealth
 		This cooldown is shared with all other dodges and reflects
 		'Light does not reach the depths of the ocean'
 		'''
@@ -81,7 +83,7 @@ AeroStone: {
 	DisplayName: Aero Stone
 	Tooltip:
 		'''
-		Provides an additional 25 flight time
+		Provides an additional 50 flight time
 		You slowly recover flight time while in the air if you are not flying or gliding
 		'One of the ancient relics'
 		'''
@@ -100,8 +102,9 @@ AlchemicalFlask: {
 	DisplayName: Alchemical Flask
 	Tooltip:
 		'''
-		All attacks inflict the Plague and grants immunity to the Plague
+		All attacks inflict the Plague and reduces damage taken from the Plague
 		Projectiles spawn plague seekers on enemy hits
+		Releases plague bees when damaged and douses you in honey 
 		'''
 }
 
@@ -122,7 +125,9 @@ AmalgamatedBrain: {
 		10% increased damage
 		Shade rains down when you are hit
 		Grants the ability to dodge attacks
-		The dodge has a 90 second cooldown which is shared with all other dodges and reflects
+		Attacks that deal less than 5% of your max life in damage will not be dodged
+		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
+		This cooldown is shared with all other dodges and reflects
 		Temporarily increases critical strike chance and summon damage after a dodge
 		You will confuse nearby enemies when you are struck
 		'''
@@ -132,10 +137,10 @@ AmbrosialAmpoule: {
 	DisplayName: Ambrosial Ampoule
 	Tooltip:
 		'''
-		+70 max life
+		+50 max life
 		Grants +2 to +6 HP/s life regen based on missing health
-		Provides life regeneration equivalent to standing in Honey
-		Standing still grants extremely powerful regen
+		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damage debuff
+		Standing still grants +1.5 HP/s life regen
 		Halves how long you are afflicted with fire and sickness debuffs
 		You emit yellow light if visibility is enabled
 		'''
@@ -254,6 +259,15 @@ AsgardsValor: {
 		'''
 }
 
+AuricSoulArtifact: {
+	DisplayName: Auric Soul Artifact
+	Tooltip:
+		'''
+		For each Fiery Draconid you have summoned, you gain 1 minion slot
+		Loyalty
+		'''
+}
+
 BadgeofBravery: {
 	DisplayName: Badge of Bravery
 	Tooltip:
@@ -304,11 +318,7 @@ BloodstainedGlove: {
 
 BloodyWormScarf: {
 	DisplayName: Bloody Worm Scarf
-	Tooltip:
-		'''
-		7% increased damage reduction
-		10% increased melee damage
-		'''
+	Tooltip: 10% increased damage reduction and melee damage
 }
 
 BloodyWormTooth: {
@@ -357,9 +367,10 @@ ChaliceOfTheBloodGod: {
 	Tooltip:
 		'''
 		Increases max HP by 25%
+		+2 HP/s life regen and reduces the cooldown of healing potions by 25%
 		Taking more than 5 damage converts the hit into a damage over time bleed debuff
 		This bleeding does not interfere with life regeneration
-		Drinking a healing potion removes half of the remaining bleed damage
+		Drinking a healing potion cancels up to 50% of its heal value of remaining bleed damage
 		Unequipping this accessory while bleeding inflicts the remaining damage instantly
 		'All that for a drop of blood...'
 		'''
@@ -418,7 +429,7 @@ CrawCarapace: {
 	DisplayName: Craw Carapace
 	Tooltip:
 		'''
-		5% increased damage
+		7% increased damage
 		Enemies that hit you take damage and are inflicted with Crumbling
 		'''
 }
@@ -427,7 +438,7 @@ Baroclaw: {
 	DisplayName: Baroclaw
 	Tooltip:
 		'''
-		10% increased damage
+		10% increased damage and 5% increased damage reduction
 		Enemies that hit you take high damage and are inflicted with Armor Crunch and Crush Depth
 		'''
 }
@@ -516,8 +527,9 @@ DeepDiver: {
 	DisplayName: Deep Diver
 	Tooltip:
 		'''
-		15% increased damage, movement speed and +15 defense while underwater
-		While underwater you gain the ability to dash great distances
+		Allows the ability to do a short ram dash
+		This dash can slam through enemies without taking damage and can be used quickly in succession
+		Provides greatly improved water mobility
 		'''
 }
 
@@ -525,9 +537,9 @@ DeificAmulet: {
 	DisplayName: Deific Amulet
 	Tooltip:
 		'''
-		Causes stars to fall and grants increased immune time when damaged
-		+0.5 HP/s life regen
-		Reduces the cooldown of healing potions
+		Causes stars to fall and increases length of invincibility after taking damage
+		Grants bonus invincibility frames based on your missing health
+		This effect scales from 10 frames at full HP to 40 frames at 25% or less HP
 		'''
 }
 
@@ -554,9 +566,8 @@ DraedonsHeart: {
 	Tooltip:
 		'''
 		{0}% reduced contact damage from enemies
-		Reduces defense damage taken by {1}%
 		[NANODESC]
-		With full Nanomachines, press [KEY] to heal {2} health over {3} {^3:second;seconds}
+		With full Nanomachines, press [KEY] to heal {1} health over {2} {^2:second;seconds}
 		While healing, you take [DR]% less damage
 		'Nanomachines, son'
 		'''
@@ -578,7 +589,7 @@ DragonScales: {
 	Tooltip:
 		'''
 		Rogue projectiles create slow fireballs as they travel
-		Stealth strikes create infernados on death
+		Stealth strikes create infernados where they hit
 		+10% max run speed and acceleration
 		Grants immunity to Dragonfire
 		'Only a living dragon holds true treasure'
@@ -589,9 +600,9 @@ DynamoStemCells: {
 	DisplayName: Dynamo Stem Cells
 	Tooltip:
 		'''
-		10% increased movement speed
-		Ranged weapons have a chance to fire mini swarmers
-		Grants immunity to Dragonfire and Electrified
+		10% increased ranged damage and movement speed
+		Ranged weapons fire a powerful mini swarmer every 3 seconds
+		Reduces the damage of the Dragonfire and Electrified debuff
 		'''
 }
 
@@ -606,7 +617,9 @@ EclipseMirror: {
 		Mobile stealth generation accelerates while not attacking
 		Stealth strikes only expend 50% of your max stealth
 		Grants the ability to evade attacks in a blast of darksun light, which inflicts extreme damage in a wide area
-		Evading an attack grants full stealth but has a 90 second cooldown
+		Attacks that deal less than 5% of your max life in damage will not be evaded
+		The evade has a cooldown that ranges between 15 and 90 seconds depending on the evaded attack's damage
+		Evading an attack grants a lot of stealth
 		This cooldown is shared with all other dodges and reflects
 		'Its reflection shows naught but darkness'
 		'''
@@ -680,7 +693,7 @@ EtherealExtorter: {
 	DisplayName: Ethereal Extorter
 	Tooltip:
 		'''
-		Rogue projectiles explode into homing souls on death
+		Rogue projectiles explode into homing souls on hit
 		8% increased rogue damage and +5 maximum stealth
 		'''
 }
@@ -751,8 +764,8 @@ FrostBarrier: {
 	DisplayName: Frost Barrier
 	Tooltip:
 		'''
-		You will freeze enemies near you when you are struck
-		You are immune to the chilled debuff
+		You will freeze nearby enemies when you are struck
+		Grants immunity to Chilled and Frostburn
 		'''
 }
 
@@ -760,10 +773,10 @@ FrostFlare: {
 	DisplayName: Frost Flare
 	Tooltip:
 		'''
-		All attacks and projectiles inflict frostbite
-		Immunity to frostburn, chilled and frozen
-		Being above 75% life grants 10% increased damage
-		Being below 25% life grants 20 defense and 15% increased max movement speed and acceleration
+		All attacks and projectiles inflict Frostbite
+		Immunity to Frostburn, Chilled and Frozen
+		Being above 50% life grants 10% increased damage
+		Being below 50% life grants 20 defense and 15% increased max movement speed and acceleration
 		Grants resistance against cold attacks
 		'''
 }
@@ -811,6 +824,7 @@ GiantTortoiseShell: {
 	DisplayName: Giant Tortoise Shell
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		5% increased damage reduction
 		10% reduced dash velocity
 		Taking a hit will remove the dash penalty and reduce defense and damage reduction for 5 seconds
@@ -841,22 +855,13 @@ GloveOfRecklessness: {
 		'''
 }
 
-GodlySoulArtifact: {
-	DisplayName: Auric Soul Artifact
-	Tooltip:
-		'''
-		For each Fiery Draconid you have summoned, you gain 1 minion slot
-		Loyalty
-		'''
-}
-
 GrandGelatin: {
 	DisplayName: Grand Gelatin
 	Tooltip:
 		'''
 		12% increased movement speed and jump speed
 		Using a healing potion will spawn a cleansing aura
-		Walking into the aura removes all debuffs and defense damage one time
+		Walking into the aura removes all debuffs one time
 		The aura grants +2.5 HP/s life regen for all players inside for 8 seconds
 		'''
 }
@@ -881,8 +886,9 @@ HallowedRune: {
 	Tooltip:
 		'''
 		Whenever your minions hit an enemy you will gain a random buff, does not stack with downgrades
-		These buffs will either boost your defense, summon damage, or life regen for a while
-		If you have the offensive boost, enemies hit by minions will sometimes be hit by stars
+		Hallowed Power increases summon damage by 10% and makes minion hits rain stars
+		Hallowed Defense increases defense by 8 and DR by 4%
+		Hallowed Regen grants +1.5 HP/s life regeneration
 		'''
 }
 
@@ -919,8 +925,8 @@ HideofAstrumDeus: {
 	Tooltip:
 		'''
 		Taking damage, or inflicting a true melee strike, drops an immense amount of astral stars from the sky
-		Taking damage boosts true melee damage by 50%
-		Boost duration is based on the amount of damage you took, the higher the damage the longer the boost
+		Taking damage boosts true melee damage by 30%
+		Boost duration scales with the amount of damage you took, up to 10 seconds
 		Provides immunity to the astral infection, cursed inferno, on fire, and frostburn debuffs
 		Enemies take damage when they hit you and are inflicted with the astral infection debuff
 		'''
@@ -931,8 +937,8 @@ HoneyDew: {
 	Tooltip:
 		'''
 		+30 max life
-		Provides life regeneration equivalent to standing in Honey
-		Standing still in Honey grants extremely powerful regen
+		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damage debuff
+		Standing still in Honey grants +1.5 HP/s life regen
 		Halves how long you are afflicted with sickness debuffs
 		'''
 }
@@ -1019,8 +1025,8 @@ LivingDew: {
 	Tooltip:
 		'''
 		+50 max life
-		Provides life regeneration equivalent to standing in Honey
-		Standing still in Honey grants extremely powerful regen
+		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damage debuff
+		Standing still in Honey grants +1.5 HP/s life regen
 		Halves how long you are afflicted with fire and sickness debuffs
 		'''
 }
@@ -1049,8 +1055,8 @@ CleansingJelly: {
 	DisplayName: Cleansing Jelly
 	Tooltip:
 		'''
-		Using a healing potion will spawn a cleansing aura 
-		Walking into the aura removes all debuffs and defense damage one time
+		Using a healing potion will spawn a cleansing aura
+		Walking into the aura removes all debuffs one time
 		'''
 }
 
@@ -1060,8 +1066,7 @@ ManaPolarizer: {
 		'''
 		Increases max mana by 50 and magic damage by 6%
 		-1.5 HP/s life regen if mana is above 50% of its maximum
-		Grants spectre healing, the amount healed scales with your mana
-		The healing only works while holding a magic weapon
+		Magic projectiles give lifesteal while holding a magic weapon
 		The more mana you have, the more you heal
 		'''
 }
@@ -1239,10 +1244,9 @@ PhantomicArtifact: {
 	Tooltip:
 		'''
 		Whenever your minions hit an enemy you will gain a random phantomic buff, does not stack with downgrades
-		These buffs will either boost your defense, summon damage, or life regen for a while
-		If you have the offensive boost, enemies hit by minions will sometimes be hit by phantomic knives
-		If you have the regenerative boost, a phantomic heart will occasionally materialise granting massive health regen
-		If you have the defensive boost, a phantomic bulwark will absorb 20% of the next projectile's damage that hits the bulwark, shattering it
+		Phantomic Empowerment increases summon damage by 10% and makes minion hits spawn phantomic knives
+		Phantomic Shield increases defense by 10 and DR by 5% and spawns a phantomic bulwark which absorbs 20% of the next projectile's damage that touches it
+		Phantomic Regen grants +2 HP/s life regen and spawns a phantomic heart which grants an additional 2 HP/s life regen when touched
 		'''
 }
 
@@ -1257,22 +1261,13 @@ PlaguedFuelPack: {
 		'''
 }
 
-PlagueHive: {
-	DisplayName: Plague Hive
-	Tooltip:
-		'''
-		All attacks inflict the Plague and grants immunity to the Plague
-		Releases bees when damaged that inflict the Plague
-		Projectiles spawn plague seekers on enemy hits
-		'''
-}
-
 ProfanedSoulArtifact: {
 	DisplayName: Profaned Soul Artifact
 	Tooltip:
 		'''
 		Summons a healer guardian, which heals for 15 health every few seconds
 		Summons a defensive guardian, which provides a weak shield reinforced by profaned rocks
+		[ADREN]
 		Upon being depleted, the barrier implodes sending the profaned rocks hurtling outwards
 		The barrier starts recharging 5 seconds after being hit
 		Recharging from zero to full charge takes 2 seconds
@@ -1281,6 +1276,7 @@ ProfanedSoulArtifact: {
 		The offensive guardian will occasionally fire spears on hit
 		Purity
 		'''
+	ShieldAdren: Halves Adrenaline lost on hit if the shield fully absorbs the hit
 }
 
 ProfanedSoulCrystal: {
@@ -1310,25 +1306,6 @@ ProfanedSoulCrystal: {
 		'''
 }
 
-Purity: {
-	DisplayName: Purity
-	Tooltip:
-		'''
-		+100 max life
-		Grants +3 to +7 HP/s life regen based on missing health
-		Provides life regeneration equivalent to standing in Honey
-		Standing still grants extremely powerful regen
-		Grants 20 defense and continuous healing while afflicted with any debuff
-		The healing eventually slows down if debuffed for an extended period of time
-		Massively boosts natural life regen while afflicted with any debuff
-		Each debuff beyond the first grants 8 additional defense
-		Granted defense fades away slowly when not afflicted with any debuffs
-		Makes weak damage over time debuffs harmless and halves the duration of all but the strongest debuffs
-		You emit shining blue light if visibility is enabled
-		'A once putrid crystal, now glimmering with immaculate purity'
-		'''
-}
-
 QuiverofNihility: {
 	DisplayName: Quiver of Nihility
 	Tooltip:
@@ -1337,6 +1314,25 @@ QuiverofNihility: {
 		Summons a ring of four void fields to orbit you
 		Arrows that pass through these fields gain a 75% damage boost and double the speed
 		'Filled with a substance darker than the night sky'
+		'''
+}
+
+Radiance: {
+	DisplayName: Radiance
+	Tooltip:
+		'''
+		+70 max life
+		Grants +2 to +6 HP/s life regen based on missing health
+		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damage debuff
+		Standing still grants +2 HP/s life regen
+		Grants 20 defense and continuous healing while afflicted with any debuff
+		The healing eventually slows down if debuffed for an extended period of time
+		Massively boosts natural life regen while afflicted with any debuff
+		Each debuff beyond the first grants 8 additional defense
+		Granted defense fades away slowly when not afflicted with any debuffs
+		Makes weak damage over time debuffs harmless and halves the duration of all but the strongest debuffs
+		You emit shining blue light if visibility is enabled
+		'A once putrid crystal, now glimmering with immaculate purity'
 		'''
 }
 
@@ -1362,12 +1358,13 @@ RampartofDeities: {
 	DisplayName: Rampart of Deities
 	Tooltip:
 		'''
-		Causes stars to fall and gives increased immune time when damaged
-		+0.5 HP/s life regen and reduces the cooldown of healing potions
-		Absorbs 15% of damage done to players on your team
-		This effect is only active above 25% life
+		Causes stars to fall and increases length of invincibility after taking damage
+		Grants bonus invincibility frames based on your missing health
+		This effect scales from 10 frames at full HP to 40 frames at 25% or less HP
+		Being struck for over 200 damage grants 30 additional invincibility frames
 		Grants immunity to knockback
 		Puts a shell around the owner when below 50% life that reduces damage taken
+		Absorbs 25% of damage done to players on your team when above 25% life
 		'''
 }
 
@@ -1424,11 +1421,13 @@ RoverDrive: {
 	Tooltip:
 		'''
 		Projects an energy shield that absorbs up to 20 damage
+		[ADREN]
 		The shield grants 10 defense while active
 		After the shield is broken, it takes 10 seconds to charge back up
 		Being hit again while recharging restarts the charge timer
 		Can also be scrapped at an extractinator
 		'''
+	ShieldAdren: Halves Adrenaline lost on hit if the shield fully absorbs the hit
 }
 
 RuinMedallion: {
@@ -1578,7 +1577,9 @@ SpiritGlyph: {
 	Tooltip:
 		'''
 		Whenever your minions hit an enemy you will gain a random buff
-		These buffs will either boost your defense, summon damage, or life regen for a while
+		Spirit Power increases summon damage by 10%
+		Spirit Defense increases defense by 6 and DR by 3%
+		Spirit Regen grants +1 HP/s life regeneration
 		'''
 }
 
@@ -1606,9 +1607,8 @@ StatisBlessing: {
 	DisplayName: Statis' Blessing
 	Tooltip:
 		'''
-		Increased max minions by 2 and 10% increased summon damage
+		Increased max minions by 2 and 12% increased summon damage
 		Increased minion knockback
-		Minions inflict holy flames on hit
 		'''
 }
 
@@ -1617,9 +1617,9 @@ StatisCurse: {
 	Tooltip:
 		'''
 		Increases max minions by 3, does not stack with downgrades
-		10% increased summon damage
+		12% increased summon damage
 		Increased minion knockback
-		Minions inflict holy flames and shadowflames on hit
+		Minions inflict shadowflames on hit
 		Grants immunity to Shadowflame
 		'''
 }
@@ -1628,11 +1628,12 @@ StatisNinjaBelt: {
 	DisplayName: Statis' Ninja Belt
 	Tooltip:
 		'''
-		6% increased jump speed and allows constant jumping
+		32% increased jump speed and allows constant jumping
 		Grants the ability to swim
 		Increased fall damage resistance by 35 blocks
 		Can climb walls, dash, and dodge attacks
-		The dodge has a 90 second cooldown
+		Attacks that deal less than 5% of your max life in damage will not be dodged
+		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
 		This cooldown is shared with all other dodges and reflects
 		'''
 }
@@ -1641,10 +1642,11 @@ StatisVoidSash: {
 	DisplayName: Statis' Void Sash
 	Tooltip:
 		'''
-		12% increased jump speed and allows constant jumping
+		32% increased jump speed and allows constant jumping
 		Grants immunity to fall damage
 		Can climb walls, dash, and dodge attacks
-		The dodge has a 90 second cooldown
+		Attacks that deal less than 5% of your max life in damage will not be dodged
+		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
 		This cooldown is shared with all other dodges and reflects
 		Dashes leave homing scythes in your wake
 		'''
@@ -1709,7 +1711,7 @@ StatMeter: {
 	// Other stats
 	GenericStats:
 		'''
-		Defense: {0} | DR: {1}% | Life Regen: {2}
+		Defense: {0} | DR: {1}% | Life Regen: {2} HP/s
 		Move Speed: {3}% | Jump Boost: {4}%
 		'''
 	FlightTime: " | Wing Flight Time: {0} seconds"
@@ -1752,9 +1754,10 @@ TheAbsorber: {
 	Tooltip:
 		'''
 		12% increased movement and jump speed
+		Grants immunity to knockback
 		Enemies take immense damage when they touch you and are afflicted with a damaging sickness debuff that reduces damage reduction significantly
 		Using a healing potion will spawn a cleansing aura
-		Walking into the aura removes all debuffs and defense damage one time
+		Walking into the aura removes all debuffs one time
 		The aura grants +3 HP/s life regen, +8% damage, and +5% damage reduction for all players inside for 10 seconds
 		5% of the damage from enemy attacks is absorbed and converted into healing
 		'''
@@ -1768,7 +1771,9 @@ TheAmalgam: {
 		15% increased damage
 		Shade rains down when you are hit
 		Grants the ability to dodge attacks
-		The dodge has a 90 second cooldown which is shared with all other dodges and reflects
+		Attacks that deal less than 5% of your max life in damage will not be dodged
+		The dodge has a cooldown that ranges between 15 and 90 seconds depending on the dodged attack's damage
+		This cooldown is shared with all other dodges and reflects
 		Temporarily increases critical strike chance and summon damage after a dodge
 		Nearby enemies receive a variety of sickness-related debuffs when you are hit
 		'''
@@ -1822,7 +1827,9 @@ TheEvolution: {
 		'''
 		You reflect projectiles when they hit you
 		Reflected projectiles deal no damage to you
-		This reflect has a 90 second cooldown which is shared with all other dodges and reflects
+		Projectiles that deal less than 5% of your max life in damage will not be reflected
+		The reflect has a cooldown that ranges between 15 and 90 seconds depending on the reflected projectile's damage
+		This cooldown is shared with all other dodges and reflects
 		After reflecting something, grants +1 HP/s life regen and accelerated life regen for 5 seconds
 		If the same enemy projectile type hits you again you will resist its damage by 15%
 		'''
@@ -1842,11 +1849,13 @@ TheSponge: {
 	Tooltip:
 		'''
 		Projects a quantum foam barrier that absorbs up to 180 damage
+		[ADREN]
 		The barrier grants 30 defense and reduces damage taken by 10% while active
 		The barrier starts recharging 9 seconds after being hit
 		Recharging from zero to full charge takes 6 seconds
 		Being hit again while recharging restarts the charge timer
 		'''
+	ShieldAdren: Halves Adrenaline lost on hit if the barrier fully absorbs the hit
 }
 
 TheTransformer: {
@@ -1864,8 +1873,9 @@ ToxicHeart: {
 	DisplayName: Toxic Heart
 	Tooltip:
 		'''
-		Summons a plague aura around you that damages nearby enemies
-		Makes you immune to the Plague debuff
+		Causes your heart to beat with powerful plague pulses, inflicting all nearby enemies with the Plague
+		The rate of these pulses scales with how low your life regen is
+		Pulses that kill targets create additional pulses and heal you
 		Multiplies all sickness-based debuff damage by 1.5
 		'''
 }
@@ -2009,6 +2019,11 @@ AbandonedWulfrumHelmet: {
 		[c/83B87E:'This rather flimsy armor was commonly worn by scavengers and looters.]
 		[c/83B87E:Its versatility and common nature led it to be used as currency in trades.']
 		'''
+}
+
+CrystalHeartVodka: {
+	DisplayName: Crystal Heart Vodka
+	Tooltip: "'Tastes like strawberry cream liqueur (and estrogen)'"
 }
 
 CocosFeather: {

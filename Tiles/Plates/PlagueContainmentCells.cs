@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ModLoader;
 using Terraria.ID;
-using ReLogic.Content;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Plates
 {
@@ -36,17 +36,17 @@ namespace CalamityMod.Tiles.Plates
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            int dust = Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 89, 0f, 0f, 100, default, 2f);
+            int dust = Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity.Y = -0.15f;
 
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
 
         public override void RandomUpdate(int i, int j)
         {
-            int dust = Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 89, 0f, 0f, 100, default, 2f);
+            int dust = Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity.Y = -0.15f;
         }

@@ -1,6 +1,6 @@
-using CalamityMod.Items.Placeables.FurnitureAshen;
-using Terraria.ModLoader;
+﻿using CalamityMod.Items.Placeables.FurnitureAshen;
 using Terraria.ID;
+using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
 namespace CalamityMod.Items.Placeables.Walls
 {

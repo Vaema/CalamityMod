@@ -1,22 +1,23 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Pets;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -81,10 +82,12 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Custom/PrimordialWyrmCharge");
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PrimordialWyrmDeath");
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.50f,
                 PortraitScale = 0.6f,
@@ -94,6 +97,10 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             value.Position.X += 55;
             value.Position.Y += 5;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -137,7 +144,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 //AAAAAAAAAAAAH Scary abyss superboss guy so he gets pitch black bg and no biome source.
                 //eidolon wyrm comment jumpscare!!!!!!
@@ -452,7 +459,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             float chargeVelocityScalarIncrement = 0.005f;
             float totalChargeDistance = 3000f;
 
-            bool lookingAtTarget = NPC.SafeDirectionTo(player.Center).AngleBetween((NPC.rotation - MathHelper.PiOver2).ToRotationVector2()) < MathHelper.ToRadians(15f);
+            bool lookingAtTarget = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation();
 
             // Telekinesis while enraged
             if (!targetDownDeep)
@@ -466,7 +473,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
                     for (int i = 0; i < 20; i++)
                     {
-                        int dust = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, 185, 0f, 0f, 100, default, 2f);
+                        int dust = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, DustID.FrostHydra, 0f, 0f, 100, default, 2f);
                         Main.dust[dust].velocity *= 0.6f;
                         if (Main.rand.NextBool())
                         {
@@ -477,9 +484,9 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
                     for (int j = 0; j < 30; j++)
                     {
-                        int dust = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, 185, 0f, 0f, 100, default, 3f);
+                        int dust = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, DustID.FrostHydra, 0f, 0f, 100, default, 3f);
                         Main.dust[dust].noGravity = true;
-                        dust = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, 185, 0f, 0f, 100, default, 2f);
+                        dust = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, DustID.FrostHydra, 0f, 0f, 100, default, 2f);
                         Main.dust[dust].velocity *= 0.2f;
                     }
 
@@ -602,16 +609,16 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                                 int numProjectiles = 0;
                                 float maxDistance = 2400f;
 
-                                for (int i = 0; i < Main.maxPlayers; i++)
+                                foreach (Player plr in Main.ActivePlayers)
                                 {
-                                    if (!Main.player[i].active || Main.player[i].dead)
+                                    if (plr.dead)
                                         continue;
 
-                                    Vector2 playerCenter = Main.player[i].Center;
+                                    Vector2 playerCenter = plr.Center;
                                     float distance = Vector2.Distance(playerCenter, NPC.Center);
                                     if (distance < maxDistance)
                                     {
-                                        whoAmIArray[numProjectiles] = i;
+                                        whoAmIArray[numProjectiles] = plr.whoAmI;
                                         targetCenterArray[numProjectiles] = playerCenter;
                                         int projectileLimit = numProjectiles + 1;
                                         numProjectiles = projectileLimit;
@@ -657,14 +664,14 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
                         float rotation = MathHelper.Clamp((float)Main.rand.NextDouble() * 1f - 0.5f, -0.5f, 0.5f);
                         Vector2 dustPosition = new Vector2(-NPC.width * 0.2f * NPC.scale, 0f).RotatedBy(rotation * ((float)Math.PI * 2f)).RotatedBy(NPC.velocity.ToRotation());
-                        int dust = Dust.NewDust(NPC.Center - Vector2.One * 5f, 10, 10, 226, (0f - NPC.velocity.X) / 3f, (0f - NPC.velocity.Y) / 3f, 150, Color.Transparent, 0.7f);
+                        int dust = Dust.NewDust(NPC.Center - Vector2.One * 5f, 10, 10, DustID.Electric, (0f - NPC.velocity.X) / 3f, (0f - NPC.velocity.Y) / 3f, 150, Color.Transparent, 0.7f);
                         Main.dust[dust].position = NPC.Center + dustPosition;
                         Main.dust[dust].velocity = Vector2.Normalize(Main.dust[dust].position - NPC.Center) * 2f;
                         Main.dust[dust].noGravity = true;
 
                         rotation = MathHelper.Clamp((float)Main.rand.NextDouble() * 1f - 0.5f, -0.5f, 0.5f);
                         dustPosition = new Vector2(-NPC.width * 0.6f * NPC.scale, 0f).RotatedBy(rotation * ((float)Math.PI * 2f)).RotatedBy(NPC.velocity.ToRotation());
-                        dust = Dust.NewDust(NPC.Center - Vector2.One * 5f, 10, 10, 226, (0f - NPC.velocity.X) / 3f, (0f - NPC.velocity.Y) / 3f, 150, Color.Transparent, 0.7f);
+                        dust = Dust.NewDust(NPC.Center - Vector2.One * 5f, 10, 10, DustID.Electric, (0f - NPC.velocity.X) / 3f, (0f - NPC.velocity.Y) / 3f, 150, Color.Transparent, 0.7f);
                         Main.dust[dust].velocity = Vector2.Zero;
                         Main.dust[dust].position = NPC.Center + dustPosition;
                         Main.dust[dust].noGravity = true;
@@ -897,16 +904,16 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                             int numProjectiles = 0;
                             float maxDistance = 2400f;
 
-                            for (int i = 0; i < Main.maxPlayers; i++)
+                            foreach (Player plr in Main.ActivePlayers)
                             {
-                                if (!Main.player[i].active || Main.player[i].dead)
+                                if (plr.dead)
                                     continue;
 
-                                Vector2 playerCenter = Main.player[i].Center;
+                                Vector2 playerCenter = plr.Center;
                                 float distance = Vector2.Distance(playerCenter, NPC.Center);
                                 if (distance < maxDistance)
                                 {
-                                    whoAmIArray[numProjectiles] = i;
+                                    whoAmIArray[numProjectiles] = plr.whoAmI;
                                     targetCenterArray[numProjectiles] = playerCenter;
                                     int projectileLimit = numProjectiles + 1;
                                     numProjectiles = projectileLimit;
@@ -945,14 +952,14 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
                         float rotation = MathHelper.Clamp((float)Main.rand.NextDouble() * 1f - 0.5f, -0.5f, 0.5f);
                         Vector2 dustPosition = new Vector2(-NPC.width * 0.2f * NPC.scale, 0f).RotatedBy(rotation * ((float)Math.PI * 2f)).RotatedBy(NPC.velocity.ToRotation());
-                        int dust = Dust.NewDust(NPC.Center - Vector2.One * 5f, 10, 10, 197, 0f, 0f, 100, Color.Transparent);
+                        int dust = Dust.NewDust(NPC.Center - Vector2.One * 5f, 10, 10, DustID.NorthPole, 0f, 0f, 100, Color.Transparent);
                         Main.dust[dust].position = NPC.Center + dustPosition;
                         Main.dust[dust].velocity = Vector2.Normalize(Main.dust[dust].position - NPC.Center) * 2f;
                         Main.dust[dust].noGravity = true;
 
                         rotation = MathHelper.Clamp((float)Main.rand.NextDouble() * 1f - 0.5f, -0.5f, 0.5f);
                         dustPosition = new Vector2(-NPC.width * 0.6f * NPC.scale, 0f).RotatedBy(rotation * ((float)Math.PI * 2f)).RotatedBy(NPC.velocity.ToRotation());
-                        dust = Dust.NewDust(NPC.Center - Vector2.One * 5f, 10, 10, 197, 0f, 0f, 100, Color.Transparent);
+                        dust = Dust.NewDust(NPC.Center - Vector2.One * 5f, 10, 10, DustID.NorthPole, 0f, 0f, 100, Color.Transparent);
                         Main.dust[dust].velocity = Vector2.Zero;
                         Main.dust[dust].position = NPC.Center + dustPosition;
                         Main.dust[dust].noGravity = true;
@@ -1370,7 +1377,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                 Vector2 dustRotation = Vector2.Normalize(NPC.velocity) * new Vector2((NPC.width + 50) / 2f, NPC.height) * 0.75f;
                 dustRotation = dustRotation.RotatedBy((num1474 - (dustAmt / 2 - 1)) * (double)pie / (float)dustAmt) + NPC.Center;
                 Vector2 dustVelocity = ((float)(Main.rand.NextDouble() * pie) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
-                int chargeDust = Dust.NewDust(dustRotation + dustVelocity, 0, 0, 172, dustVelocity.X * 2f, dustVelocity.Y * 2f, 100, default, 1.4f);
+                int chargeDust = Dust.NewDust(dustRotation + dustVelocity, 0, 0, DustID.DungeonWater, dustVelocity.X * 2f, dustVelocity.Y * 2f, 100, default, 1.4f);
                 Main.dust[chargeDust].noGravity = true;
                 Main.dust[chargeDust].noLight = true;
                 Main.dust[chargeDust].velocity /= 4f;
@@ -1434,7 +1441,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/PrimordialWyrm/PrimordialWyrmHeadGlow").Value;
+            texture = GlowTexture.Value;
             spriteBatch.Draw(texture, center, NPC.frame, Color.White * NPC.Opacity, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
             return false;
@@ -1448,15 +1455,15 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<EidolicWail>());
-            npcLoot.Add(ModContent.ItemType<SoulEdge>());
+            npcLoot.Add(ModContent.ItemType<VoidEdge>());
             npcLoot.Add(ModContent.ItemType<HalibutCannon>());
             npcLoot.Add(ModContent.ItemType<AbyssShellFossil>());
             npcLoot.Add(ModContent.ItemType<Voidstone>(), 1, 80, 100);
             npcLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
-            var postClone = npcLoot.DefineConditionalDropSet(() => DownedBossSystem.downedCalamitasClone);
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 1, 50, 108, 65, 135));
-            postClone.Add(ItemID.Ectoplasm, 1, 21, 32);
+            var postLevi = npcLoot.DefineConditionalDropSet(() => DownedBossSystem.downedLeviathan);
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 1, 50, 108, 65, 135));
+            postLevi.Add(ItemID.Ectoplasm, 1, 21, 32);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -1466,12 +1473,12 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                 return;
 
             for (int k = 0; k < 15; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, default, 1f);
 
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, default, 1f);
 
                 Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("PrimordialWyrm").Type, 1f);
             }
@@ -1481,7 +1488,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 

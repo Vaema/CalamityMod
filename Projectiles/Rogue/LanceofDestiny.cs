@@ -1,10 +1,10 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.Reflection.Metadata;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil;
-using System;
-using System.Reflection.Metadata;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Rogue
 {
     public class LanceofDestiny : ModProjectile, ILocalizedModType
     {
-        public static readonly SoundStyle Hitsound = new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak2") { Volume = 0.6f, PitchVariance = 0.3f};
+        public static readonly SoundStyle Hitsound = new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak2") { Volume = 0.6f, PitchVariance = 0.3f };
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/Rogue/LanceofDestiny";
         public bool posthit = false;
@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

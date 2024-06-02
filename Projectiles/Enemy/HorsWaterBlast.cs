@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    int waterDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
+                    int waterDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                     Main.dust[waterDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -37,12 +37,12 @@ namespace CalamityMod.Projectiles.Enemy
                     }
                 }
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item21, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item21, Projectile.Center);
             }
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.35f / 255f);
             for (int j = 0; j < 10; j++)
             {
-                int watery = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 1.2f);
+                int watery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 1.2f);
                 Main.dust[watery].noGravity = true;
                 Main.dust[watery].velocity *= 0.5f;
                 Main.dust[watery].velocity += Projectile.velocity * 0.1f;
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item21, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item21, Projectile.Center);
             for (int dust = 0; dust <= 40; dust++)
             {
                 float rando1 = (float)Main.rand.Next(-10, 11);
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Enemy
                 randoAdjuster = rando3 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int killWaterDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 1.2f);
+                int killWaterDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 1.2f);
                 Main.dust[killWaterDust].noGravity = true;
                 Main.dust[killWaterDust].position.X = Projectile.Center.X;
                 Main.dust[killWaterDust].position.Y = Projectile.Center.Y;

@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -37,6 +38,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.ai[0] = 20f;
 
+                SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot with { Volume = 0.5f, MaxInstances = -1 }, Projectile.Center);
                 int fireballID = ModContent.ProjectileType<WrathwingFireball>();
                 int damage = (int)(Projectile.damage * 0.7f);
                 float angleDiff = Main.rand.NextFloat(-FireballAngleVariance, FireballAngleVariance);

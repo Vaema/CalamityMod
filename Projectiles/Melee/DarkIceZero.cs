@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 using Terraria.WorldBuilding;
 
 namespace CalamityMod.Projectiles.Melee
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             //make pretty dust
-            int dustSpawns = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 172, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.25f);
+            int dustSpawns = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.25f);
             Main.dust[dustSpawns].noGravity = true;
         }
 
@@ -75,13 +75,13 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
                 for (int i = 0; i < 30; i++)
                 {
-                    int dustSpawns = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 172, 0f, 0f, 0, default, Main.rand.NextFloat(1f, 2f));
+                    int dustSpawns = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater, 0f, 0f, 0, default, Main.rand.NextFloat(1f, 2f));
                     Main.dust[dustSpawns].noGravity = true;
                     Main.dust[dustSpawns].velocity *= 4f;
                 }
                 for (int j = 0; j < 20; ++j)
                 {
-                    int dustSpawns = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 68, 0f, 0f, 0, new Color(), 1.3f);
+                    int dustSpawns = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueCrystalShard, 0f, 0f, 0, new Color(), 1.3f);
                     Main.dust[dustSpawns].noGravity = true;
                     Main.dust[dustSpawns].velocity *= 1.5f;
                 }

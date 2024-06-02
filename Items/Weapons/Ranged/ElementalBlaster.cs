@@ -1,15 +1,20 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
     public class ElementalBlaster : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+        }
         public override void SetDefaults()
         {
             Item.width = 104;
@@ -21,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.75f;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.UseSound = CommonCalamitySounds.PlasmaBoltSound;
             Item.autoReuse = true;

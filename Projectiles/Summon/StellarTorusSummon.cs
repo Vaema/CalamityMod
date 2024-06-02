@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Summon
                         Projectile.velocity,
                         Color.Cyan with { A = 10 },
                         Utils.Remap(TimerToShoot, StellarTorusStaff.TimeBeforeCharging, StellarTorusStaff.TimeBeforeCharging + StellarTorusStaff.TimeCharging, relativeScale * 2f, relativeScale / 2f),
-                        (int)StellarTorusStaff  .TimeCharging);
+                        (int)StellarTorusStaff.TimeCharging);
                     GeneralParticleHandler.SpawnParticle(bloomCharge);
 
                     Vector2 chargeDustSpawn = Projectile.Center + Main.rand.NextVector2Circular(scale * 1.2f, scale * 1.2f);
@@ -244,7 +244,7 @@ namespace CalamityMod.Projectiles.Summon
 
                 if (Main.projectile.IndexInRange(laser))
                     Main.projectile[laser].originalDamage = Projectile.originalDamage;
-                
+
                 HasShotLaser = true;
                 Projectile.netUpdate = true;
             }
@@ -263,7 +263,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

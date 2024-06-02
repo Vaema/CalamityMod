@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Rogue;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -116,9 +116,8 @@ namespace CalamityMod.Projectiles.Rogue
             float maxDistance = 300f;
             bool homeIn = false;
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
                 if (npc.CanBeChasedBy(Projectile, false))
                 {
                     float extraDistance = npc.width / 2 + npc.height / 2;
@@ -168,7 +167,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Main.rand.NextBool(3))
             {
-                int rainbow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 66, Projectile.direction * 2, 0f, 150, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.3f);
+                int rainbow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, Projectile.direction * 2, 0f, 150, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.3f);
                 Main.dust[rainbow].noGravity = true;
                 Main.dust[rainbow].velocity *= 0f;
             }

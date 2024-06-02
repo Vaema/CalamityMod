@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class ScorchedEarthRocket : ModProjectile, ILocalizedModType
@@ -52,11 +52,11 @@ namespace CalamityMod.Projectiles.Ranged
 
             float xVel = Projectile.velocity.X * 0.5f;
             float yVel = Projectile.velocity.Y * 0.5f;
-            int d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + xVel, Projectile.position.Y + 3f + yVel) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 244, 0f, 0f, 100, default, 1f);
+            int d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + xVel, Projectile.position.Y + 3f + yVel) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
             Main.dust[d].scale *= 2f + (float)Main.rand.Next(10) * 0.1f;
             Main.dust[d].velocity *= 0.2f;
             Main.dust[d].noGravity = true;
-            d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + xVel, Projectile.position.Y + 3f + yVel) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 244, 0f, 0f, 100, default, 0.5f);
+            d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + xVel, Projectile.position.Y + 3f + yVel) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.CopperCoin, 0f, 0f, 100, default, 0.5f);
             Main.dust[d].fadeIn = 1f + (float)Main.rand.Next(5) * 0.1f;
             Main.dust[d].velocity *= 0.05f;
         }

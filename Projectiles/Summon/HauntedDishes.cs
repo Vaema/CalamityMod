@@ -1,7 +1,7 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                     rotate = rotate.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
                     Vector2 faceDirection = rotate - Projectile.Center;
-                    int dusty = Dust.NewDust(rotate + faceDirection, 0, 0, 7, faceDirection.X * 1.1f, faceDirection.Y * 1.1f, 100, default, 1.4f);
+                    int dusty = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.WoodFurniture, faceDirection.X * 1.1f, faceDirection.Y * 1.1f, 100, default, 1.4f);
                     Main.dust[dusty].noGravity = true;
                     Main.dust[dusty].noLight = true;
                     Main.dust[dusty].velocity = faceDirection;
@@ -79,9 +79,9 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.ai[1] = 0f;
             }
             int idlePos = 40 * (Projectile.minionPos + 1) * player.direction;
-            if (player.position.X + (float) (player.width / 2) < Projectile.position.X + (float) (Projectile.width / 2) - 10f + (float) idlePos)
+            if (player.position.X + (float)(player.width / 2) < Projectile.position.X + (float)(Projectile.width / 2) - 10f + (float)idlePos)
                 minionMovingLeft = true;
-            else if (player.position.X + (float) (player.width / 2) > Projectile.position.X + (float) (Projectile.width / 2) + 10f + (float) idlePos)
+            else if (player.position.X + (float)(player.width / 2) > Projectile.position.X + (float)(Projectile.width / 2) + 10f + (float)idlePos)
                 minionMovingRight = true;
 
             if (Projectile.ai[1] == 0f)
@@ -90,9 +90,9 @@ namespace CalamityMod.Projectiles.Summon
                 conflict1 += 40 * Projectile.minionPos;
                 if (Projectile.localAI[0] > 0f)
                     conflict1 += 500;
-                Vector2 idleMinionPos = new Vector2(Projectile.position.X + (float) Projectile.width * 0.5f, Projectile.position.Y + (float) Projectile.height * 0.5f);
-                float playerX = player.position.X + (float) (player.width / 2) - idleMinionPos.X;
-                float playerY = player.position.Y + (float) (player.height / 2) - idleMinionPos.Y;
+                Vector2 idleMinionPos = Projectile.Center;
+                float playerX = player.position.X + (float)(player.width / 2) - idleMinionPos.X;
+                float playerY = player.position.Y + (float)(player.height / 2) - idleMinionPos.Y;
                 float playerDist = (float)Math.Sqrt(playerX * playerX + playerY * playerY);
                 if (playerDist > 1500f)
                 {
@@ -100,8 +100,8 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (playerDist > 2000f) //teleport to player if too far
                 {
-                    Projectile.position.X = player.position.X + (float) (player.width / 2) - (float) (Projectile.width / 2);
-                    Projectile.position.Y = player.position.Y + (float) (player.height / 2) - (float) (Projectile.height / 2);
+                    Projectile.position.X = player.position.X + (float)(player.width / 2) - (float)(Projectile.width / 2);
+                    Projectile.position.Y = player.position.Y + (float)(player.height / 2) - (float)(Projectile.height / 2);
                 }
             }
             if (Projectile.ai[0] != 0f) //flying back to the player
@@ -113,11 +113,11 @@ namespace CalamityMod.Projectiles.Summon
                 for (int index = 0; index < Main.maxNPCs; ++index)
                 {
                     NPC npc2 = Main.npc[index];
-                    if (npc2.CanBeChasedBy((object) Projectile, false))
+                    if (npc2.CanBeChasedBy((object)Projectile, false))
                     {
-                        float npcX = npc2.position.X + (float) (npc2.width / 2);
-                        float npcY = npc2.position.Y + (float) (npc2.height / 2);
-                        float npcDist = (float) Math.Abs(player.position.X + (float) (player.width / 2) - npcX) + (float) Math.Abs(player.position.Y + (float) (player.height / 2) - npcY);
+                        float npcX = npc2.position.X + (float)(npc2.width / 2);
+                        float npcY = npc2.position.Y + (float)(npc2.height / 2);
+                        float npcDist = (float)Math.Abs(player.position.X + (float)(player.width / 2) - npcX) + (float)Math.Abs(player.position.Y + (float)(player.height / 2) - npcY);
                         if (npcDist < npcDetectRange)
                         {
                             if (Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, npc2.position, npc2.width, npc2.height))
@@ -132,14 +132,14 @@ namespace CalamityMod.Projectiles.Summon
                 if (npcFound && targetIndex >= 0)
                     Projectile.ai[0] = 0f;
 
-                Vector2 returningMinionPos = new Vector2(Projectile.position.X + (float) Projectile.width * 0.5f, Projectile.position.Y + (float) Projectile.height * 0.5f);
-                float xDist = player.position.X + (float) (player.width / 2) - returningMinionPos.X;
-                xDist -= (float) (40 * player.direction);
+                Vector2 returningMinionPos = Projectile.Center;
+                float xDist = player.position.X + (float)(player.width / 2) - returningMinionPos.X;
+                xDist -= (float)(40 * player.direction);
                 if (!npcFound)
-                    xDist -= (float) (40 * Projectile.minionPos * player.direction);
-                float yDist = player.position.Y + (float) (player.height / 2) - returningMinionPos.Y;
+                    xDist -= (float)(40 * Projectile.minionPos * player.direction);
+                float yDist = player.position.Y + (float)(player.height / 2) - returningMinionPos.Y;
                 yDist -= 60f;
-                float playerDist2 = (float) Math.Sqrt(xDist * xDist + yDist * yDist);
+                float playerDist2 = (float)Math.Sqrt(xDist * xDist + yDist * yDist);
                 float currentReturnSpeed = 12f;
                 float minionReturnSpeed = playerDist2;
                 float minionReturnAccel = 0.4f;
@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles.Summon
                     currentReturnSpeed = Math.Abs(player.velocity.X) + Math.Abs(player.velocity.Y);
 
                 //if close enough to the player and has tile to stand on, return to normal
-                if (playerDist2 < 100f && player.velocity.Y == 0f && (Projectile.position.Y + (float) Projectile.height <= player.position.Y + (float) player.height && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height)))
+                if (playerDist2 < 100f && player.velocity.Y == 0f && (Projectile.position.Y + (float)Projectile.height <= player.position.Y + (float)player.height && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height)))
                 {
                     Projectile.ai[0] = 0f;
                     if (Projectile.velocity.Y < -6f)
@@ -200,7 +200,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Projectile.velocity.Y < yDist)
                 {
                     Projectile.velocity.Y = Projectile.velocity.Y + minionReturnAccel;
-                    if (minionReturnAccel> 0.05f && Projectile.velocity.Y < 0f)
+                    if (minionReturnAccel > 0.05f && Projectile.velocity.Y < 0f)
                     {
                         Projectile.velocity.Y = Projectile.velocity.Y + minionReturnAccel * 2f;
                     }
@@ -234,11 +234,11 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.spriteDirection = 1;
                 else if (Projectile.velocity.X < -0.5f)
                     Projectile.spriteDirection = -1;
-                Projectile.rotation = Projectile.spriteDirection != 1 ? (float) Math.Atan2((double) Projectile.velocity.Y, (double) Projectile.velocity.X) + 3.14f : (float) Math.Atan2((double) Projectile.velocity.Y, (double) Projectile.velocity.X);
+                Projectile.rotation = Projectile.spriteDirection != 1 ? Projectile.velocity.ToRotation() + MathHelper.Pi : Projectile.velocity.ToRotation();
             }
             else
             {
-                float exaggeratedMinionPos = (float) (40 * Projectile.minionPos);
+                float exaggeratedMinionPos = (float)(40 * Projectile.minionPos);
                 float attackCooldown = 30f;
                 --Projectile.localAI[0];
                 if (Projectile.localAI[0] < 0f)
@@ -255,11 +255,11 @@ namespace CalamityMod.Projectiles.Summon
                     float minionAttackDistance = minionAttackMaxDist;
                     int minionAttackIndex = -1;
                     NPC minionAttackTargetNpc = Projectile.OwnerMinionAttackTargetNPC;
-                    if (minionAttackTargetNpc != null && minionAttackTargetNpc.CanBeChasedBy((object) Projectile, false))
+                    if (minionAttackTargetNpc != null && minionAttackTargetNpc.CanBeChasedBy((object)Projectile, false))
                     {
-                        float minionTargetXDist = minionAttackTargetNpc.position.X + (float) (minionAttackTargetNpc.width / 2);
-                        float minionTargetYDist = minionAttackTargetNpc.position.Y + (float) (minionAttackTargetNpc.height / 2);
-                        float minionTargetDist = Math.Abs(Projectile.position.X + (float) (Projectile.width / 2) - minionTargetXDist) + Math.Abs(Projectile.position.Y + (float) (Projectile.height / 2) - minionTargetYDist);
+                        float minionTargetXDist = minionAttackTargetNpc.position.X + (float)(minionAttackTargetNpc.width / 2);
+                        float minionTargetYDist = minionAttackTargetNpc.position.Y + (float)(minionAttackTargetNpc.height / 2);
+                        float minionTargetDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - minionTargetXDist) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - minionTargetYDist);
                         if (minionTargetDist < minionAttackMaxDist)
                         {
                             if (minionAttackIndex == -1 && minionTargetDist <= minionAttackDistance)
@@ -281,11 +281,11 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         for (int index = 0; index < Main.maxNPCs; ++index)
                         {
-                            if (Main.npc[index].CanBeChasedBy((object) Projectile, false))
+                            if (Main.npc[index].CanBeChasedBy((object)Projectile, false))
                             {
-                                float minionTargetXDist = Main.npc[index].position.X + (float) (Main.npc[index].width / 2);
-                                float minionTargetYDist = Main.npc[index].position.Y + (float) (Main.npc[index].height / 2);
-                                float minionTargetDist = Math.Abs(Projectile.position.X + (float) (Projectile.width / 2) - minionTargetXDist) + Math.Abs(Projectile.position.Y + (float) (Projectile.height / 2) - minionTargetYDist);
+                                float minionTargetXDist = Main.npc[index].position.X + (float)(Main.npc[index].width / 2);
+                                float minionTargetYDist = Main.npc[index].position.Y + (float)(Main.npc[index].height / 2);
+                                float minionTargetDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - minionTargetXDist) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - minionTargetYDist);
                                 if (minionTargetDist < minionAttackMaxDist)
                                 {
                                     if (minionAttackIndex == -1 && minionTargetDist <= minionAttackDistance)
@@ -308,11 +308,11 @@ namespace CalamityMod.Projectiles.Summon
                     if (minionAttackIndex == -1 && minionAttackDistance < minionAttackMaxDist)
                         minionAttackMaxDist = minionAttackDistance;
                     float yDependentTargeting = 400f;
-                    if ((double) Projectile.position.Y > Main.worldSurface * 16.0)
+                    if ((double)Projectile.position.Y > Main.worldSurface * 16.0)
                         yDependentTargeting = 200f;
                     if (minionAttackMaxDist < yDependentTargeting + exaggeratedMinionPos && minionAttackIndex == -1)
                     {
-                        float minionTargetXDist = minionXTarget - (Projectile.position.X + (float) (Projectile.width / 2));
+                        float minionTargetXDist = minionXTarget - (Projectile.position.X + (float)(Projectile.width / 2));
                         if (minionTargetXDist < -5f)
                         {
                             minionMovingLeft = true;
@@ -327,7 +327,7 @@ namespace CalamityMod.Projectiles.Summon
                     else if (minionAttackIndex >= 0 && minionAttackMaxDist < 800f + exaggeratedMinionPos)
                     {
                         Projectile.localAI[0] = 60f;
-                        float minionTargetXDist = minionXTarget - (Projectile.position.X + (float) (Projectile.width / 2));
+                        float minionTargetXDist = minionXTarget - (Projectile.position.X + (float)(Projectile.width / 2));
                         if (minionTargetXDist > 300f || minionTargetXDist < -300f)
                         {
                             if (minionTargetXDist < -50f)
@@ -347,10 +347,10 @@ namespace CalamityMod.Projectiles.Summon
                             double plateSpeed = 12.0;
                             Vector2 projMinionPos = new Vector2(Projectile.Center.X, Projectile.Center.Y - 8f);
                             float plateTargetX = minionXTarget - projMinionPos.X + Main.rand.NextFloat(-6f, 6f);
-                            float randomPlateYOffset = (float) ((double) (Math.Abs(plateTargetX) * 0.1f) * (double) Main.rand.Next(0, 100) * (1.0 / 1000.0));
+                            float randomPlateYOffset = (float)((double)(Math.Abs(plateTargetX) * 0.1f) * (double)Main.rand.Next(0, 100) * (1.0 / 1000.0));
                             float plateTargetY = minionYTarget - projMinionPos.Y + Main.rand.NextFloat(-6f, 6f) - randomPlateYOffset;
-                            double plateTargetDist = Math.Sqrt((double) plateTargetX * (double) plateTargetX + (double) plateTargetY * (double) plateTargetY);
-                            float plateVelocity = (float) (plateSpeed / plateTargetDist);
+                            double plateTargetDist = Math.Sqrt((double)plateTargetX * (double)plateTargetX + (double)plateTargetY * (double)plateTargetY);
+                            float plateVelocity = (float)(plateSpeed / plateTargetDist);
                             float SpeedX = plateTargetX * plateVelocity;
                             float SpeedY = plateTargetY * plateVelocity;
                             int damage = Projectile.damage;
@@ -404,13 +404,13 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (minionMovingLeft | minionMovingRight)
                 {
-                    int minionTileX = (int) ((double) Projectile.position.X + (double) (Projectile.width / 2)) / 16;
-                    int j = (int) ((double) Projectile.position.Y + (double) (Projectile.height / 2)) / 16;
+                    int minionTileX = (int)((double)Projectile.position.X + (double)(Projectile.width / 2)) / 16;
+                    int j = (int)((double)Projectile.position.Y + (double)(Projectile.height / 2)) / 16;
                     if (minionMovingLeft)
                         --minionTileX;
                     if (minionMovingRight)
                         ++minionTileX;
-                    if (WorldGen.SolidTile(minionTileX + (int) Projectile.velocity.X, j))
+                    if (WorldGen.SolidTile(minionTileX + (int)Projectile.velocity.X, j))
                         minionShouldJump = true;
                 }
                 if (player.position.Y + player.height - 8f > Projectile.position.Y + Projectile.height)
@@ -418,10 +418,10 @@ namespace CalamityMod.Projectiles.Summon
                 Collision.StepUp(ref Projectile.position, ref Projectile.velocity, Projectile.width, Projectile.height, ref Projectile.stepSpeed, ref Projectile.gfxOffY, 1, false, 0);
                 if (Projectile.velocity.Y == 0f)
                 {
-                    if (!minionBelowPlayer && ((double) Projectile.velocity.X < 0.0 || (double) Projectile.velocity.X > 0.0))
+                    if (!minionBelowPlayer && ((double)Projectile.velocity.X < 0.0 || (double)Projectile.velocity.X > 0.0))
                     {
-                        int i = (int) ((double) Projectile.position.X + (double) (Projectile.width / 2)) / 16;
-                        int j = (int) ((double) Projectile.position.Y + (double) (Projectile.height / 2)) / 16 + 1;
+                        int i = (int)((double)Projectile.position.X + (double)(Projectile.width / 2)) / 16;
+                        int j = (int)((double)Projectile.position.Y + (double)(Projectile.height / 2)) / 16 + 1;
                         if (minionMovingLeft)
                             --i;
                         if (minionMovingRight)
@@ -430,9 +430,9 @@ namespace CalamityMod.Projectiles.Summon
                     }
                     if (minionShouldJump)
                     {
-                        int i1 = (int) ((double) Projectile.position.X + (double) (Projectile.width / 2)) / 16;
-                        int j = (int) ((double) Projectile.position.Y + (double) Projectile.height) / 16 + 1;
-                        if (WorldGen.SolidTile(i1, j) || Main.tile[i1, j].IsHalfBlock || ((int) Main.tile[i1, j].Slope > 0 || Projectile.type == 200))
+                        int i1 = (int)((double)Projectile.position.X + (double)(Projectile.width / 2)) / 16;
+                        int j = (int)((double)Projectile.position.Y + (double)Projectile.height) / 16 + 1;
+                        if (WorldGen.SolidTile(i1, j) || Main.tile[i1, j].IsHalfBlock || ((int)Main.tile[i1, j].Slope > 0 || Projectile.type == 200))
                         {
                             if (Projectile.type == 200)
                             {
@@ -442,13 +442,13 @@ namespace CalamityMod.Projectiles.Summon
                             {
                                 try
                                 {
-                                    int minionJumpTileX = (int) ((double) Projectile.position.X + (double) (Projectile.width / 2)) / 16;
-                                    int minionJumpTileY = (int) ((double) Projectile.position.Y + (double) (Projectile.height / 2)) / 16;
+                                    int minionJumpTileX = (int)((double)Projectile.position.X + (double)(Projectile.width / 2)) / 16;
+                                    int minionJumpTileY = (int)((double)Projectile.position.Y + (double)(Projectile.height / 2)) / 16;
                                     if (minionMovingLeft)
                                         --minionJumpTileX;
                                     if (minionMovingRight)
                                         ++minionJumpTileX;
-                                    int i2 = minionJumpTileX + (int) Projectile.velocity.X;
+                                    int i2 = minionJumpTileX + (int)Projectile.velocity.X;
                                     if (!WorldGen.SolidTile(i2, minionJumpTileY - 1) && !WorldGen.SolidTile(i2, minionJumpTileY - 2))
                                         Projectile.velocity.Y = -5.1f;
                                     else if (!WorldGen.SolidTile(i2, minionJumpTileY - 2))
@@ -523,7 +523,7 @@ namespace CalamityMod.Projectiles.Summon
                     }
                     else if (Projectile.velocity.X < -0.8f || Projectile.velocity.X > 0.8f)
                     {
-                        Projectile.frameCounter = Projectile.frameCounter + (int) Math.Abs(Projectile.velocity.X);
+                        Projectile.frameCounter = Projectile.frameCounter + (int)Math.Abs(Projectile.velocity.X);
                         Projectile.frameCounter++;
                         if (Projectile.frameCounter > 20)
                         {

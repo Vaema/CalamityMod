@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
     public class TyphonsGreedBubble : ModProjectile, ILocalizedModType
@@ -75,8 +75,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y6 = framing * Projectile.frame;
             Main.spriteBatch.Draw(texture2D13,
                 Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY),
@@ -99,14 +99,14 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.position.Y -= (float)(Projectile.height / 2);
             for (int i = 0; i < 2; i++)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
             }
             for (int j = 0; j < 6; j++)
             {
-                int bubblyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 186, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
+                int bubblyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedsWingsRun, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
                 Main.dust[bubblyDust].noGravity = true;
                 Main.dust[bubblyDust].velocity *= 3f;
-                bubblyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 186, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                bubblyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedsWingsRun, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                 Main.dust[bubblyDust].velocity *= 2f;
                 Main.dust[bubblyDust].noGravity = true;
             }

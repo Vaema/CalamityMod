@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Rogue
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             int javelin = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             if (javelin.WithinBounds(Main.maxProjectiles))
                 Main.projectile[javelin].Calamity().stealthStrike = player.Calamity().StealthStrikeAvailable();
-            
+
             return false;
         }
 

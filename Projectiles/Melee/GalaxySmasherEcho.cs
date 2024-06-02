@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.DraedonsArsenal;
 using static Humanizer.In;
 
 namespace CalamityMod.Projectiles.Melee
@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Melee
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle sourceRectangle = new Rectangle(0, 0, texture.Width + 12, texture.Height + 12);
             Vector2 origin = sourceRectangle.Size() / 2f;
 

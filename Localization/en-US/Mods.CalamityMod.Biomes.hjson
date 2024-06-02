@@ -1,29 +1,28 @@
 // For general uses
 Abyss: Abyss
 AstralInfection: Astral Infection
-AstralDesert: Astral Desert
 AstralSnow: Astral Snow
 BrimstoneCrags: Brimstone Crags
 SulphurousSea: Sulphurous Sea
 SunkenSea: Sunken Sea
 
-AbovegroundAstralBiome: {
-	DisplayName: Astral Infection
-	TownNPCDialogueName: Astral Infection
-}
-
-AbovegroundAstralBiomeSurface: {
-	DisplayName: Astral Surface
-	TownNPCDialogueName: Astral Infection
-}
-
-AbovegroundAstralDesertBiome: {
+AstralDesert: {
 	DisplayName: Astral Desert Surface
 	TownNPCDialogueName: Astral Desert
 }
 
-AbovegroundAstralSnowBiome: {
-	DisplayName: Astral Snow Surface
+AstralBiome: {
+	DisplayName: Astral Infection
+	TownNPCDialogueName: Astral Infection
+}
+
+AstralInfectionBiome: {
+	DisplayName: Astral Infection
+	TownNPCDialogueName: Astral Infection
+}
+
+AstralIce: {
+	DisplayName: Astral Ice
 	TownNPCDialogueName: Astral Snow
 }
 
@@ -72,7 +71,7 @@ SunkenSeaBiome: {
 	TownNPCDialogueName: Sunken Sea
 }
 
-UndergroundAstralBiome: {
+AstralUnderground: {
 	DisplayName: Astral Underground
 	TownNPCDialogueName: Underground Astral Infection
 }
@@ -95,4 +94,9 @@ SunkenSeaReefsBiome: {
 SunkenSeaShoresBiome: {
 	DisplayName: Sunken Sea Shores Biome
 	TownNPCDialogueName: the Sunken Sea Shores Biome
+}
+
+AstralCaveDesert: {
+	DisplayName: Astral Cave Desert
+	TownNPCDialogueName: the Astral Cave Desert
 }

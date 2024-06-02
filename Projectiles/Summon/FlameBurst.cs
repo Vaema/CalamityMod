@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
                 for (int i = 0; i < 10; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                     Main.dust[dust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -52,10 +52,10 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 3f);
+                    int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 3f);
                     Main.dust[dust2].noGravity = true;
                     Main.dust[dust2].velocity *= 5f;
-                    dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 2f);
+                    dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
                     Main.dust[dust2].velocity *= 2f;
                 }
                 count += 1f;
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int k = 0; k < 5; k++)
                 {
-                    int otherDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 0.75f);
+                    int otherDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 0.75f);
                     Main.dust[otherDust].velocity *= 0f;
                 }
             }
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 246, Projectile.oldVelocity.X * 0f, Projectile.oldVelocity.Y * 0f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GoldCoin, Projectile.oldVelocity.X * 0f, Projectile.oldVelocity.Y * 0f);
             }
         }
     }

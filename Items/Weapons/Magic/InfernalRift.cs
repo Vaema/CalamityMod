@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 7f;
-            Item.value = CalamityGlobalItem.Rarity6BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item9;
             Item.autoReuse = true;
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Magic
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 25;
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);

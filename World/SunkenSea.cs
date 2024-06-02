@@ -1,16 +1,15 @@
-﻿using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.WorldBuilding;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
-
 using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using CalamityMod.Walls;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.Generation;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.WorldBuilding;
 
 namespace CalamityMod.World
 {

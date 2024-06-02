@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 25;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
 
-			ItemID.Sets.SortingPriorityMaterials[Type] = 94; // Spectre Bar
+            ItemID.Sets.SortingPriorityMaterials[Type] = 94; // Spectre Bar
         }
 
         public override void SetDefaults()

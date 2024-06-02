@@ -13,7 +13,7 @@ namespace CalamityMod.Cooldowns
         public override bool ShouldDisplay => true;
         public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
         public override string Texture => "CalamityMod/Cooldowns/DivineBless";
-        public override Color OutlineColor =>  new Color(233, 192, 68);
+        public override Color OutlineColor => new Color(233, 192, 68);
         public override Color CooldownStartColor => new Color(177, 105, 33);
         public override Color CooldownEndColor => new Color(233, 192, 68);
 

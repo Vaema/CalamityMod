@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Armor.Fearmonger
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 44;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class FishronRPG : ModProjectile, ILocalizedModType
@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                     Main.dust[dust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.ai[1] = 1f;
                 SoundEngine.PlaySound(SoundID.Item92, Projectile.position);
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.owner == Main.myPlayer && Projectile.timeLeft <= 3)
             {
                 Projectile.tileCollide = false;
@@ -63,11 +63,11 @@ namespace CalamityMod.Projectiles.Ranged
                             halfX = Projectile.velocity.X * 0.5f;
                             halfY = Projectile.velocity.Y * 0.5f;
                         }
-                        int fishDust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 33, 0f, 0f, 100, default, 1f);
+                        int fishDust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.Water, 0f, 0f, 100, default, 1f);
                         Main.dust[fishDust].scale *= 2f + (float)Main.rand.Next(10) * 0.1f;
                         Main.dust[fishDust].velocity *= 0.2f;
                         Main.dust[fishDust].noGravity = true;
-                        fishDust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 33, 0f, 0f, 100, default, 0.5f);
+                        fishDust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.Water, 0f, 0f, 100, default, 0.5f);
                         Main.dust[fishDust].fadeIn = 1f + (float)Main.rand.Next(5) * 0.1f;
                         Main.dust[fishDust].velocity *= 0.05f;
                     }
@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item92, Projectile.position);
             for (int i = 0; i < 10; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                 Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -107,10 +107,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int i = 0; i < 20; i++)
             {
-                int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 3f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 3f);
                 Main.dust[dusty].noGravity = true;
                 Main.dust[dusty].velocity *= 5f;
-                dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
+                dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                 Main.dust[dusty].velocity *= 2f;
             }
         }

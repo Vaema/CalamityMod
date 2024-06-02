@@ -11,7 +11,6 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Nadir : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public static int BaseDamage = 365;
         public static float ProjShootSpeed = 20f;
         public static int FadeoutSpeed = 20;
 
@@ -26,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 144;
             Item.noUseGraphic = true;
             Item.DamageType = DamageClass.Melee;
-            Item.damage = BaseDamage;
+            Item.damage = 365;
             Item.knockBack = 8f;
             Item.useAnimation = 18;
             Item.useTime = 18;
@@ -36,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item1;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
 

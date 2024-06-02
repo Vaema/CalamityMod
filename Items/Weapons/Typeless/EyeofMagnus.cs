@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Sounds;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Typeless
 {
@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.height = 50;
             Item.DamageType = AverageDamageClass.Instance;
             Item.damage = 32;
-            Item.rare = ItemRarityID.Cyan;
+            Item.rare = ItemRarityID.Red;
             Item.useAnimation = 20;
             Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -24,15 +24,15 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.UseSound = CommonCalamitySounds.LaserCannonSound;
             Item.autoReuse = true;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.shoot = ModContent.ProjectileType<MagnusBeam>();
             Item.shootSpeed = 12f;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ClasslessWeapon;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ClasslessWeapon;
+        }
 
         public override Vector2? HoldoutOffset()
         {

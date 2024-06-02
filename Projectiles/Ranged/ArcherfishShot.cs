@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Water trail
             for (int i = 0; i < 6; i++)
             {
-                Dust water = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 211, 0f, 0f, 100);
+                Dust water = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Wet, 0f, 0f, 100);
                 water.noGravity = true;
                 water.velocity = Projectile.velocity * 0.5f;
             }

@@ -24,10 +24,10 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             Item.rare = ItemRarityID.Yellow;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
+        }
 
         public override bool CanRightClick() => true;
 

@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.5f;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<LifeScythe>();
             Item.shootSpeed = 12f;
@@ -34,25 +34,33 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (Main.rand.NextBool(4))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 75);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.CursedTorch);
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (!target.canGhostHeal || player.moonLeech)
+            if (player.moonLeech || player.lifeSteal <= 0f || target.lifeMax <= 5)
                 return;
 
-            player.statLife += 5;
-            player.HealEffect(5);
+            int heal = 5;
+            player.lifeSteal -= heal;
+            player.statLife += heal;
+            player.HealEffect(heal);
+            if (player.statLife > player.statLifeMax2)
+                player.statLife = player.statLifeMax2;
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            if (player.moonLeech)
+            if (player.moonLeech || player.lifeSteal <= 0f)
                 return;
 
-            player.statLife += 5;
-            player.HealEffect(5);
+            int heal = 5;
+            player.lifeSteal -= heal;
+            player.statLife += heal;
+            player.HealEffect(heal);
+            if (player.statLife > player.statLifeMax2)
+                player.statLife = player.statLifeMax2;
         }
 
         public override void AddRecipes()

@@ -1,21 +1,21 @@
-﻿using CalamityMod.Buffs.StatBuffs;
-using Microsoft.Xna.Framework;
-using System;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
-using System.IO;
+using CalamityMod.Projectiles.Boss;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 using static CalamityMod.Items.Weapons.Ranged.PolarisParrotfish;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Projectiles.Boss;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -46,6 +46,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.tileCollide = true;
         }
 
         public override void AI()
@@ -125,30 +126,6 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.velocity = Vector2.Zero;
                 DoSlowdown = false;
             }
-        }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Time = 2;
-
-            if (tileBounces >= 2)
-                Projectile.Kill();
-            else
-                tileBounces++;
-
-            for (int i = 0; i <= 5; i++)
-            {
-                SquishyLightParticle energy = new(Projectile.Center, Projectile.velocity.RotatedByRandom(100) * Main.rand.NextFloat(0.08f, 0.15f), Main.rand.NextFloat(0.4f, 0.7f), EffectsColor, Main.rand.Next(40, 50 + 1), 0.25f, 2f);
-                GeneralParticleHandler.SpawnParticle(energy);
-            }
-            if (Projectile.velocity.X != oldVelocity.X)
-            {
-                Projectile.velocity.X = -oldVelocity.X;
-            }
-            if (Projectile.velocity.Y != oldVelocity.Y)
-            {
-                Projectile.velocity.Y = -oldVelocity.Y;
-            }
-            return false;
         }
         public override void OnKill(int timeLeft)
         {

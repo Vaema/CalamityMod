@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
                 return;
             }
             bool isInTile = WorldGen.SolidTile(Framing.GetTileSafely((int)Projectile.position.X / 16, (int)Projectile.position.Y / 16));
-            Dust blastDust = Main.dust[Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 0, default, 1f)];
+            Dust blastDust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 0, default, 1f)];
             blastDust.position = Projectile.Center;
             blastDust.velocity = Vector2.Zero;
             blastDust.noGravity = true;
@@ -79,16 +79,15 @@ namespace CalamityMod.Projectiles.Melee
             {
                 int npcTracker = -1;
                 float homingRange = 60f;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC nPC in Main.ActiveNPCs)
                 {
-                    NPC nPC = Main.npc[i];
                     if (nPC.CanBeChasedBy(Projectile, false))
                     {
                         float npcDistance = Projectile.Distance(nPC.Center);
                         if (npcDistance < homingRange && Collision.CanHitLine(Projectile.Center, 0, 0, nPC.Center, 0, 0))
                         {
                             homingRange = npcDistance;
-                            npcTracker = i;
+                            npcTracker = nPC.whoAmI;
                         }
                     }
                 }
@@ -107,18 +106,18 @@ namespace CalamityMod.Projectiles.Melee
             bool insideTile = WorldGen.SolidTile(Framing.GetTileSafely((int)Projectile.position.X / 16, (int)Projectile.position.Y / 16));
             for (int m = 0; m < 4; m++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.5f);
             }
             for (int n = 0; n < 4; n++)
             {
-                int killingPeople = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 0, default, 2.5f);
+                int killingPeople = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 0, default, 2.5f);
                 Main.dust[killingPeople].noGravity = true;
                 Main.dust[killingPeople].velocity *= 3f;
                 if (insideTile)
                 {
                     Main.dust[killingPeople].noLight = true;
                 }
-                killingPeople = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1.5f);
+                killingPeople = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.5f);
                 Main.dust[killingPeople].velocity *= 2f;
                 Main.dust[killingPeople].noGravity = true;
                 if (insideTile)

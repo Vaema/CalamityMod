@@ -25,19 +25,19 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
             Item.rare = ModContent.RarityType<Violet>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
+        }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-				AddIngredient<BrimstoneSlag>(30).
-				AddIngredient<AuricBar>(5).
-				AddIngredient<CoreofCalamity>().
-				AddTile<CosmicAnvil>().
-				Register();
+                AddIngredient<BrimstoneSlag>(30).
+                AddIngredient<AuricBar>(5).
+                AddIngredient<CoreofCalamity>().
+                AddTile<CosmicAnvil>().
+                Register();
         }
     }
 }

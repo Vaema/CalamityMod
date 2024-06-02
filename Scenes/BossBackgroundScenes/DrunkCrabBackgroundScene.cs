@@ -16,7 +16,7 @@ namespace CalamityMod.Systems
             // Case 1: Zenith Seed Crabulon.
             if (Main.zenithWorld && NPC.AnyNPCs(ModContent.NPCType<Crabulon>()))
                 return true;
-            
+
             // Case 2: Supreme Cirrus BH5.
             bool cirrusSpecialAttack = false;
 

@@ -45,7 +45,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             if (Main.rand.Next(5) < 4)
             {
-                int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, 298, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 0.6f);
+                int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.JungleTorch, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 0.6f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 0.75f;
                 Main.dust[dust].velocity.X = Main.dust[dust].velocity.X * 0.75f;
@@ -68,7 +68,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             if (Main.rand.NextBool())
             {
                 Vector2 npcSize = npc.Center + new Vector2(Main.rand.NextFloat(-npc.width / 2, npc.width / 2), Main.rand.NextFloat(-npc.height / 2, npc.height / 2));
-                int dust = Dust.NewDust(npc.position - new Vector2(2f), npc.width + 4, npc.height + 4, 298, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 100, default, 1.2f + +(0.000003f * npc.width * npc.height));
+                int dust = Dust.NewDust(npc.position - new Vector2(2f), npc.width + 4, npc.height + 4, DustID.JungleTorch, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 100, default, 1.2f + +(0.000003f * npc.width * npc.height));
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 0.75f;
                 Main.dust[dust].velocity.X = Main.dust[dust].velocity.X * 0.75f;

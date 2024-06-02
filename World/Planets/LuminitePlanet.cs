@@ -27,7 +27,7 @@ namespace CalamityMod.World.Planets
             {
                 for (int tries = 0; tries < 15000; tries++)
                 {
-                    Point planetoidOrigin = new Point(WorldGen.genRand.Next((int)(Main.maxTilesX*0.15), (int)(Main.maxTilesX*0.85)), WorldGen.genRand.Next(75, 125));
+                    Point planetoidOrigin = new Point(WorldGen.genRand.Next((int)(Main.maxTilesX * 0.15), (int)(Main.maxTilesX * 0.85)), WorldGen.genRand.Next(75, 125));
                     if (WorldGen.genRand.NextBool(2))
                     {
                         if (config.CreateBiome<LuminitePlanet>().Place(planetoidOrigin, GenVars.structures))

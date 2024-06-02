@@ -1,11 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
@@ -36,9 +37,14 @@ namespace CalamityMod.NPCs.Abyss
         public const int BaseDefense = 10; // the crab's defense while hostile
         public const int BaseAttack = 20; // the crab's damage while hostile
         public const float BaseKB = 1f; // the crab's knockback taken while hostile
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 23;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -69,6 +75,10 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToWater = false;
             NPC.GravityIgnoresLiquid = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer1Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -265,7 +275,7 @@ namespace CalamityMod.NPCs.Abyss
         {
             CurrentPhase = ai0;
             AITimer = ai1 == -1 ? 0 : ai1;
-            HopTimer = ai2 == -1 ? 0 : ai2;    
+            HopTimer = ai2 == -1 ? 0 : ai2;
             CalmDownTimer = ai3 == -1 ? 0 : ai3;
             NPC.netUpdate = true;
             if (Main.netMode == NetmodeID.Server)
@@ -299,7 +309,7 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (spawnInfo.Player.Calamity().ZoneAbyssLayer1 && spawnInfo.Water)
             {
-                return SpawnCondition.OceanMonster.Chance;
+                return SpawnCondition.CaveJellyfish.Chance;
             }
             return 0f;
         }
@@ -331,7 +341,7 @@ namespace CalamityMod.NPCs.Abyss
                 else
                 {
                     NPC.frame.Y = frameHeight * 19;
-                }    
+                }
                 return;
             }
             switch (CurrentPhase)
@@ -442,6 +452,13 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Water, hit.HitDirection, -1f, 0, default, 1f);
                 }
+                if (Main.netMode != NetmodeID.Server)
+                {
+                    for (int i = 1; i < 5; i++)
+                    {
+                        Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SlabCrab" + i).Type, 1f);
+                    }
+                }                
             }
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
@@ -453,11 +470,9 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/SlabCrabGlow").Value;
-
                 var effects = NPC.spriteDirection != 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }

@@ -20,11 +20,11 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             get
             {
                 if (!Main.npc.IndexInRange(CalamityGlobalNPC.holyBoss))
-                  return null;
+                    return null;
                 if (Main.npc[CalamityGlobalNPC.holyBoss].type != ModContent.NPCType<Providence>())
                     return null;
 
-                if (Main.npc[CalamityGlobalNPC.holyBoss].ModNPC is not null && 
+                if (Main.npc[CalamityGlobalNPC.holyBoss].ModNPC is not null &&
                     Main.npc[CalamityGlobalNPC.holyBoss].ModNPC is Providence provi)
                     return provi;
 
@@ -65,7 +65,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             }
 
             var shader = GameShaders.Misc["CalamityMod:HolyInfernoShader"].Shader;
-            shader.Parameters["colorMult"].SetValue(Main.dayTime ? 7.35f : 7.65f); //I want you to know it took considerable restraint to deliberately misspell colour.
+            shader.Parameters["colorMult"].SetValue(Main.IsItDay() ? 7.35f : 7.65f); //I want you to know it took considerable restraint to deliberately misspell colour.
             shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["radius"].SetValue(borderDistance);
             shader.Parameters["anchorPoint"].SetValue(npc.Center);
@@ -74,7 +74,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             shader.Parameters["burnIntensity"].SetValue(holyInfernoIntensity);
             shader.Parameters["playerPosition"].SetValue(target.Center);
             shader.Parameters["maxOpacity"].SetValue(maxOpacity);
-            shader.Parameters["day"].SetValue(Main.dayTime);
+            shader.Parameters["day"].SetValue(Main.IsItDay());
 
             spriteBatch.GraphicsDevice.Textures[1] = diagonalNoise.Value;
             spriteBatch.GraphicsDevice.Textures[2] = upwardNoise.Value;

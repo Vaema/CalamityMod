@@ -1,5 +1,5 @@
-﻿using CalamityMod.Events;
-using System;
+﻿using System;
+using CalamityMod.Events;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -12,8 +12,8 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           	NPCID.Sets.MPAllowedEnemies[NPCID.CultistBoss] = true;
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 18; // Bloody Tear (1 below Celestial Sigil fsr)
+            NPCID.Sets.MPAllowedEnemies[NPCID.CultistBoss] = true;
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 18; // Bloody Tear (1 below Celestial Sigil fsr)
         }
 
         public override void SetDefaults()
@@ -27,10 +27,10 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {

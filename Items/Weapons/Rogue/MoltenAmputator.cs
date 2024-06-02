@@ -25,14 +25,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 18;
             Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<MoltenAmputatorProj>();
             Item.shootSpeed = Speed;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 1.07f;
+        public override float StealthDamageMultiplier => 1.07f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

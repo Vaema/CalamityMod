@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.shoot = ModContent.ProjectileType<InfestedClawmerangProj>();
             Item.shootSpeed = 15f;
             Item.DamageType = RogueDamageClass.Instance;

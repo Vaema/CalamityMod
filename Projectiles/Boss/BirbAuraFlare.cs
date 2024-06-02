@@ -1,11 +1,11 @@
-﻿using CalamityMod.NPCs.Bumblebirb;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.NPCs.Bumblebirb;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Boss
                             Vector2 dustRotation = Vector2.Normalize(Projectile.velocity) * new Vector2(Projectile.width / 2f, Projectile.height) * Projectile.localAI[1];
                             dustRotation = dustRotation.RotatedBy((i - (dustAmt / 2 - 1)) * 3.1415926535897931 / (float)dustAmt) + Projectile.Center;
                             Vector2 randomDustPos = ((float)(Main.rand.NextDouble() * Math.PI) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
-                            int lightningDust = Dust.NewDust(dustRotation + randomDustPos, 0, 0, 60, randomDustPos.X * 2f, randomDustPos.Y * 2f, 100, default, 1f);
+                            int lightningDust = Dust.NewDust(dustRotation + randomDustPos, 0, 0, DustID.RedTorch, randomDustPos.X * 2f, randomDustPos.Y * 2f, 100, default, 1f);
                             Main.dust[lightningDust].scale = 1.4f;
                             Main.dust[lightningDust].noGravity = true;
                             Main.dust[lightningDust].noLight = true;
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
                 Vector2 vector6 = Vector2.Normalize(Projectile.velocity) * new Vector2(Projectile.width / 2f, Projectile.height) * 0.75f;
                 vector6 = vector6.RotatedBy((i - (killDustAmt / 2 - 1)) * MathHelper.TwoPi / killDustAmt) + Projectile.Center;
                 Vector2 vector7 = vector6 - Projectile.Center;
-                int killLightningDust = Dust.NewDust(vector6 + vector7, 0, 0, 60, vector7.X, vector7.Y, 100, default, 1.4f);
+                int killLightningDust = Dust.NewDust(vector6 + vector7, 0, 0, DustID.RedTorch, vector7.X, vector7.Y, 100, default, 1.4f);
                 Main.dust[killLightningDust].noGravity = true;
                 Main.dust[killLightningDust].noLight = true;
                 Main.dust[killLightningDust].velocity = vector7;

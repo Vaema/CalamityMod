@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // Water drip
             for (int i = 0; i < 4; i++)
             {
-                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, 2, 2, 154, 0f, 0f, 0, new Color(112, 150, 42, 127), 1f);
+                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, 2, 2, DustID.Rain, 0f, 0f, 0, new Color(112, 150, 42, 127), 1f);
                 Dust dust = Main.dust[idx];
                 dust.position.X -= 2f;
                 Main.dust[idx].alpha = 38;

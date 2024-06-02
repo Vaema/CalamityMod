@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Summon
         public ref float FlowerShootTimer => ref Projectile.ai[0];
 
         public ref float RotationMovement => ref Projectile.ai[1];
-        
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;

@@ -1,6 +1,6 @@
-using CalamityMod.Tiles.Furniture.BossTrophies;
-using Terraria.ModLoader;
+﻿using CalamityMod.Tiles.Furniture.BossTrophies;
 using Terraria.ID;
+using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.Furniture.Trophies
 {
     public class OldDukeTrophy : ModItem, ILocalizedModType

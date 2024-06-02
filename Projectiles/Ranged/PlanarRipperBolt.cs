@@ -1,9 +1,9 @@
 ﻿using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -106,17 +106,17 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Damage();
 
             SoundStyle sound = Main.rand.NextBool() ? SoundID.Item93 : SoundID.Item92;
-            SoundEngine.PlaySound(sound with { Volume = sound.Volume * 0.5f}, Projectile.position);
+            SoundEngine.PlaySound(sound with { Volume = sound.Volume * 0.5f }, Projectile.position);
 
             for (int i = 0; i < 5; i++)
             {
-                int dust = Dust.NewDust(Projectile.Center, 1, 1, 132, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 0.5f);
+                int dust = Dust.NewDust(Projectile.Center, 1, 1, DustID.Firework_Blue, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 0.5f);
                 Main.dust[dust].noGravity = true;
             }
             int rando = Main.rand.Next(10, 20);
             for (int i = 0; i < rando; i++)
             {
-                int dusty = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, 135, 0f, 0f, 100, default, 2f);
+                int dusty = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, DustID.IceTorch, 0f, 0f, 100, default, 2f);
                 Main.dust[dusty].velocity *= 2f;
                 Main.dust[dusty].noGravity = true;
             }

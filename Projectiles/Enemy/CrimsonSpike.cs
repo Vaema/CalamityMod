@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 Color dustColor = Color.Crimson;
                 dustColor.A = 150;
-                int redSpiky = Dust.NewDust(Projectile.position - Projectile.velocity * 3f, Projectile.width, Projectile.height, 260, 0f, 0f, 50, dustColor, 1.2f);
+                int redSpiky = Dust.NewDust(Projectile.position - Projectile.velocity * 3f, Projectile.width, Projectile.height, DustID.SparksMech, 0f, 0f, 50, dustColor, 1.2f);
                 Main.dust[redSpiky].velocity *= 0.3f;
                 Main.dust[redSpiky].velocity += Projectile.velocity * 0.3f;
                 Main.dust[redSpiky].noGravity = true;
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Enemy
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item17, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item17, Projectile.Center);
             }
 
             Projectile.ai[0] += 1f;
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Enemy
             dustColor.A = 150;
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 260, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 50, dustColor, 1f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.SparksMech, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 50, dustColor, 1f);
             }
         }
 

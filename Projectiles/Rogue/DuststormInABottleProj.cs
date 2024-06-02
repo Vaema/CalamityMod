@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
+﻿using System;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
     public class DuststormInABottleProj : ModProjectile, ILocalizedModType
@@ -36,9 +36,9 @@ namespace CalamityMod.Projectiles.Rogue
                 //DUST STORM
                 for (int dustexplode = 0; dustexplode < 180; dustexplode++)
                 {
-                    Vector2 dustd = new Vector2(DuststormInABottle.DustRadius, DuststormInABottle.DustRadius).RotatedBy(MathHelper.ToRadians(dustexplode*2));
+                    Vector2 dustd = new Vector2(DuststormInABottle.DustRadius, DuststormInABottle.DustRadius).RotatedBy(MathHelper.ToRadians(dustexplode * 2));
 
-                    Particle dust = new SandyDustParticle(Projectile.Center, dustd*Main.rand.NextFloat(0.25f, 1f), Color.Beige, Main.rand.NextFloat(0.7f, 1.2f), Main.rand.Next(30, 50));
+                    Particle dust = new SandyDustParticle(Projectile.Center, dustd * Main.rand.NextFloat(0.25f, 1f), Color.Beige, Main.rand.NextFloat(0.7f, 1.2f), Main.rand.Next(30, 50));
                     GeneralParticleHandler.SpawnParticle(dust);
 
                     int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, Main.rand.NextBool(5) ? 32 : 85, dustd.X, dustd.Y, 50, default, 2f);
@@ -48,7 +48,8 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 cloudAmt *= 2.75;
                 cloudAmt = Math.Round(cloudAmt);
-            } else
+            }
+            else
             {
                 //DUST STORM but smaller
                 for (int dustexplode = 0; dustexplode < 120; dustexplode++)
@@ -64,7 +65,7 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int index = 0; index < cloudAmt; index++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 10f, 200f, 0.01f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, stealth ? velocity*1.2f : velocity, ModContent.ProjectileType<DuststormCloud>(), 0, 0, Projectile.owner, stealth ? 1f : 0f, (float)Main.rand.Next(-45, 1));
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, stealth ? velocity * 1.2f : velocity, ModContent.ProjectileType<DuststormCloud>(), 0, 0, Projectile.owner, stealth ? 1f : 0f, (float)Main.rand.Next(-45, 1));
                 }
                 int hitbox = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudHitbox>(), Projectile.damage, Projectile.knockBack * 0.5f, Projectile.owner);
                 if (hitbox.WithinBounds(Main.maxProjectiles) && Projectile.Calamity().stealthStrike) //Inherit stealth flag and less iframes

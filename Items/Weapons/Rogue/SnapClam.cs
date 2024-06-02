@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<SnapClamProj>();
             Item.shootSpeed = 12f;
@@ -37,11 +37,11 @@ namespace CalamityMod.Items.Weapons.Rogue
                 int spread = 3;
                 for (int i = 0; i < 5; i++)
                 {
-                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-3,4), velocity.Y + Main.rand.Next(-3,4)).RotatedBy(MathHelper.ToRadians(spread));
+                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-3, 4), velocity.Y + Main.rand.Next(-3, 4)).RotatedBy(MathHelper.ToRadians(spread));
                     int proj = Projectile.NewProjectile(source, position, perturbedspeed, ModContent.ProjectileType<SnapClamStealth>(), Math.Max(damage / 5, 1), knockback / 5f, player.whoAmI);
                     if (proj.WithinBounds(Main.maxProjectiles))
                         Main.projectile[proj].Calamity().stealthStrike = true;
-                    spread -= Main.rand.Next(1,3);
+                    spread -= Main.rand.Next(1, 3);
                 }
                 return false;
             }

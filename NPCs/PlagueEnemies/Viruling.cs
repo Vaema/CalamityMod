@@ -1,17 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.PlagueEnemies
 {
@@ -32,7 +32,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.height = 44;
             NPC.defense = 18;
             NPC.lifeMax = 400;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.3f;
             NPC.value = Item.buyPrice(0, 0, 10, 0);
             NPC.HitSound = SoundID.NPCHit22;
             Banner = NPC.type;
@@ -40,15 +40,19 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Jungle,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundJungle,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Viruling")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Viruling")
             });
         }
 
@@ -161,7 +165,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             {
                 NPC.netUpdate = true;
             }
-            int idleDust = Dust.NewDust(new Vector2(NPC.position.X - NPC.velocity.X, NPC.position.Y - NPC.velocity.Y), NPC.width, NPC.height, 46, NPC.velocity.X * 0.2f, NPC.velocity.Y * 0.2f, 100, default, 2f);
+            int idleDust = Dust.NewDust(new Vector2(NPC.position.X - NPC.velocity.X, NPC.position.Y - NPC.velocity.Y), NPC.width, NPC.height, DustID.Poisoned, NPC.velocity.X * 0.2f, NPC.velocity.Y * 0.2f, 100, default, 2f);
             Dust dust = Main.dust[idleDust];
             dust.noGravity = true;
             dust.velocity.X *= 0.3f;

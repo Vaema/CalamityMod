@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noMelee = true;
             Item.channel = true;
             Item.knockBack = 0f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<Teslabeam>();

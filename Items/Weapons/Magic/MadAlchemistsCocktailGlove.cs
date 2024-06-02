@@ -48,15 +48,15 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<MadAlchemistsCocktailRed>();
             Item.shootSpeed = 19f;
 
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.Calamity().donorItem = true;
         }
 
         public override bool AltFunctionUse(Player player) => true;
 
-		public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-		{
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+        {
             if (player.altFunctionUse == 2)
             {
                 type = flaskIDs[4];
@@ -67,7 +67,7 @@ namespace CalamityMod.Items.Weapons.Magic
             type = flaskIDs[flaskIndex++];
             if (flaskIndex > 3)
                 flaskIndex = 0;
-		}
+        }
 
         public override void AddRecipes()
         {

@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         private const float Spread = 0.15f;
 
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
             Item.UseSound = SoundID.Item11;

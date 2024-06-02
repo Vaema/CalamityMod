@@ -1,19 +1,20 @@
-﻿using CalamityMod.Particles;
-using Terraria.Graphics.Shaders;
+﻿using System;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
+using CalamityMod.Graphics.Primitives;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class EonBolt : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        internal PrimitiveTrail TrailDrawer;
 
         public override string Texture => "CalamityMod/Projectiles/Melee/GalaxiaBolt";
 
@@ -71,12 +72,12 @@ namespace CalamityMod.Projectiles.Melee
 
             Lighting.AddLight(Projectile.Center, 0.75f, 1f, 0.24f);
 
-            if (Main.rand.Next(2) == 0)
+            if (Main.rand.NextBool(2))
             {
                 Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * 0.5f, Color.Lerp(Color.DodgerBlue, Color.MediumVioletRed, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 20, Main.rand.NextFloat(0.6f, 1.2f) * Projectile.scale, 0.28f, 0, false, 0, true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                if (Main.rand.Next(3) == 0)
+                if (Main.rand.NextBool(3))
                 {
                     Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * 0.5f, Main.hslToRgb(Hue, 1, 0.7f), 15, Main.rand.NextFloat(0.4f, 0.7f) * Projectile.scale, 0.8f, 0, true, 0.05f, true);
                     GeneralParticleHandler.SpawnParticle(smokeGlow);
@@ -102,15 +103,11 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 30);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
 
             Texture2D texture = Request<Texture2D>("CalamityMod/Projectiles/Melee/GalaxiaBolt").Value;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.Lerp(lightColor, Color.White, 0.5f), Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-
             return false;
         }
     }

@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -15,7 +16,7 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y -= 10f;
             value.PortraitPositionYOverride = -36f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
@@ -43,18 +44,25 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[2] { ModContent.GetInstance<SulphurousSeaBiome>().Type, ModContent.GetInstance<AbyssLayer1Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Sulflounder")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Sulflounder")
             });
         }
 
         public override void AI()
         {
+            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
+            NPC.damage = 0;
+
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             int alphaControl = 200;
             if (NPC.ai[2] == 0f)
@@ -94,7 +102,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             if (NPC.ai[2] == 1f)
             {
                 NPC.chaseable = true;
-                CalamityAI.PassiveSwimmingAI(NPC, Mod, 0, 0f, 0.1f, 0.1f, 2f, 1f, 0.1f);
+                CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 0, 0f, 0.1f, 0.1f, 2f, 1f, 0.1f);
             }
         }
 

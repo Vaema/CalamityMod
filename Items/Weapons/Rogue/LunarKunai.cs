@@ -1,10 +1,10 @@
-﻿using Terraria.DataStructures;
-using System;
+﻿using System;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Rogue;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-                       Item.ResearchUnlockCount = 99;
+            Item.ResearchUnlockCount = 99;
         }
 
         public override void SetDefaults()
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
             Item.value = Item.sellPrice(copper: 24);
-            Item.rare = ItemRarityID.Red;
+            Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<LunarKunaiProj>();
             Item.shootSpeed = 22f;
             Item.DamageType = RogueDamageClass.Instance;
@@ -61,24 +61,24 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
             mouseXDist *= mouseDistance;
             mouseYDist *= mouseDistance;
-			int projAmt = player.Calamity().StealthStrikeAvailable() ? 9 : 3;
-			for (int i = 0; i < projAmt; i++)
-			{
-				float randXOffset = mouseXDist;
-				float randYOffset = mouseYDist;
-				float randOffsetDampener = 0.05f * (float)i;
-				randXOffset += (float)Main.rand.Next(-35, 36) * randOffsetDampener;
-				randYOffset += (float)Main.rand.Next(-35, 36) * randOffsetDampener;
-				mouseDistance = (float)Math.Sqrt((double)(randXOffset * randXOffset + randYOffset * randYOffset));
-				mouseDistance = kunaiSpeed / mouseDistance;
-				randXOffset *= mouseDistance;
-				randYOffset *= mouseDistance;
-				float x4 = realPlayerPos.X;
-				float y4 = realPlayerPos.Y;
-				int stealth = Projectile.NewProjectile(source, x4, y4, randXOffset, randYOffset, ModContent.ProjectileType<LunarKunaiProj>(), damage, knockback, player.whoAmI, 0f, 0f);
-				if (stealth.WithinBounds(Main.maxProjectiles) && player.Calamity().StealthStrikeAvailable())
-					Main.projectile[stealth].Calamity().stealthStrike = true;
-			}
+            int projAmt = player.Calamity().StealthStrikeAvailable() ? 9 : 3;
+            for (int i = 0; i < projAmt; i++)
+            {
+                float randXOffset = mouseXDist;
+                float randYOffset = mouseYDist;
+                float randOffsetDampener = 0.05f * (float)i;
+                randXOffset += (float)Main.rand.Next(-35, 36) * randOffsetDampener;
+                randYOffset += (float)Main.rand.Next(-35, 36) * randOffsetDampener;
+                mouseDistance = (float)Math.Sqrt((double)(randXOffset * randXOffset + randYOffset * randYOffset));
+                mouseDistance = kunaiSpeed / mouseDistance;
+                randXOffset *= mouseDistance;
+                randYOffset *= mouseDistance;
+                float x4 = realPlayerPos.X;
+                float y4 = realPlayerPos.Y;
+                int stealth = Projectile.NewProjectile(source, x4, y4, randXOffset, randYOffset, ModContent.ProjectileType<LunarKunaiProj>(), damage, knockback, player.whoAmI, 0f, 0f);
+                if (stealth.WithinBounds(Main.maxProjectiles) && player.Calamity().StealthStrikeAvailable())
+                    Main.projectile[stealth].Calamity().stealthStrike = true;
+            }
             return false;
         }
 

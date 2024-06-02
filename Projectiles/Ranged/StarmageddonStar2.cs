@@ -1,17 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
 using System.Collections.Generic;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Dusts;
-using System;
-using CalamityMod.NPCs.TownNPCs;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Particles;
 using System.IO;
+using CalamityMod.Dusts;
+using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Ranged
                                 Vector2 dustVel = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
                                 dustVel += -Vector2.UnitY.RotatedBy((double)((float)l * MathHelper.Pi / 6f), default) * new Vector2(8f, 16f);
                                 dustVel = dustVel.RotatedBy((double)(speed.ToRotation()), default);
-                                int starDust = Dust.NewDust(position, 0, 0, 221, 0f, 0f, 0, default, 1f);
+                                int starDust = Dust.NewDust(position, 0, 0, DustID.FireworkFountain_Blue, 0f, 0f, 0, default, 1f);
                                 Main.dust[starDust].noGravity = true;
                                 Main.dust[starDust].position = position + dustVel;
                                 Main.dust[starDust].velocity = speed * 0.1f;
@@ -163,7 +163,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int height = texture.Height / Main.projFrames[Projectile.type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
@@ -183,18 +183,18 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i < 4; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 135, 0f, 0f, 100, default(Color), 1.5f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceTorch, 0f, 0f, 100, default(Color), 1.5f);
                 Main.dust[dust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
             }
 
             for (int i = 0; i < 30; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 135, 0f, 0f, 200, default(Color), 3.7f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceTorch, 0f, 0f, 200, default(Color), 3.7f);
                 Main.dust[dust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                 Main.dust[dust].noGravity = true;
                 Dust dust2 = Main.dust[dust];
                 dust2.velocity *= 3f;
-                dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 135, 0f, 0f, 100, default(Color), 1.5f);
+                dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceTorch, 0f, 0f, 100, default(Color), 1.5f);
                 Main.dust[dust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                 dust2 = Main.dust[dust];
                 dust2.velocity *= 2f;
@@ -204,7 +204,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i < 10; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 135, 0f, 0f, 0, default(Color), 2.7f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceTorch, 0f, 0f, 0, default(Color), 2.7f);
                 Main.dust[dust].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 2f;
                 Main.dust[dust].noGravity = true;
                 Dust dust2 = Main.dust[dust];
@@ -213,7 +213,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i < 10; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 303, 0f, 0f, 0, default(Color), 1.5f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SteampunkSteam, 0f, 0f, 0, default(Color), 1.5f);
                 Main.dust[dust].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 2f;
                 Main.dust[dust].noGravity = true;
                 Dust dust2 = Main.dust[dust];

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Materials;
 using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,7 +10,6 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using System.Collections.Generic;
 
 namespace CalamityMod.Tiles.DraedonStructures
 {
@@ -50,7 +50,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 226);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Electric);
             return false;
         }
 
@@ -85,7 +85,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             Vector2 screenOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + screenOffset;
             drawOffset.Y -= 2f;
-            drawOffset.X += (drawDirection == -1 ? -10f : 2f) -2f;
+            drawOffset.X += (drawDirection == -1 ? -10f : 2f) - 2f;
 
             SpriteEffects sfx = drawDirection == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
             spriteBatch.Draw(tex, drawOffset, null, drawColor, te.Angle, tex.Size() * 0.5f, 1f, sfx, 0.0f);

@@ -1,16 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Perforator
 {
@@ -19,10 +20,16 @@ namespace CalamityMod.NPCs.Perforator
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PerfMediumHit", 3);
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfMediumDeath");
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.PerforatorHeadMedium.DisplayName");
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -32,7 +39,11 @@ namespace CalamityMod.NPCs.Perforator
             NPC.width = 40;
             NPC.height = 50;
             NPC.defense = 10;
+
             NPC.LifeMaxNERB(180, 216, 7000);
+            if (Main.zenithWorld)
+                NPC.lifeMax *= 4;
+
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
@@ -42,7 +53,6 @@ namespace CalamityMod.NPCs.Perforator
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = HitSound;
             NPC.DeathSound = DeathSound;
             NPC.netAlways = true;
@@ -62,24 +72,14 @@ namespace CalamityMod.NPCs.Perforator
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
         {
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = 4f;
-            float minimalDamageVelocity = 8f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
-
             NPC.realLife = -1;
 
             // Target
@@ -120,9 +120,9 @@ namespace CalamityMod.NPCs.Perforator
                     NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, NPC.whoAmI, -1f, 0f, 0f, 0, 0, 0);
             }
 
-            Vector2 segmentDirection = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
-            float targetX = Main.player[NPC.target].position.X + (Main.player[NPC.target].width / 2);
-            float targetY = Main.player[NPC.target].position.Y + (Main.player[NPC.target].height / 2);
+            Vector2 segmentDirection = NPC.Center;
+            float targetX = Main.player[NPC.target].Center.X;
+            float targetY = Main.player[NPC.target].Center.Y;
 
             targetX = (int)(targetX / 16f) * 16;
             targetY = (int)(targetY / 16f) * 16;
@@ -136,9 +136,9 @@ namespace CalamityMod.NPCs.Perforator
             {
                 try
                 {
-                    segmentDirection = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
-                    targetX = Main.npc[(int)NPC.ai[1]].position.X + (Main.npc[(int)NPC.ai[1]].width / 2) - segmentDirection.X;
-                    targetY = Main.npc[(int)NPC.ai[1]].position.Y + (Main.npc[(int)NPC.ai[1]].height / 2) - segmentDirection.Y;
+                    segmentDirection = NPC.Center;
+                    targetX = Main.npc[(int)NPC.ai[1]].Center.X - segmentDirection.X;
+                    targetY = Main.npc[(int)NPC.ai[1]].Center.Y - segmentDirection.Y;
                 }
                 catch
                 {
@@ -154,6 +154,22 @@ namespace CalamityMod.NPCs.Perforator
                 NPC.velocity = Vector2.Zero;
                 NPC.position.X += targetX;
                 NPC.position.Y += targetY;
+            }
+
+            // Calculate contact damage based on velocity
+            // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.
+            float maxChaseSpeed = 16f;
+            float minimalContactDamageVelocity = maxChaseSpeed * 0.4f;
+            float minimalDamageVelocity = maxChaseSpeed * 0.8f;
+            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            {
+                NPC.damage = 0;
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
             }
         }
 
@@ -171,7 +187,7 @@ namespace CalamityMod.NPCs.Perforator
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Perforator/PerforatorTailMediumGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color glowmaskColor = Color.Lerp(Color.White, Color.Yellow, 0.5f);
 
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
@@ -209,7 +225,7 @@ namespace CalamityMod.NPCs.Perforator
             int closestPlayer = Player.FindClosest(NPC.Center, 1, 1);
             if (Main.rand.NextBool(4) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
-            
+
             if (Main.netMode != NetmodeID.MultiplayerClient && Main.zenithWorld)
             {
                 int type = ModContent.ProjectileType<IchorBlob>();

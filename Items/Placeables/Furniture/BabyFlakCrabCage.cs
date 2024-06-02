@@ -1,5 +1,5 @@
-﻿using CalamityMod.Tiles.Furniture;
-using CalamityMod.Items.Critters;
+﻿using CalamityMod.Items.Critters;
+using CalamityMod.Tiles.Furniture;
 using Terraria.ID;
 using Terraria.ModLoader;
 

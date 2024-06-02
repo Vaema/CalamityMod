@@ -1,8 +1,8 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -20,6 +20,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.tileCollide = true;
             Projectile.timeLeft = 120;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -30,18 +32,6 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.timeLeft < 51)
             {
                 Projectile.alpha += 5;
-            }
-        }
-
-        public override bool? CanHitNPC(NPC target)
-        {
-            if (Projectile.timeLeft < 130)
-            {
-                return null;
-            }
-            else
-            {
-                return false;
             }
         }
 

@@ -1,8 +1,8 @@
-﻿using CalamityMod.TileEntities;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.TileEntities;
 using CalamityMod.Tiles.DraedonStructures;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -63,7 +63,7 @@ namespace CalamityMod.Schematics
 
         internal const string VernalKey = "Vernal Pass";
         internal const string VernalFilename = "Schematics/VernalPass.csch";
-        
+
         internal const string MechanicShedKey = "Mechanic Key";
         internal const string MechanicShedFilename = "Schematics/MechanicShed.csch";
 
@@ -90,7 +90,7 @@ namespace CalamityMod.Schematics
         internal const string CragRuinKey3Filename = "Schematics/CragRuin3.csch";
         internal const string CragRuinKey4 = "Crag Ruin 4";
         internal const string CragRuinKey4Filename = "Schematics/CragRuin4.csch";
-        
+
         internal static Dictionary<string, SchematicMetaTile[,]> TileMaps;
         internal static Dictionary<string, PilePlacementFunction> PilePlacementMaps;
         public delegate void PilePlacementFunction(int x, int y, Rectangle placeInArea);

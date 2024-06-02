@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
-using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,12 +23,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.5f;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item61;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<Aquashard>();
-            Item.shootSpeed = 22f;
+            Item.shootSpeed = 30f;
             Item.useAmmo = AmmoID.Bullet;
             Item.Calamity().canFirePointBlankShots = true;
         }

@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.ObjectInteractions;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -13,8 +14,8 @@ namespace CalamityMod.Tiles.FurnitureAncient
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 60, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.RedTorch, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
 
@@ -28,7 +29,7 @@ namespace CalamityMod.Tiles.FurnitureAncient
         public override bool RightClick(int i, int j)
         {
             Player player = Main.LocalPlayer;
-            Tile tile = Main.tile[i , j];
+            Tile tile = Main.tile[i, j];
             int spawnX = i - tile.TileFrameX / 18 + (tile.TileFrameX >= 72 ? 5 : 2);
             int spawnY = j + 2;
             if (tile.TileFrameY % 38 != 0)

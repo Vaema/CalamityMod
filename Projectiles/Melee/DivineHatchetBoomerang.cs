@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
             //holy dust
             if (Main.rand.NextBool(8))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 244, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.CopperCoin, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
 
             // Boomerang rotation
@@ -165,21 +165,20 @@ namespace CalamityMod.Projectiles.Melee
                 //find a nearby NPC to track
                 float minDist = 999f;
                 int index = 0;
-                for (int i = 0; i < Main.npc.Length; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
                     bool hasHitNPC = false;
                     for (int j = 0; j < previousNPCs.Count; j++)
                     {
-                        if (previousNPCs[j] == i)
+                        if (previousNPCs[j] == npc.whoAmI)
                         {
                             hasHitNPC = true;
                         }
                     }
 
-                    NPC npc = Main.npc[i];
                     if (npc == target)
                     {
-                        previousNPCs.Add(i);
+                        previousNPCs.Add(npc.whoAmI);
                     }
                     if (npc.CanBeChasedBy(Projectile, false) && npc != target && !hasHitNPC)
                     {
@@ -187,7 +186,7 @@ namespace CalamityMod.Projectiles.Melee
                         if (dist < minDist)
                         {
                             minDist = dist;
-                            index = i;
+                            index = npc.whoAmI;
                         }
                     }
                 }

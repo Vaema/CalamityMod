@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -193,10 +194,9 @@ namespace CalamityMod.Projectiles.Summon
             if (Target is not null)
             {
                 // Find the vortex that it shot.
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile proj in Main.ActiveProjectiles)
                 {
-                    Projectile proj = Main.projectile[i];
-                    if (proj is null || !proj.active || proj.type != ModContent.ProjectileType<MutatedTruffleVortex>() || proj.owner != Owner.whoAmI || proj.timeLeft < MutatedTruffle.VortexTimeUntilNextState)
+                    if (proj.type != ModContent.ProjectileType<MutatedTruffleVortex>() || proj.owner != Owner.whoAmI || proj.timeLeft < MutatedTruffle.VortexTimeUntilNextState)
                         continue;
 
                     // Spin around the vortex.
@@ -260,7 +260,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

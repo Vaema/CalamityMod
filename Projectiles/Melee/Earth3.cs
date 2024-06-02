@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
     public class Earth3 : ModProjectile, ILocalizedModType
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.rand.NextBool(16))
             {
                 Vector2 dustDirection = Vector2.UnitX.RotatedByRandom(1.5707963705062866).RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                int brownDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
+                int brownDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
                 Main.dust[brownDust].velocity = dustDirection * 0.66f;
                 Main.dust[brownDust].position = Projectile.Center + dustDirection * 12f;
             }
@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.light = 0.9f;
                 if (Main.rand.NextBool(10))
                 {
-                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
+                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
                 }
                 if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
                 {
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 20; i++)
             {
-                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[dusty].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -102,10 +102,10 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int num623 = 0; num623 < 35; num623++)
             {
-                int dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 3f);
+                int dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 3f);
                 Main.dust[dusty2].noGravity = true;
                 Main.dust[dusty2].velocity *= 5f;
-                dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[dusty2].velocity *= 2f;
             }
 

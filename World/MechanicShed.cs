@@ -25,14 +25,14 @@ namespace CalamityMod.World
             while (!foundValidGround && attempts++ < 100000)
             {
                 while (!WorldGen.SolidTile(placementPositionX, placementPositionY) && placementPositionY <= Main.worldSurface)
-				{
+                {
                     placementPositionY++;
-				}
+                }
 
                 if (Main.tile[placementPositionX, placementPositionY].HasTile || Main.tile[placementPositionX, placementPositionY].WallType > 0)
-				{
+                {
                     foundValidGround = true;
-				}
+                }
             }
 
             Point placementPoint = new Point(placementPositionX, placementPositionY + 5);
@@ -58,7 +58,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemID.BuilderPotion, WorldGen.genRand.Next(1, 3)),
                 new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(1, 3)),
             };
-            
+
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);

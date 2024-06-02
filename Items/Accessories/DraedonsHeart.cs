@@ -1,8 +1,8 @@
-﻿using CalamityMod.Balancing;
+﻿using System.Collections.Generic;
+using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.Rarities;
 using CalamityMod.World;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -15,18 +15,19 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         private const double ContactDamageReduction = 0.15D;
-        public const double DefenseDamageMultiplier = 0.5D;
 
         // Duration of Nanomachines in frames.
         internal static readonly int NanomachinesDuration = 120;
         // Health gained per frame while using Nanomachines.
         internal static readonly int NanomachinesHealPerFrame = 3;
+
         // Duration of time where Nanomachines won't accumulate after taking damage, in frames.
         internal static readonly int NanomachinePauseAfterDamage = 60;
+        // Same as above, but for hits that are fully absorbed by a shield.
+        internal static readonly int NanomachinePauseAfterShieldDamage = 30;
 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(
             (ContactDamageReduction * 100).ToString("N0"),
-            (100 - (DefenseDamageMultiplier * 100)).ToString("N0"),
             NanomachinesHealPerFrame * NanomachinesDuration,
             NanomachinesDuration / 60);
 
@@ -59,9 +60,6 @@ namespace CalamityMod.Items.Accessories
             modPlayer.hadNanomachinesLastFrame = true;
             modPlayer.AdrenalineDuration = NanomachinesDuration;
             modPlayer.contactDamageReduction += ContactDamageReduction;
-
-            // Multiplies the player's defense damage ratio directly, instead of being hardcoded into various places
-            modPlayer.defenseDamageRatio *= DefenseDamageMultiplier;
         }
 
         public override void ModifyTooltips(List<TooltipLine> list)

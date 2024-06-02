@@ -1,18 +1,18 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.PlagueEnemies
 {
@@ -33,7 +33,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.height = 30;
             NPC.defense = 12;
             NPC.lifeMax = 350;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.CorruptSlime;
             NPC.value = Item.buyPrice(0, 0, 10, 0);
             NPC.alpha = 60;
@@ -45,15 +45,19 @@ namespace CalamityMod.NPCs.PlagueEnemies
             BannerItem = ModContent.ItemType<PestilentSlimeBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Jungle,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundJungle,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.PestilentSlime")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.PestilentSlime")
             });
         }
 
@@ -76,18 +80,22 @@ namespace CalamityMod.NPCs.PlagueEnemies
                     {
                         NPC.velocity.X = NPC.velocity.X * 0.9f;
                     }
-                    if (Main.netMode != NetmodeID.MultiplayerClient && spikeTimer == 0f)
+                    if (spikeTimer == 0f)
                     {
+                        int damage = Main.masterMode ? 16 : Main.expertMode ? 19 : 25;
                         SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
-                        for (int n = 0; n < 5; n++)
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Vector2 spikeVelocity = new Vector2((float)(n - 2), -4f);
-                            spikeVelocity.X *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
-                            spikeVelocity.Y *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
-                            spikeVelocity.Normalize();
-                            spikeVelocity *= 4f + (float)Main.rand.Next(-50, 51) * 0.01f;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), slimePosition.X, slimePosition.Y, spikeVelocity.X, spikeVelocity.Y, ModContent.ProjectileType<PlagueStingerGoliathV2>(), 25, 0f, Main.myPlayer, 0f, 0f);
-                            spikeTimer = 30f;
+                            for (int n = 0; n < 5; n++)
+                            {
+                                Vector2 spikeVelocity = new Vector2((float)(n - 2), -4f);
+                                spikeVelocity.X *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
+                                spikeVelocity.Y *= 1f + (float)Main.rand.Next(-50, 51) * 0.005f;
+                                spikeVelocity.Normalize();
+                                spikeVelocity *= 4f + (float)Main.rand.Next(-50, 51) * 0.01f;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), slimePosition.X, slimePosition.Y, spikeVelocity.X, spikeVelocity.Y, ModContent.ProjectileType<PlagueStingerGoliathV2>(), damage, 0f, Main.myPlayer, 0f, 0f);
+                                spikeTimer = 30f;
+                            }
                         }
                     }
                 }
@@ -98,8 +106,9 @@ namespace CalamityMod.NPCs.PlagueEnemies
                     {
                         NPC.velocity.X = NPC.velocity.X * 0.9f;
                     }
-                    if (Main.netMode != NetmodeID.MultiplayerClient && spikeTimer == 0f)
+                    if (spikeTimer == 0f)
                     {
+                        int damage = Main.masterMode ? 14 : Main.expertMode ? 17 : 22;
                         SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
                         targetYDist = Main.player[NPC.target].position.Y - slimePosition.Y - (float)Main.rand.Next(0, 200);
                         targetDistance = (float)Math.Sqrt((double)(targetXDist * targetXDist + targetYDist * targetYDist));
@@ -107,7 +116,8 @@ namespace CalamityMod.NPCs.PlagueEnemies
                         targetXDist *= targetDistance;
                         targetYDist *= targetDistance;
                         spikeTimer = 50f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), slimePosition.X, slimePosition.Y, targetXDist, targetYDist, ModContent.ProjectileType<PlagueStingerGoliathV2>(), 22, 0f, Main.myPlayer, 0f, 0f);
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), slimePosition.X, slimePosition.Y, targetXDist, targetYDist, ModContent.ProjectileType<PlagueStingerGoliathV2>(), damage, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
             }

@@ -1,11 +1,11 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.Projectiles.Summon;
+using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.Items.Armor.Plaguebringer
 {
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
             Item.width = 18;
             Item.height = 18;
             Item.defense = 7; // 32 total
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
         }

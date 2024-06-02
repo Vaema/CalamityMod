@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -102,14 +102,14 @@ namespace CalamityMod.Projectiles.Boss
                     Vector2 dustVelocity = dustRotation * Projectile.velocity.Length();
                     for (int i = 0; i < 10; i++)
                     {
-                        int ichorDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 170, 0f, 0f, 200, default, 1.6f);
+                        int ichorDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Ichor, 0f, 0f, 200, default, 1.6f);
                         Dust dust = Main.dust[ichorDust];
                         dust.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                         dust.noGravity = true;
                         dust.velocity.Y -= 2f;
                         dust.velocity *= 3f;
                         dust.velocity += dustVelocity * Main.rand.NextFloat();
-                        ichorDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 170, 0f, 0f, 100, default, 0.8f);
+                        ichorDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Ichor, 0f, 0f, 100, default, 0.8f);
                         dust.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                         dust.velocity.Y -= 2f;
                         dust.velocity *= 2f;
@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Boss
                     }
                     for (int j = 0; j < 5; j++)
                     {
-                        int ichorDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 170, 0f, 0f, 0, default, 2f);
+                        int ichorDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Ichor, 0f, 0f, 0, default, 2f);
                         Dust dust = Main.dust[ichorDust2];
                         dust.position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 3f;
                         dust.noGravity = true;

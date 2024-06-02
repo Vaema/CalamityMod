@@ -1,8 +1,8 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

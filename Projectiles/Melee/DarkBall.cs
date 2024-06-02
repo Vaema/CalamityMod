@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -63,7 +63,8 @@ namespace CalamityMod.Projectiles.Melee
                         }
                     }
                 }
-            } catch
+            }
+            catch
             {
             }
             if (Projectile.owner == Main.myPlayer && Projectile.timeLeft <= 3)
@@ -108,15 +109,15 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 20; i++)
             {
-                int corruptDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 14, 0f, 0f, 100, default, 1.5f);
+                int corruptDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 100, default, 1.5f);
                 Main.dust[corruptDust].velocity *= 1.4f;
             }
             for (int j = 0; j < 10; j++)
             {
-                int corruptDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 14, 0f, 0f, 100, default, 2.5f);
+                int corruptDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 100, default, 2.5f);
                 Main.dust[corruptDust2].noGravity = true;
                 Main.dust[corruptDust2].velocity *= 5f;
-                corruptDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 14, 0f, 0f, 100, default, 1.5f);
+                corruptDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 100, default, 1.5f);
                 Main.dust[corruptDust2].velocity *= 3f;
             }
         }

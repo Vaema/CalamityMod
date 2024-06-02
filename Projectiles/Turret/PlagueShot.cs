@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 
 namespace CalamityMod.Projectiles.Turret
 {
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Turret
             Projectile.localAI[0]++;
             if (Projectile.friendly)
                 CalamityUtils.HomeInOnNPC(Projectile, false, 180f, 12f, 0f);
-            Projectile.velocity = ((Projectile.oldVelocity*7f) + Projectile.velocity) / 8; //inertia
+            Projectile.velocity = ((Projectile.oldVelocity * 7f) + Projectile.velocity) / 8; //inertia
             DrawParticles();
         }
 

@@ -31,17 +31,17 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
         public override void AddRecipes()
         {
             CreateRecipe(400).
-				AddRecipeGroup("AnyStoneBlock", 400).
-				AddIngredient<AshesofAnnihilation>().
-				AddTile<SCalAltar>().
-				Register();
+                AddRecipeGroup("AnyStoneBlock", 400).
+                AddIngredient<AshesofAnnihilation>().
+                AddTile<SCalAltar>().
+                Register();
             CreateRecipe().
-				AddIngredient<OccultPlatformItem>(2).
-				Register();
+                AddIngredient<OccultPlatformItem>(2).
+                Register();
             CreateRecipe().
-				AddIngredient<OccultBrickWallItem>(4).
-				AddTile(TileID.WorkBenches).
-				Register();
+                AddIngredient<OccultBrickWallItem>(4).
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

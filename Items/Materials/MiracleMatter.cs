@@ -1,8 +1,8 @@
-﻿using CalamityMod.Rarities;
+﻿using System;
+using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -16,13 +16,13 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 122;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 122;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 46;
-            Item.height = 64;
+            Item.width = 70;
+            Item.height = 80;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(platinum: 6, gold: 50);
             Item.rare = ModContent.RarityType<Violet>();
@@ -73,7 +73,7 @@ namespace CalamityMod.Items.Materials
 
             if (Main.rand.NextBool(3))
             {
-                Dust exoFlame = Dust.NewDustDirect(Item.position, (int)(Item.width * Item.scale), (int)(Item.height * Item.scale * 0.6f), 6);
+                Dust exoFlame = Dust.NewDustDirect(Item.position, (int)(Item.width * Item.scale), (int)(Item.height * Item.scale * 0.6f), DustID.Torch);
                 exoFlame.velocity = Vector2.Lerp(Main.rand.NextVector2Unit(), -Vector2.UnitY, 0.5f) * Main.rand.NextFloat(1.8f, 2.6f);
                 exoFlame.scale *= Main.rand.NextFloat(0.85f, 1.15f);
                 exoFlame.fadeIn = 0.9f;

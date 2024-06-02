@@ -1,18 +1,18 @@
-﻿using Terraria.Graphics.Shaders;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
-using static CalamityMod.CalamityUtils;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
-using Terraria.Audio;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Tiles.Astral;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.ModLoader;
+using static CalamityMod.CalamityUtils;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -28,15 +28,11 @@ namespace CalamityMod.Projectiles.Melee
         public ref float CurrentIndicator => ref Projectile.localAI[0]; //What "indicator" stage are you on.
         public ref float OverCharge => ref Projectile.localAI[1];
 
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
         const float MaxCharge = 500;
 
         public Vector2 lastDisplacement;
         public float dashDuration;
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -80,7 +76,7 @@ namespace CalamityMod.Projectiles.Melee
                 initialized = true;
             }
 
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 if (State == 0f)
                 {
@@ -173,7 +169,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
 
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
@@ -238,7 +234,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Owner.GiveIFrames(OmegaBiomeBlade.ShockwaveAttunement_DashHitIFrames);
+            // 17APR2024: Ozzatron: True Biome Blade's shockwave slam gives iframes when striking enemies in a similar manner to a ram dash.
+            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+            Owner.GiveUniversalIFrames(OmegaBiomeBlade.ShockwaveAttunement_DashHitIFrames);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

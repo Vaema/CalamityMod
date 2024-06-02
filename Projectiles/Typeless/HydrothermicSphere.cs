@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
-            Dust fire = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, 2f);
+            Dust fire = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
             fire.noGravity = true;
             fire.velocity = Vector2.Zero;
 

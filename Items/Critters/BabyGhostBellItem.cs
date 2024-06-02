@@ -1,7 +1,7 @@
 ﻿using CalamityMod.NPCs.SunkenSea;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Critters
 {

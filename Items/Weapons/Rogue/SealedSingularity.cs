@@ -26,12 +26,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noMelee = Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item106;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }
 
-		public override float StealthDamageMultiplier => 0.72f;
+        public override float StealthDamageMultiplier => 0.72f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

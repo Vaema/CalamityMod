@@ -2,6 +2,7 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -41,10 +42,9 @@ namespace CalamityMod.Items.Armor.LunicCorps
             get
             {
                 bool result = false;
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    Player player = Main.player[i];
-                    if (player is null || !player.active || player.outOfRange || player.dead)
+                    if (player.outOfRange || player.dead)
                         continue;
 
                     CalamityPlayer modPlayer = player.Calamity();
@@ -61,7 +61,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.defense = 14;
             Item.rare = ItemRarityID.Cyan;
             Item.Calamity().donorItem = true;
@@ -76,7 +76,10 @@ namespace CalamityMod.Items.Armor.LunicCorps
         {
             var modPlayer = player.Calamity();
             modPlayer.lunicCorpsSet = true;
-            player.setBonus = this.GetLocalizedValue("SetBonus");
+
+            // The localization is formatted strangely, but attempting to put the {0} on its own line will leave a blank space if given an empty string
+            string adrenTooltip = CalamityWorld.revenge ? "\n" + this.GetLocalizedValue("ShieldAdren") : "";
+            player.setBonus = this.GetLocalization("SetBonus").Format(adrenTooltip);
 
             player.bulletDamage += 0.1f;
             player.specialistDamage += 0.1f;
@@ -112,10 +115,9 @@ namespace CalamityMod.Items.Armor.LunicCorps
             // Visibility is not net synced, for example.
             bool alreadyDrawnShieldForPlayer = false;
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active || player.outOfRange || player.dead)
+                if (player.outOfRange || player.dead)
                     continue;
 
                 CalamityPlayer modPlayer = player.Calamity();
@@ -126,6 +128,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
 
                 // Scale the shield is drawn at. The Lunic Corps shield sticks very close to the body to mimic Halo and occasionally pulses.
                 // The "i" parameter is to make different player's shields not be perfectly synced.
+                int i = player.whoAmI;
                 float baseScale = 0.11f;
                 float maxExtraScale = 0.013f;
                 float extraScalePulseInterpolant = MathF.Pow(12f, MathF.Sin(Main.GlobalTimeWrappedHourly * 1.6f + i) - 1);

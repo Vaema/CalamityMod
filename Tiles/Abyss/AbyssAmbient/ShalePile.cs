@@ -1,4 +1,4 @@
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -42,7 +42,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
     public class ShalePile2 : ShalePile1
     {
     }
-    
+
     public class ShalePile3 : ShalePile1
     {
     }

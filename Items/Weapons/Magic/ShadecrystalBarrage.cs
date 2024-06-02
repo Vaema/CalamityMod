@@ -12,34 +12,42 @@ namespace CalamityMod.Items.Weapons.Magic
     public class ShadecrystalBarrage : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
+        internal const float ShootSpeed = 2f;
+
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 30;
-            Item.damage = 25;
+            Item.damage = 24;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 4;
-            Item.useTime = 6;
-            Item.useAnimation = 6;
+            Item.mana = 10;
+            Item.useTime = 7;
+            Item.useAnimation = 14;
+            Item.reuseDelay = 49;
+            Item.useLimitPerAnimation = 3;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 5.5f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.knockBack = 5f;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item9;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ShadecrystalProjectile>();
-            Item.shootSpeed = 16f;
+            Item.shootSpeed = ShootSpeed;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int projAmt = Main.rand.Next(1, 3);
-            for (int index = 0; index < projAmt; ++index)
+            int projAmt = 6;
+            float maxSpread = ShootSpeed * 0.25f;
+            Vector2 cachedVelocity = velocity;
+            Vector2 newPosition = position + velocity.SafeNormalize(Vector2.UnitY) * 20f;
+            for (int index = 0; index < projAmt; index++)
             {
-                float SpeedX = velocity.X + Main.rand.Next(-40, 41) * 0.05f;
-                float SpeedY = velocity.Y + Main.rand.Next(-40, 41) * 0.05f;
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
+                velocity += new Vector2(Main.rand.NextFloat(-maxSpread, maxSpread), Main.rand.NextFloat(-maxSpread, maxSpread));
+                Projectile.NewProjectile(source, newPosition, velocity, type, damage, knockback, player.whoAmI, 0f, MathHelper.Lerp(1.04f, 1.09f, index / (float)(projAmt - 1)));
+                velocity = cachedVelocity;
             }
             return false;
         }

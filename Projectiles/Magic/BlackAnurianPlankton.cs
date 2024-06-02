@@ -1,5 +1,5 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.alpha = 0;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             float projX = Projectile.position.X;
             float projY = Projectile.position.Y;
             float homingRange = 100000f;
@@ -57,14 +57,14 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.ai[0] > 30f)
             {
                 Projectile.ai[0] = 30f;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].CanBeChasedBy(Projectile, false) && !Main.npc[i].wet)
+                    if (n.CanBeChasedBy(Projectile, false) && !n.wet)
                     {
-                        float npcX = Main.npc[i].position.X + (float)(Main.npc[i].width / 2);
-                        float npcY = Main.npc[i].position.Y + (float)(Main.npc[i].height / 2);
+                        float npcX = n.position.X + (float)(n.width / 2);
+                        float npcY = n.position.Y + (float)(n.height / 2);
                         float npcDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcY);
-                        if (npcDist < 800f && npcDist < homingRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, Main.npc[i].position, Main.npc[i].width, Main.npc[i].height))
+                        if (npcDist < 800f && npcDist < homingRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, n.position, n.width, n.height))
                         {
                             homingRange = npcDist;
                             projX = npcX;
@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             float projVelModifier = 0.1f;
-            Vector2 projDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+            Vector2 projDirection = Projectile.Center;
             float xDest = projX - projDirection.X;
             float yDest = projY - projDirection.Y;
             float destinationDist = (float)Math.Sqrt((double)(xDest * xDest + yDest * yDest));

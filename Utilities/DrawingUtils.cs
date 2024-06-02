@@ -1,13 +1,14 @@
-﻿using CalamityMod.Graphics;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using ReLogic.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using CalamityMod.Graphics;
+using CalamityMod.Items.Weapons.Melee;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using ReLogic.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -397,16 +398,21 @@ namespace CalamityMod
 
         public static void DrawItemGlowmaskSingleFrame(this Item item, SpriteBatch spriteBatch, float rotation, Texture2D glowmaskTexture)
         {
-            Vector2 origin = new Vector2(glowmaskTexture.Width / 2f, glowmaskTexture.Height / 2f - 2f);
-            spriteBatch.Draw(glowmaskTexture, item.Center - Main.screenPosition, null, Color.White, rotation, origin, 1f, SpriteEffects.None, 0f);
+            Vector2 origin = new Vector2(glowmaskTexture.Width / 2f, glowmaskTexture.Height / 2f);
+
+            Color color = new Color(250, 250, 250, item.alpha);
+            if (item.type == ModContent.ItemType<GrandGuardian>())
+                color = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, item.alpha);
+
+            spriteBatch.Draw(glowmaskTexture, item.Center - Main.screenPosition, null, color, rotation, origin, 1f, SpriteEffects.None, 0f);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Rectangle GetFrame(int itemID, int whoAmI, Texture2D texture = null)
         {
             texture ??= TextureAssets.Item[itemID].Value;
-            return Main.itemAnimations[itemID] == null 
-                ? texture.Frame() 
+            return Main.itemAnimations[itemID] == null
+                ? texture.Frame()
                 : Main.itemAnimations[itemID].GetFrame(texture, Main.itemFrameCounter[whoAmI]);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -418,8 +424,8 @@ namespace CalamityMod
         public static Rectangle GetFrame(int itemID, Texture2D texture = null)
         {
             texture ??= TextureAssets.Item[itemID].Value;
-            return Main.itemAnimations[itemID] == null 
-                ? texture.Frame() 
+            return Main.itemAnimations[itemID] == null
+                ? texture.Frame()
                 : Main.itemAnimations[itemID].GetFrame(texture);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -438,118 +444,6 @@ namespace CalamityMod
             if (frameCounterUp)
                 frameCounter++;
             return new Rectangle(0, item.height * frame, item.width, item.height);
-        }
-
-        public static bool DrawFishingLine(this Projectile projectile, int fishingRodType, Color poleColor, int xPositionAdditive = 45, float yPositionAdditive = 35f)
-        {
-            Player player = Main.player[projectile.owner];
-            Item item = player.HeldItem;
-            if (!projectile.bobber || item.holdStyle <= 0)
-                return false;
-
-            Texture2D fishingLineTexture = TextureAssets.FishingLine.Value;
-            float originX = player.MountedCenter.X;
-            float originY = player.MountedCenter.Y;
-            originY += player.gfxOffY;
-            //This variable is used to account for Gravitation Potions
-            float gravity = player.gravDir;
-
-            if (item.type == fishingRodType)
-            {
-                originX += (float)(xPositionAdditive * player.direction);
-                if (player.direction < 0)
-                {
-                    originX -= 13f;
-                }
-                originY -= yPositionAdditive * gravity;
-            }
-
-            if (gravity == -1f)
-            {
-                originY -= 12f;
-            }
-            Vector2 mountedCenter = new Vector2(originX, originY);
-            mountedCenter = player.RotatedRelativePoint(mountedCenter + new Vector2(8f), true) - new Vector2(8f);
-            Vector2 lineOrigin = projectile.Center - mountedCenter;
-            bool canDraw = true;
-            if (lineOrigin.X == 0f && lineOrigin.Y == 0f)
-                return false;
-
-            float projPosMagnitude = lineOrigin.Length();
-            projPosMagnitude = 12f / projPosMagnitude;
-            lineOrigin.X *= projPosMagnitude;
-            lineOrigin.Y *= projPosMagnitude;
-            mountedCenter -= lineOrigin;
-            lineOrigin = projectile.Center - mountedCenter;
-
-            while (canDraw)
-            {
-                float height = 12f;
-                float positionMagnitude = lineOrigin.Length();
-                if (float.IsNaN(positionMagnitude) || float.IsNaN(positionMagnitude))
-                    break;
-
-                if (positionMagnitude < 20f)
-                {
-                    height = positionMagnitude - 8f;
-                    canDraw = false;
-                }
-                positionMagnitude = 12f / positionMagnitude;
-                lineOrigin.X *= positionMagnitude;
-                lineOrigin.Y *= positionMagnitude;
-                mountedCenter += lineOrigin;
-                lineOrigin = projectile.Center - mountedCenter;
-                if (positionMagnitude > 12f)
-                {
-                    float positionInverseMultiplier = 0.3f;
-                    float absVelocitySum = Math.Abs(projectile.velocity.X) + Math.Abs(projectile.velocity.Y);
-                    if (absVelocitySum > 16f)
-                    {
-                        absVelocitySum = 16f;
-                    }
-                    absVelocitySum = 1f - absVelocitySum / 16f;
-                    positionInverseMultiplier *= absVelocitySum;
-                    absVelocitySum = positionMagnitude / 80f;
-                    if (absVelocitySum > 1f)
-                    {
-                        absVelocitySum = 1f;
-                    }
-                    positionInverseMultiplier *= absVelocitySum;
-                    if (positionInverseMultiplier < 0f)
-                    {
-                        positionInverseMultiplier = 0f;
-                    }
-                    absVelocitySum = 1f - projectile.localAI[0] / 100f;
-                    positionInverseMultiplier *= absVelocitySum;
-                    if (lineOrigin.Y > 0f)
-                    {
-                        lineOrigin.Y *= 1f + positionInverseMultiplier;
-                        lineOrigin.X *= 1f - positionInverseMultiplier;
-                    }
-                    else
-                    {
-                        absVelocitySum = Math.Abs(projectile.velocity.X) / 3f;
-                        if (absVelocitySum > 1f)
-                        {
-                            absVelocitySum = 1f;
-                        }
-                        absVelocitySum -= 0.5f;
-                        positionInverseMultiplier *= absVelocitySum;
-                        if (positionInverseMultiplier > 0f)
-                        {
-                            positionInverseMultiplier *= 2f;
-                        }
-                        lineOrigin.Y *= 1f + positionInverseMultiplier;
-                        lineOrigin.X *= 1f - positionInverseMultiplier;
-                    }
-                }
-                //This color decides the color of the fishing line.
-                Color lineColor = Lighting.GetColor((int)mountedCenter.X / 16, (int)mountedCenter.Y / 16, poleColor);
-                float rotation = lineOrigin.ToRotation() - MathHelper.PiOver2;
-
-                Main.spriteBatch.Draw(fishingLineTexture, new Vector2(mountedCenter.X - Main.screenPosition.X + fishingLineTexture.Width * 0.5f, mountedCenter.Y - Main.screenPosition.Y + fishingLineTexture.Height * 0.5f), new Rectangle(0, 0, fishingLineTexture.Width, (int)height), lineColor, rotation, new Vector2(fishingLineTexture.Width * 0.5f, 0f), 1f, SpriteEffects.None, 0f);
-            }
-            return false;
         }
 
         public static void DrawHook(this Projectile projectile, Texture2D hookTexture, float angleAdditive = 0f)

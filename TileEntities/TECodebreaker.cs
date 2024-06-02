@@ -1,9 +1,9 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System.IO;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.DraedonSummoner;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -421,7 +421,7 @@ namespace CalamityMod.TileEntities
             HeldSchematicID = reader.ReadInt32();
             DecryptionCountdown = reader.ReadInt32();
             InitialCellCountBeforeDecrypting = reader.ReadInt32();
-            ContainsBloodSample= reader.ReadBoolean();
+            ContainsBloodSample = reader.ReadBoolean();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 5;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
 
-			ItemID.Sets.SortingPriorityMaterials[Type] = 109;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 109;
         }
 
         public override void SetDefaults()

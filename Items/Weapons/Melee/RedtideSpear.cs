@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.Spears[Item.type] = true;
+            ItemID.Sets.Spears[Item.type] = true;
         }
 
         public override void SetDefaults()
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 5f;
             Item.UseSound = null;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<RedtideSpearProjectile>();
             Item.shootSpeed = 4f;

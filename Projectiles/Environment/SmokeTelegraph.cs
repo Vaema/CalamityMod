@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Environment
 {
     public class SmokeTelegraph : ModProjectile, ILocalizedModType
@@ -31,9 +31,9 @@ namespace CalamityMod.Projectiles.Environment
             int dustCustomData = isActive == -1 ? 0 : 1;
             if (Projectile.ai[0] == 0f)
             {
-                if (!Collision.SolidCollision(Projectile.position + new Vector2(0f, isActive == -1 ? (float) (Projectile.height - 48) : 0f), Projectile.width, 48) && !Collision.WetCollision(Projectile.position + new Vector2(0f, isActive == -1 ? (float) (Projectile.height - 20) : 0f), Projectile.width, 20))
+                if (!Collision.SolidCollision(Projectile.position + new Vector2(0f, isActive == -1 ? (float)(Projectile.height - 48) : 0f), Projectile.width, 48) && !Collision.WetCollision(Projectile.position + new Vector2(0f, isActive == -1 ? (float)(Projectile.height - 20) : 0f), Projectile.width, 20))
                 {
-                    Projectile.velocity = new Vector2(0f, (float) Math.Sign(Projectile.velocity.Y) * (1f / 1000f));
+                    Projectile.velocity = new Vector2(0f, (float)Math.Sign(Projectile.velocity.Y) * (1f / 1000f));
                     Projectile.ai[0] = 1f;
                     Projectile.ai[1] = 0f;
                     Projectile.timeLeft = 60;
@@ -49,14 +49,14 @@ namespace CalamityMod.Projectiles.Environment
                     Main.dust[smoky].scale = 0.1f + Main.rand.Next(5) * 0.1f;
                     Main.dust[smoky].fadeIn = 1.5f + Main.rand.Next(5) * 0.1f;
                     Main.dust[smoky].noGravity = true;
-                    Main.dust[smoky].position = Projectile.Center + new Vector2(0f, (float) (-Projectile.height / 2)).RotatedBy((double)Projectile.rotation, new Vector2()) * 1.1f;
+                    Main.dust[smoky].position = Projectile.Center + new Vector2(0f, (float)(-Projectile.height / 2)).RotatedBy((double)Projectile.rotation, new Vector2()) * 1.1f;
                 }
             }
 
             if (Projectile.ai[0] != 1f)
                 return;
 
-            Projectile.velocity = new Vector2(0f, (float) Math.Sign(Projectile.velocity.Y) * (1f / 1000f));
+            Projectile.velocity = new Vector2(0f, (float)Math.Sign(Projectile.velocity.Y) * (1f / 1000f));
 
             if (isActive != 0)
             {
@@ -84,34 +84,34 @@ namespace CalamityMod.Projectiles.Environment
                 Projectile.localAI[0] = 1f;
                 for (int i = 0; i < 60; ++i)
                 {
-                    int smoky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, -2.5f * (float) -isActive, 0, new Color(), 1f);
+                    int smoky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, -2.5f * (float)-isActive, 0, new Color(), 1f);
                     Dust dust = Main.dust[smoky];
                     dust.alpha = 200;
                     dust.velocity *= new Vector2(0.3f, 2f);
                     dust.velocity.Y += (float)(2 * isActive);
                     dust.scale += Main.rand.NextFloat();
-                    dust.position = new Vector2(Projectile.Center.X, Projectile.Center.Y + (float) Projectile.height * 0.5f * (float) -isActive);
-                    dust.customData = (object) dustCustomData;
-                    if (isActive == -1 && Main.rand.Next(4) != 0)
+                    dust.position = new Vector2(Projectile.Center.X, Projectile.Center.Y + (float)Projectile.height * 0.5f * (float)-isActive);
+                    dust.customData = (object)dustCustomData;
+                    if (isActive == -1 && !Main.rand.NextBool(4))
                     {
                         dust.velocity.Y -= 0.2f;
                     }
                 }
-                SoundEngine.PlaySound(SoundID.Item34, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item34, Projectile.Center);
             }
             if (isActive == 1)
             {
                 for (int i = 0; i < 9; ++i)
                 {
-                    int smoky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, -2.5f * (float) -isActive, 0, new Color(), 1f);
+                    int smoky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, -2.5f * (float)-isActive, 0, new Color(), 1f);
                     Dust dust = Main.dust[smoky];
                     dust.alpha = 200;
                     dust.velocity *= new Vector2(0.3f, 2f);
                     dust.velocity.Y += (float)(2 * isActive);
                     dust.scale += Main.rand.NextFloat();
-                    dust.position = new Vector2(Projectile.Center.X, Projectile.Center.Y + (float) Projectile.height * 0.5f * (float) -isActive);
+                    dust.position = new Vector2(Projectile.Center.X, Projectile.Center.Y + (float)Projectile.height * 0.5f * (float)-isActive);
                     dust.customData = (object)dustCustomData;
-                    if (isActive == -1 && Main.rand.Next(4) != 0)
+                    if (isActive == -1 && !Main.rand.NextBool(4))
                     {
                         Main.dust[smoky].velocity.Y -= 0.2f;
                     }
@@ -120,8 +120,8 @@ namespace CalamityMod.Projectiles.Environment
             int Height = (int)(Projectile.ai[1] / 60f * (float)Projectile.height) * 3;
             if (Height > Projectile.height)
                 Height = Projectile.height;
-            Vector2 Position = Projectile.position + (isActive == -1 ? new Vector2(0f, (float) (Projectile.height - Height)) : Vector2.Zero);
-            Vector2 vector2 = Projectile.position + (isActive == -1 ? new Vector2(0f, (float) Projectile.height) : Vector2.Zero);
+            Vector2 Position = Projectile.position + (isActive == -1 ? new Vector2(0f, (float)(Projectile.height - Height)) : Vector2.Zero);
+            Vector2 vector2 = Projectile.position + (isActive == -1 ? new Vector2(0f, (float)Projectile.height) : Vector2.Zero);
             for (int i = 0; i < 6; ++i)
             {
                 if (Main.rand.Next(3) < 2)
@@ -155,12 +155,12 @@ namespace CalamityMod.Projectiles.Environment
             {
                 if (Main.rand.NextFloat() >= 0.5f)
                 {
-                    int smoky = Dust.NewDust(Position, Projectile.width, Height, dustType, 0f, -2.5f * (float) -isActive, 0, new Color(), 1f);
+                    int smoky = Dust.NewDust(Position, Projectile.width, Height, dustType, 0f, -2.5f * (float)-isActive, 0, new Color(), 1f);
                     Dust dust = Main.dust[smoky];
                     dust.alpha = 200;
                     dust.velocity *= new Vector2(0.6f, 1.5f);
                     dust.scale += Main.rand.NextFloat();
-                    if (isActive == -1 && Main.rand.Next(4) != 0)
+                    if (isActive == -1 && !Main.rand.NextBool(4))
                     {
                         dust.velocity.Y -= 0.2f;
                     }

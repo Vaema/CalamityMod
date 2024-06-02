@@ -14,11 +14,13 @@ using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -32,12 +34,13 @@ namespace CalamityMod.NPCs.Bumblebirb
     [AutoloadBossHead]
     public class Bumblefuck : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 6;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.5f,
                 PortraitScale = 0.85f,
@@ -47,6 +50,10 @@ namespace CalamityMod.NPCs.Bumblebirb
             value.Position.Y += 8f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Bumblebirb/BirbGlow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override string Texture => "CalamityMod/NPCs/Bumblebirb/Birb";
@@ -82,7 +89,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Jungle,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bumblefuck")
@@ -111,7 +118,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
         public override void AI()
         {
-            CalamityAI.BumblebirbAI(NPC, Mod);
+            BumblebirbAI.VanillaBumblebirbAI(NPC, Mod);
         }
 
         public override void FindFrame(int frameHeight)
@@ -349,7 +356,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
             if (phase2)
             {
-                texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Bumblebirb/BirbGlow").Value;
+                texture2D15 = GlowTexture.Value;
                 Color glowmaskColor = Color.Lerp(Color.White, Color.Red, 0.5f);
                 altColor = Color.Red;
 
@@ -480,7 +487,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
@@ -496,13 +503,13 @@ namespace CalamityMod.NPCs.Bumblebirb
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 244, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CopperCoin, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 50; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 244, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CopperCoin, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFire") { PitchVariance = 0.1f };
         public static readonly SoundStyle ShootAndReloadSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFireAndReload") { PitchVariance = 0.1f };
 
-        public static float MinSpreadDistance = 460f; 
+        public static float MinSpreadDistance = 460f;
         public static float MaxSpreadDistance = 60f;
         public static float MinSpread = 0.2f;
         public static float MaxSpread = 0.6f;
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.25f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = ShootSound;
             Item.autoReuse = false;
@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             player.Calamity().mouseWorldListener = true;
         }
 
-        public override bool CanUseItem(Player player) =>  storedScrap > 0 || (player.HasItem(ModContent.ItemType<WulfrumMetalScrap>()) || player.HasItem(ItemID.SilverCoin));
+        public override bool CanUseItem(Player player) => storedScrap > 0 || (player.HasItem(ModContent.ItemType<WulfrumMetalScrap>()) || player.HasItem(ItemID.SilverCoin));
 
         public override void UseAnimation(Player player)
         {
@@ -184,7 +184,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Register();
         }
 
-        public override void OnCreated (ItemCreationContext context)
+        public override void OnCreated(ItemCreationContext context)
         {
             if (context is RecipeItemCreationContext)
                 storedScrap = ShotsPerScrap;

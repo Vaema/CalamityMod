@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Projectiles.BaseProjectiles;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
-using ReLogic.Content;
+﻿using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Sounds;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Turret
 {

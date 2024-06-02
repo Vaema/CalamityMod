@@ -17,7 +17,7 @@ namespace CalamityMod.Buffs.Summon
         {
             CalamityPlayer modPlayer = player.Calamity();
 
-            
+
             if (player.ownedProjectileCounts[ModContent.ProjectileType<VictideSeaSnail>()] > 0)
             {
                 modPlayer.victideSnail = true;

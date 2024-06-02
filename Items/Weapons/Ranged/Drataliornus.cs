@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useLimitPerAnimation = 2;
             Item.UseSound = SoundID.Item5;
             Item.shoot = ModContent.ProjectileType<DrataliornusBow>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.DamageType = DamageClass.Ranged;

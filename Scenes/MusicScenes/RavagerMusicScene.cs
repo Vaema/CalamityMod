@@ -1,4 +1,4 @@
-using CalamityMod.NPCs.Ravager;
+﻿using CalamityMod.NPCs.Ravager;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

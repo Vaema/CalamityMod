@@ -1,10 +1,10 @@
-﻿using CalamityMod.Events;
+﻿using System.Collections.Generic;
+using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Signus;
 using CalamityMod.NPCs.StormWeaver;
 using CalamityMod.Rarities;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.SummonItems
         public static readonly SoundStyle StormSound = new("CalamityMod/Sounds/Item/StormWeaverSpawn");
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
@@ -36,10 +36,10 @@ namespace CalamityMod.Items.SummonItems
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {

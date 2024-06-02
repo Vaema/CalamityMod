@@ -1,28 +1,28 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.World;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class ScornEater : ModNPC
     {
 
         public static readonly SoundStyle JumpSound = new("CalamityMod/Sounds/Custom/ScornJump");
-        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/ScornHurt"); 
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/ScornHurt");
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/ScornDeath");
 
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 7;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.4f,
                 PortraitScale = 0.67f,
@@ -42,7 +42,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 38;
             NPC.DR_NERD(0.05f);
             NPC.lifeMax = 9000;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.1f;
             AIType = -1;
             NPC.lavaImmune = true;
             NPC.value = Item.buyPrice(0, 0, 50, 0);
@@ -53,11 +53,15 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheHallow,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheUnderworld,
@@ -75,37 +79,39 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             if (NPC.velocity.Y == 0f)
             {
+                NPC.knockBackResist = 0f;
+
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 NPC.ai[2] += 1f;
-                int decelerationDelay = 20;
+
+                int decelerationDelay = CalamityWorld.death ? 6 : CalamityWorld.revenge ? 12 : 20;
                 if (NPC.ai[1] == 0f)
-                {
-                    decelerationDelay = 12;
-                }
-                if (CalamityWorld.revenge)
-                {
-                    decelerationDelay /= 2;
-                }
-                if (CalamityWorld.death)
-                {
-                    decelerationDelay /= 2;
-                }
+                    decelerationDelay = CalamityWorld.death ? 3 : CalamityWorld.revenge ? 6 : 12;
+
                 if (NPC.ai[2] < (float)decelerationDelay)
                 {
                     NPC.velocity.X = NPC.velocity.X * 0.9f;
                     return;
                 }
+
                 NPC.ai[2] = 0f;
                 if (NPC.direction == 0)
-                {
                     NPC.direction = -1;
-                }
+
                 NPC.spriteDirection = NPC.direction;
+
                 NPC.ai[1] += 1f;
                 NPC.ai[3] += 1f;
                 if (NPC.ai[3] >= 4f)
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     NPC.ai[3] = 0f;
                     NPC.noTileCollide = true;
+
                     if (NPC.ai[1] == 2f)
                     {
                         NPC.velocity.X = (float)NPC.direction * 15f;
@@ -126,22 +132,25 @@ namespace CalamityMod.NPCs.NormalNPCs
                         else
                             NPC.velocity.Y = 12f;
                     }
+
                     if (!Main.zenithWorld)
-                    SoundEngine.PlaySound(JumpSound, NPC.Center);
+                        SoundEngine.PlaySound(JumpSound, NPC.Center);
                 }
+
                 NPC.netUpdate = true;
             }
             else
             {
+                NPC.knockBackResist = 0.1f;
+
                 if (NPC.direction == 1 && NPC.velocity.X < 1f)
                 {
-                    NPC.velocity.X = NPC.velocity.X + 0.1f;
+                    NPC.velocity.X += 0.1f;
                     return;
                 }
+
                 if (NPC.direction == -1 && NPC.velocity.X > -1f)
-                {
-                    NPC.velocity.X = NPC.velocity.X - 0.1f;
-                }
+                    NPC.velocity.X -= 0.1f;
             }
         }
 

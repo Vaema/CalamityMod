@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityMod.Tiles.FurnitureAuric;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureAuric
@@ -9,6 +9,10 @@ namespace CalamityMod.Items.Placeables.FurnitureAuric
     public class AuricAbsorber : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
+        public override void SetStaticDefaults()
+        {
+            Item.ResearchUnlockCount = 100;
+        }
         public override void SetDefaults()
         {
             Item.width = 12;

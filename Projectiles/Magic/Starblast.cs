@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Magic
 
                     if (Main.rand.NextBool(4))
                     {
-                        int stardust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 180, 0f, 0f, 100, default, 1f);
+                        int stardust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 1f);
                         Main.dust[stardust].position = Projectile.Center;
                         Main.dust[stardust].scale += (float)Main.rand.Next(50) * 0.01f;
                         Main.dust[stardust].noGravity = true;
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
 
                     if (Main.rand.NextBool(6))
                     {
-                        int stardustier = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 176, 0f, 0f, 100, default, 1f);
+                        int stardustier = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BubbleBurst_Blue, 0f, 0f, 100, default, 1f);
                         Main.dust[stardustier].position = Projectile.Center;
                         Main.dust[stardustier].scale += 0.3f + (float)Main.rand.Next(50) * 0.01f;
                         Main.dust[stardustier].noGravity = true;
@@ -68,8 +68,8 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 176, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 180, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BubbleBurst_Blue, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.DungeonSpirit, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
     }

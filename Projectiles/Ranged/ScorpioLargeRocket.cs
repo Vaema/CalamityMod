@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -110,9 +111,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= 13f;
+            modifiers.SourceDamage *= 15f;
             if (Projectile.numHits == 1)
-                Projectile.damage = (int)(Projectile.damage * 0.2f); // Inital shot does big damage, AOE does a 5th of that damage so Deus doesn't get to cash in for healthcare
+                Projectile.damage = (int)(Projectile.damage * .89f); // Reduction in damage if the hits are more than one, mostly for Deus
             if (Projectile.numHits > 1)
                 Projectile.damage = (int)(Projectile.damage * 0.92f); // 8% penalty on explosion hits
             if (Projectile.damage < 1)
@@ -208,7 +209,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowTexture = Request<Texture2D>("CalamityMod/Projectiles/Ranged/ScorpioLargeRocket_Glow").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
@@ -216,9 +217,9 @@ namespace CalamityMod.Projectiles.Ranged
             float drawRotation = Projectile.rotation + MathHelper.PiOver2;
             Vector2 rotationPoint = frame.Size() * 0.5f;
 
-            PrimitiveTrail trail = new PrimitiveTrail(TrailWidthFunction, TrailColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
+            // 29FEB2024: Ozzatron: hopefully ported this correctly to the new prim system by Toasty
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
-            trail.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 25);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidthFunction, TrailColorFunction, (_) => Projectile.Size * 0.5f, smoothen: false, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 25);
 
             Main.EntitySpriteDraw(texture, drawPosition, frame, drawColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
             Main.EntitySpriteDraw(glowTexture, drawPosition, frame, Color.White, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);

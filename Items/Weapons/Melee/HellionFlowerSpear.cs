@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.Spears[Item.type] = true;
+            ItemID.Sets.Spears[Item.type] = true;
         }
 
         public override void SetDefaults()
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<HellionFlowerSpearProjectile>();
             Item.shootSpeed = 8f;

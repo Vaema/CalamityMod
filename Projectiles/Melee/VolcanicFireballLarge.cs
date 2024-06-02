@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.frame = 0;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+            Projectile.rotation = Projectile.velocity.ToRotation();
             Lighting.AddLight(Projectile.Center, 0.4f, 0f, 0f);
             if (Main.rand.NextBool(4))
             {
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             for (int k = 0; k < 5; k++)
             {
-                int volcano = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 174, 0f, 0f);
+                int volcano = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f);
                 Main.dust[volcano].noGravity = true;
                 Main.dust[volcano].velocity *= 0f;
             }

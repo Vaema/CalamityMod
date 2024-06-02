@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class SeaDragonRocket : ModProjectile, ILocalizedModType
@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 2f);
+                    int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                     Main.dust[fire].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -62,11 +62,11 @@ namespace CalamityMod.Projectiles.Ranged
                             halfX = Projectile.velocity.X * 0.5f;
                             halfY = Projectile.velocity.Y * 0.5f;
                         }
-                        int explosion = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 6, 0f, 0f, 100, default, 1f);
+                        int explosion = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.Torch, 0f, 0f, 100, default, 1f);
                         Main.dust[explosion].scale *= 2f + (float)Main.rand.Next(10) * 0.1f;
                         Main.dust[explosion].velocity *= 0.2f;
                         Main.dust[explosion].noGravity = true;
-                        explosion = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 33, 0f, 0f, 100, default, 0.5f);
+                        explosion = Dust.NewDust(new Vector2(Projectile.position.X + 3f + halfX, Projectile.position.Y + 3f + halfY) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.Water, 0f, 0f, 100, default, 0.5f);
                         Main.dust[explosion].fadeIn = 1f + (float)Main.rand.Next(5) * 0.1f;
                         Main.dust[explosion].velocity *= 0.05f;
                     }
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item110, Projectile.position);
             for (int i = 0; i < 15; i++)
             {
-                int smoke = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
+                int smoke = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                 Main.dust[smoke].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -96,10 +96,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int j = 0; j < 25; j++)
             {
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 3f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
                 Main.dust[fire].noGravity = true;
                 Main.dust[fire].velocity *= 5f;
-                fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 2f);
+                fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                 Main.dust[fire].velocity *= 2f;
             }
             int projAmt = Main.rand.Next(2, 4);

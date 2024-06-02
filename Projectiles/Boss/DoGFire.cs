@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
     public class DoGFire : ModProjectile, ILocalizedModType
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.frame > 5)
                 Projectile.frame = 0;
 
-            int dust = Dust.NewDust(new Vector2(Projectile.position.X + Projectile.velocity.X, Projectile.position.Y + Projectile.velocity.Y), Projectile.width, Projectile.height, 173, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 0.8f);
+            int dust = Dust.NewDust(new Vector2(Projectile.position.X + Projectile.velocity.X, Projectile.position.Y + Projectile.velocity.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 0.8f);
             Main.dust[dust].noGravity = true;
 
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.position.Y = Projectile.position.Y - Projectile.height / 2;
             for (int i = 0; i < 5; i++)
             {
-                int godSlay = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 2f);
+                int godSlay = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[godSlay].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -95,10 +95,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int j = 0; j < 10; j++)
             {
-                int godSlay2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 3f);
+                int godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
                 Main.dust[godSlay2].noGravity = true;
                 Main.dust[godSlay2].velocity *= 5f;
-                godSlay2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 2f);
+                godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[godSlay2].velocity *= 2f;
             }
             for (int k = 0; k < 200; k++)
@@ -111,7 +111,7 @@ namespace CalamityMod.Projectiles.Boss
                 if (k < 50)
                     dustScale = 3f;
 
-                int scalingDust = Dust.NewDust(Projectile.Center, 6, 6, 173, 0f, 0f, 100, default, 1f);
+                int scalingDust = Dust.NewDust(Projectile.Center, 6, 6, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
                 float scalingDustVelX = Main.dust[scalingDust].velocity.X;
                 float scalingDustVelY = Main.dust[scalingDust].velocity.Y;
 

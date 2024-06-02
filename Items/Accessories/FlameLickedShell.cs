@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Items.Potions.Alcohol;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -18,12 +18,12 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         internal const int flameLickedParry = 30;
         public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.AccessoryParryHotKey);
-        
+
         public override void SetDefaults()
         {
             Item.width = 36;
             Item.height = 42;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
         }
@@ -38,14 +38,14 @@ namespace CalamityMod.Items.Accessories
         {
             var calPlayer = player.Calamity();
             var empowered = calPlayer.flameLickedShellEmpoweredParry;
-            
+
             NPC target = player.Center.ClosestNPCAt(1300f, true, true);
             Vector2 targetPosition = target?.Center ?? Main.MouseWorld;
             float projectileSpeed = 8f;
 
             float radialOffset = 0.2f;
             float diameter = 80f;
-                
+
             Vector2 projectileVelocity = targetPosition - player.Center;
             projectileVelocity = Vector2.Normalize(projectileVelocity) * projectileSpeed;
 
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Accessories
             int totalProjectiles = 6;
             float offsetAngle = (float)Math.PI * radialOffset;
             int type = ModContent.ProjectileType<FlameLickedHellblast>();
-            int damage = (int)player.GetBestClassDamage().ApplyTo(60);
+            int damage = (int)player.GetBestClassDamage().ApplyTo(200);
             damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
             if (player.whoAmI == Main.myPlayer)
@@ -72,7 +72,7 @@ namespace CalamityMod.Items.Accessories
                 totalProjectiles = 12;
                 float radians2 = MathHelper.TwoPi / totalProjectiles;
                 type = ModContent.ProjectileType<FlameLickedBarrage>();
-                damage = (int)player.GetBestClassDamage().ApplyTo(20);
+                damage = (int)player.GetBestClassDamage().ApplyTo(70);
                 damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                 double angleA = radians2 * 0.5;
@@ -90,10 +90,10 @@ namespace CalamityMod.Items.Accessories
 
             calPlayer.flameLickedShellEmpoweredParry = false;
         }
-        
+
         public static void HandleParryCountdown(Player player)
         {
-            
+
             player.Calamity().flameLickedShellParry--;
 
             if (player.Calamity().flameLickedShellParry > 0)

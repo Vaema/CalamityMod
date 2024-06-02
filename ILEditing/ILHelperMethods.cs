@@ -1,15 +1,15 @@
-﻿using CalamityMod.Waters;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Systems;
+using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoMod.Cil;
 using Terraria;
-using Terraria.ID;
 using Terraria.Audio;
-using CalamityMod.Systems;
 using Terraria.Graphics;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework.Input;
+using Terraria.ID;
 
 namespace CalamityMod.ILEditing
 {
@@ -75,7 +75,7 @@ namespace CalamityMod.ILEditing
 
             if (cachedLavaStyle == default)
                 return initialTexture;
-            
+
             switch (type)
             {
                 case LiquidTileType.Block:
@@ -103,7 +103,7 @@ namespace CalamityMod.ILEditing
             // No lava style to draw? Then skip.
             if (cachedLavaStyle == default)
                 return initialColor;
-            
+
             cachedLavaStyle.SelectLightColor(ref initialColor.TopLeftColor);
             cachedLavaStyle.SelectLightColor(ref initialColor.TopRightColor);
             cachedLavaStyle.SelectLightColor(ref initialColor.BottomLeftColor);
@@ -173,7 +173,7 @@ namespace CalamityMod.ILEditing
 
                         default:
                             break;
-                    }   
+                    }
                 }
             }
 

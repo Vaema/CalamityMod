@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 18;
             Item.knockBack = 6.5f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<BrimbladeProj>();
             Item.shootSpeed = 12f;

@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
-            Item.value = CalamityGlobalItem.Rarity0BuyPrice;
+            Item.value = CalamityGlobalItem.RarityWhiteBuyPrice;
             Item.rare = ItemRarityID.White;
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;
@@ -34,10 +34,10 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                position = Main.MouseWorld;
-                velocity.X = 0;
-                velocity.Y = 0;
-                int p = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, 30f);
+                player.FindSentryRestingSpot(type, out int XPosition, out int YPosition, out int YOffset);
+                YOffset += 6;
+                position = new Vector2((float)XPosition, (float)(YPosition - YOffset));
+                int p = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 30f);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
 

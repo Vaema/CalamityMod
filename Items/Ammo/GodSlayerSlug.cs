@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Ammo
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-                   }
+        }
 
         public override void SetDefaults()
         {

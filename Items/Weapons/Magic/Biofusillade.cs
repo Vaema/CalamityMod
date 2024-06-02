@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 28;
             Item.height = 30;
-            Item.damage = 107;
+            Item.damage = 118;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 4;
             Item.useTime = 3;
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.UseSound = SoundID.Item33;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<GammaLaser>();

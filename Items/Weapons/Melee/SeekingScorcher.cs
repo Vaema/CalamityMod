@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.shoot = ModContent.ProjectileType<DivineHatchetBoomerang>();
             Item.shootSpeed = 14f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 

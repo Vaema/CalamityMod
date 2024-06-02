@@ -55,9 +55,19 @@ namespace CalamityMod.Projectiles.Boss
                 if (Main.npc[CalamityGlobalNPC.holyBoss].active)
                     Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
             }
+            else if (CalamityGlobalNPC.doughnutBoss != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.doughnutBoss].active)
+                {
+                    if (Main.npc[CalamityGlobalNPC.doughnutBoss].Calamity().CurrentlyEnraged)
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Night;
+                    else
+                        Projectile.maxPenetrate = (int)Providence.BossMode.Day;
+                }
+            }
             else
                 Projectile.maxPenetrate = (int)Providence.BossMode.Day;
-                
+
             bool scissorLasers = CalamityWorld.revenge || (Projectile.maxPenetrate != (int)Providence.BossMode.Day);
             Vector2? vector78 = null;
 
@@ -144,11 +154,11 @@ namespace CalamityMod.Projectiles.Boss
                 return false;
 
             bool dayTime = Projectile.maxPenetrate == (int)Providence.BossMode.Day;
-            Texture2D texture2D19 = dayTime ? ModContent.Request<Texture2D>(Texture, AssetRequestMode.ImmediateLoad).Value : 
+            Texture2D texture2D19 = dayTime ? ModContent.Request<Texture2D>(Texture, AssetRequestMode.ImmediateLoad).Value :
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ProvidenceHolyRayNight", AssetRequestMode.ImmediateLoad).Value;
-            Texture2D texture2D20 = dayTime ? ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayMid", AssetRequestMode.ImmediateLoad).Value : 
+            Texture2D texture2D20 = dayTime ? ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayMid", AssetRequestMode.ImmediateLoad).Value :
                 ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayMidNight", AssetRequestMode.ImmediateLoad).Value;
-            Texture2D texture2D21 = dayTime ? ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayEnd", AssetRequestMode.ImmediateLoad).Value : 
+            Texture2D texture2D21 = dayTime ? ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayEnd", AssetRequestMode.ImmediateLoad).Value :
                 ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayEndNight", AssetRequestMode.ImmediateLoad).Value;
 
             float rayDrawLength = Projectile.localAI[1]; //length of laser
@@ -198,7 +208,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             if (projHitbox.Intersects(targetHitbox))
                 return true;
-    
+
             float useless = 0f;
             if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + Projectile.velocity * Projectile.localAI[1], 22f * Projectile.scale, ref useless))
                 return true;

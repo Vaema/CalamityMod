@@ -35,7 +35,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
             {
                 setBonusText = CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}.Melee");
             }
-            
+
             setBonusText += $"\n{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(DefenseBoostMax)}";
         }
 

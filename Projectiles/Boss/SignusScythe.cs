@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System.IO;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
     public class SignusScythe : ModProjectile, ILocalizedModType
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Boss
                 SoundEngine.PlaySound(SoundID.Item73, Projectile.Center);
             }
 
-            int shadowDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
+            int shadowDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
             Main.dust[shadowDust].noGravity = true;
             Main.dust[shadowDust].velocity *= 0f;
 
@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Boss
             SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
             for (int i = 0; i < 5; i++)
             {
-                int killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
+                int killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
                 Main.dust[killDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -107,10 +107,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int j = 0; j < 10; j++)
             {
-                int killDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1.5f);
+                int killDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.5f);
                 Main.dust[killDust2].noGravity = true;
                 Main.dust[killDust2].velocity *= 5f;
-                killDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
+                killDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
                 Main.dust[killDust2].velocity *= 2f;
             }
         }

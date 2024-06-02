@@ -1,10 +1,10 @@
 ﻿using CalamityMod.Projectiles.Magic;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noMelee = true;
             Item.knockBack = 6.75f;
             Item.UseSound = CommonCalamitySounds.FlareSound;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<SeethingDischargeBrimstoneBarrage>();

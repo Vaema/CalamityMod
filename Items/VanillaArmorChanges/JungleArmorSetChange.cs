@@ -29,10 +29,8 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public override void ApplyHeadPieceEffect(Player player)
         {
             player.statManaMax2 -= 20;
-            player.GetCritChance<MagicDamageClass>() -= 4;
+            player.GetCritChance<MagicDamageClass>() -= 3;
         }
-
-        public override void ApplyBodyPieceEffect(Player player) => player.GetDamage<MagicDamageClass>() -= 0.01f;
 
         public override void ApplyLegPieceEffect(Player player) => player.GetCritChance<MagicDamageClass>() -= 3;
 

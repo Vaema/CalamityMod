@@ -1,4 +1,7 @@
-﻿using CalamityMod.Buffs.StatBuffs;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
@@ -8,9 +11,6 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -25,10 +25,10 @@ namespace CalamityMod.Items.Accessories
         public static string[] contributorNames = new[] { "IbanPlay", "Chen", "Nincity", "Amber", "Mishiro", "LordMetarex", "Memes" };
         public static int ShieldDurabilityMax = 125;
         public new string LocalizationCategory => "Items.Accessories";
-        
+
         public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(5);
         public static int TotalShieldRechargeTime = CalamityUtils.SecondsToFrames(4);
-        
+
         public const int maxMinionRequirement = 10;
         public const int maxPscAnimTime = 120;
 
@@ -42,10 +42,9 @@ namespace CalamityMod.Items.Accessories
             get
             {
                 bool result = false;
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    Player player = Main.player[i];
-                    if (player is null || !player.active || player.outOfRange || player.dead)
+                    if (player.outOfRange || player.dead)
                         continue;
 
                     CalamityPlayer modPlayer = player.Calamity();
@@ -75,7 +74,7 @@ namespace CalamityMod.Items.Accessories
         {
             if (!player.Calamity().profanedCrystalBuffs && !ignoreNoBuffs)
                 return ProfanedSoulCrystalState.Vanity; //vanity if no buffs
-            
+
             //vanity check during animation
             if (ignoreNoBuffs &&
                 (!DownedBossSystem.downedCalamitas || !DownedBossSystem.downedExoMechs ||
@@ -84,12 +83,12 @@ namespace CalamityMod.Items.Accessories
             {
                 return ProfanedSoulCrystalState.Vanity; //failsafe for vanity
             }
-            
+
             var noMinions = player.slotsMinions == 0;
             var noSentries = !Main.projectile.Any(proj => proj.active && proj.owner == player.whoAmI && proj.sentry);
             if (noMinions && noSentries)
                 return ProfanedSoulCrystalState.Empowered; //immediately check for empowered as it overrides everything else
-            
+
             return !Main.dayTime ? ProfanedSoulCrystalState.Enraged : //check for enrage
                 ProfanedSoulCrystalState.Buffs; //return buffs as the sole remaining option
         }
@@ -110,7 +109,7 @@ namespace CalamityMod.Items.Accessories
         {
             if (calPlayer.pscLerpColor != Color.White)
                 return calPlayer.pscLerpColor; //already set the lerp colour this frame, calculating it again is redundant
-            
+
             bool day = Main.dayTime;
             double totalTime = Main.dayTime ? Main.dayLength : Main.dayLength + Main.nightLength;
             double currentTime = Main.time;
@@ -139,12 +138,12 @@ namespace CalamityMod.Items.Accessories
             {
                 result = Color.Lerp(nonTargetColor, targetColor, (Main.time < midday ? 2f : 0f) - (float)interpolant);
             }
-                
+
 
             calPlayer.pscLerpColor = result;
             return result;
         }
-        
+
         /**
          * Notes: Drops from providence if the only damage source during the fight is from typeless damage or the profaned soul and the owners of those babs do not have profaned crystal.
          * All projectiles are in ProfanedSoulCrystalProjectiles.cs in the summon projectile directory
@@ -237,11 +236,11 @@ namespace CalamityMod.Items.Accessories
                 modPlayer.profanedCrystalAnim = maxPscAnimTime;
                 Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<PscTransformAnimation>(), 0, 0f, player.whoAmI);
             }
-                
+
 
             modPlayer.profanedCrystalHide = hideVisual || modPlayer.profanedCrystalAnim > 0;
             modPlayer.pSoulShieldVisible = !hideVisual;
-            
+
             DetermineTransformationEligibility(player);
         }
 
@@ -254,7 +253,7 @@ namespace CalamityMod.Items.Accessories
         internal static void DetermineTransformationEligibility(Player player)
         {
             //short circuit immediately if profanedcrystalbuffs has already been set
-            
+
             if (!player.Calamity().profanedCrystalBuffs && player.Calamity().profanedCrystalAnim == -1 && DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs && (player.maxMinions - player.slotsMinions) >= maxMinionRequirement && !player.Calamity().profanedCrystalForce && player.HasBuff<ProfanedCrystalBuff>())
             {
                 player.Calamity().profanedCrystalBuffs = true;
@@ -269,10 +268,10 @@ namespace CalamityMod.Items.Accessories
                 return false;
 
             var source = player.GetSource_ItemUse(item);
-            int weaponType = item.CountsAsClass<MeleeDamageClass>() ? 1 : 
-                item.CountsAsClass<RangedDamageClass>() ? 2 : 
+            int weaponType = item.CountsAsClass<MeleeDamageClass>() ? 1 :
+                item.CountsAsClass<RangedDamageClass>() ? 2 :
                 item.CountsAsClass<MagicDamageClass>() ? 3 :
-                item.CountsAsClass<ThrowingDamageClass>() ? 4 : 
+                item.CountsAsClass<ThrowingDamageClass>() ? 4 :
                 item.CountsAsClass<SummonMeleeSpeedDamageClass>() ? 5 : -1;
             if (weaponType > 0)
             {
@@ -418,7 +417,7 @@ namespace CalamityMod.Items.Accessories
                     {
                         player.Calamity().profanedSoulWeaponUsage = 0;
                     }
-                    
+
                     if (player.Calamity().profanedSoulWeaponUsage >= (empowered ? 120 : 360))
                     {
                         float crystalCount = 36f;

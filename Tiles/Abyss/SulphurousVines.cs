@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Metadata;
@@ -22,11 +22,11 @@ namespace CalamityMod.Tiles.Abyss
             AddMapEntry(new Color(0, 50, 0));
             HitSound = SoundID.Grass;
             DustType = 2;
-			TileID.Sets.IsVine[Type] = true;
-			TileID.Sets.ReplaceTileBreakDown[Type] = true;
-			TileID.Sets.VineThreads[Type] = true;
-			TileID.Sets.DrawFlipMode[Type] = 1;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+            TileID.Sets.IsVine[Type] = true;
+            TileID.Sets.ReplaceTileBreakDown[Type] = true;
+            TileID.Sets.VineThreads[Type] = true;
+            TileID.Sets.DrawFlipMode[Type] = 1;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -35,17 +35,17 @@ namespace CalamityMod.Tiles.Abyss
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-		{
-			Tile tileAbove = Framing.GetTileSafely(i, j - 1);
+        {
+            Tile tileAbove = Framing.GetTileSafely(i, j - 1);
 
-			if (!tileAbove.HasTile)
+            if (!tileAbove.HasTile)
             {
                 WorldGen.KillTile(i, j);
-				return true;
-			}
+                return true;
+            }
 
-			return true;
-		}
+            return true;
+        }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
@@ -72,7 +72,7 @@ namespace CalamityMod.Tiles.Abyss
             if (closer && Main.rand.NextBool(200) && j > Main.worldSurface)
             {
                 Dust dust;
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, 304, 0.23255825f, 10f, 0, new Color(22, 255, 0), 1.5116279f)];
+                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, DustID.Firefly, 0.23255825f, 10f, 0, new Color(22, 255, 0), 1.5116279f)];
                 dust.noGravity = true;
                 dust.noLight = true;
                 dust.fadeIn = 2.5813954f;

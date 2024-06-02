@@ -1,7 +1,7 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Melee
             Player Owner = Main.player[Projectile.owner];
             if (Projectile.ai[1] < 300f)
                 Projectile.ai[1]++;
-            
+
             Projectile.damage = (int)(Owner.GetTotalDamage(Projectile.DamageType).ApplyTo(Projectile.originalDamage) * (1f + Utils.GetLerpValue(0f, 300f, Projectile.ai[1], true)));
 
             red = 30 + (int)(Projectile.ai[1] * 0.75f);
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.myPlayer == Projectile.owner)
             {
-                if (Owner.channel && !Owner.noItems && !Owner.CCed)
+                if (!Owner.CantUseHoldout())
                 {
                     float scaleFactor6 = 1f;
 
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.rand.NextBool(3))
             {
-                int dust = Dust.NewDust(dustSpawn - Projectile.Size * 0.5f, Projectile.width, Projectile.height, 66, Projectile.velocity.X, Projectile.velocity.Y, 100, new Color(red, greenAndBlue, greenAndBlue), 1f);
+                int dust = Dust.NewDust(dustSpawn - Projectile.Size * 0.5f, Projectile.width, Projectile.height, DustID.RainbowTorch, Projectile.velocity.X, Projectile.velocity.Y, 100, new Color(red, greenAndBlue, greenAndBlue), 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].position -= Projectile.velocity;
             }

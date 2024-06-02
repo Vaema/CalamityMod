@@ -1,11 +1,11 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.DesertScourge;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Rogue
                 dust.noGravity = true;
                 dust.velocity = -Projectile.velocity * 0.5f;
             }
-            
+
             if (!InitialTileHit && Time > 45)
             {
                 if (Projectile.velocity.Y < 0)
@@ -101,19 +101,28 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (InsideTiles)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
-                {
-                    if (Main.npc[i].CanBeChasedBy(Projectile.GetSource_FromThis(), false))
-                        NPCDestination = Main.npc[i].Center + Main.npc[i].velocity * 5f;
-                }
-
                 TimeUnderground++;
                 Vector3 DustLight = new Vector3(0.171f, 0.124f, 0.086f);
-                Lighting.AddLight(Projectile.Center + Projectile.velocity, DustLight * 4);
+                Lighting.AddLight(Projectile.Center + Projectile.velocity, DustLight * 1.5f);
                 if (Time % 15 == 0 && TimeUnderground < 120)
                 {
                     SoundEngine.PlaySound(SoundID.WormDig with { Volume = 0.7f, Pitch = 0.2f }, Projectile.Center);
                 }
+
+
+                NPC target = Projectile.Center.ClosestNPCAt(1800, true);
+                if (target == null)
+                {
+                    if (Projectile.velocity.Y < 0)
+                    {
+                        Projectile.velocity.Y *= 0.98f;
+                    }
+                    Projectile.velocity.Y += 0.08f;
+                    Projectile.velocity.X *= 0.99f;
+                    return;
+                }
+                NPCDestination = target.Center + target.velocity * 5f;
+
                 float returnSpeed = 10;
                 float acceleration = 0.2f;
                 float xDist = NPCDestination.X - Projectile.Center.X;
@@ -164,7 +173,7 @@ namespace CalamityMod.Projectiles.Rogue
                     dust.noGravity = true;
                 }
                 Projectile.velocity = oldVelocity * 0.7f;
-                SoundEngine.PlaySound(SoundID.WormDig with { Volume = 1.5f, Pitch = 1.1f}, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.WormDig with { Volume = 1.5f, Pitch = 1.1f }, Projectile.Center);
                 InitialTileHit = true;
             }
             return false;

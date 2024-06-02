@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Magic
 
             if (!SoundEngine.TryGetActiveSound(SuccSoundSlot, out var idleSoundOut) || !idleSoundOut.IsPlaying)
             {
-                SuccSoundSlot = SoundEngine.PlaySound(WulfrumProsthesis.SuckSound with { Volume = WulfrumProsthesis.SuckSound.Volume * 0.01f ,IsLooped = true }, Owner.Center);
+                SuccSoundSlot = SoundEngine.PlaySound(WulfrumProsthesis.SuckSound with { Volume = WulfrumProsthesis.SuckSound.Volume * 0.01f, IsLooped = true }, Owner.Center);
 
             }
 
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Magic
                 idleSoundOut.Position = Owner.Center;
                 idleSoundOut.Volume = Math.Clamp((Timer / 30f) + 0.001f, 0f, 1f) * 100f;
             }
-            
+
 
             Projectile.timeLeft = 2;
             Projectile.Center = Owner.MountedCenter;
@@ -94,11 +94,9 @@ namespace CalamityMod.Projectiles.Magic
         {
             float collisionPoint = 0f;
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC struckNPC in Main.ActiveNPCs)
             {
-                NPC struckNPC = Main.npc[i];
-
-                if (!struckNPC.active || struckNPC.townNPC || struckNPC.friendly)
+                if (struckNPC.townNPC || struckNPC.friendly)
                     continue;
 
                 float distance = struckNPC.Distance(Projectile.Center);
@@ -147,7 +145,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 soundOut.Stop();
 
-                SoundEngine.PlaySound(WulfrumProsthesis.SuckStopSound with { Volume = WulfrumProsthesis.SuckStopSound.Volume * Timer / 30f}, Projectile.Center);
+                SoundEngine.PlaySound(WulfrumProsthesis.SuckStopSound with { Volume = WulfrumProsthesis.SuckStopSound.Volume * Timer / 30f }, Projectile.Center);
 
             }
         }

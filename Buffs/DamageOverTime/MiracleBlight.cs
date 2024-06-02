@@ -44,10 +44,10 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             if (Main.rand.NextBool(2))
             {
-                Dust dust = Dust.NewDustPerfect(Player.Calamity().RandomDebuffVisualSpot, 278, CalamityUtils.RandomVelocity(100f, 70f, 150f, 0.04f));
+                Dust dust = Dust.NewDustPerfect(Player.Calamity().RandomDebuffVisualSpot, 66, CalamityUtils.RandomVelocity(100f, 70f, 150f, 0.04f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.7f, 0.85f);
-                dust.color = sparkColor * 0.45f;
+                dust.color = sparkColor;
             }
 
             float numberOfDusts = 1f;
@@ -57,7 +57,7 @@ namespace CalamityMod.Buffs.DamageOverTime
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 velOffset = CalamityUtils.RandomVelocity(100f, 70f, 150f, 0.04f);
                 velOffset *= Main.rand.NextFloat(2, 13);
-                SquishyLightParticle exoEnergy = new(Player.Center + Player.velocity * 3 + velOffset * 1.5f, -velOffset * 0.25f, 0.3f, sparkColor, 8);
+                Particle exoEnergy = new GlowSparkParticle(Player.Center + Player.velocity * 3 + velOffset * 1.5f, -velOffset * 0.25f, false, 4, 0.008f, sparkColor, new Vector2(0.6f, 1.2f));
                 GeneralParticleHandler.SpawnParticle(exoEnergy);
             }
         }
@@ -73,26 +73,24 @@ namespace CalamityMod.Buffs.DamageOverTime
                 _ => Color.LawnGreen,
             };
 
-            if (Main.rand.NextBool(3))
+            if (Main.rand.NextBool(4))
             {
-                Dust dust = Dust.NewDustPerfect(npcSize, 278, CalamityUtils.RandomVelocity(100f, 70f, 150f, 0.04f));
+                Dust dust = Dust.NewDustPerfect(npcSize, 66, CalamityUtils.RandomVelocity(100f, 70f, 150f, 0.04f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.7f, 0.85f) + (0.0000007f * npc.width * npc.height);
-                dust.color = sparkColor * 0.45f;
+                dust.color = sparkColor;
             }
 
-            float numberOfDusts = 1f;
-            float rotFactor = 360f / numberOfDusts;
-            if (Main.rand.NextBool())
+
+            float rotFactor = 360f;
+            if (Main.rand.NextBool(3))
             {
-                for (int i = 0; i < numberOfDusts; i++)
-                {
-                    float rot = MathHelper.ToRadians(i * rotFactor);
-                    Vector2 velOffset = CalamityUtils.RandomVelocity(100f, 70f, 150f, 0.04f);
-                    velOffset *= Main.rand.NextFloat(1, 9) + (0.0002f * npc.width * npc.height);
-                    SquishyLightParticle exoEnergy = new(npc.Center + npc.velocity * 3 + velOffset * 1.5f, -velOffset * 0.25f, 0.3f, sparkColor, 8);
-                    GeneralParticleHandler.SpawnParticle(exoEnergy);
-                }
+                float rot = MathHelper.ToRadians(rotFactor);
+                Vector2 velOffset = CalamityUtils.RandomVelocity(100f, 70f, 150f, 0.04f);
+                velOffset *= Main.rand.NextFloat(5, 9) + (0.0002f * npc.width * npc.height);
+
+                Particle exoEnergy = new GlowSparkParticle(npc.Center + npc.velocity * 3 + velOffset * 1.5f, -velOffset * 0.25f, false, 4, 0.008f, sparkColor, new Vector2(0.6f, 1.2f));
+                GeneralParticleHandler.SpawnParticle(exoEnergy);
             }
         }
     }

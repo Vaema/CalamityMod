@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System.IO;
+﻿using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -55,10 +55,17 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     if (!Owner.moonLeech && AbleToHealOwner)
                     {
-                        int healAmount = Projectile.Calamity().stealthStrike ? 40 : 3;
+                        int heal = Projectile.Calamity().stealthStrike ? 40 : 3;
 
-                        Owner.HealEffect(healAmount);
-                        Owner.statLife += healAmount;
+                        if (Main.player[Main.myPlayer].lifeSteal <= 0f)
+                        {
+                            Projectile.Kill();
+                            return;
+                        }
+
+                        Main.player[Main.myPlayer].lifeSteal -= heal;
+                        Owner.HealEffect(heal);
+                        Owner.statLife += heal;
                         if (Owner.statLife > Owner.statLifeMax2)
                             Owner.statLife = Owner.statLifeMax2;
                     }
@@ -87,7 +94,7 @@ namespace CalamityMod.Projectiles.Rogue
                 else if (Projectile.timeLeft > 180 && Projectile.Calamity().stealthStrike)
                     Projectile.timeLeft = 180;
             }
-                Projectile.StickyProjAI(50);
+            Projectile.StickyProjAI(50);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -106,7 +113,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i < 5; i++)
             {
-                Dust blood = Dust.NewDustDirect(Projectile.Center, 1, 1, 5, 0, 0, 0, default, 1.5f);
+                Dust blood = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.Blood, 0, 0, 0, default, 1.5f);
                 blood.position += Projectile.velocity.SafeNormalize(Vector2.Zero) * Projectile.scale * 42f;
                 blood.noGravity = true;
             }

@@ -1,4 +1,4 @@
-namespace CalamityMod.Balancing
+﻿namespace CalamityMod.Balancing
 {
     public struct NPCBalancingChange
     {

@@ -1,7 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -83,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
                 int dustAmount = 0;
                 while ((float)dustAmount < Projectile.scale * 10f)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 62, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1.3f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurpleTorch, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1.3f);
                     Main.dust[dust].position = (Main.dust[dust].position + Projectile.Center) / 2f;
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].velocity *= 0.1f;

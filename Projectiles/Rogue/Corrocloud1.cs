@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff (BuffID.Poisoned, 120);
+            target.AddBuff(BuffID.Poisoned, 120);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i < 8; i++)
             {
-                Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid);
             }
         }
     }

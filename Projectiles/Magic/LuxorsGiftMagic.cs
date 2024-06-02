@@ -1,5 +1,5 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.localAI[0] == 0f)
             {
                 Projectile.scale -= 0.01f;
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Magic
                     Vector2 dustRotate = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
                     dustRotate += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
                     dustRotate = dustRotate.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
-                    int dusty = Dust.NewDust(Projectile.Center, 0, 0, 244, 0f, 0f, 160, default, 1f);
+                    int dusty = Dust.NewDust(Projectile.Center, 0, 0, DustID.CopperCoin, 0f, 0f, 160, default, 1f);
                     Main.dust[dusty].scale = 1.1f;
                     Main.dust[dusty].noGravity = true;
                     Main.dust[dusty].position = Projectile.Center + dustRotate;

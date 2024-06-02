@@ -258,7 +258,7 @@ namespace CalamityMod.FluidSimulation
             CalculateDiffusion(Viscosity, VelocityField);
             if (!ShouldSkipDivergenceClearingStep)
                 ClearDivergence(VelocityField.NextState);
-            
+
             CalculateAdvection(VelocityField.NextState, VelocityField.PreviousState, VelocityField.PreviousState);
             if (!ShouldSkipDivergenceClearingStep)
                 ClearDivergence(VelocityField.NextState);

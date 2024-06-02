@@ -1,8 +1,8 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class LunarBolt : ModProjectile, ILocalizedModType
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int d = 0; d < 5; d++)
                 {
                     Vector2 dspeed = -Projectile.velocity * 0.5f;
-                    int index = Dust.NewDust(Projectile.Center, 1, 1, 206, 0f, 0f, 0, default, 1.2f);
+                    int index = Dust.NewDust(Projectile.Center, 1, 1, DustID.UnusedWhiteBluePurple, 0f, 0f, 0, default, 1.2f);
                     Main.dust[index].alpha = Projectile.alpha;
                     Main.dust[index].velocity = dspeed;
                     Main.dust[index].noGravity = true;
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int d = 0; d < 5; d++)
                 {
                     Vector2 dspeed2 = -Projectile.velocity * 0.5f;
-                    int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 0, default, 0.7f);
+                    int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 0, default, 0.7f);
                     Main.dust[index].alpha = Projectile.alpha;
                     Main.dust[index].velocity = dspeed2;
                     Main.dust[index].noGravity = true;

@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class MadAlchemistsCocktailAlt : ModProjectile, ILocalizedModType
@@ -69,25 +69,25 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.Damage();
 
             // I don't even know what this dust code does
-	    // So true bestie! -CIT
+            // So true bestie! -CIT
             Vector2 dustRotation = (0f - 1.57079637f).ToRotationVector2();
             Vector2 dustVelocity = dustRotation * Projectile.velocity.Length() * (float)Projectile.MaxUpdates;
             int inc;
             for (int i = 0; i < 40; i = inc + 1)
             {
-                int alchDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 200, default, 2.5f);
+                int alchDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 200, default, 2.5f);
                 Main.dust[alchDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 Main.dust[alchDust].noGravity = true;
                 Dust dust = Main.dust[alchDust];
                 dust.velocity *= 4f;
                 dust = Main.dust[alchDust];
                 dust.velocity += dustVelocity * Main.rand.NextFloat();
-                alchDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 174, 0f, 0f, 100, default, 1.8f);
+                alchDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 100, default, 1.8f);
                 Main.dust[alchDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 dust = Main.dust[alchDust];
                 dust.velocity *= 3f;
                 Main.dust[alchDust].noGravity = true;
-                alchDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 229, 0f, 0f, 100, default, 1.8f);
+                alchDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 100, default, 1.8f);
                 Main.dust[alchDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 dust = Main.dust[alchDust];
                 dust.velocity *= 2f;
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int j = 0; j < 20; j = inc + 1)
             {
-                int alchDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 206, 0f, 0f, 0, default, 2.5f);
+                int alchDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, 0f, 0f, 0, default, 2.5f);
                 Main.dust[alchDust2].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 3f;
                 Main.dust[alchDust2].noGravity = true;
                 Dust dust = Main.dust[alchDust2];

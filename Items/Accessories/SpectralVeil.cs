@@ -1,7 +1,7 @@
-﻿using CalamityMod.Rarities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CalamityMod.Balancing;
+using CalamityMod.Rarities;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -10,11 +10,15 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         public const float TeleportRange = 845f;
+
+        // Boosted by Cross Necklace.
+        internal static readonly int VeilIFrames = BalancingConstants.VanillaDodgeIFrames;
+
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.accessory = true;
         }

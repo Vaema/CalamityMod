@@ -1,6 +1,6 @@
-﻿using Terraria.DataStructures;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,15 +14,15 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 66;
             Item.height = 24;
-            Item.damage = 58;
+            Item.damage = 61;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 35;
-            Item.useAnimation = 35;
+            Item.useTime = 32;
+            Item.useAnimation = 32;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item38;
             Item.autoReuse = true;
             Item.shootSpeed = 13f;
@@ -58,16 +58,15 @@ namespace CalamityMod.Items.Weapons.Ranged
             int[] targets = new int[maxTargets];
             int targetArrayIndex = 0;
             Rectangle rectangle = new Rectangle((int)player.Center.X - 960, (int)player.Center.Y - 540, 1920, 1080);
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (npc.active && npc.chaseable && npc.lifeMax > 5 && !npc.dontTakeDamage && !npc.friendly && !npc.immortal)
+                if (npc.chaseable && npc.lifeMax > 5 && !npc.dontTakeDamage && !npc.friendly && !npc.immortal)
                 {
                     if (npc.Hitbox.Intersects(rectangle))
                     {
                         if (targetArrayIndex < maxTargets)
                         {
-                            targets[targetArrayIndex] = i;
+                            targets[targetArrayIndex] = npc.whoAmI;
                             targetArrayIndex++;
                         }
                         else

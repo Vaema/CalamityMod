@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTime = 19;
             Item.knockBack = 4;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<UrchinMaceProjectile>();
             Item.shootSpeed = 9f;

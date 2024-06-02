@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
                 DoAnimation();
                 ShootTarget();
 
-                Projectile.rotation = Projectile.rotation.AngleTowards(CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, Target, MirrorofKalandra.Wind_ArrowSpeed).ToRotation(), .2f);
+                Projectile.rotation = Projectile.rotation.AngleTowards(CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Target, MirrorofKalandra.Wind_ArrowSpeed, MirrorofKalandra.Wind_ArrowSpeedMult).ToRotation(), .2f);
             }
             else
             {
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
                 Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * (Projectile.width / 2);
                 int arrow = Projectile.NewProjectile(Projectile.GetSource_FromThis(),
                     Projectile.Center,
-                    CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, Target, MirrorofKalandra.Wind_ArrowSpeed),
+                    CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Target, MirrorofKalandra.Wind_ArrowSpeed, MirrorofKalandra.Wind_ArrowSpeedMult),
                     ModContent.ProjectileType<WindRipperArrow>(),
                     Projectile.damage,
                     Projectile.knockBack,
@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

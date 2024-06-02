@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
@@ -9,9 +10,11 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class FabsolsVodka : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<CrystalHeartVodka>();
         }
 
         public override void SetDefaults()

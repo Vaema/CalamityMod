@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Melee
             Lighting.AddLight(Projectile.Center, 0.35f, 0f, 0.35f);
 
             if (Main.rand.NextBool(3))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

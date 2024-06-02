@@ -11,6 +11,11 @@ namespace CalamityMod.Items.Weapons.Melee
     public class PhotonRipper : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+        }
+
         public override void SetDefaults()
         {
             Item.width = 134;
@@ -41,10 +46,22 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 18;
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+        public override bool AltFunctionUse(Player player) => true;
+        public override void HoldItem(Player player)
+        {
+            if (Main.myPlayer == player.whoAmI)
+                player.Calamity().rightClickListener = true;
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 0f);
+            float breakBlocks = 1;
+            // If right clicking, the chainsaw won't be able to chop down trees
+            if (player.Calamity().mouseRight && player.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse)
+            {
+                breakBlocks = 0;
+            }
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 0f, breakBlocks);
             return false;
         }
     }

@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
+﻿using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Summon;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             // Create a burst of dust.
             for (int i = 0; i < 40; i++)
             {
-                float dustSpeed = Main.rand.NextFloat(1.8f, 3f);                
+                float dustSpeed = Main.rand.NextFloat(1.8f, 3f);
                 Vector2 dustVel = shootDirection * dustSpeed;
                 dustVel = dustVel.RotatedBy(-0.35f);
                 dustVel = dustVel.RotatedByRandom(2.0f * 0.35f);

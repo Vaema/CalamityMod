@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Core;
@@ -117,13 +117,13 @@ namespace CalamityMod.Particles
         {
             if (particles.Count == 0)
                 return;
-            
+
             sb.End();
             var rasterizer = Main.Rasterizer;
             rasterizer.ScissorTestEnable = true;
             Main.instance.GraphicsDevice.RasterizerState.ScissorTestEnable = true;
             Main.instance.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, Main.screenWidth, Main.screenHeight);
-            
+
             //Batch the particles to avoid constant restarting of the spritebatch
             foreach (Particle particle in particles)
             {
@@ -148,7 +148,7 @@ namespace CalamityMod.Particles
                     else
                     {
                         Rectangle frame = particleTextures[particle.Type].Frame(1, particle.FrameVariants, 0, particle.Variant);
-                        sb.Draw(particleTextures[particle.Type], particle.Position - Main.screenPosition, frame, particle.Color, particle.Rotation, frame.Size() * 0.5f, 
+                        sb.Draw(particleTextures[particle.Type], particle.Position - Main.screenPosition, frame, particle.Color, particle.Rotation, frame.Size() * 0.5f,
                             particle.Scale, SpriteEffects.None, 0f);
                     }
                 }
@@ -223,8 +223,8 @@ namespace CalamityMod.Particles
         /// </summary>
         public static Texture2D GetTexture(int type) => particleTextures[type];
 
-        #pragma warning disable CS0414
+#pragma warning disable CS0414
         private static string noteToEveryone = "This particle system was inspired by spirit mod's own particle system, with permission granted by Yuyutsu. Love you spirit mod! -Iban";
-        #pragma warning restore CS0414
+#pragma warning restore CS0414
     }
 }

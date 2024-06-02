@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Terraria;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 4;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
 

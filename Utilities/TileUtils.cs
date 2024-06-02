@@ -1,4 +1,7 @@
-﻿using CalamityMod.Tiles;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -14,14 +17,11 @@ using CalamityMod.Tiles.Ores;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using static Terraria.ModLoader.ModContent;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace CalamityMod
 {
@@ -150,7 +150,7 @@ namespace CalamityMod
                 if (Main.rand.NextBool(rarity))
                 {
                     int dust = Dust.NewDust(new Vector2(i * 16 + 4, j * 16 + 2), 4, 4, dustType, 0f, 0f, 100, default, 1f);
-                    if (Main.rand.Next(3) != 0)
+                    if (!Main.rand.NextBool(3))
                         Main.dust[dust].noGravity = true;
 
                     // Prevent lag.

@@ -1,10 +1,10 @@
-﻿using CalamityMod.Balancing;
+﻿using System;
+using CalamityMod.Balancing;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.EntitySources;
 using CalamityMod.Enums;
 using CalamityMod.Items.Mounts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -27,10 +27,10 @@ namespace CalamityMod.CalPlayer
             set => dashID = value;
         }
 
-    public string DeferredDashID;
+        public string DeferredDashID;
 
         public string LastUsedDashID;
-        
+
         public PlayerDashEffect UsedDash
         {
             get
@@ -72,15 +72,13 @@ namespace CalamityMod.CalPlayer
             if (HasCustomDash && Player.dashDelay < 0)
             {
                 Rectangle hitArea = new Rectangle((int)(Player.position.X + Player.velocity.X * 0.5 - 4f), (int)(Player.position.Y + Player.velocity.Y * 0.5 - 4), Player.width + 8, Player.height + 8);
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    NPC n = Main.npc[i];
-
                     // Ignore critters with the Guide to Critter Companionship
                     if (Player.dontHurtCritters && NPCID.Sets.CountsAsCritter[n.type])
                         continue;
 
-                    if (n.active && !n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
+                    if (!n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
                     {
                         if (hitArea.Intersects(n.getRect()) && (n.noTileCollide || Player.CanHit(n)))
                         {
@@ -127,7 +125,9 @@ namespace CalamityMod.CalPlayer
                     dashDelayToApply = BalancingConstants.UniversalShieldSlamCooldown;
                 else if (UsedDash.CollisionType == DashCollisionType.ShieldBonk)
                     dashDelayToApply = BalancingConstants.UniversalShieldBonkCooldown;
-                
+                if (DashID == "Deep Diver")
+                    dashDelayToApply = 23;
+
                 float dashSpeed = 12f;
                 float dashSpeedDecelerationFactor = 0.985f;
                 float runSpeed = Math.Max(Player.accRunSpeed, Player.maxRunSpeed);
@@ -541,15 +541,13 @@ namespace CalamityMod.CalPlayer
         public int DoMountDashDamage(Rectangle myRect, float Damage, float Knockback, int NPCImmuneTime, int PlayerImmuneTime)
         {
             int totalHurtNPCs = 0;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                NPC n = Main.npc[i];
-
                 // Ignore critters with the Guide to Critter Companionship
                 if (Player.dontHurtCritters && NPCID.Sets.CountsAsCritter[n.type])
                     continue;
 
-                if (n.active && !n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
+                if (!n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
                 {
                     Rectangle npcHitbox = n.getRect();
                     if (myRect.Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
@@ -564,8 +562,10 @@ namespace CalamityMod.CalPlayer
                         if (Player.whoAmI == Main.myPlayer)
                             Player.ApplyDamageToNPC(n, (int)Damage, Knockback, hitDirection, false);
 
+                        // 17APR2024: Ozzatron: Dash iframes are not boosted by Cross Necklace at all and are fixed.
                         n.Calamity().dashImmunityTime[Player.whoAmI] = NPCImmuneTime;
-                        Player.GiveIFrames(PlayerImmuneTime, false);
+                        Player.GiveUniversalIFrames(PlayerImmuneTime, false);
+
                         totalHurtNPCs++;
                         break;
                     }

@@ -3,9 +3,9 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.5f;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<SoulScythe>();
             Item.shootSpeed = 18f;
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(3))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 75);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.CursedTorch);
             }
         }
 
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 player.ApplyDamageToNPC(target, onHitDamage, 0f, 0, false);
                 for (int i = 0; i < 10; i++)
                 {
-                    int plagueDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 89, 0f, 0f, 100, default, 2f);
+                    int plagueDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                     Main.dust[plagueDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -59,10 +59,10 @@ namespace CalamityMod.Items.Weapons.Melee
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 89, 0f, 0f, 100, default, 3f);
+                    int plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 3f);
                     Main.dust[plagueDust2].noGravity = true;
                     Main.dust[plagueDust2].velocity *= 5f;
-                    plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 89, 0f, 0f, 100, default, 2f);
+                    plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                     Main.dust[plagueDust2].velocity *= 2f;
                 }
             }
@@ -77,7 +77,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 SoundEngine.PlaySound(SoundID.Item14, target.Center);
                 for (int i = 0; i < 10; i++)
                 {
-                    int plagueDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 89, 0f, 0f, 100, default, 2f);
+                    int plagueDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                     Main.dust[plagueDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -87,10 +87,10 @@ namespace CalamityMod.Items.Weapons.Melee
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 89, 0f, 0f, 100, default, 3f);
+                    int plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 3f);
                     Main.dust[plagueDust2].noGravity = true;
                     Main.dust[plagueDust2].velocity *= 5f;
-                    plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 89, 0f, 0f, 100, default, 2f);
+                    plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                     Main.dust[plagueDust2].velocity *= 2f;
                 }
             }

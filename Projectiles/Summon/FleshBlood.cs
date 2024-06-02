@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
@@ -22,6 +22,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minion = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = LifeTime;
+            Projectile.extraUpdates = 1;
             Projectile.DamageType = DamageClass.Summon;
         }
 

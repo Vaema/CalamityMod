@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items;
+﻿using System;
+using CalamityMod.Items;
 using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -102,7 +102,7 @@ namespace CalamityMod.Projectiles.Ranged
                         dustScale = 0.65f;
 
                     Vector2 randDustSpawn = dustSpawn + ((float)Main.rand.NextDouble() * ((float)Math.PI * 2f)).ToRotationVector2() * (12f - chargeAmt * 2);
-                    int electricDust = Dust.NewDust(randDustSpawn - Vector2.One * 8f, 16, 16, 226, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f);
+                    int electricDust = Dust.NewDust(randDustSpawn - Vector2.One * 8f, 16, 16, DustID.Electric, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f);
                     Main.dust[electricDust].velocity = Vector2.Normalize(dustSpawn - randDustSpawn) * 1.5f * (10f - chargeAmt * 2f) / 10f;
                     Main.dust[electricDust].noGravity = true;
                     Main.dust[electricDust].scale = dustScale;
@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     float randFloat = Main.rand.NextFloatDirection();
                     Vector2 randDustSpawnLaser = dustSpawnLaser + (Projectile.rotation + (Projectile.spriteDirection == -1 ? -MathHelper.PiOver2 : MathHelper.PiOver2) + randFloat * ((float)Math.PI / 4f) * 0.8f - (float)Math.PI / 2f).ToRotationVector2() * 6f;
-                    int electric2 = Dust.NewDust(randDustSpawnLaser - Vector2.One * 12, 24, 24, 226, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f);
+                    int electric2 = Dust.NewDust(randDustSpawnLaser - Vector2.One * 12, 24, 24, DustID.Electric, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f);
                     Main.dust[electric2].velocity = (randDustSpawnLaser - dustSpawnLaser).SafeNormalize(Vector2.Zero) * MathHelper.Lerp(1.5f, 9f, Utils.GetLerpValue(1f, 0f, Math.Abs(randFloat), clamped: true));
                     Main.dust[electric2].noGravity = true;
                     Main.dust[electric2].scale = dustScale;
@@ -143,7 +143,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // This grabs the weapon's current damage, taking current charge level into account.
                 int currentDamage = player.GetWeaponDamage(freedomStar);
 
-                bool stillInUse = player.channel && !player.noItems && !player.CCed;
+                bool stillInUse = !player.CantUseHoldout();
 
                 // Checks if the Freedom Star has sufficient charge to fire. If this is false, it stops functioning.
                 CalamityGlobalItem modItem = freedomStar.Calamity();

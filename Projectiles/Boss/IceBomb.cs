@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.NPCs.Cryogen;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.NPCs.Cryogen;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     for (int i = 0; i < 8; i++)
                     {
-                        int iceDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 2f);
+                        int iceDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
                         Main.dust[iceDust].velocity *= 3f;
                         if (Main.rand.NextBool())
                         {
@@ -47,10 +47,10 @@ namespace CalamityMod.Projectiles.Boss
                     }
                     for (int j = 0; j < 14; j++)
                     {
-                        int iceDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 3f);
+                        int iceDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 3f);
                         Main.dust[iceDust2].noGravity = true;
                         Main.dust[iceDust2].velocity *= 5f;
-                        iceDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 2f);
+                        iceDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
                         Main.dust[iceDust2].velocity *= 2f;
                     }
 
@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             for (int k = 0; k < 10; k++)
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 67, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
@@ -101,7 +101,9 @@ namespace CalamityMod.Projectiles.Boss
             {
                 target.AddBuff(BuffID.Frostburn, 180, true);
                 target.AddBuff(BuffID.Chilled, 90, true);
-                target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
+
+                if (!target.Calamity().gState)
+                    target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
             }
         }
     }

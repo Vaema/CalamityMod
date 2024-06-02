@@ -43,7 +43,7 @@ namespace CalamityMod.CalPlayer.Dashes
                 int scytheDamage = (int)player.GetBestClassDamage().ApplyTo(250);
                 scytheDamage = player.ApplyArmorAccDamageBonusesTo(scytheDamage);
 
-                int scythe = Projectile.NewProjectile(player.GetSource_FromAI(), player.Center, player.velocity.RotatedBy(player.direction * (AngleSwap ? 30 : -30), default) * 0.1f - player.velocity / 2f, ModContent.ProjectileType<CosmicScythe>(), scytheDamage, 5f, player.whoAmI);;
+                int scythe = Projectile.NewProjectile(player.GetSource_FromAI(), player.Center, player.velocity.RotatedBy(player.direction * (AngleSwap ? 30 : -30), default) * 0.1f - player.velocity / 2f, ModContent.ProjectileType<CosmicScythe>(), scytheDamage, 5f, player.whoAmI); ;
                 if (scythe.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[scythe].DamageType = DamageClass.Generic;
@@ -52,7 +52,7 @@ namespace CalamityMod.CalPlayer.Dashes
                 }
 
                 AngleSwap = !AngleSwap;
-                
+
             }
 
             // Dash at a faster speed than the default value.

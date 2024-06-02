@@ -1,12 +1,20 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Buffs.DamageOverTime;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using System.Reflection.Metadata;
+using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics.Contracts;
+using Terraria.GameContent;
+using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -90,7 +98,7 @@ namespace CalamityMod.Projectiles.Melee
                 float multiplier = Projectile.velocity.Length() < 4f ? Projectile.velocity.Length() + 1f : 1f;      // Probably a better way to do this, but just a bandaid fix for if the trail velocity ends up being low
                 targetVelocity *= Projectile.velocity.Length() + multiplier;
 
-                Projectile.velocity = Vector2.Lerp(Projectile.velocity, targetVelocity, 0.12f);               
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, targetVelocity, 0.12f);
             }
 
             // lifespan timer
@@ -104,10 +112,43 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 60);
         }
 
+        // pretty much entirely from the Oracle circular damage code
+        private void CircularDamage(float radius)
+        {
+            if (Projectile.owner != Main.myPlayer)
+                return;
+            Player owner = Main.player[Projectile.owner];
+
+            foreach (NPC target in Main.ActiveNPCs)
+            {
+                if (target.dontTakeDamage || target.friendly)
+                    continue;
+
+                // Shock any valid target within range. Check all four corners of their hitbox.
+                float d1 = Vector2.Distance(Projectile.Center, target.Hitbox.TopLeft());
+                float d2 = Vector2.Distance(Projectile.Center, target.Hitbox.TopRight());
+                float d3 = Vector2.Distance(Projectile.Center, target.Hitbox.BottomLeft());
+                float d4 = Vector2.Distance(Projectile.Center, target.Hitbox.BottomRight());
+                float dist = MathHelper.Min(d1, d2);
+                dist = MathHelper.Min(dist, d3);
+                dist = MathHelper.Min(dist, d4);
+
+                if (dist <= radius)
+                {
+                    int damage = (int)(Projectile.damage * ExplosionDamageMultiplier);
+                    bool crit = Main.rand.Next(100) <= owner.GetCritChance<MeleeDamageClass>() + 4;
+                    target.StrikeNPC(target.CalculateHitInfo(damage, 0, crit, 0));
+
+                    if (Main.netMode != NetmodeID.SinglePlayer)
+                        NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, target.whoAmI, damage, 0f, 0f, crit ? 1 : 0, 0, 0);
+                }
+            }
+        }
+
         // Very similar to CosmicShivBlade PreDraw
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = sourceRectangle.Size() / 2f;
             float rotation = Projectile.rotation;
@@ -122,8 +163,8 @@ namespace CalamityMod.Projectiles.Melee
                 Main.spriteBatch.Draw(texture, drawPos, new Rectangle?(sourceRectangle), color, rotation, origin, Projectile.scale * scaleMult, SpriteEffects.None, 0f);
                 scaleMult *= 0.9f;
             }
-            
-            return false; 
+
+            return false;
 
         }
 
@@ -137,7 +178,8 @@ namespace CalamityMod.Projectiles.Melee
             float speed = Main.rand.Next(6, 11);                            // Size
 
             int rand = Main.rand.Next(0, 10);   // 10% chance rose, 10% chance big wavy shape, and 80% chance small undetail wavy shape
-            if (rand == 0) { 
+            if (rand == 0)
+            {
                 for (float k = 0f; k < MathHelper.TwoPi; k += 0.03f)
                 {
                     float scale = Main.rand.NextFloat(1.1f, 1.4f);
@@ -153,7 +195,9 @@ namespace CalamityMod.Projectiles.Melee
                     dust2.noGravity = true;
                     dust2.fadeIn = -1f;
                 }
-            } else if (rand == 1) {
+            }
+            else if (rand == 1)
+            {
                 for (float k = 0f; k < MathHelper.TwoPi; k += 0.08f)
                 {
                     float scale = Main.rand.NextFloat(1.2f, 1.6f);
@@ -169,7 +213,9 @@ namespace CalamityMod.Projectiles.Melee
                     dust2.noGravity = true;
                     dust2.fadeIn = -1f;
                 }
-            } else {
+            }
+            else
+            {
                 for (float k = 0f; k < MathHelper.TwoPi; k += 0.2f)
                 {
                     float scale = Main.rand.NextFloat(1f, 1.2f);
@@ -182,6 +228,8 @@ namespace CalamityMod.Projectiles.Melee
                     dust.fadeIn = -1f;
                 }
             }
+
+            CircularDamage(80f);
         }
 
         public override Color? GetAlpha(Color lightColor)

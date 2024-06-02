@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
-using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -75,12 +75,12 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int drawStart = frameHeight * Projectile.frame;
             lightColor.R = (byte)(255 * Projectile.Opacity);
 
-            if (CalamityGlobalNPC.SCal != -1)
+            if (CalamityGlobalNPC.SCal != -1 && NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) == true)
             {
                 if (Main.npc[CalamityGlobalNPC.SCal].active)
                 {
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (Projectile.ai[0] == 0f || Main.zenithWorld)
-                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 120);
+                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
             else
                 target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
         }

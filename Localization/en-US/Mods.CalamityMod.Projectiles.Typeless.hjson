@@ -8,12 +8,14 @@ ArtifactOfResilienceShard3.DisplayName: Artifact Shard
 ArtifactOfResilienceShard4.DisplayName: Artifact Shard
 ArtifactOfResilienceShard5.DisplayName: Artifact Shard
 ArtifactOfResilienceShard6.DisplayName: Artifact Shard
+AscendantAura.DisplayName: Ascendant Aura
 AstralFallingSand.DisplayName: Astral Falling Sand
 AstralSandBallFalling.DisplayName: Astral Sand
 AstralSandBallGun.DisplayName: Astral Sand
 AstralSpray.DisplayName: Astral Spray
 AstralStar.DisplayName: Star
 BallisticPoisonCloud.DisplayName: Ballistic Cloud
+BasicPlagueBee.DisplayName: Basic Plague Bee
 BlazingStarHeal.DisplayName: Blazing Star Heal
 BlazingStarThatDoesNotHeal.DisplayName: Blazing Star That Does Not Heal
 BlazingSun.DisplayName: Blazing Sun
@@ -33,6 +35,7 @@ ChlorophyteLifePulse.DisplayName: Life Pulse
 ChronoClock.DisplayName: Chrono Clock
 CoralBubble.DisplayName: Bubble
 CoralBubbleSmall.DisplayName: Bubble
+CosmicDashExplosion.DisplayName: Cosmic Dash Explosion
 CryonicShield.DisplayName: Cryonic Shield
 CursorProj.DisplayName: Aestheticus Crystal
 CursorProjSplit.DisplayName: Aestheticus Crystal
@@ -61,7 +64,6 @@ GhostlyBolt.DisplayName: Bolt
 GodKiller.DisplayName: God Killer
 GodSlayerShrapnel.DisplayName: Flame
 GodSlayerShrapnelRound.DisplayName: Round
-GoldenGunProj.DisplayName: Golden Round
 GreenLabSeeker.DisplayName: Seeking Mechanism
 HellfireExplosionFriendly2.DisplayName: Explosion
 HeronBobber.DisplayName: Heron Bobber
@@ -92,6 +94,7 @@ PauldronExplosion.DisplayName: Pauldron Explosion
 PendantProjectile1.DisplayName: Prism Shard
 PendantProjectile2.DisplayName: Prism Shard
 PendantProjectile3.DisplayName: Prism Shard
+PlaguePulse.DisplayName: Plague Pulse
 PoisonousSeawater.DisplayName: Seawater
 PscTransformAnimation.DisplayName: Psc Transform Animation
 PscTransformRocks.DisplayName: Psc Transform Rocks
@@ -121,7 +124,6 @@ SulphurousSandBallGun.DisplayName: Sulphurous Sand
 TarraEnergy.DisplayName: Tarra Energy
 TarragonAura.DisplayName: Tarragon Aura
 TeslaAura.DisplayName: Tesla's Electricity
-VanquisherArrowSplit.DisplayName: Arrow
 VerstaltiteBobber.DisplayName: Verstaltite Bobber
 VoidFieldGenerator.DisplayName: Void Field Generator
 WaterConvertor.DisplayName: Water Convertor
@@ -132,5 +134,3 @@ WulfrumHook.DisplayName: Wulfrum Slingshot
 WulfrumLureSignal.DisplayName: Signal
 YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
-AscendantAura.DisplayName: Ascendant Aura
-CosmicDashExplosion.DisplayName: Cosmic Dash Explosion

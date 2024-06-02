@@ -3,12 +3,12 @@ using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
-using Terraria.Audio;
-using Terraria.GameContent;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod

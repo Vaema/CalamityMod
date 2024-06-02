@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * Projectile.Opacity * 0.67f);
 
-            Projectile.Opacity = Utils.GetLerpValue(240f, 235f, Projectile.timeLeft, true);            
+            Projectile.Opacity = Utils.GetLerpValue(240f, 235f, Projectile.timeLeft, true);
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.frameCounter++;
             if (Projectile.frameCounter >= 5)

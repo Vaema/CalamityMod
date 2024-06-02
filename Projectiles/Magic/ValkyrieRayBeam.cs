@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Enums;
 using Terraria.GameContent.Shaders;
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             // On frame 1, set the beam vector and rotation, but set the real velocity to zero.
-            if(Projectile.velocity != Vector2.Zero)
+            if (Projectile.velocity != Vector2.Zero)
             {
                 beamVector = Vector2.Normalize(Projectile.velocity);
                 Projectile.rotation = Projectile.velocity.ToRotation();
@@ -141,7 +141,7 @@ namespace CalamityMod.Projectiles.Magic
             if (beamVector == Vector2.Zero || Projectile.velocity != Vector2.Zero)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float beamLength = Projectile.ai[0];
             Vector2 centerFloored = Projectile.Center.Floor() + beamVector * Projectile.scale * BeamRenderTileOffset;
             Vector2 scaleVec = new Vector2(Projectile.scale);

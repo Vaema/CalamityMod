@@ -28,11 +28,11 @@ namespace CalamityMod.Items.Placeables
             Item.createTile = ModContent.TileType<Tiles.Astral.AstralMonolith>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			// It's not really wood... but it comes from trees!
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Wood;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            // It's not really wood... but it comes from trees!
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Wood;
+        }
 
         public override void AddRecipes()
         {

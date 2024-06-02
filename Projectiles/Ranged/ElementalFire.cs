@@ -1,7 +1,7 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.scale = 1.8f * Utils.GetLerpValue(5f, 30f, Time, true);
             else
                 return; // Helps position it at the tip
-            
+
             if (Time == 1)
             {
                 for (int i = 0; i < 12; i++)

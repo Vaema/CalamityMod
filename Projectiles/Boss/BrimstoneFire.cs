@@ -1,9 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Boss
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Projectile.velocity = oldVelocity * 0.95f;
-			Projectile.position -= Projectile.velocity;
+            Projectile.position -= Projectile.velocity;
             Time++;
             Projectile.timeLeft--;
             return false;
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D fire = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
 
             // The conga line of colors to sift through

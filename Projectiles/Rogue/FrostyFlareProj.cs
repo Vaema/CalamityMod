@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
                     Main.projectile[shard].alpha = Projectile.alpha;
                 }
 
-                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 172);
+                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater);
                 Main.dust[index2].noGravity = true;
             }
             else
@@ -96,15 +96,15 @@ namespace CalamityMod.Projectiles.Rogue
             int flaresFound = 0;
             int oldestFlare = -1;
             int oldestFlareTimeLeft = 300;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].type == Projectile.type && i != Projectile.whoAmI && Main.projectile[i].ai[1] == target.whoAmI)
+                if (p.owner == Main.myPlayer && p.type == Projectile.type && p.whoAmI != Projectile.whoAmI && p.ai[1] == target.whoAmI)
                 {
                     flaresFound++;
-                    if (Main.projectile[i].timeLeft < oldestFlareTimeLeft)
+                    if (p.timeLeft < oldestFlareTimeLeft)
                     {
-                        oldestFlareTimeLeft = Main.projectile[i].timeLeft;
-                        oldestFlare = Main.projectile[i].whoAmI;
+                        oldestFlareTimeLeft = p.timeLeft;
+                        oldestFlare = p.whoAmI;
                     }
                     if (flaresFound >= maxFlares)
                         break;

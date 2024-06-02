@@ -1,10 +1,11 @@
 ﻿//using CalamityMod.Tiles.Abyss.AbyssAmbient;
+using System;
+using System.Collections.Generic;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -15,12 +16,9 @@ namespace CalamityMod.Tiles.Abyss
     public class SulphurousShale : ModTile
     {
         int animationFrameWidth = 234;
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
-        public byte[,] thirdTileAdjacency;
 
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AbyssGravelMine", 3);
-
+        
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -35,9 +33,17 @@ namespace CalamityMod.Tiles.Abyss
             MinPick = 65;
             HitSound = MineSound;
             DustType = 33;
-            TileFraming.SetUpUniversalMerge(Type, TileID.Dirt, out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Stone, out secondTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<AbyssGravel>(), out thirdTileAdjacency);
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
+        }
+
+        public override void NearbyEffects(int i, int j, bool closer)
+        {
+            if (Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.AbyssLayer1Biome>()))
+            {
+                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater").Slot;
+            }
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
@@ -60,7 +66,7 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void RandomUpdate(int i, int j)
         {
-            
+
             int vineLength = WorldGen.genRand.Next((int)Main.rockLayer, (int)(Main.rockLayer + (double)Main.maxTilesY * 0.143));
             int nearbyVineCount = 0;
             for (int x = i - 15; x <= i + 15; x++)
@@ -120,7 +126,7 @@ namespace CalamityMod.Tiles.Abyss
             Tile up2 = Main.tile[i, j - 2];
 
             // Place sulphur tentacle corals
-            if (WorldGen.genRand.Next(10) == 0 && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            if (WorldGen.genRand.NextBool(10)&& !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
                 up.TileType = (ushort)ModContent.TileType<SulphurTentacleCorals>();
                 up.HasTile = true;
@@ -224,21 +230,6 @@ namespace CalamityMod.Tiles.Abyss
                     break;
             }
             frameXOffset = uniqueAnimationFrameX * animationFrameWidth;
-        }
-
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, thirdTileAdjacency, "CalamityMod/Tiles/Merges/AbyssGravelMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/StoneMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/DirtMerge");
-        }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.GetAdjacencyData(i, j, TileID.Dirt, out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Stone, out secondTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<AbyssGravel>(), out thirdTileAdjacency[i, j]);
-            return true;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
-                   }
+        }
 
         public override void SetDefaults()
         {
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<SunkenSailfish>().
                 AddIngredient(ItemID.SoulofFlight).
                 AddTile(TileID.AlchemyTable).
-				AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
                 Register();
 
             CreateRecipe().

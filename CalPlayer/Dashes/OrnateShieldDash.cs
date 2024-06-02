@@ -29,7 +29,7 @@ namespace CalamityMod.CalPlayer.Dashes
         {
             for (int d = 0; d < 3; d++)
             {
-                Dust iceDashDust = Dust.NewDustPerfect(player.Center + new Vector2 (Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.7f), Main.rand.NextBool(8) ? 223 : 180, -player.velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.6f, 0.8f));
+                Dust iceDashDust = Dust.NewDustPerfect(player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.7f), Main.rand.NextBool(8) ? 223 : 180, -player.velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.6f, 0.8f));
                 iceDashDust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
                 iceDashDust.noGravity = true;
                 iceDashDust.fadeIn = 0.5f;

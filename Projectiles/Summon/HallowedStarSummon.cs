@@ -1,11 +1,11 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.position -= Projectile.Size;
             for (int i = 0; i < 5; i++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 16, 0f, 0f, 100, default, 1.2f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Cloud, 0f, 0f, 100, default, 1.2f);
                 Main.dust[idx].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {

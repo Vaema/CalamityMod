@@ -1,5 +1,7 @@
-﻿using CalamityMod.Projectiles.Melee.Yoyos;
+﻿using System.Collections.Generic;
+using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Rarities;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -20,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 42;
             Item.height = 40;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 220;
+            Item.damage = 222;
             Item.knockBack = 7.5f;
             Item.useTime = 20;
             Item.useAnimation = 20;
@@ -35,8 +37,9 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<ObliteratorYoyo>();
             Item.shootSpeed = 16f;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
     }
 }

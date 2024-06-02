@@ -53,19 +53,18 @@ namespace CalamityMod.Projectiles.Summon
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
 
-            for (int j = 0; j < Main.maxProjectiles; j++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[j];
                 // Short circuits to make the loop as fast as possible
-                if (!proj.active || proj.owner != Projectile.owner || !proj.minion || proj.Calamity().lineColor != 1)
+                if (proj.owner != Projectile.owner || !proj.minion || proj.Calamity().lineColor != 1)
                     continue;
                 if (proj.type == Projectile.type)
                 {
-					proj.Calamity().lineColor = 2;
+                    proj.Calamity().lineColor = 2;
                 }
             }
-			if (Projectile.Calamity().lineColor == 0)
-				Projectile.Calamity().lineColor = 1;
+            if (Projectile.Calamity().lineColor == 0)
+                Projectile.Calamity().lineColor = 1;
 
             if (dust == 0f)
             {
@@ -75,7 +74,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                     rotate = rotate.RotatedBy((double)((float)(i - (constant / 2 - 1)) * 6.28318548f / (float)constant), default) + Projectile.Center;
                     Vector2 faceDirection = rotate - Projectile.Center;
-                    int bloody = Dust.NewDust(rotate + faceDirection, 0, 0, 5, faceDirection.X * 1f, faceDirection.Y * 1f, 100, default, 1.1f);
+                    int bloody = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.Blood, faceDirection.X * 1f, faceDirection.Y * 1f, 100, default, 1.1f);
                     Main.dust[bloody].noGravity = true;
                     Main.dust[bloody].noLight = true;
                     Main.dust[bloody].velocity = faceDirection;

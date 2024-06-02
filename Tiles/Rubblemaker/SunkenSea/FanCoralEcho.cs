@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Items.Placeables;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;

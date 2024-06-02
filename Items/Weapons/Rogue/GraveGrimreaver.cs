@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -25,12 +25,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shoot = ModContent.ProjectileType<GraveGrimreaverProjectile>();
             Item.shootSpeed = 16.5f;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.Calamity().donorItem = true;
         }
 
-		public override float StealthDamageMultiplier => 0.40f;
+        public override float StealthDamageMultiplier => 0.40f;
         public override float StealthVelocityMultiplier => 1.75f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

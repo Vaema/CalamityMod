@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
 namespace CalamityMod.Projectiles.Summon
 {
     public class SiriusExplosion : ModProjectile, ILocalizedModType
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 siriusDustVel = Vector2.UnitY.RotatedBy((double)((float)i * 3.14159274f), default).RotatedBy((double)Projectile.rotation, default);
-                    Dust siriusDust = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 225, newColor2, 1.5f)];
+                    Dust siriusDust = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 225, newColor2, 1.5f)];
                     siriusDust.noGravity = true;
                     siriusDust.noLight = true;
                     siriusDust.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 siriusDustVel2 = Vector2.UnitY.RotatedBy((double)((float)j * 3.14159274f), default);
-                    Dust siriusDust2 = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 225, newColor2, 1.5f)];
+                    Dust siriusDust2 = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 225, newColor2, 1.5f)];
                     siriusDust2.noGravity = true;
                     siriusDust2.noLight = true;
                     siriusDust2.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (shouldSpawnDust)
                 {
-                    Dust starDust = Main.dust[Dust.NewDust(dustPos, 0, 0, 267, 0f, 0f, 127, newColor2, 1f)];
+                    Dust starDust = Main.dust[Dust.NewDust(dustPos, 0, 0, DustID.RainbowMk2, 0f, 0f, 127, newColor2, 1f)];
                     starDust.noGravity = true;
                     starDust.position = dustPos;
                     starDust.velocity = -Vector2.UnitY * dustVelMod * (Main.rand.NextFloat() * 0.9f + 1.6f);
@@ -139,7 +139,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Color colorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
             Vector2 projPos = Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D34 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle rectangular = texture2D34.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Color colorAlpha = Projectile.GetAlpha(colorArea);
             Vector2 halfRectangle = rectangular.Size() / 2f;
@@ -172,7 +172,7 @@ namespace CalamityMod.Projectiles.Summon
             float dustCount;
             for (float i = 0f; i < rando; i = dustCount + 1f)
             {
-                int dusty = Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 0, newColor, 1f);
+                int dusty = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, newColor, 1f);
                 Main.dust[dusty].position = Projectile.Center;
                 Main.dust[dusty].velocity = spinningpoint.RotatedBy((double)(6.28318548f * i / rando), default) * dustVel * (0.8f + Main.rand.NextFloat() * 0.4f);
                 Main.dust[dusty].noGravity = true;
@@ -188,7 +188,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             for (float j = 0f; j < rando; j = dustCount + 1f)
             {
-                int dusty2 = Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 0, newColor, 1f);
+                int dusty2 = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, newColor, 1f);
                 Main.dust[dusty2].position = Projectile.Center;
                 Main.dust[dusty2].velocity = spinningpoint.RotatedBy((double)(6.28318548f * j / rando), default) * dustVel * (0.8f + Main.rand.NextFloat() * 0.4f);
                 Dust dust = Main.dust[dusty2];
