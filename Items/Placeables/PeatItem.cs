@@ -4,8 +4,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    public class PeatItem : ModItem
+    public class PeatItem : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;

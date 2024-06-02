@@ -100,3 +100,8 @@ AstralCaveDesert: {
 	DisplayName: Astral Cave Desert
 	TownNPCDialogueName: the Astral Cave Desert
 }
+
+FloralParadiseBiome: {
+	DisplayName: Floral Paradise
+	TownNPCDialogueName: the Floral Paradise
+}

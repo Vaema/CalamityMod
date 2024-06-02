@@ -5,11 +5,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Environment
 {
-    public class Lilyglow : ModProjectile
+    public class Lilyglow : ModProjectile, ILocalizedModType
     {
-        public ref float Direction => ref Projectile.ai[0];
+        public new string LocalizationCategory => "Projectiles.Misc";
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public override string Texture => "CalamityMod/Particles/Metaballs/FusableParticleBase";
+        public ref float Direction => ref Projectile.ai[0];
 
         public override void SetDefaults()
         {

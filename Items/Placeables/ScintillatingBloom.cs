@@ -5,8 +5,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    public class ScintillatingBloom : ModItem
+    public class ScintillatingBloom : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 10;

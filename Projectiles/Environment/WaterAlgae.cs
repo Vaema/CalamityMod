@@ -5,8 +5,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Environment
 {
-    public class WaterAlgae : ModProjectile
+    public class WaterAlgae : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
+
         public ref float Direction => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
