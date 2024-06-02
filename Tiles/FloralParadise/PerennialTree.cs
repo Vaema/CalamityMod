@@ -4,7 +4,6 @@ using CalamityMod.ILEditing;
 using CalamityMod.Tiles.BaseTiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -62,7 +61,10 @@ namespace CalamityMod.Tiles.FloralParadise
                 controlPoints[i] = Vector2.Lerp(vineTop, downwardBottom, i / (float)(controlPoints.Length - 1f));
 
                 Point p = (controlPoints[i] + lightOffset + BranchDrawer.PreviousPoint.ToWorldCoordinates()).ToTileCoordinates();
-                ILChanges.Windgrid.GetWindTime(p.X, p.Y, 40, out int windTimeLeft, out int direction);
+
+                // 02JUN2024: Ozzatron: directionY did not exist at the time of the creation of the Perennial Tree. As such, it is ignored here.
+                ILChanges.Windgrid.GetWindTime(p.X, p.Y, 40, out int windTimeLeft, out int direction, out _);
+
                 float windInterpolant = windTimeLeft / 40f;
                 swayOffset += Utils.GetLerpValue(0f, 0.45f, windInterpolant, true) * Utils.GetLerpValue(1f, 0.55f, windInterpolant, true) * direction * 28f;
                 controlPoints[i].X += swayOffset * Utils.GetLerpValue(0f, controlPoints.Length - 1f, i, true);

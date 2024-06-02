@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.FloralParadise;
+﻿using CalamityMod.Graphics.Primitives;
+using CalamityMod.Tiles.FloralParadise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -11,23 +12,11 @@ namespace CalamityMod.Waterfalls
 {
     public static class WaterfallRenderer
     {
-        private static PrimitiveTrail renderer = null;
-
         private static Vector2 currentWaterfallPosition;
 
         private static float currentWaterfallBrightness;
 
         private static float currentWaterfallHeight;
-
-        public static PrimitiveTrail Renderer
-        {
-            get
-            {
-                if (renderer is null)
-                    renderer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, GameShaders.Misc["CalamityMod:Waterfall"]);
-                return renderer;
-            }
-        }
 
         internal static float PrimitiveWidthFunction(float completionRatio)
         {
@@ -109,7 +98,7 @@ namespace CalamityMod.Waterfalls
 
                 GameShaders.Misc["CalamityMod:Waterfall"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/WorleyNoise"));
                 GameShaders.Misc["CalamityMod:Waterfall"].UseOpacity((float)Math.Pow(currentWaterfallBrightness, 0.62));
-                Renderer.Draw(drawPoints, Vector2.One * 8f - Main.screenPosition, 80);
+                PrimitiveRenderer.RenderTrail(drawPoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, shader: GameShaders.Misc["CalamityMod:Waterfall"]), 80);
             }
         }
     }

@@ -43,6 +43,8 @@ namespace CalamityMod.Tiles.BaseTiles
 
         public abstract int MaxCutoffBranchesPerBranch { get; }
 
+        internal int ItemDrop;
+
         public const int ControlPointCountPerBranch = 8;
 
         public UnifiedRandom RNG => BranchDrawer.RNG;
@@ -98,7 +100,7 @@ namespace CalamityMod.Tiles.BaseTiles
             TileObjectData.newTile.DrawYOffset = 2;
         }
 
-        public override bool Drop(int i, int j) => false;
+        public override bool CanDrop(int i, int j) => false;
 
         public override void KillMultiTile(int x, int y, int frameX, int frameY)
         {

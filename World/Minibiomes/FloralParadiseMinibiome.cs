@@ -90,7 +90,7 @@ namespace CalamityMod.World.Minibiomes
                     break;
 
                 int x = Main.maxTilesX / 2 + WorldGen.genRand.Next(-MaxHorizontalDistanceFromWorldCenter, MaxHorizontalDistanceFromWorldCenter);
-                int y = (int)WorldGen.worldSurface + WorldGen.genRand.Next(MinSurfaceDepth, MaxSurfaceDepth);
+                int y = (int)Main.worldSurface + WorldGen.genRand.Next(MinSurfaceDepth, MaxSurfaceDepth);
                 int width = (int)(WorldGen.genRand.Next(127, 140) * worldSize);
                 int height = (int)(WorldGen.genRand.Next(80, 104) * worldSize);
                 Rectangle caveArea = Utils.CenteredRectangle(new Vector2(x, y), new Vector2(width, height));
@@ -130,7 +130,7 @@ namespace CalamityMod.World.Minibiomes
             for (int i = 0; i < 2000; i++)
             {
                 int x = Main.maxTilesX / 2 + WorldGen.genRand.Next(330, MaxHorizontalDistanceFromWorldCenter) * WorldGen.genRand.NextBool().ToDirectionInt();
-                int y = (int)WorldGen.worldSurface - 120;
+                int y = (int)Main.worldSurface - 120;
                 if (!FloralParadiseTree.Create(new(x, y)))
                     continue;
                 break;
@@ -500,7 +500,7 @@ namespace CalamityMod.World.Minibiomes
                     break;
 
                 if (tile.HasTile || tile.LiquidAmount > 0 || !WorldGen.SolidTile(x, y + 1) || 
-                    !TileObject.CanPlace(x, y, treeID, 0, 0, out _, true, true) ||
+                    !TileObject.CanPlace(x, y, treeID, 0, 0, out _, true, checkStay: true) ||
                     Collision.SolidCollision(checkTopLeft, (int)checkArea.X, (int)checkArea.Y))
                 {
                     i--;
