@@ -3221,14 +3221,6 @@ namespace CalamityMod.NPCs
             if (effectiveDR <= 0f)
                 effectiveDR = 0f;
 
-            // Add Yellow Candle damage if the NPC isn't supposed to be "near invincible"
-            // Armor penetration has already been applied as bonus damage.
-            // Yellow Candle provides +5% damage which ignores both DR and defense.
-            // This means Yellow Candle is buffing armor penetration and technically not ignoring defense,
-            // but it's small enough to let it slide.
-            if (npc.HasBuff<CirrusYellowCandleBuff>() && DR < 0.99f && npc.takenDamageMultiplier > 0.05f)
-                finalMultiplier += 0.05f;
-
             // Calculate extra DR based on kill time, similar to the Hush boss from The Binding of Isaac
             // Cirrus being active makes the extra DR cease to function
             bool cirrusBossActive = false;
