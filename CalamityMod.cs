@@ -100,7 +100,7 @@ namespace CalamityMod
         // Astral Snow Sky/BG
         public static Texture2D AstralSnowSurfaceMiddle;
 
-        // Sulpher Sea Sky/BG
+        // Sulphur Sea Sky/BG
         public static Texture2D SulphurSeaSky;
         public static Texture2D SulphurSeaSkyFront;
         public static Texture2D SulphurSeaSurface;
