@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,6 +8,7 @@ using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Typeless
 {
     public class AuricLandMineExplosion : ModProjectile, ILocalizedModType
@@ -81,41 +83,24 @@ namespace CalamityMod.Projectiles.Typeless
             target.velocity += yeetVec * (target.noKnockback ? 20f : 40f);
             return true;
         }
-        public PrimitiveTrail LightningDrawer;
 
-        public PrimitiveTrail LightningBackgroundDrawer;
-        internal float WidthFunction(float completionRatio)
-        {
-            return MathHelper.Clamp(completionRatio * 2, 0.4f, 1f);
-        }
+        internal float WidthFunction(float completionRatio) => MathHelper.Clamp(completionRatio * 2, 0.4f, 1f);
+        internal Color ColorFunction(float completionRatio) => new Color(174, 227, 244); 
 
-        internal Color ColorFunction(float completionRatio)
-        {
-            return new Color(174, 227, 244); 
-        }
         internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 2f;
-
-        internal Color BackgroundColorFunction(float completionRatio)
-        {
-            return new Color(92, 144, 245) * 0.6f;
-        }
+        internal Color BackgroundColorFunction(float completionRatio) => new Color(92, 144, 245) * 0.6f;
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.spriteBatch.EnterShaderRegion();
-            if (LightningDrawer is null)
-                LightningDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, GameShaders.Misc["CalamityMod:TeslaTrail"]);
-            if (LightningBackgroundDrawer is null)
-                LightningBackgroundDrawer = new PrimitiveTrail(BackgroundWidthFunction, BackgroundColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, GameShaders.Misc["CalamityMod:TeslaTrail"]);
-            GameShaders.Misc["CalamityMod:TeslaTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ZapTrail"));
-
-
             if (lightningTrails.Count <= 0)
                 return false;
+
+            Main.spriteBatch.EnterShaderRegion();
+            GameShaders.Misc["CalamityMod:TeslaTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ZapTrail"));
             foreach (List<Vector2> points in lightningTrails)
             {
-                LightningBackgroundDrawer.Draw(points, -Main.screenPosition, 60);
-                LightningDrawer.Draw(points, -Main.screenPosition, 60);
+                PrimitiveRenderer.RenderTrail(points, new(WidthFunction, ColorFunction, (_) => Vector2.Zero, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]), 60);
+                PrimitiveRenderer.RenderTrail(points, new(BackgroundWidthFunction, BackgroundColorFunction, (_) => Vector2.Zero, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]), 60);
             }
 
             Main.spriteBatch.ExitShaderRegion();
