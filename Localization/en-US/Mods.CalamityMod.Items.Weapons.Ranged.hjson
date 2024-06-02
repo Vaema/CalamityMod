@@ -466,8 +466,10 @@ FetidEmesis: {
 	DisplayName: Fetid Emesis
 	Tooltip:
 		'''
-		Has a chance to release rotten chunks instead of bullets
-		40% chance to save ammo
+		Fires bullets at an accelerating rate
+		After firing for a while it will vomit a spread of fetid chunks
+		Once it has finished firing it will go on cooldown for a bit
+		75% chance to save ammo
 		'''
 }
 

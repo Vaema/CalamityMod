@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 76;
             Item.height = 46;
-            Item.damage = 129;
+            Item.damage = 187;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 6;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -35,9 +35,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().canFirePointBlankShots = true;
         }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => false;
-
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<FetidEmesisHoldout>(), damage, knockback, player.whoAmI);

@@ -42,16 +42,17 @@ namespace CalamityMod.Projectiles.Ranged
                 PostFiringCooldown();
                 return;
             }
+
             revSpeed = Utils.Remap(revFrames, 0, 200, 1, 20, true);
             if (shootingTimer >= 60)
             {
                 int bulletAMMO = ProjectileID.Bullet;
-                Owner.PickAmmo(Owner.ActiveItem(), out bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out int _, Main.rand.Next(0, 100 + 1) < 50);
+                Owner.PickAmmo(Owner.ActiveItem(), out bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, Main.rand.NextBool(4));
 
                 SoundStyle fire = new("CalamityMod/Sounds/Item/StrongGunShot");
                 SoundEngine.PlaySound(fire with { Volume = 0.7f }, Projectile.Center);
 
-                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 12;
+                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
                 float spread = 0.045f * Utils.GetLerpValue(0, 300, revFrames, true);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(spread), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
                 
@@ -79,12 +80,25 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(bigShot with { Pitch = -0.2f, Volume = 0.6f }, Projectile.Center);
                 SoundEngine.PlaySound(bigShotGun with { Volume = 0.6f }, Projectile.Center);
 
-                for (int i = 0; i <= 12; i++)
+                int chunkDamage = (int)(Projectile.damage * 1.3f);
+                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 13;
+                for (int i = 0; i <= 4; i++)
                 {
-                    Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 13;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(0.02f * i) * Main.rand.NextFloat(0.7f, 1.1f), ModContent.ProjectileType<EmesisGore>(), Projectile.damage, Projectile.knockBack * 3, Projectile.owner);
-
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(-0.025f * i) * (1 - i * 0.05f), ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner);
                 }
+                for (int i = 0; i <= 4; i++)
+                {
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(0.025f * i) * (1 - i * 0.05f), ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner);
+                }
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner);
+                for (int i = 0; i <= 18; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(GunTipPosition, 66, shootVelocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 1.5f), 0, default, Main.rand.NextFloat(0.6f, 1.4f));
+                    dust.noGravity = true;
+                    dust.color = Color.Chartreuse;
+                }
+                Particle pulse = new GlowSparkParticle(GunTipPosition - shootVelocity, shootVelocity, false, 12, 0.035f, Color.Chartreuse, new Vector2(2.5f, 0.9f), true);
+                GeneralParticleHandler.SpawnParticle(pulse);
             }
         }
         private void PostFiringCooldown()
@@ -131,7 +145,6 @@ namespace CalamityMod.Projectiles.Ranged
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
-
             return false;
         }
     }
