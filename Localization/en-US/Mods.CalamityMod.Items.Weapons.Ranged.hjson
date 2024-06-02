@@ -1407,3 +1407,18 @@ WulfrumBlunderbuss: {
 		[c/83B87E:In fact, it is quite common for a robot to be turned into ammo right after it stops functioning.']
 		'''
 }
+
+AcidwoodBow: {
+	DisplayName: Acidwood Bow
+	Tooltip: ""
+}
+
+DriftwoodBow: {
+	DisplayName: Driftwood Bow
+	Tooltip: This bow is stronger while you are wet
+}
+
+MonolithBow: {
+	DisplayName: Monolith Bow
+	Tooltip: ""
+}

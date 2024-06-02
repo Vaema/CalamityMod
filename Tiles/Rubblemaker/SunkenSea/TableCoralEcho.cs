@@ -14,7 +14,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
     {
         int subsheetHeight = 34;
         int subsheetWidth = 108;
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/TableCoral";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/TableCoral";
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;

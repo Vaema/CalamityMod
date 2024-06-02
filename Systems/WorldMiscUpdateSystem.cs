@@ -269,7 +269,7 @@ namespace CalamityMod.Systems
                                 {
                                     Tile tile = Main.tile[x, y];
                                     bool growTile = !tile.HasTile && tile.LiquidAmount >= 128;
-                                    bool isSunkenSeaTile = tileType == ModContent.TileType<Navystone>() || tileType == ModContent.TileType<EutrophicSand>() || tileType == ModContent.TileType<SeaPrism>();
+                                    bool isSunkenSeaTile = tileType == ModContent.TileType<Navystone>() || tileType == ModContent.TileType<SeaPrism>();
                                     bool meetsAdditionalGrowConditions = tile.Slope == SlopeType.Solid && !tile.IsHalfBlock && tile.LiquidType != LiquidID.Lava;
 
                                     if (growTile && meetsAdditionalGrowConditions)

@@ -9,7 +9,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 {
     public class SmallWideCoralEcho : ModTile
     {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/SmallWideCoral";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/SmallWideCoral";
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -29,6 +29,6 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
     }
     public class SmallWideCoral2Echo : SmallWideCoralEcho
     {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/SmallWideCoral2";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/SmallWideCoral2";
     }
 }

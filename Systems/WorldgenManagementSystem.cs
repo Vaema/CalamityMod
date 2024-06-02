@@ -116,18 +116,26 @@ namespace CalamityMod.Systems
                 }));
             }
 
-            // Sunken sea
-            int SunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Settle Liquids Again"));
+            // sunken sea
+            int SunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Cactus, Palm Trees, & Coral"));
             if (SunkenSeaIndex != -1)
             {
                 tasks.Insert(SunkenSeaIndex + 1, new PassLegacy("Sunken Sea", (progress, config) =>
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SunkenSea").Value;
 
-                    int sunkenSeaX = GenVars.UndergroundDesertLocation.Left;
-                    int sunkenSeaY = Main.maxTilesY - 400;
+                    int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
+                    int sunkenSeaY = Main.maxTilesY / 2;
 
-                    SunkenSea.Place(new Point(sunkenSeaX, sunkenSeaY));
+                    //place each piece of the sunken sea based on the above positons
+                    SunkenSea.PlaceRadiantReefs(sunkenSeaX - 100, sunkenSeaY + 75, true);
+                    SunkenSea.PlaceRadiantReefs(sunkenSeaX + 100, sunkenSeaY + 75, false);
+                    SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 75);
+                    SunkenSea.PlaceBasaltGully(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
+                    SunkenSea.PlaceSunkenSeaAmbience();
+                    SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceTimelessShores(sunkenSeaX, sunkenSeaY);
                 }));
             }
 
@@ -135,8 +143,9 @@ namespace CalamityMod.Systems
             int FinalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
             if (FinalIndex != -1)
             {
-                // Reallocate gems so rarity corresponds to depth
                 int currentFinalIndex = FinalIndex;
+
+                // Reallocate gems so rarity corresponds to depth
                 tasks.Insert(++currentFinalIndex, new PassLegacy("Gem Depth Adjustment", (progress, config) =>
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.GemAdjustment").Value;
@@ -272,6 +281,7 @@ namespace CalamityMod.Systems
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Abyss").Value;
                     Abyss.PlaceAbyss();
+                    Abyss.AbyssCleanup();
                 }));
 
                 // Sulphurous Sea (Part 2, after Abyss)

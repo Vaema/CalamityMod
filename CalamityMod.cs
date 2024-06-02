@@ -248,29 +248,6 @@ namespace CalamityMod
             BalancingChangesManager.Load();
             BaseIdleHoldoutProjectile.LoadAll();
             PlayerDashManager.Load();
-
-            /*
-            //keep this disabled for now, hell bg system isnt used and there is a better way to load it
-            //hell background loading
-            HellBGManager.Load();
-
-            //load stuff for hell background
-            loadCache = new List<HellBGLoad>();
-
-            foreach (Type type in Code.GetTypes())
-            {
-                if (!type.IsAbstract && type.GetInterfaces().Contains(typeof(HellBGLoad)))
-                {
-                    var instance = Activator.CreateInstance(type);
-                    loadCache.Add(instance as HellBGLoad);
-                }
-            }
-
-            for (int k = 0; k < loadCache.Count; k++)
-            {
-                loadCache[k].Load();
-            }
-            */
         }
 
         private void LoadClient()
@@ -484,21 +461,6 @@ namespace CalamityMod
             SceneMetrics.GraveyardTileThreshold = 28;
 
             carpetOriginal = null;
-
-            /*
-            //unload hell background stuff
-            HellBGManager.Unload();
-
-            if (loadCache != null)
-            {
-                foreach (var loadable in loadCache)
-                {
-                    loadable.Unload();
-                }
-            }
-
-            loadCache = null;
-            */
 
             Instance = null;
             base.Unload();
