@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
@@ -58,11 +55,6 @@ namespace CalamityMod.Tiles.SunkenSea
             r *= brightness;
             g *= brightness;
             b *= brightness;
-        }
-
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/NavystoneMerge");
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)

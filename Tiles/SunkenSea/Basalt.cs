@@ -1,8 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using Microsoft.Xna.Framework.Graphics;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
@@ -34,10 +33,11 @@ namespace CalamityMod.Tiles.SunkenSea
 
             MinPick = 100;
 
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<RuneSand>(), out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Sandstone, out secondTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Sand, out thirdTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.HardenedSand, out fourthTileAdjacency);
+            // 02JUN2024: Ozzatron: RuneSand has no merge
+            // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<RuneSand>(), out tileAdjacency);
+            this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
+            this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
+            this.RegisterUniversalMerge(TileID.HardenedSand, "CalamityMod/Tiles/Merges/HardenedSandMerge");
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -52,21 +52,10 @@ namespace CalamityMod.Tiles.SunkenSea
             frameYOffset = j % 4 * sheetHeight;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            //TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/TimelessSandMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/SandstoneMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, thirdTileAdjacency, "CalamityMod/Tiles/Merges/SandMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, fourthTileAdjacency, "CalamityMod/Tiles/Merges/HardenedSandMerge");
-        }
-
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<RuneSand>(), out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Sandstone, out secondTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Sand, out thirdTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.HardenedSand, out thirdTileAdjacency[i, j]);
-            return true;
+            // 02JUN2024: Ozzatron: unclear if this is the correct framing strategy for Basalt
+            return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
         }
     }
 }

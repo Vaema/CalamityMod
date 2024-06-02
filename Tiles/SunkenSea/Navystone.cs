@@ -1,12 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-
-using CalamityMod.Tiles.SunkenSea.Ambient;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
@@ -47,10 +43,10 @@ namespace CalamityMod.Tiles.SunkenSea
         public override void RandomUpdate(int i, int j)
         {
             Tile Tile = Framing.GetTileSafely(i, j);
-			Tile Below = Framing.GetTileSafely(i, j + 1);
+            Tile Below = Framing.GetTileSafely(i, j + 1);
             Tile Above = Framing.GetTileSafely(i, j - 1);
 
-			if (!Below.HasTile && Below.LiquidType <= 0 && !Tile.BottomSlope) 
+            if (!Below.HasTile && Below.LiquidType <= 0 && !Tile.BottomSlope) 
             {
                 if (Main.rand.NextBool(10))
                 {

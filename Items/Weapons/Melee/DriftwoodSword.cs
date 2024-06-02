@@ -1,7 +1,5 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Placeables;
 using Microsoft.Xna.Framework;
-using CalamityMod.Items.Placeables;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.useTurn = true;
-            Item.value = CalamityGlobalItem.Rarity0BuyPrice;
+            Item.value = CalamityGlobalItem.RarityWhiteBuyPrice;
             Item.rare = ItemRarityID.White;
         }
         public override void MeleeEffects(Player player, Rectangle hitbox)

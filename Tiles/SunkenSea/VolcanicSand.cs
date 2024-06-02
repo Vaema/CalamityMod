@@ -1,17 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using Microsoft.Xna.Framework.Graphics;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
     public class VolcanicSand : ModTile
     {
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
-        public byte[,] thirdTileAdjacency;
-
         public override void SetStaticDefaults()
         {
             TileID.Sets.GeneralPlacementTiles[Type] = false;
@@ -29,9 +24,9 @@ namespace CalamityMod.Tiles.SunkenSea
             DustType = 147;
             AddMapEntry(new Color(117, 79, 97));
 
-            TileFraming.SetUpUniversalMerge(Type, TileID.Sandstone, out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Sand, out secondTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.HardenedSand, out thirdTileAdjacency);
+            this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
+            this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
+            this.RegisterUniversalMerge(TileID.HardenedSand, "CalamityMod/Tiles/Merges/HardenedSandMerge");
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -39,18 +34,8 @@ namespace CalamityMod.Tiles.SunkenSea
             num = fail ? 1 : 3;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/SandstoneMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/SandMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, thirdTileAdjacency, "CalamityMod/Tiles/Merges/HardenedSandMerge");
-        }
-
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.GetAdjacencyData(i, j, TileID.Sandstone, out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Sand, out secondTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.HardenedSand, out thirdTileAdjacency[i, j]);
             return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
         }
     }

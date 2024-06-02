@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Placeables;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,7 +21,7 @@ namespace CalamityMod.Items.Tools
             Item.height = 32;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity0BuyPrice;
+            Item.value = CalamityGlobalItem.RarityWhiteBuyPrice;
             Item.rare = ItemRarityID.White;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;

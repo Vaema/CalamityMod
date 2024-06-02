@@ -1,11 +1,6 @@
-﻿//using CalamityMod.Tiles.Abyss.AbyssAmbient;
-using System;
-using System.Collections.Generic;
-using CalamityMod.Tiles.Abyss.AbyssAmbient;
+﻿using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -36,14 +31,6 @@ namespace CalamityMod.Tiles.Abyss
             this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
             this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
             this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
-        }
-
-        public override void NearbyEffects(int i, int j, bool closer)
-        {
-            if (Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.AbyssLayer1Biome>()))
-            {
-                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater").Slot;
-            }
         }
 
         public override void NearbyEffects(int i, int j, bool closer)

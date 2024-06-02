@@ -9,8 +9,6 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class AbyssCoral : ModTile
     {
-        public byte[,] tileAdjacency;
-
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -28,8 +26,6 @@ namespace CalamityMod.Tiles.Abyss
             Main.tileShine2[Type] = true;
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
-
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<AbyssGravel>(), out tileAdjacency);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -52,7 +48,6 @@ namespace CalamityMod.Tiles.Abyss
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<AbyssGravel>(), out tileAdjacency[i, j]);
             return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
         }
     }

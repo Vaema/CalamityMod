@@ -1,9 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
@@ -32,19 +31,15 @@ namespace CalamityMod.Tiles.SunkenSea
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<RuneSand>(), out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Shellstone>(), out secondTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<EutrophicSand>(), out thirdTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Navystone>(), out fourthTileAdjacency);
+            // 02JUN2024: Ozzatron: RuneSand has no merge
+            // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<RuneSand>(), out tileAdjacency);
+            // 02JUN2024: Ozzatron: Shellstone has no merge tile sheet defined
+            // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Shellstone>(), out secondTileAdjacency);
+
+            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            //TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/TimelessSandMerge");
-            //TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/ShellstoneMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, thirdTileAdjacency, "CalamityMod/Tiles/Merges/EutrophicSandMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, fourthTileAdjacency, "CalamityMod/Tiles/Merges/NavystoneMerge");
-        }
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             if (!Main.tile[i - 1, j].HasTile || !Main.tile[i + 1, j].HasTile || !Main.tile[i, j - 1].HasTile || !Main.tile[i, j + 1].HasTile)
@@ -65,10 +60,6 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<RuneSand>(), out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<Shellstone>(), out secondTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<EutrophicSand>(), out thirdTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<Navystone>(), out fourthTileAdjacency[i, j]);
             return TileFraming.BetterGemsparkFraming(i, j, resetFrame);
         }
     }

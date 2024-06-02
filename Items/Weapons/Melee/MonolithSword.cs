@@ -1,12 +1,10 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Materials;
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Dusts;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -25,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.useTurn = true;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
         }
         public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)

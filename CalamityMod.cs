@@ -248,13 +248,6 @@ namespace CalamityMod
             BalancingChangesManager.Load();
             BaseIdleHoldoutProjectile.LoadAll();
             PlayerDashManager.Load();
-
-            //load all the detours for the custom backgrounds
-            Backgrounds.AstralSurfaceBG.Load();
-            Backgrounds.AstralDesertBG.Load();
-            Backgrounds.AstralSnowBG.Load();
-            Backgrounds.SulphurSeaBG.Load();
-            Backgrounds.SunkenSeaBurrowsBG.Load();
         }
 
         private void LoadClient()

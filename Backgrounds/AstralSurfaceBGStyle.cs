@@ -36,6 +36,7 @@ namespace CalamityMod.Backgrounds
                     if (fades[i] < 0f)
                     {
                         fades[i] = 0f;
+                    }
                 }
             }
         }
