@@ -1,0 +1,37 @@
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Plates;
+using CalamityMod.Tiles.PlayerTurrets;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Items.Placeables.PlaceableTurrets
+{
+    public class OnyxTurret : ModItem, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Items.Placeables";
+        public override void SetDefaults()
+        {
+            Item.DefaultToPlaceableTile(ModContent.TileType<PlayerOnyxTurret>());
+
+            Item.value = Item.buyPrice(0, 5, 0, 0);
+            Item.rare = ItemRarityID.Orange;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 1);
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<MysteriousCircuitry>(14).
+                AddIngredient<DubiousPlating>(20).
+                AddIngredient<Onyxplate>(10).
+                AddIngredient<BlightedGel>(50).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Func<bool> condition), condition).
+                AddTile(TileID.Anvils).
+                Register();
+        }
+    }
+}
