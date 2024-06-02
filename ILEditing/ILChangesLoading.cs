@@ -157,9 +157,6 @@ namespace CalamityMod.ILEditing
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;
             On_NPC.PlayerInteraction += FixSplittingWormInteraction;
 
-            // Let Sunken Sea BG walls appear even when covered with water.
-            IL_MapHelper.CreateMapTile += ShowSunkenSeaBGWallsThroughWater;
-            
             // Fix vanilla not accounting for spritebatch modification in held projectile drawing
             On_PlayerDrawLayers.DrawHeldProj += FixHeldProjectileBlendState;
 
