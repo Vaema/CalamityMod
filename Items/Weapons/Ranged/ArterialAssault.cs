@@ -1,8 +1,8 @@
-﻿﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4.25f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item102;
             Item.autoReuse = true;
@@ -79,7 +79,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             int shotArrow = Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, type, damage, knockback, player.whoAmI);
             Main.projectile[shotArrow].noDropItem = true;
             Main.projectile[shotArrow].tileCollide = false;
-            Main.projectile[shotArrow].timeLeft = (int)(Main.projectile[shotArrow].timeLeft * Main.projectile[shotArrow].MaxUpdates * 0.75f);
             CalamityGlobalProjectile cgp = Main.projectile[shotArrow].Calamity();
             cgp.allProjectilesHome = true;
             return false;

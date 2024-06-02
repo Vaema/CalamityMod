@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 113;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 113;
         }
 
         public override void SetDefaults()
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Materials
             CreateRecipe(2).
                 AddIngredient<Bloodstone>(5).
                 AddIngredient<BloodOrb>().
-                AddIngredient<Polterplasm>().
+                AddIngredient<Necroplasm>().
                 AddTile(TileID.AdamantiteForge).
                 Register();
         }

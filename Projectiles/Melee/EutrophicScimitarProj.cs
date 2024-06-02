@@ -1,8 +1,10 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
     public class EutrophicScimitarProj : ModProjectile, ILocalizedModType
@@ -48,17 +50,17 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.velocity.X < 0f)
             {
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
             else
             {
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
             if (Main.rand.NextBool())
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 226, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Electric, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.5f);
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+            Projectile.rotation = Projectile.velocity.ToRotation();
         }
 
         public override void OnKill(int timeLeft)
@@ -67,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Dust dust;
                 Vector2 position = new Vector2(Projectile.position.X - 4, Projectile.position.Y - 4);
-                dust = Main.dust[Terraria.Dust.NewDust(position, 58, 58, 226, 0f, 0f, 0, new Color(255, 255, 255), 0.4605263f)];
+                dust = Main.dust[Terraria.Dust.NewDust(position, 58, 58, DustID.Electric, 0f, 0f, 0, new Color(255, 255, 255), 0.4605263f)];
                 dust.noGravity = true;
                 dust.fadeIn = 0.9473684f;
             }

@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
@@ -41,13 +41,13 @@ namespace CalamityMod.Items.Weapons.Rogue
                 int spread = 15;
                 for (int i = 0; i < 3; i++)
                 {
-                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-2,3), velocity.Y + Main.rand.Next(-2,3)).RotatedBy(MathHelper.ToRadians(spread));
-                    int proj = Projectile.NewProjectile(source, position, perturbedspeed, type, (int)(damage*0.45), knockback, player.whoAmI);
+                    Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-2, 3), velocity.Y + Main.rand.Next(-2, 3)).RotatedBy(MathHelper.ToRadians(spread));
+                    int proj = Projectile.NewProjectile(source, position, perturbedspeed, type, (int)(damage * 0.45), knockback, player.whoAmI);
                     if (proj.WithinBounds(Main.maxProjectiles))
                     {
                         Main.projectile[proj].Calamity().stealthStrike = true;
                     }
-                    spread -= Main.rand.Next(5,8);
+                    spread -= Main.rand.Next(5, 8);
                 }
                 return false;
             }

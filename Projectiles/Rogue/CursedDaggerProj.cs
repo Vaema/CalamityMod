@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Main.rand.NextBool(Projectile.Calamity().stealthStrike ? 3 : 7))
             {
-                Dust dust = Main.dust[Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, Projectile.velocity.X * -3f, Projectile.velocity.Y * -3f, 0, default, Projectile.Calamity().stealthStrike ? Main.rand.NextFloat(2.5f, 3.2f) : 1.5f)];
+                Dust dust = Main.dust[Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, Projectile.velocity.X * -3f, Projectile.velocity.Y * -3f, 0, default, Projectile.Calamity().stealthStrike ? Main.rand.NextFloat(2.5f, 3.2f) : 1.5f)];
                 dust.noGravity = true;
             }
 
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Rogue
             int numberofdusts = Projectile.Calamity().stealthStrike ? 14 : 5;
             for (int i = 0; i <= numberofdusts; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
             if (Projectile.Calamity().stealthStrike)
             {
@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

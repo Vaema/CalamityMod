@@ -1,12 +1,12 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Melee
             Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Color.Lerp(Color.Purple, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.6f, 1.2f), 0.8f, 0, false, 0, true);
             GeneralParticleHandler.SpawnParticle(smoke);
 
-            if (Main.rand.Next(3) == 0)
+            if (Main.rand.NextBool(3))
             {
                 Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Main.hslToRgb(0.55f, 1, 0.5f), 20, Main.rand.NextFloat(0.4f, 0.7f), 0.8f, 0, true, 0.01f, true);
                 GeneralParticleHandler.SpawnParticle(smokeGlow);
@@ -137,7 +137,7 @@ namespace CalamityMod.Projectiles.Melee
                 Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Color.Lerp(Color.DarkRed, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(1.5f, 2.2f), 0.8f, 0, false, 0, true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                if (Main.rand.Next(3) == 0)
+                if (Main.rand.NextBool(3))
                 {
                     Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Main.hslToRgb(0.55f, 1, 0.5f), 20, Main.rand.NextFloat(1.4f, 1.5f), 0.8f, 0, true, 0.01f, true);
                     GeneralParticleHandler.SpawnParticle(smokeGlow);

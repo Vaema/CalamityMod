@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class BeamingBolt : ModProjectile, ILocalizedModType
@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (Projectile.ai[0] == 1f)
                 tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/BeamingThornBlossom").Value;
 
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<BeamingBolt2>(), (int)(Projectile.damage * 1), Projectile.knockBack, Projectile.owner, Projectile.ai[0]);
                 }
             }
-            SoundEngine.PlaySound(SoundID.Item105, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item105, Projectile.Center);
         }
     }
 }

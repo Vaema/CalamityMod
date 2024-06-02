@@ -1,12 +1,12 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
     public class AuroradicalStar : ModProjectile, ILocalizedModType
@@ -72,16 +72,15 @@ namespace CalamityMod.Projectiles.Rogue
             //Home in
             float maxDistance = 800f;
             int targetIndex = -1;
-            int i;
-            for (i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].CanBeChasedBy(Projectile, false))
+                if (n.CanBeChasedBy(Projectile, false))
                 {
-                    float extraDistance = (Main.npc[i].width / 2) + (Main.npc[i].height / 2);
+                    float extraDistance = (n.width / 2) + (n.height / 2);
 
-                    if (Vector2.Distance(Main.npc[i].Center, Projectile.Center) < (maxDistance + extraDistance))
+                    if (Vector2.Distance(n.Center, Projectile.Center) < (maxDistance + extraDistance))
                     {
-                        targetIndex = i;
+                        targetIndex = n.whoAmI;
                         break;
                     }
                 }
@@ -154,7 +153,7 @@ namespace CalamityMod.Projectiles.Rogue
                 int astral = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.Next(dustTypes), 0f, 0f, 0, default, 1.5f);
                 Main.dust[astral].noGravity = true;
                 Main.dust[astral].velocity *= 3f;
-                astral = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 50, default, 1f);
+                astral = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 50, default, 1f);
                 Main.dust[astral].velocity *= 2f;
                 Main.dust[astral].noGravity = true;
             }

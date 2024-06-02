@@ -100,7 +100,6 @@ namespace CalamityMod.Projectiles.Summon
 
             Projectile.rotation = 0f;
             Projectile.tileCollide = true;
-            Projectile.StickToTiles(false, false);
         }
 
         public void DoInitializationEffects()
@@ -108,7 +107,8 @@ namespace CalamityMod.Projectiles.Summon
             int dustQuantity = 36;
             for (int d = 0; d < dustQuantity; d++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 7);
+                // The ground squirrel is very slightly off-center
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Vector2.UnitY * 16f, 7);
                 dust.scale = 1.4f;
                 dust.velocity = (MathHelper.TwoPi * d / dustQuantity).ToRotationVector2() * 4f;
                 dust.noGravity = true;
@@ -145,6 +145,12 @@ namespace CalamityMod.Projectiles.Summon
         public override bool? CanDamage() => false;
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
 
         public override void OnKill(int timeLeft)
         {

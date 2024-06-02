@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Items.Placeables;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -11,7 +11,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 {
     public class FanCoralEcho : ModTile
     {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/FanCoral";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/FanCoral";
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -30,7 +30,8 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaWater").Slot;
+            if (!Main.dedServ)
+                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaWater").Slot;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

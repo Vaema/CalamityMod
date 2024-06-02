@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class PhantasmalFuryProj : ModProjectile, ILocalizedModType
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int i = 0; i < 3; i++)
             {
-                int spectre = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 175, 0f, 0f, 100, default, 2f);
+                int spectre = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[spectre].noGravity = true;
                 Main.dust[spectre].velocity *= 0.5f;
                 Main.dust[spectre].velocity += Projectile.velocity * 0.1f;
@@ -65,10 +65,10 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item43, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item43, Projectile.Center);
             for (int j = 0; j <= 10; j++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 175, 0f, 0f, 100, default, 1f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 1f);
             }
             if (Projectile.owner == Main.myPlayer)
             {

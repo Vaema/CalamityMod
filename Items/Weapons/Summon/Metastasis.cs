@@ -21,14 +21,14 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.UseSound = SoundID.DD2_BetsySummon;
             Item.shoot = ModContent.ProjectileType<SepulcherMinion>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
-        
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<StaffoftheMechworm>();

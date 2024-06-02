@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             Item.width = 22;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.accessory = true;
         }
@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Accessories.Wings
                 {
                     dustXOffset = -40;
                 }
-                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, 157, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
+                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, DustID.ChlorophyteWeapon, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
                 Main.dust[flightDust].noGravity = true;
                 Main.dust[flightDust].velocity *= 0.3f;
                 if (Main.rand.NextBool(10))

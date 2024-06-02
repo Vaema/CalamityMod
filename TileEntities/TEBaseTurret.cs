@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -114,7 +114,7 @@ namespace CalamityMod.TileEntities
         }
 
         // This function does nothing by default, but turrets can use it for flavor behaviors e.g. emitting sparks or beeping.
-        protected virtual void PassiveBehavior(Vector2 turretPos) {}
+        protected virtual void PassiveBehavior(Vector2 turretPos) { }
 
         protected virtual void ActiveBehavior(Vector2 turretPos, Vector2 targetPos)
         {
@@ -237,7 +237,8 @@ namespace CalamityMod.TileEntities
         // Due to the limitations of TML packets, this data must be exactly 16 bytes in size.
         // The default implementations here write 16 bytes of zeroes and dump all 16 bytes when read.
         public const int NumExtraBytes = 16;
-        protected virtual void WriteExtraData(BinaryWriter writer) {
+        protected virtual void WriteExtraData(BinaryWriter writer)
+        {
             writer.Write(0Lu);
             writer.Write(0Lu);
         }

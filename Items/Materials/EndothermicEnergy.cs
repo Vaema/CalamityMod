@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Materials
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 116;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 116;
         }
 
         public override void SetDefaults()

@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Items.SummonItems;
 using CalamityMod.World;
+using CalamityMod.World.Minibiomes;
 using CalamityMod.World.Planets;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-using CalamityMod.Items.SummonItems;
 using static CalamityMod.World.CalamityWorld;
-using Terraria.Localization;
 
 namespace CalamityMod.Systems
 {
@@ -56,6 +57,14 @@ namespace CalamityMod.Systems
                 progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterJungleTemple").Value;
                 CustomTemple.NewJungleTemple();
             });
+
+            // Floral Paradise Biome
+            tasks.Insert(JungleTempleIndex + 1, new PassLegacy("FloralParadise", (progress, config) =>
+            {
+                progress.Message = "Growing a floral paradise underground";
+                if (FloralParadiseMinibiome.SHOULD_GENERATE)
+                    FloralParadiseMinibiome.GenerateInstances();
+            }));
 
             // Improved Golem arena
             int JungleTempleIndex2 = tasks.FindIndex(genpass => genpass.Name.Equals("Temple"));
@@ -116,18 +125,26 @@ namespace CalamityMod.Systems
                 }));
             }
 
-            // Sunken sea
-            int SunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Settle Liquids Again"));
+            // sunken sea
+            int SunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Cactus, Palm Trees, & Coral"));
             if (SunkenSeaIndex != -1)
             {
                 tasks.Insert(SunkenSeaIndex + 1, new PassLegacy("Sunken Sea", (progress, config) =>
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SunkenSea").Value;
 
-                    int sunkenSeaX = GenVars.UndergroundDesertLocation.Left;
-                    int sunkenSeaY = Main.maxTilesY - 400;
+                    int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
+                    int sunkenSeaY = Main.maxTilesY / 2;
 
-                    SunkenSea.Place(new Point(sunkenSeaX, sunkenSeaY));
+                    //place each piece of the sunken sea based on the above positons
+                    SunkenSea.PlaceRadiantReefs(sunkenSeaX - 100, sunkenSeaY + 75, true);
+                    SunkenSea.PlaceRadiantReefs(sunkenSeaX + 100, sunkenSeaY + 75, false);
+                    SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 75);
+                    SunkenSea.PlaceBasaltGully(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
+                    SunkenSea.PlaceSunkenSeaAmbience();
+                    SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceTimelessShores(sunkenSeaX, sunkenSeaY);
                 }));
             }
 
@@ -135,8 +152,9 @@ namespace CalamityMod.Systems
             int FinalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
             if (FinalIndex != -1)
             {
-                // Reallocate gems so rarity corresponds to depth
                 int currentFinalIndex = FinalIndex;
+
+                // Reallocate gems so rarity corresponds to depth
                 tasks.Insert(++currentFinalIndex, new PassLegacy("Gem Depth Adjustment", (progress, config) =>
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.GemAdjustment").Value;
@@ -216,7 +234,7 @@ namespace CalamityMod.Systems
                 tasks.Insert(++currentFinalIndex, new PassLegacy("Aerialite", (progress, config) =>
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Aerialite").Value;
-                    AerialiteOreGen.Generate(false);
+                    AerialiteOreGen.Generate();
                 }));
 
                 // Draedon Labs
@@ -272,6 +290,7 @@ namespace CalamityMod.Systems
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.Abyss").Value;
                     Abyss.PlaceAbyss();
+                    Abyss.AbyssCleanup();
                 }));
 
                 // Sulphurous Sea (Part 2, after Abyss)
@@ -291,9 +310,36 @@ namespace CalamityMod.Systems
         }
 
         // An Astral Meteor always falls at the beginning of Hardmode.
+        // T1 Hardmode Ores always generate after killing Wall of Flesh.
         public override void ModifyHardmodeTasks(List<GenPass> tasks)
         {
             int announceIndex = tasks.FindIndex(match => match.Name == "Hardmode Announcement");
+
+            //
+            // EARLY HARDMODE REWORK
+            //
+            {
+                var hardmodeOreT1Pass = new PassLegacy("CalamityMod:EarlyHMRework_HardmodeOreTier1", (progress, config) =>
+                {
+                    string key = CalamityMod.Instance.GetLocalization("Status.Progression.HardmodeOreTier1Text").Value;
+                    Color messageColor = new Color(50, 255, 130);
+
+                    CalamityUtils.SpawnOre(TileID.Cobalt, 12E-05, 0.45f, 0.7f, 3, 8);
+                    CalamityUtils.SpawnOre(TileID.Palladium, 12E-05, 0.45f, 0.7f, 3, 8);
+
+                    CalamityUtils.DisplayLocalizedText(key, messageColor);
+                });
+
+                // Disable gen pass if Early Hardmode Rework is disabled.
+                // Could just not add/remove gen pass, but that could lead to mod conflicts
+                // in case whatever mod targets this specific gen pass.
+                if (!CalamityConfig.Instance.EarlyHardmodeProgressionRework)
+                {
+                    hardmodeOreT1Pass.Disable();
+                }
+
+                tasks.Insert(announceIndex, hardmodeOreT1Pass);
+            }
 
             // Insert the Astral biome generation right before the final hardmode announcement.
             tasks.Insert(announceIndex, new PassLegacy("AstralMeteor", (progress, config) =>
@@ -320,7 +366,7 @@ namespace CalamityMod.Systems
                     bool isGoldChest = isContainer1 && (Main.tile[chest.x, chest.y].TileFrameX == 36 || Main.tile[chest.x, chest.y].TileFrameX == 2 * 36); // Includes Locked Gold Chests
                     bool isMahoganyChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 8 * 36;
                     bool isIvyChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 10 * 36;
-                    bool isIceChest = isContainer1 &&  Main.tile[chest.x, chest.y].TileFrameX == 11 * 36;
+                    bool isIceChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 11 * 36;
                     bool isMushroomChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 32 * 36;
                     bool isMarniteChest = isContainer1 && (Main.tile[chest.x, chest.y].TileFrameX == 50 * 36 || Main.tile[chest.x, chest.y].TileFrameX == 51 * 36);
 

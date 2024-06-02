@@ -1,8 +1,8 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -19,7 +19,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 5;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
             };
@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
-            NPC.damage = 30;
+            NPC.damage = Main.hardMode ? 60 : 30;
             NPC.width = 56;
             NPC.height = 38;
             NPC.defense = 9999;
@@ -50,11 +50,15 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Clam")
             });
@@ -94,13 +98,8 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 if (!statChange)
                 {
-                    NPC.defense = 6;
-                    NPC.damage = Main.expertMode ? 60 : 30;
-                    if (Main.hardMode)
-                    {
-                        NPC.defense = 15;
-                        NPC.damage = Main.expertMode ? 120 : 60;
-                    }
+                    NPC.defense = Main.hardMode ? 15 : 6;
+                    NPC.damage = NPC.defDamage;
                     statChange = true;
                 }
                 if (NPC.ai[0] == 0f)
@@ -175,9 +174,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
             else
-            {
                 NPC.damage = 0;
-            }
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
@@ -223,13 +220,13 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 37, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 50; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 37, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

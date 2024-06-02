@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Magic
                 float shortXVel = Projectile.velocity.X / 3f * (float)i;
                 float shortYVel = Projectile.velocity.Y / 3f * (float)i;
                 int fourConst = 4;
-                int fireDust = Dust.NewDust(new Vector2(Projectile.position.X + (float)fourConst, Projectile.position.Y + (float)fourConst), Projectile.width - fourConst * 2, Projectile.height - fourConst * 2, 174, 0f, 0f, 100, default, 1.2f);
+                int fireDust = Dust.NewDust(new Vector2(Projectile.position.X + (float)fourConst, Projectile.position.Y + (float)fourConst), Projectile.width - fourConst * 2, Projectile.height - fourConst * 2, DustID.InfernoFork, 0f, 0f, 100, default, 1.2f);
                 Dust dust = Main.dust[fireDust];
                 dust.noGravity = true;
                 dust.velocity *= 0.1f;
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Main.rand.NextBool(10))
             {
                 int otherFourConst = 4;
-                int fireDustSmol = Dust.NewDust(new Vector2(Projectile.position.X + (float)otherFourConst, Projectile.position.Y + (float)otherFourConst), Projectile.width - otherFourConst * 2, Projectile.height - otherFourConst * 2, 174, 0f, 0f, 100, default, 0.6f);
+                int fireDustSmol = Dust.NewDust(new Vector2(Projectile.position.X + (float)otherFourConst, Projectile.position.Y + (float)otherFourConst), Projectile.width - otherFourConst * 2, Projectile.height - otherFourConst * 2, DustID.InfernoFork, 0f, 0f, 100, default, 0.6f);
                 Main.dust[fireDustSmol].velocity *= 0.25f;
                 Main.dust[fireDustSmol].velocity += Projectile.velocity * 0.5f;
             }
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Magic
                 float shortyX = Projectile.velocity.X / 3f * (float)j;
                 float shortyY = Projectile.velocity.Y / 3f * (float)j;
                 int itsAFour = 4;
-                int frostDust = Dust.NewDust(new Vector2(Projectile.position.X + (float)itsAFour, Projectile.position.Y + (float)itsAFour), Projectile.width - itsAFour * 2, Projectile.height - itsAFour * 2, 92, 0f, 0f, 100, default, 1.2f);
+                int frostDust = Dust.NewDust(new Vector2(Projectile.position.X + (float)itsAFour, Projectile.position.Y + (float)itsAFour), Projectile.width - itsAFour * 2, Projectile.height - itsAFour * 2, DustID.Frost, 0f, 0f, 100, default, 1.2f);
                 Dust dust = Main.dust[frostDust];
                 dust.noGravity = true;
                 dust.velocity *= 0.1f;
@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Main.rand.NextBool(10))
             {
                 int itsStillAFour = 4;
-                int frostDustSmol = Dust.NewDust(new Vector2(Projectile.position.X + (float)itsStillAFour, Projectile.position.Y + (float)itsStillAFour), Projectile.width - itsStillAFour * 2, Projectile.height - itsStillAFour * 2, 92, 0f, 0f, 100, default, 0.6f);
+                int frostDustSmol = Dust.NewDust(new Vector2(Projectile.position.X + (float)itsStillAFour, Projectile.position.Y + (float)itsStillAFour), Projectile.width - itsStillAFour * 2, Projectile.height - itsStillAFour * 2, DustID.Frost, 0f, 0f, 100, default, 0.6f);
                 Main.dust[frostDustSmol].velocity *= 0.25f;
                 Main.dust[frostDustSmol].velocity += Projectile.velocity * 0.5f;
             }
@@ -104,18 +104,18 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Projectile.velocity.Y = -oldVelocity.Y;
                 }
-                SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             }
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(FrigidflashBolt.ProjDeathSound, Projectile.position);
+            SoundEngine.PlaySound(FrigidflashBolt.ProjDeathSound, Projectile.Center);
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 174, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 92, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.InfernoFork, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Frost, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
 

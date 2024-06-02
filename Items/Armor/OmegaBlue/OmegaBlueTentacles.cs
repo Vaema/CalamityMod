@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 22;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ReaperTooth>(10).
+                AddIngredient<ReaperTooth>(4).
                 AddIngredient<DepthCells>(15).
                 AddIngredient<RuinousSoul>(2).
                 AddTile(TileID.LunarCraftingStation).

@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Sounds;
@@ -18,7 +19,6 @@ namespace CalamityMod.Projectiles.Melee
     public class WulfrumScrew : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        internal PrimitiveTrail TrailDrawer;
         internal Color PrimColorMult = Color.White;
 
 
@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SoundEngine.PlaySound(WulfrumKnife.TileHitSound, Projectile.Center);
-            
+
 
             bool screwRegained = false;
 
@@ -151,12 +151,12 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
-            
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+
             float distanceFromAim = Projectile.Center.ShortestDistanceToLine(Owner.MountedCenter, Main.MouseWorld);
             float distanceFromPlayerAcrossSightLine = (Owner.MountedCenter - Projectile.Center.ClosestPointOnLine(Owner.MountedCenter, Main.MouseWorld)).Length();
 
-            float opacity = MathHelper.Clamp(1f - distanceFromAim / 90f, 0f, 1f) * (1f -  Math.Clamp((float)Math.Pow(distanceFromPlayerAcrossSightLine / 300f, 9f) , 0f, 1f));
+            float opacity = MathHelper.Clamp(1f - distanceFromAim / 90f, 0f, 1f) * (1f - Math.Clamp((float)Math.Pow(distanceFromPlayerAcrossSightLine / 300f, 9f), 0f, 1f));
 
             //Draw a sightline before the player hits it.
             if (Owner.whoAmI == Main.myPlayer && BazingaTime == 0 && opacity > 0)
@@ -168,7 +168,7 @@ namespace CalamityMod.Projectiles.Melee
                 laserScopeEffect.Parameters["sampleTexture2"].SetValue(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/CertifiedCrustyNoise").Value);
                 laserScopeEffect.Parameters["noiseOffset"].SetValue(Main.GameUpdateCount * -0.003f);
 
-                laserScopeEffect.Parameters["mainOpacity"].SetValue((float)Math.Pow(opacity , 0.5f)); //Opacity increases as the screw gets close to the cursor
+                laserScopeEffect.Parameters["mainOpacity"].SetValue((float)Math.Pow(opacity, 0.5f)); //Opacity increases as the screw gets close to the cursor
 
                 laserScopeEffect.Parameters["Resolution"].SetValue(new Vector2(700f * 0.2f));
                 laserScopeEffect.Parameters["laserAngle"].SetValue((Main.MouseWorld - Owner.MountedCenter).ToRotation() * -1);
@@ -200,17 +200,12 @@ namespace CalamityMod.Projectiles.Melee
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-                //Draw a trail
-                if (TrailDrawer is null)
-                    TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-
                 GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(Request<Texture2D>("CalamityMod/ExtraTextures/Trails/BasicTrail"));
 
                 CalamityUtils.DrawChromaticAberration(Vector2.UnitX, 1f, delegate (Vector2 offset, Color colorMod)
                 {
                     PrimColorMult = colorMod;
-
-                    TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition + offset, 30);
+                    PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
                 });
 
                 //Draw the screw with chroma abberation

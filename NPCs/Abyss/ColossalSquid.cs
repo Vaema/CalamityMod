@@ -56,13 +56,17 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToWater = false;
             NPC.Calamity().canBreakPlayerDefense = true;
             SpawnModBiomes = new int[2] { ModContent.GetInstance<AbyssLayer3Biome>().Type, ModContent.GetInstance<AbyssLayer4Biome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ColossalSquid")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ColossalSquid")
             });
         }
 
@@ -112,6 +116,9 @@ namespace CalamityMod.NPCs.Abyss
                 NPC.noTileCollide = false;
                 if (NPC.ai[0] == 0f)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.TargetClosest(true);
                     if (Collision.CanHit(NPC.Center, 1, 1, Main.player[NPC.target].Center, 1, 1))
                     {
@@ -170,6 +177,9 @@ namespace CalamityMod.NPCs.Abyss
                 }
                 else if (NPC.ai[0] == 1f)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.rotation += (float)NPC.direction * 0.1f;
                     Vector2 latchPosition = Main.player[NPC.target].Top - NPC.Center;
                     float latchDistance = latchPosition.Length();
@@ -195,6 +205,9 @@ namespace CalamityMod.NPCs.Abyss
                 }
                 else if (NPC.ai[0] == 2f)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.rotation = NPC.velocity.X * 0.05f;
                     NPC.noTileCollide = true;
                     Vector2 lungeDirection = Main.player[NPC.target].Center - NPC.Center;
@@ -211,6 +224,9 @@ namespace CalamityMod.NPCs.Abyss
                 }
                 else if (NPC.ai[0] == 3f)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.rotation = NPC.velocity.X * 0.05f;
                     Vector2 otherLungePos = new Vector2(NPC.ai[1], NPC.ai[2]);
                     Vector2 otherLungeDirection = otherLungePos - NPC.Center;
@@ -232,6 +248,9 @@ namespace CalamityMod.NPCs.Abyss
                 }
                 else if (NPC.ai[0] == 4f)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.rotation = NPC.velocity.X * 0.05f;
                     if (NPC.collideX)
                     {
@@ -291,6 +310,9 @@ namespace CalamityMod.NPCs.Abyss
                 }
                 else if (NPC.ai[0] == 5f)
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     Player latchedTarget = Main.player[NPC.target];
                     if (!latchedTarget.active || latchedTarget.dead || clone)
                     {
@@ -419,23 +441,32 @@ namespace CalamityMod.NPCs.Abyss
                     {
                         NPC.localAI[0] = 0f;
                         NPC.netUpdate = true;
-                        int damage = 70;
-                        if (Main.expertMode)
-                        {
-                            damage = 55;
-                        }
+                        int damage = Main.masterMode ? 46 : Main.expertMode ? 55 : 70;
                         if (clone)
-                        {
                             damage /= 4;
-                        }
+
                         SoundEngine.PlaySound(SoundID.Item111, NPC.Center);
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y + 60, 0f, 2f, ModContent.ProjectileType<InkBombHostile>(), damage, 0f, Main.myPlayer);
                     }
+
                     NPC.rotation = NPC.velocity.X * 0.05f;
                     NPC.velocity *= 0.975f;
+
                     float hitLungeThreshold = 2.5f;
+                    float lungeVelocity = 20f;
+                    if (NPC.velocity.Length() > lungeVelocity * 0.4f)
+                    {
+                        // Set damage
+                        NPC.damage = NPC.defDamage;
+                    }
+                    else
+                    {
+                        // Avoid cheap bullshit
+                        NPC.damage = 0;
+                    }
+
                     if (NPC.velocity.X > -hitLungeThreshold && NPC.velocity.X < hitLungeThreshold && NPC.velocity.Y > -hitLungeThreshold && NPC.velocity.Y < hitLungeThreshold)
                     {
                         NPC.TargetClosest(true);
@@ -443,7 +474,7 @@ namespace CalamityMod.NPCs.Abyss
                         float hitLungeTargetX = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2) - hitLungePos.X;
                         float hitLungeTargetY = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2) - hitLungePos.Y;
                         float hitLungeTargetDist = (float)Math.Sqrt((double)(hitLungeTargetX * hitLungeTargetX + hitLungeTargetY * hitLungeTargetY));
-                        hitLungeTargetDist = 20f / hitLungeTargetDist;
+                        hitLungeTargetDist = lungeVelocity / hitLungeTargetDist;
                         hitLungeTargetX *= hitLungeTargetDist;
                         hitLungeTargetY *= hitLungeTargetDist;
                         NPC.velocity.X = hitLungeTargetX;
@@ -453,6 +484,9 @@ namespace CalamityMod.NPCs.Abyss
                 }
                 else
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     if (Main.rand.NextBool(300))
                     {
                         SoundEngine.PlaySound(SoundID.Zombie35, NPC.Center);
@@ -504,32 +538,29 @@ namespace CalamityMod.NPCs.Abyss
                     }
                 }
             }
-            float pushVelocity = 0.05f;
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (Main.npc[i].active)
-                {
-                    if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
-                    {
-                        if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < 160f)
-                        {
-                            if (NPC.position.X < Main.npc[i].position.X)
-                                NPC.velocity.X -= pushVelocity;
-                            else
-                                NPC.velocity.X += pushVelocity;
 
-                            if (NPC.position.Y < Main.npc[i].position.Y)
-                                NPC.velocity.Y -= pushVelocity;
-                            else
-                                NPC.velocity.Y += pushVelocity;
-                        }
+            float pushVelocity = 0.05f;
+            foreach (NPC otherNPC in Main.ActiveNPCs)
+            {
+                if (otherNPC.whoAmI != NPC.whoAmI && otherNPC.type == NPC.type)
+                {
+                    if (Vector2.Distance(NPC.Center, otherNPC.Center) < 160f)
+                    {
+                        if (NPC.position.X < otherNPC.position.X)
+                            NPC.velocity.X -= pushVelocity;
+                        else
+                            NPC.velocity.X += pushVelocity;
+
+                        if (NPC.position.Y < otherNPC.position.Y)
+                            NPC.velocity.Y -= pushVelocity;
+                        else
+                            NPC.velocity.Y += pushVelocity;
                     }
                 }
             }
+
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 6400f)
-            {
                 NPC.active = false;
-            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -599,10 +630,10 @@ namespace CalamityMod.NPCs.Abyss
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemID.BlackInk, 1, 3, 5);
-            npcLoot.Add(ModContent.ItemType<InkBomb>(), 5);
+            npcLoot.Add(ModContent.ItemType<InkBomb>(), 3);
 
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 26, 38, 31, 45));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 26, 38, 31, 45));
 
             npcLoot.AddIf(DropHelper.PostPolter(), ModContent.ItemType<CalamarisLament>(), 3);
         }

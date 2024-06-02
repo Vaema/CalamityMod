@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
-            int blood = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 5, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
+            int blood = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
             Dust dust = Main.dust[blood];
             dust.velocity = Vector2.Zero;
             dust.position -= Projectile.velocity / 5f;

@@ -1,10 +1,10 @@
-﻿using CalamityMod.Projectiles.Melee;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -15,7 +15,6 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 74;
             Item.height = 74;
-            Item.scale = 1.5f;
             Item.damage = 110;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 55;
@@ -24,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<ForbiddenOathbladeProjectile>();
             Item.shootSpeed = 10f;
@@ -33,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 173);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.ShadowbeamStaff);
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
@@ -55,14 +54,14 @@ namespace CalamityMod.Items.Weapons.Melee
                 int dustIncr;
                 for (int i = 0; i < 40; i = dustIncr + 1)
                 {
-                    int swingDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 173, 0f, 0f, 200, default, firstDustScale);
+                    int swingDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.ShadowbeamStaff, 0f, 0f, 200, default, firstDustScale);
                     Dust dust = Main.dust[swingDust];
                     dust.position = target.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)target.width / 2f;
                     dust.noGravity = true;
                     dust.velocity.Y -= 4.5f;
                     dust.velocity *= 3f;
                     dust.velocity += dustVelocity * Main.rand.NextFloat();
-                    swingDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 173, 0f, 0f, 100, default, secondDustScale);
+                    swingDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, secondDustScale);
                     dust.position = target.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)target.width / 2f;
                     dust.velocity.Y -= 3f;
                     dust.velocity *= 2f;
@@ -74,7 +73,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 }
                 for (int j = 0; j < 20; j = dustIncr + 1)
                 {
-                    int swingDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 173, 0f, 0f, 0, default, thirdDustScale);
+                    int swingDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.ShadowbeamStaff, 0f, 0f, 0, default, thirdDustScale);
                     Dust dust = Main.dust[swingDust2];
                     dust.position = target.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy((double)target.velocity.ToRotation(), default) * (float)target.width / 3f;
                     dust.noGravity = true;

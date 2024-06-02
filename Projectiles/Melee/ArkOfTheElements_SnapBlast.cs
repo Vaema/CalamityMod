@@ -1,15 +1,15 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 
 namespace CalamityMod.Projectiles.Melee
@@ -186,7 +186,7 @@ namespace CalamityMod.Projectiles.Melee
             Color sliceColor = Color.Lerp(Color.OrangeRed, Color.White, SnapProgress);
             float rot = Projectile.rotation + MathHelper.PiOver2;
             Vector2 nitpickShiftCorrection = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 10f; //Ngl these minor nitpick variables probably be horrible to understand when decompiled into Vector43
-            Vector2 sliceScale = new Vector2(0.2f * (1 - SnapProgress) ,ThrustDisplaceRatio() * 242f);
+            Vector2 sliceScale = new Vector2(0.2f * (1 - SnapProgress), ThrustDisplaceRatio() * 242f);
             Main.EntitySpriteDraw(sliceTex, Projectile.Center + nitpickShiftCorrection - Main.screenPosition, null, sliceColor, rot, new Vector2(sliceTex.Width / 2f, sliceTex.Height), sliceScale, 0f, 0);
 
             //Draw the scissors

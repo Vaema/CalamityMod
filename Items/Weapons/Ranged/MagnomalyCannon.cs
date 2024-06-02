@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 84;
             Item.height = 30;
-            Item.damage = 357;
+            Item.damage = 279;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 15;
             Item.useAnimation = 15;
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.knockBack = 9.5f;
             Item.UseSound = SoundID.Item11;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<MagnomalyRocket>();
             Item.shootSpeed = 15f;

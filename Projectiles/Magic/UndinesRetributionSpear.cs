@@ -1,10 +1,10 @@
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Magic
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
             Lighting.AddLight(Projectile.Center, 0f, 0.1f, 0.7f);
             if (Main.player[Projectile.owner].active && !Main.player[Projectile.owner].dead)
@@ -100,17 +100,17 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.localNPCHitCooldown = 10;
             Projectile.damage /= 2;
             Projectile.Damage();
-            SoundEngine.PlaySound(SoundID.Item21, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item21, Projectile.Center);
             for (int i = 0; i < 4; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
             }
             for (int j = 0; j < 6; j++)
             {
-                int undust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 186, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
+                int undust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedsWingsRun, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
                 Main.dust[undust].noGravity = true;
                 Main.dust[undust].velocity *= 3f;
-                undust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 186, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                undust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedsWingsRun, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                 Main.dust[undust].velocity *= 2f;
                 Main.dust[undust].noGravity = true;
             }

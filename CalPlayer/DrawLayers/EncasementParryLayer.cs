@@ -63,13 +63,13 @@ namespace CalamityMod.CalPlayer.DrawLayers
                     scale = 0f;
                     break;
             }
-            
+
             Texture2D texture = ModContent.Request<Texture2D>(tex).Value;
             Vector2 drawPos = drawInfo.Center - Main.screenPosition + new Vector2(0f, drawPlayer.gfxOffY);
             drawPos.Y += 15f;
             drawPos.X += 15f;
-            
-            
+
+
             int maxParry = 30; //all parries use thirty seconds as a max at this point in time, if this changes, this too should change
             float colorIntensity = currentParry >= 18 ? defaultOpacity : 1f - Utils.GetLerpValue(maxParry, 0f, currentParry, true);
             SpriteEffects spriteEffects = drawPlayer.direction != -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;

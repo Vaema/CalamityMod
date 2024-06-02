@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
     public class IceStarProjectile : ModProjectile, ILocalizedModType
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 67, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, Projectile.Calamity().stealthStrike ? 800f : 400f, 14f, 20f);
         }
@@ -55,18 +55,18 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 67, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects();
-        
+
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => OnHitEffects();
 
         public void OnHitEffects()
         {
             if (initStealth && Projectile.owner == Main.myPlayer && Projectile.numHits < 1)
-            {            
+            {
                 for (int i = 0; i < 8; i++)
                 {
                     Vector2 velocity = (MathHelper.TwoPi * i / 8f).ToRotationVector2() * 4f;

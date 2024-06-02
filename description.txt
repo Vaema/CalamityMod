@@ -20,5 +20,5 @@ A more detailed breakdown of the content available in Calamity:
 - 450+ tweaks and improvements to vanilla items
 - Cross-mod support for the Thorium Mod
 
-PLEASE NOTE THAT THIS MOD DOES NOT INCLUDE THE CALAMITY SOUNDTRACK.
-You need to install the Calamity Music Mod if you want Calamity music.
+PLEASE NOTE THAT THIS MOD REQUIRES THE CALAMITY MUSIC MOD.
+You will need to install "Calamity Mod Music" from the Mod Browser or the Workshop.

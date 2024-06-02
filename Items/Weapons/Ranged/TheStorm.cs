@@ -1,7 +1,7 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using System;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,11 +13,11 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-	public override void SetStaticDefaults()
-	{
+        public override void SetStaticDefaults()
+        {
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-	    Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 9));
-	}
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 9));
+        }
         public override void SetDefaults()
         {
             Item.width = 54;
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item122;
             Item.autoReuse = true;

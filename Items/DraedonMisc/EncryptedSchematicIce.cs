@@ -1,17 +1,17 @@
-﻿using CalamityMod.CustomRecipes;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Rarities;
-using CalamityMod.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.CustomRecipes;
+using CalamityMod.Items.DraedonMisc;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityMod.Rarities;
+using CalamityMod.UI;
+using CalamityMod.UI.DraedonLogs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.UI.DraedonLogs;
 
 namespace CalamityMod.Items.DraedonMisc
 {

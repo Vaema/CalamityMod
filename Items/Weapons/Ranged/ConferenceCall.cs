@@ -21,8 +21,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
-            Item.rare = ItemRarityID.Cyan;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.rare = ItemRarityID.Red;
             Item.UseSound = SoundID.Item38;
             Item.autoReuse = true;
             Item.shootSpeed = 12f;
@@ -58,16 +58,15 @@ namespace CalamityMod.Items.Weapons.Ranged
             int[] targets = new int[maxTargets];
             int targetArrayIndex = 0;
             Rectangle rectangle = new Rectangle((int)player.Center.X - 960, (int)player.Center.Y - 540, 1920, 1080);
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (npc.active && npc.chaseable && npc.lifeMax > 5 && !npc.dontTakeDamage && !npc.friendly && !npc.immortal)
+                if (npc.chaseable && npc.lifeMax > 5 && !npc.dontTakeDamage && !npc.friendly && !npc.immortal)
                 {
                     if (npc.Hitbox.Intersects(rectangle))
                     {
                         if (targetArrayIndex < maxTargets)
                         {
-                            targets[targetArrayIndex] = i;
+                            targets[targetArrayIndex] = npc.whoAmI;
                             targetArrayIndex++;
                         }
                         else

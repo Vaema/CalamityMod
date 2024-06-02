@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 102;
             Item.height = 70;
-            Item.damage = 300;
+            Item.damage = 235;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 28;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.UseSound = SoundID.Item14;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<PrismMine>();
-            Item.shootSpeed = 14.5f;
+            Item.shootSpeed = 20f;
             Item.useAmmo = AmmoID.Bullet;
         }
 

@@ -1,22 +1,21 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
+using CalamityMod.Schematics;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Walls;
-using CalamityMod.Schematics;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-
 using static CalamityMod.Schematics.SchematicManager;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Items.Potions;
 
 namespace CalamityMod.World
 {
@@ -90,14 +89,14 @@ namespace CalamityMod.World
         {
             int tries = 0;
             string mapKey = CorruptionShrineKey;
-            
+
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.05f), (int)(Main.maxTilesX * 0.95f));
                 int placementPositionY = WorldGen.genRand.Next((int)(Main.maxTilesY * 0.15f), (int)(Main.maxTilesY * 0.5f));
                 Point placementPoint = new Point(placementPositionX, placementPositionY);
 
-                Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0)/2, TileMaps[mapKey].GetLength(1)); //Fooling the system into thinking the shrine is smaller than it actually is so it fits into chasms
+                Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0) / 2, TileMaps[mapKey].GetLength(1)); //Fooling the system into thinking the shrine is smaller than it actually is so it fits into chasms
                 int corruptStuffInArea = 0;
                 bool canGenerateInLocation = true;
                 bool inYourWalls = false;
@@ -117,13 +116,13 @@ namespace CalamityMod.World
 
                         if (tile.WallType == WallID.EbonstoneUnsafe)
                             inYourWalls = true;
-                        
+
                         //Do not cut into the altars
                         if (tile.TileType == TileID.DemonAltar)
                             canGenerateInLocation = false;
                     }
                 }
-                if (!canGenerateInLocation || corruptStuffInArea < totalTiles*0.9f || !structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y)) || !inYourWalls)
+                if (!canGenerateInLocation || corruptStuffInArea < totalTiles * 0.9f || !structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y)) || !inYourWalls)
                 {
                     tries++;
                 }
@@ -181,7 +180,7 @@ namespace CalamityMod.World
         {
             int tries = 0;
             string mapKey = CrimsonShrineKey;
-            
+
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.05f), (int)(Main.maxTilesX * 0.95f));
@@ -203,14 +202,14 @@ namespace CalamityMod.World
                         Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
                         if (ShouldAvoidLocation(new Point(x, y)))
                             canGenerateInLocation = false;
-                        
+
                         //Crimson does not generate walls in blocks very much, so both walls and tiles are grouped
                         if (tile.TileType == TileID.Crimstone || tile.WallType == WallID.CrimstoneUnsafe)
                             crimsonStuffInArea++;
 
                         if (tile.WallType == WallID.CrimstoneUnsafe)
                             inYourWalls = true;
-                        
+
                         //Do not cut into the altars
                         if (tile.TileType == TileID.DemonAltar)
                             canGenerateInLocation = false;
@@ -231,7 +230,7 @@ namespace CalamityMod.World
             } while (tries <= 60000);
         }
         #endregion
-        
+
         #region Desert Shrine
         public static void FillDesertShrineChest(Chest chest)
         {
@@ -272,7 +271,7 @@ namespace CalamityMod.World
         {
             int tries = 0;
             string mapKey = DesertShrineKey;
-            
+
             do
             {
                 int placementPositionX = WorldGen.genRand.Next(GenVars.UndergroundDesertLocation.Left, GenVars.UndergroundDesertLocation.Right);
@@ -294,7 +293,7 @@ namespace CalamityMod.World
                             canGenerateInLocation = false;
 
                         if (tile.TileType == TileID.DesertFossil || tile.TileType == TileID.Sand || tile.TileType == TileID.HardenedSand || tile.TileType == TileID.Sandstone)
-                                desertTilesInArea++;
+                            desertTilesInArea++;
                     }
                 }
                 if (!canGenerateInLocation || desertTilesInArea < totalTiles * 0.3f || !structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y)))
@@ -341,7 +340,7 @@ namespace CalamityMod.World
         {
             int tries = 0;
             string mapKey = GraniteShrineKey;
-            
+
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.1f), (int)(Main.maxTilesX * 0.9f));
@@ -358,7 +357,7 @@ namespace CalamityMod.World
                     for (int y = placementPoint.Y; y < placementPoint.Y + schematicSize.Y; y++)
                     {
                         Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-                        if (ShouldAvoidLocation(new Point(x, y)))
+                        if (ShouldAvoidLocation(new Point(x, y), false))
                             canGenerateInLocation = false;
 
                         //The granite geode is supposed to fully float in free air. No tile replacements
@@ -424,7 +423,7 @@ namespace CalamityMod.World
         {
             int tries = 0;
             string mapKey = IceShrineKey;
-            
+
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.25f), (int)(Main.maxTilesX * 0.75f));
@@ -448,7 +447,7 @@ namespace CalamityMod.World
                             canGenerateInLocation = false;
 
                         if (tile.TileType == TileID.SnowBlock || tile.TileType == TileID.IceBlock)
-                                iceTilesInArea++;
+                            iceTilesInArea++;
                     }
                 }
                 if (!canGenerateInLocation || iceTilesInArea < totalTiles * 0.35f || !structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y)))
@@ -494,7 +493,7 @@ namespace CalamityMod.World
         {
             int tries = 0;
             string mapKey = MarbleShrineKey;
-            
+
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.1f), (int)(Main.maxTilesX * 0.9f));
@@ -521,7 +520,7 @@ namespace CalamityMod.World
                             marbleStuffInArea++;
                         else if ((tile.WallType == WallID.GraniteUnsafe || tile.TileType == TileID.Granite) && Main.zenithWorld) //Generates in granite in gfb
                             marbleStuffInArea++;
-                        
+
                         //There should be some space between the pillars so it doesn't make pillars in the middle of nowhere zone
                         float pillarFoundationBound = schematicSize.Y * 0.2f;
                         bool pillarSpace = y <= placementPoint.Y + schematicSize.Y - pillarFoundationBound && y >= placementPoint.Y + pillarFoundationBound;
@@ -678,7 +677,7 @@ namespace CalamityMod.World
         {
             int tries = 0;
             string mapKey = SurfaceShrineKey;
-            
+
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.2f), (int)(Main.maxTilesX * 0.8f));
@@ -691,10 +690,10 @@ namespace CalamityMod.World
                 while (placementPositionX > (int)(Main.maxTilesX * 0.4f) && placementPositionX < (int)(Main.maxTilesX * 0.6f));
 
                 int numTilesBelowSurface = WorldGen.genRand.Next(25, 50);
-                
+
                 //use Main.worldSurface and not WorldGen.WorldSurface, i believe that is why it was genning on the surface so much
                 int placementPositionY = (int)Main.worldSurface + numTilesBelowSurface;
-                
+
                 if (Main.remixWorld)
                     placementPositionY = WorldGen.genRand.Next((int)(Main.maxTilesY * 0.65f), (int)(Main.maxTilesY * 0.7f)); //above mushroom layer
                 Point placementPoint = new Point(placementPositionX, placementPositionY);
@@ -715,10 +714,10 @@ namespace CalamityMod.World
 
                         if (tile.TileType == TileID.Dirt || tile.TileType == TileID.Stone || tile.TileType == TileID.ClayBlock || tile.TileType == TileID.Sand)
                             normalTilesInArea++;
-                            
+
                         if (tile.HasTile)
                             activeTilesInArea++;
-                        
+
                         // Avoid the desert due to sand checks.
                         if (tile.WallType == WallID.HardenedSand || tile.WallType == WallID.Sandstone)
                             canGenerateInLocation = false;
@@ -773,7 +772,8 @@ namespace CalamityMod.World
                                 break;
                             }
                         }
-                    } else
+                    }
+                    else
                     {
                         bool _ = true;
                         PlaceSchematic(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref _, new Action<Chest>(FillSurfaceShrineChest));

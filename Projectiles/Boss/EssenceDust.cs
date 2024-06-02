@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
     public class EssenceDust : ModProjectile, ILocalizedModType
@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Boss
             Lighting.AddLight(Projectile.Center, 0.45f, 0f, 0.55f);
             for (int i = 0; i < 5; i++)
             {
-                int essenceDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 0.5f);
+                int essenceDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 0.5f);
                 Main.dust[essenceDust].noGravity = true;
                 Main.dust[essenceDust].velocity *= 0f;
             }
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 10; i++)
             {
-                int godSlay = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
+                int godSlay = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
                 Main.dust[godSlay].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -52,10 +52,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int j = 0; j < 15; j++)
             {
-                int godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 2f);
+                int godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[godSlay2].noGravity = true;
                 Main.dust[godSlay2].velocity *= 5f;
-                godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
+                godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
                 Main.dust[godSlay2].velocity *= 2f;
             }
             Projectile.Damage();

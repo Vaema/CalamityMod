@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
                 fullSpeed = true;
                 int arg_1EF4_0 = (int)Projectile.ai[0] / (delayCompare - fireSpeedCompare * fireSpeed);
             }
-            bool canUseItem = player.channel && player.HasAmmo(player.ActiveItem()) && !player.noItems && !player.CCed;
+            bool canUseItem = !player.CantUseHoldout() && player.HasAmmo(player.ActiveItem());
             if (Projectile.localAI[0] > 0f)
             {
                 Projectile.localAI[0] -= 1f;

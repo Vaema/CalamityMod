@@ -54,8 +54,8 @@ BallisticPoisonBomb: {
 	DisplayName: Ballistic Poison Bomb
 	Tooltip:
 		'''
-		Throws a sticky bomb that explodes into spikes and poison clouds
-		Stealth strikes throw three at once
+		Throws a sticky bomb that explodes into spikes and venomous clouds
+		Stealth strikes erupt into more clouds with a longer lasting venom
 		'''
 }
 
@@ -193,7 +193,7 @@ CorpusAvertor: {
 		Attacks grant lifesteal based on damage dealt
 		The lower your HP the more damage this weapon does and heals the player on enemy hits
 		Stealth strikes throw a single rainbow outlined dagger
-		On enemy hits, this dagger boosts the damage and life regen of all members of your team
+		On enemy hits, this dagger grants 10% damage and +2 HP/s life regen to all members of your team
 		However, there is a small chance it will cut your health in half instead
 		'Seems like it has worn down over time'
 		'''
@@ -204,7 +204,7 @@ CosmicKunai: {
 	Tooltip:
 		'''
 		Fires a rapid stream of short-range kunai
-		Stealth strikes make kunai travel farther and spawn 5 homing Cosmic Scythes
+		Stealth strikes make kunai pierce foes, travel farther, and spawn 5 homing scythes
 		'''
 }
 
@@ -415,18 +415,6 @@ FeatherKnife: {
 		'''
 }
 
-FinalDawn: {
-	DisplayName: The Final Dawn
-	Tooltip:
-		'''
-		Attack enemies with a giant scythe swing to replenish stealth
-		Press up and attack to throw the scythe 
-		Stealth strikes perform a horizontal swing that leaves a lingering fire aura
-		Stealth strikes performed while pressing up fling yourself at the enemy and slice through them, causing homing fireballs to emerge
-		'We shall ride into the sunrise once more'
-		'''
-}
-
 FishboneBoomerang: {
 	DisplayName: Fishbone Boomerang
 	Tooltip:
@@ -550,8 +538,8 @@ HeavenfallenStardisk: {
 	Tooltip:
 		'''
 		Throws a stardisk upwards which then launches itself towards your mouse cursor
-		Explodes into 5 astral energy bolts if the thrower is moving vertically when throwing it
-		Stealth strikes rain astral energy bolts from the sky
+		Explodes into a star of astral bolts on hit
+		Stealth strikes throw three disks that rain astral energy bolts from the sky
 		'''
 }
 
@@ -630,7 +618,8 @@ JawsOfOblivion: {
 	DisplayName: Jaws of Oblivion
 	Tooltip:
 		'''
-		Throws a tight spread of six venomous reaper fangs that stick in enemies
+		Throws a tight spread of six venomous reaper teeth that stick in enemies
+		This venom can stack when more teeth are stuck in an enemy
 		Stealth strikes cause the teeth to emit a crushing shockwave on impact
 		'You're gonna need a bigger boat'
 		'''
@@ -678,6 +667,7 @@ LeviathanTeeth: {
 	Tooltip:
 		'''
 		Rapidly throws a spread of venomous teeth that stick to enemies
+		This venom can stack when more teeth are stuck in an enemy
 		Stealth strikes cause 6 very fast teeth to be thrown, ignoring gravity and spawning water blasts on hit
 		'''
 }
@@ -686,8 +676,9 @@ Lionfish: {
 	DisplayName: Lionfish
 	Tooltip:
 		'''
-		Sticks to enemies and injects a potent toxin
-		Stealth strikes are trailed by homing urchin spikes
+		Sticks to enemies and injects a potent venom
+		This venom can stack when more lionfish are stuck in an enemy
+		Stealth strikes spawn homing urchin spikes as they travel
 		'''
 }
 
@@ -881,7 +872,7 @@ ProfanedPartisan: {
 	DisplayName: Profaned Partisan
 	Tooltip:
 		'''
-		Fires an unholy spear that explodes on death
+		Fires an unholy spear that explodes on enemy hits
 		Stealth strikes spawn smaller spears to fly along side it
 		'''
 }
@@ -930,6 +921,15 @@ Sacrifice: {
 		'''
 }
 
+SamsaraSlicer: {
+	DisplayName: Samsara Slicer
+	Tooltip:
+		'''
+		Throws a disk that has a chance to generate several disks if enemies are near it
+		Stealth strikes travel slower and are rapidly orbited by the smaller disks
+		'''
+}
+
 SandDollar: {
 	DisplayName: Sand Dollar
 	Tooltip:
@@ -973,17 +973,24 @@ ScourgeoftheSeas: {
 	DisplayName: Scourge of the Seas
 	Tooltip:
 		'''
-		Snaps apart into poisonous clouds upon striking an enemy
-		Stealth strikes are additionally coated with venomous toxins
+		Snaps apart into irradiated clouds upon striking an enemy
+		Stealth strikes irradiate for longer and are additionally coated with venomous toxins
 		'''
 }
 
 SeafoamBomb: {
 	DisplayName: Seafoam Bomb
-	Tooltip:
+	Tooltip: "[GFB]"
+	TooltipNormal:
 		'''
 		Throws a bomb that explodes into a bubble which deals extra damage to enemies
 		Stealth strikes are faster and explode into 5 bubbles
+		'''
+	TooltipGFB:
+		'''
+		Throws a bomb that explodes into a bubble which deals extra damage to enemies
+		Stealth strikes are faster and explode into 5 bubbles
+		[c/256b93:'Right back in S tier!']
 		'''
 }
 
@@ -1077,7 +1084,8 @@ SlickCane: {
 	Tooltip:
 		'''
 		Swipes a cane that steals money from enemies
-		Stealth strikes gives a 1 in 15 chance for enemies to drop 1-3 gold coins when hit
+		Stealth strikes gives a 1 in 20 chance for enemies to drop 1-3 gold coins when hit
+		Stealth strikes' damage increases in proportion to money in the inventory (up to 2 platinum)
 		'Economy at its finest'
 		'''
 }
@@ -1178,9 +1186,10 @@ Supernova: {
 	DisplayName: Supernova
 	Tooltip:
 		'''
-		Creates a massive explosion on impact
-		Explodes into spikes and homing energy
-		Stealth strikes release energy as they fly
+		Tosses a smart bomb that locks onto and tracks targets
+		If no target is found it will return to you
+		Each bomb creates a miniature supernova that drags in weak enemies and chases strong enemies
+		Stealth strikes create a blast that shakes the foundations of reality itself
 		'''
 }
 
@@ -1190,15 +1199,6 @@ TarragonThrowingDart: {
 		'''
 		Fires a piercing dart with reduced immunity frames
 		Stealth strikes erupt into thorns on enemy hits
-		'''
-}
-
-TerraDisk: {
-	DisplayName: Terra Disk
-	Tooltip:
-		'''
-		Throws a disk that has a chance to generate several disks if enemies are near it
-		Stealth strikes travel slower and are rapidly orbited by the smaller disks
 		'''
 }
 
@@ -1217,6 +1217,18 @@ TheAtomSplitter: {
 		'''
 		Throws a quantum-superimposed javelin that strikes from numerous timelines at once
 		Stealth strikes perform far more simultaneous strikes
+		'''
+}
+
+TheFinalDawn: {
+	DisplayName: The Final Dawn
+	Tooltip:
+		'''
+		Attack enemies with a giant scythe swing to replenish stealth
+		Press up and attack to throw the scythe 
+		Stealth strikes perform a horizontal swing that leaves a lingering fire aura
+		Stealth strikes performed while pressing up fling yourself at the enemy and slice through them, causing homing fireballs to emerge
+		'We shall ride into the sunrise once more'
 		'''
 }
 

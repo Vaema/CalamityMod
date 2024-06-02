@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class IonBlast : ModProjectile, ILocalizedModType
@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.velocity *= 1.015f;
             if (Projectile.alpha > 0)
             {
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Magic
             int randDustAmt = Main.rand.Next(15, 30);
             for (int i = 0; i < randDustAmt; i++)
             {
-                int reddish = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, 130, 0f, 0f, 100, default, 1f);
+                int reddish = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, DustID.Firework_Red, 0f, 0f, 100, default, 1f);
                 Main.dust[reddish].velocity *= 2f;
                 Main.dust[reddish].noGravity = true;
             }

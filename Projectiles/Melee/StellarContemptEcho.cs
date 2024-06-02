@@ -3,9 +3,9 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.rotation += MathHelper.ToRadians(48f) * Projectile.localAI[0];
                 }
             }
-            
+
 
             if (Main.rand.NextBool())
             {
@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Melee
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(30f, 5.8f).RotatedBy(rot);
                 Vector2 velOffset = new Vector2(20.8f, 10.5f).RotatedBy(rot);
-                int dust = Dust.NewDust(Projectile.position + offset, Projectile.width, Projectile.height, 229, velOffset.X, velOffset.Y);
+                int dust = Dust.NewDust(Projectile.position + offset, Projectile.width, Projectile.height, DustID.Vortex, velOffset.X, velOffset.Y);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity = velOffset;
                 Main.dust[dust].scale = 3.8f;
@@ -186,7 +186,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle sourceRectangle = new Rectangle(0, 0, texture.Width + 12, texture.Height + 12);
             Vector2 origin = sourceRectangle.Size() / 2f;
 

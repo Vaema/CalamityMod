@@ -1,7 +1,7 @@
-﻿using Terraria.ID;
+﻿using CalamityMod.Projectiles.Typeless;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Projectiles.Typeless;
 
 namespace CalamityMod.Items.Fishing.SunkenSeaCatches
 {
@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
             Item.height = 32;
             Item.shootSpeed = SerpentsBiteHook.LaunchSpeed; // how quickly the hook is shot.
             Item.shoot = ProjectileType<SerpentsBiteHook>();
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
         }
     }

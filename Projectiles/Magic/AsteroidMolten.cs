@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class AsteroidMolten : ModProjectile, ILocalizedModType
@@ -39,20 +39,20 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.scale = Projectile.ai[1];
             Projectile.rotation += Projectile.velocity.X * 2f;
             Vector2 position = Projectile.Center + Vector2.Normalize(Projectile.velocity) * 10f;
-            Dust flaming = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 0, new Color(255, Main.DiscoG, 0), 1f)];
+            Dust flaming = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 0, new Color(255, Main.DiscoG, 0), 1f)];
             flaming.position = position;
             flaming.velocity = Projectile.velocity.RotatedBy(1.5707963705062866, default) * 0.33f + Projectile.velocity / 4f;
             flaming.position += Projectile.velocity.RotatedBy(1.5707963705062866, default);
             flaming.fadeIn = 0.5f;
             flaming.noGravity = true;
-            flaming = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 0, new Color(255, Main.DiscoG, 0), 1f)];
+            flaming = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 0, new Color(255, Main.DiscoG, 0), 1f)];
             flaming.position = position;
             flaming.velocity = Projectile.velocity.RotatedBy(-1.5707963705062866, default) * 0.33f + Projectile.velocity / 4f;
             flaming.position += Projectile.velocity.RotatedBy(-1.5707963705062866, default);
             flaming.fadeIn = 0.5f;
             flaming.noGravity = true;
 
-            int fiery = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 0, new Color(255, Main.DiscoG, 0), 1f);
+            int fiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 0, new Color(255, Main.DiscoG, 0), 1f);
             Main.dust[fiery].velocity *= 0.5f;
             Main.dust[fiery].scale *= 1.3f;
             Main.dust[fiery].fadeIn = 1f;
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item89, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item89, Projectile.Center);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
             Projectile.width = (int)(128f * Projectile.scale);
@@ -70,14 +70,14 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 8; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 1.5f);
             }
             for (int j = 0; j < 32; j++)
             {
-                int killFire = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 2.5f);
+                int killFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 2.5f);
                 Main.dust[killFire].noGravity = true;
                 Main.dust[killFire].velocity *= 3f;
-                killFire = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 1.5f);
+                killFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 0), 1.5f);
                 Main.dust[killFire].velocity *= 2f;
                 Main.dust[killFire].noGravity = true;
             }
@@ -120,7 +120,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             //Changes the texture of the projectile
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             switch ((int)Projectile.ai[0])
             {
                 case 0:

@@ -1,9 +1,12 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -11,50 +14,69 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Scorpio : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
-        }
+
+        #region Other stats
+
+        // Weapon stats.
+        public static int OriginalUseTime = 30;
+        public static int TimeBetweenBursts = 8;
+        public static int ProjectilesPerBurst = 8;
+
+        // Small rocket stats.
+        public static float EnemyDetectionDistance = 2000f;
+        public static float TrackingSpeed = 0.06f; // VERY DELICATE VALUE, CHANGE SLOWLY.
+
+        // Large rocket stats. 
+        public static float NukeEnemyDistanceDetection = 300f;
+        public static float NukeRequiredRotationProximity = 0.96f;
+        public static float NukeTrackingSpeed = 0.0095f; // VERY DELICATE VALUE, CHANGE SLOWLY.
+
+        #endregion
+
+        public static readonly SoundStyle RocketShoot = new("CalamityMod/Sounds/Item/ScorpioShot") { Volume = 0.45f };
+        public static readonly SoundStyle RocketHit = new("CalamityMod/Sounds/Item/ScorpioHit") { Volume = 0.35f };
+        public static readonly SoundStyle NukeHit = new("CalamityMod/Sounds/Item/ScorpioNukeHit") { Volume = 0.6f };
 
         public override void SetDefaults()
         {
-            Item.width = 58;
-            Item.height = 26;
-            Item.damage = 40;
+            Item.damage = 33;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 13;
-            Item.useAnimation = 13;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
+            Item.useTime = Item.useAnimation = OriginalUseTime;
+            Item.shoot = ProjectileType<ScorpioHoldout>();
+            Item.shootSpeed = 15f;
             Item.knockBack = 6.5f;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
-            Item.rare = ItemRarityID.Red;
-            Item.UseSound = SoundID.Item11;
-            Item.autoReuse = true;
-            Item.shootSpeed = 20f;
-            Item.shoot = ModContent.ProjectileType<MiniRocket>();
+
+            Item.width = 96;
+            Item.height = 42;
+            Item.noMelee = true;
+            Item.channel = true;
+            Item.noUseGraphic = true;
             Item.useAmmo = AmmoID.Rocket;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.rare = ItemRarityID.Red;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.9f, PitchVariance = 0.1f };
         }
 
-        public override Vector2? HoldoutOffset() => new Vector2(-20, 10);
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
 
-        public override bool AltFunctionUse(Player player) => true;
+        // Spawning the holdout won't consume ammo.
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] != 0;
 
-        public override float UseSpeedMultiplier(Player player) => player.altFunctionUse == 2 ? 0.3333f : 1f;
-
-        // Figure out which rocket is used
-        public int RocketType;
-        public override void OnConsumeAmmo(Item ammo, Player player) => RocketType = ammo.type;
+        // Makes the rotation of the mouse around the player sync in multiplayer.
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse == 2)
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<BigNuke>(), (int)(damage * 1.85), knockback * 2f, player.whoAmI, RocketType);
-            else
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<MiniRocket>(), damage, knockback, player.whoAmI, RocketType);
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ProjectileType<ScorpioHoldout>(), 0, 0f, player.whoAmI, -30);
+
+            // We set the rotation to the direction to the mouse so the first frame doesn't appear bugged out.
+            holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
 
             return false;
         }
+
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI) => Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/Scorpio_Glow").Value);
 
         public override void AddRecipes()
         {

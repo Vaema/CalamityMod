@@ -5,6 +5,7 @@ using CalamityMod.Items.Weapons.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
@@ -94,7 +95,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 for (int i = 0; i < 60; i++)
                 {
-                    Dust dust = Dust.NewDustDirect(Main.player[Projectile.owner].position, Main.player[Projectile.owner].width, Main.player[Projectile.owner].height, 267);
+                    Dust dust = Dust.NewDustDirect(Main.player[Projectile.owner].position, Main.player[Projectile.owner].width, Main.player[Projectile.owner].height, DustID.RainbowMk2);
                     dust.position.X += Main.rand.NextFloat(-16f, 16f);
                     dust.color = Main.hslToRgb(Main.rand.NextFloat(0.26f, 0.37f), 1f, 0.75f);
                     dust.velocity = Main.rand.NextVector2Circular(24f, 24f);

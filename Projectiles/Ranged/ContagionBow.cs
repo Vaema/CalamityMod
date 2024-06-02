@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 value = Projectile.Center + rotate;
                     for (int i = 0; i < 2; i++)
                     {
-                        int dust = Dust.NewDust(value - Vector2.One * 8f, 16, 16, 44, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f, 100, default, 0.25f);
+                        int dust = Dust.NewDust(value - Vector2.One * 8f, 16, 16, DustID.JungleSpore, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f, 100, default, 0.25f);
                         Main.dust[dust].velocity *= 0.66f;
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].scale = 1.4f;
@@ -87,8 +87,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 if (fullSpeed && Main.myPlayer == Projectile.owner)
                 {
-                    bool canUseItem = player.channel && !player.noItems && !player.CCed;
-                    if (canUseItem)
+                    if (!player.CantUseHoldout())
                     {
                         float speed = player.ActiveItem().shootSpeed * Projectile.scale;
                         Vector2 spawnPos = vector;

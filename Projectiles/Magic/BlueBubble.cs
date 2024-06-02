@@ -1,8 +1,8 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Magic
             int num190 = Main.rand.Next(5, 9);
             for (int i = 0; i < num190; i++)
             {
-                int bubbly = Dust.NewDust(Projectile.Center, 0, 0, 206, 0f, 0f, 100, default, 1.4f);
+                int bubbly = Dust.NewDust(Projectile.Center, 0, 0, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, default, 1.4f);
                 Main.dust[bubbly].velocity *= 0.8f;
                 Main.dust[bubbly].position = Vector2.Lerp(Main.dust[bubbly].position, Projectile.Center, 0.5f);
                 Main.dust[bubbly].noGravity = true;

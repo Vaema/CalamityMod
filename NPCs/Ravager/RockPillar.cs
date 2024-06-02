@@ -2,10 +2,11 @@
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Ravager
 {
@@ -26,7 +27,6 @@ namespace CalamityMod.NPCs.Ravager
             NPC.defense = 50;
             NPC.DR_NERD(0.3f);
             NPC.chaseable = false;
-            NPC.canGhostHeal = false;
             NPC.lifeMax = DownedBossSystem.downedProvidence ? 20000 : 5000;
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
@@ -38,6 +38,10 @@ namespace CalamityMod.NPCs.Ravager
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -55,31 +59,25 @@ namespace CalamityMod.NPCs.Ravager
 
             if (NPC.alpha > 0)
             {
-                NPC.damage = 0;
-
                 NPC.alpha -= 10;
                 if (NPC.alpha < 0)
                     NPC.alpha = 0;
-            }
-            else
-            {
-                if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
-                    NPC.damage = (int)(NPC.defDamage * 1.5);
-                else
-                    NPC.damage = NPC.defDamage;
             }
 
             if (NPC.ai[0] == 0f)
             {
                 if (NPC.velocity.Y == 0f)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     if (NPC.ai[1] == -1f)
                     {
                         SoundEngine.PlaySound(SoundID.Item62, NPC.Center);
 
                         for (int i = 0; i < 10; i++)
                         {
-                            int rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                            int rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                             Main.dust[rockDust].velocity *= 3f;
                             if (Main.rand.NextBool())
                             {
@@ -89,12 +87,18 @@ namespace CalamityMod.NPCs.Ravager
                         }
                         for (int j = 0; j < 10; j++)
                         {
-                            int rockDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
+                            int rockDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
                             Main.dust[rockDust2].noGravity = true;
                             Main.dust[rockDust2].velocity *= 5f;
-                            rockDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                            rockDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                             Main.dust[rockDust2].velocity *= 2f;
                         }
+
+                        // Set damage
+                        if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
+                            NPC.damage = (int)Math.Round(NPC.defDamage * 1.5);
+                        else
+                            NPC.damage = NPC.defDamage;
 
                         NPC.noTileCollide = true;
                         NPC.velocity.X = (BossRushEvent.BossRushActive ? 15 : 12) * NPC.direction;
@@ -106,6 +110,12 @@ namespace CalamityMod.NPCs.Ravager
             }
             else
             {
+                // Set damage
+                if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
+                    NPC.damage = (int)Math.Round(NPC.defDamage * 1.5);
+                else
+                    NPC.damage = NPC.defDamage;
+
                 if (NPC.velocity.Y == 0f || Vector2.Distance(NPC.Center, Main.npc[CalamityGlobalNPC.scavenger].Center) > 2800f)
                 {
                     SoundEngine.PlaySound(SoundID.Item14, NPC.Center);
@@ -153,7 +163,7 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 30; i++)
                 {
-                    int rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    int rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[rockDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -163,10 +173,10 @@ namespace CalamityMod.NPCs.Ravager
                 }
                 for (int j = 0; j < 30; j++)
                 {
-                    int rockDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
+                    int rockDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
                     Main.dust[rockDust2].noGravity = true;
                     Main.dust[rockDust2].velocity *= 5f;
-                    rockDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    rockDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[rockDust2].velocity *= 2f;
                 }
 
@@ -190,7 +200,7 @@ namespace CalamityMod.NPCs.Ravager
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    int rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[rockDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -200,10 +210,10 @@ namespace CalamityMod.NPCs.Ravager
                 }
                 for (int j = 0; j < 2; j++)
                 {
-                    int rockDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
+                    int rockDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
                     Main.dust[rockDust2].noGravity = true;
                     Main.dust[rockDust2].velocity *= 5f;
-                    rockDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    rockDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[rockDust2].velocity *= 2f;
                 }
             }

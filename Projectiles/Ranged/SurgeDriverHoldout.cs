@@ -12,7 +12,6 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<SurgeDriver>();
         public Player Owner => Main.player[Projectile.owner];
-        public bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
         public ref float ShootCountdown => ref Projectile.ai[0];
 
         public override void SetDefaults()
@@ -35,12 +34,10 @@ namespace CalamityMod.Projectiles.Ranged
             UpdateProjectileHeldVariables(armPosition);
             ManipulatePlayerVariables();
 
-            if (!OwnerCanShoot)
-            {
-                // Prevent spam clicking by letting the animation run if the player just stops holding
-                if (Owner.noItems || Owner.CCed || Owner.dead || ShootCountdown < 0f)
-                    Projectile.Kill();
-            }
+            // Prevent spam clicking by letting the animation run if the player just stops holding
+            if (Owner.CantUseHoldout() && ShootCountdown < 0f)
+                Projectile.Kill();
+
             // Can't shoot on frame 1 as it can't use ammo yet
             else if (ShootCountdown < 0f && Owner.HasAmmo(Owner.ActiveItem()))
             {

@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 10;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.8f,
             };
@@ -47,11 +47,15 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Desert,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Cnidrion")
@@ -92,14 +96,18 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
+            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
+            NPC.damage = 0;
+
             Player player = Main.player[NPC.target];
             bool expertMode = Main.expertMode;
+            bool masterMode = Main.masterMode;
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             float movementSpeed = 1f;
             NPC.TargetClosest(true);
             bool stopMoving = false;
             int offsetX = 80;
-            int projectileDamage = expertMode ? 9 : 12;
+            int projectileDamage = masterMode ? 8 : expertMode ? 9 : 12;
             if (NPC.life < NPC.lifeMax * 0.33 && CalamityWorld.death)
             {
                 movementSpeed = 2f;
@@ -311,7 +319,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 for (int k = 0; k < 40; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 5, hit.HitDirection, -1f, 0, default, 2f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 2f);
                 }
             }
         }

@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,14 +15,14 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 32;
             Item.height = 62;
-            Item.damage = 19;
+            Item.damage = 25;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 22;
             Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item75;
             Item.autoReuse = true;

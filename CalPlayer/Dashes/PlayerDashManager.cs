@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ModLoader.Core;
 
 namespace CalamityMod.CalPlayer.Dashes
 {
@@ -44,7 +45,8 @@ namespace CalamityMod.CalPlayer.Dashes
         {
             DashIdentificationTable = new();
             Type baseType = typeof(PlayerDashEffect);
-            foreach (Type type in CalamityMod.Instance.Code.GetTypes())
+            Type[] types = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
+            foreach (Type type in types)
             {
                 // Ignore any types which are not dash effects or are abstract.
                 // This eliminates the PlayerDashEffect template type, which cannot have instances.

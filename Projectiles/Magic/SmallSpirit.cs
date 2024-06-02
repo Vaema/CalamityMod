@@ -1,6 +1,6 @@
-﻿using CalamityMod.Graphics.Metaballs;
+﻿using System;
+using CalamityMod.Graphics.Metaballs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -15,15 +15,15 @@ namespace CalamityMod.Projectiles.Magic
             get
             {
                 int spiritType = ModContent.ProjectileType<SpiritCongregation>();
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type != spiritType || Main.projectile[i].identity != Projectile.ai[0] ||
-                        Main.projectile[i].owner != Projectile.owner)
+                    if (p.type != spiritType || p.identity != Projectile.ai[0] ||
+                        p.owner != Projectile.owner)
                     {
                         continue;
                     }
 
-                    return Main.projectile[i];
+                    return p;
                 }
                 return null;
             }
@@ -117,11 +117,11 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < 6; i++)
             {
-                Dust polterplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12f, 12f), 261);
-                polterplasm.color = Color.Lerp(Color.LightPink, Color.Red, Main.rand.NextFloat(0.67f));
-                polterplasm.scale = 1.2f;
-                polterplasm.fadeIn = 0.55f;
-                polterplasm.noGravity = true;
+                Dust necroplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12f, 12f), 261);
+                necroplasm.color = Color.Lerp(Color.LightPink, Color.Red, Main.rand.NextFloat(0.67f));
+                necroplasm.scale = 1.2f;
+                necroplasm.fadeIn = 0.55f;
+                necroplasm.noGravity = true;
             }
         }
     }

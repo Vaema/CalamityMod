@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Enemy
 {
     public class StormMarkHostile : ModProjectile, ILocalizedModType
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Enemy
                     dustMovement.X *= -1f;
                     Vector2 dustMovement2 = new Vector2(2f, 10f);
                     Vector2 position4 = Projectile.Center + new Vector2(60f, Projectile.ai[0] != 0f ? 800f : 200f) * dustMovement * 0.5f + dustMovement2;
-                    Dust stormy = Main.dust[Dust.NewDust(position4, 0, 0, 16, 0f, 0f, 0, default, 0.5f)];
+                    Dust stormy = Main.dust[Dust.NewDust(position4, 0, 0, DustID.Cloud, 0f, 0f, 0, default, 0.5f)];
                     stormy.position = position4;
                     stormy.customData = Projectile.Center + dustMovement2;
                     stormy.fadeIn = 1f;
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Enemy
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 dustVel = Vector2.UnitY.RotatedBy((double)((float)j * 3.14159274f), default).RotatedBy((double)Projectile.rotation, default);
-                    Dust stormDust = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 16, 0f, 0f, 225, newColor3, 1f)];
+                    Dust stormDust = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.Cloud, 0f, 0f, 225, newColor3, 1f)];
                     stormDust.noGravity = true;
                     stormDust.noLight = true;
                     stormDust.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -108,7 +108,7 @@ namespace CalamityMod.Projectiles.Enemy
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 dustVel2 = Vector2.UnitY.RotatedBy((double)((float)k * 3.14159274f), default);
-                    Dust stormDust2 = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 16, 0f, 0f, 225, newColor3, 1.5f)];
+                    Dust stormDust2 = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.Cloud, 0f, 0f, 225, newColor3, 1.5f)];
                     stormDust2.noGravity = true;
                     stormDust2.noLight = true;
                     stormDust2.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -124,7 +124,7 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.localAI[1] += 1f;
             if (Projectile.localAI[1] == 60f && Projectile.owner == Main.myPlayer)
             {
-                int projectileDamage = Projectile.ai[0] != 0f ? (int)Projectile.ai[0] : Main.expertMode ? 25 : 40;
+                int projectileDamage = Projectile.ai[0] != 0f ? (int)Projectile.ai[0] : Main.masterMode ? 21 : Main.expertMode ? 25 : 40;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TornadoHostile>(), projectileDamage, 3f, Projectile.owner, 0f, Projectile.ai[1]);
             }
             if (Projectile.localAI[1] >= 120f)
@@ -137,7 +137,7 @@ namespace CalamityMod.Projectiles.Enemy
         {
             Color originalColor = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
             Vector2 drawPos = Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D27 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D27 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle rectangl = texture2D27.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Color alphaColor = Projectile.GetAlpha(originalColor);
             Vector2 halfRect = rectangl.Size() / 2f;

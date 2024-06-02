@@ -1,8 +1,8 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -16,9 +16,9 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = 15f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 240f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 14f;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = 21f;
+            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 320f;
+            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 20f;
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 15;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
             // Rain Starfury stars every 30 frames
             Projectile.localAI[1]++;
-            float starRainGateValue = 30f;
+            float starRainGateValue = 27f;
             if (Projectile.localAI[1] % starRainGateValue == 0f)
             {
                 Vector2 starSpawnLocation = Projectile.Center + new Vector2(Main.rand.Next(-200, 201), -600f);
@@ -67,10 +67,10 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             }
 
             if (Main.rand.NextBool(5))
-                Dust.NewDust(Projectile.Center + new Vector2(-25f, -25f), 50, 50, 58, 0f, 0f, 150, default(Color), 1.2f);
+                Dust.NewDust(Projectile.Center + new Vector2(-25f, -25f), 50, 50, DustID.Enchanted_Pink, 0f, 0f, 150, default(Color), 1.2f);
 
             if (Main.rand.NextBool(10))
-                Gore.NewGore(Projectile.GetSource_FromAI(), new Vector2(Projectile.position.X, Projectile.position.Y), default(Vector2), Main.rand.Next(16, 18));
+                Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, default(Vector2), Main.rand.Next(16, 18));
         }
 
         // Hitbox is larger than normal while trying to hit NPCs

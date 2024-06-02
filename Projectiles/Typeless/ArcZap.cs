@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Typeless
 {
     public class ArcZap : ModProjectile, ILocalizedModType
@@ -82,12 +82,12 @@ namespace CalamityMod.Projectiles.Typeless
                     target = npcIndex;
                 }
             }
-            
-            if (target > 0) 
+
+            if (target > 0)
             {
                 selectedTarget = Main.npc[target];
                 selectedTarget.Calamity().arcZapCooldown = 18;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), new Vector2(Projectile.position.X, Projectile.position.Y - 10f), new Vector2(0f, -2f), ModContent.ProjectileType<ArcZap>(), Projectile.damage, 0f, Projectile.owner, target, Projectile.ai[1] - 1f); 
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), new Vector2(Projectile.position.X, Projectile.position.Y - 10f), new Vector2(0f, -2f), ModContent.ProjectileType<ArcZap>(), Projectile.damage, 0f, Projectile.owner, target, Projectile.ai[1] - 1f);
             }
         }
 

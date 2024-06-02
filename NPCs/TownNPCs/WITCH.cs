@@ -1,10 +1,10 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.Collections.Generic;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.UI.CalamitasEnchants;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -36,10 +36,11 @@ namespace CalamityMod.NPCs.TownNPCs
                 .SetBiomeAffection<BrimstoneCragsBiome>(AffectionLevel.Dislike)
                 .SetNPCAffection(NPCID.Clothier, AffectionLevel.Like)
                 .SetNPCAffection(NPCID.PartyGirl, AffectionLevel.Dislike);
-			NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers(0) {
-				Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
-			};
-			NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
+            NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers()
+            {
+                Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
+            };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
         }
 
         public override void SetDefaults()
@@ -64,16 +65,16 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,        
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.WITCH")
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.WITCH")
             });
         }
 
         public override bool CanTownNPCSpawn(int numTownNPCs) => DownedBossSystem.downedCalamitas && !NPC.AnyNPCs(NPCType<SCalBoss>());
 
-		public override List<string> SetNPCNameList() => new List<string>() { this.GetLocalizedValue("Name.Calamitas") };
+        public override List<string> SetNPCNameList() => new List<string>() { this.GetLocalizedValue("Name.Calamitas") };
 
         // The way this works is by having an RNG based on weights.
         // With certain conditions (such as if a blood moon is happening) you can add possibilities

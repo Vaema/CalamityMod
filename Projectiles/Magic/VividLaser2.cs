@@ -1,7 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class VividLaser2 : ModProjectile, ILocalizedModType
@@ -29,7 +31,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Vector2 dustPosOffset = Vector2.UnitX * -12f;
                 dustPosOffset = -Vector2.UnitY.RotatedBy((double)(Projectile.ai[1] * 0.1308997f + (float)dust * 3.14159274f), default) * value7 - Projectile.rotation.ToRotationVector2() * 10f;
-                int exo = Dust.NewDust(Projectile.Center, 0, 0, 66, 0f, 0f, 160, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
+                int exo = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowTorch, 0f, 0f, 160, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
                 Main.dust[exo].scale = 0.75f;
                 Main.dust[exo].noGravity = true;
                 Main.dust[exo].position = Projectile.Center + dustPosOffset;

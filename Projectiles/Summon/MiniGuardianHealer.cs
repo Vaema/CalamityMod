@@ -1,15 +1,15 @@
-using CalamityMod.CalPlayer;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
 using CalamityMod.Buffs.Summon.Whips;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs.Providence;
-using static CalamityMod.Items.Accessories.ProfanedSoulCrystal;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static CalamityMod.Items.Accessories.ProfanedSoulCrystal;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -19,12 +19,12 @@ namespace CalamityMod.Projectiles.Summon
         internal const int starTimer = 180;
         internal const int laserTimer = 1200;
         private bool hasSetTimers;
-        
+
         public Player Owner => Main.player[Projectile.owner];
 
         public bool SpawnedFromPSC => Projectile.ai[0] == 1f;
         public bool ForcedVanity => SpawnedFromPSC && !Owner.Calamity().profanedCrystalBuffs;
-        
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 4;
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            
+
             if (modPlayer.pSoulGuardians)
             {
                 Projectile.timeLeft = 2;
@@ -82,19 +82,19 @@ namespace CalamityMod.Projectiles.Summon
                 hasSetTimers = true;
                 Projectile.netUpdate = true;
             }
-            
+
             Projectile.MinionAntiClump();
             Player owner = Owner;
-            
+
             var psc = owner.Calamity().profanedCrystal;
             if (psc && !SpawnedFromPSC || !psc && SpawnedFromPSC)
             {
                 Projectile.active = false;
             }
-            
+
             Vector2 playerDestination = owner.Center - Projectile.Center;
-            bool empowered = isEmpowered; 
-            
+            bool empowered = isEmpowered;
+
 
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 5)
@@ -143,7 +143,7 @@ namespace CalamityMod.Projectiles.Summon
                                 int maxDust = 3;
                                 for (int k = 0; k < maxDust; k++)
                                 {
-                                    int dust = Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 0, dustColor, 1f);
+                                    int dust = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, dustColor, 1f);
                                     Main.dust[dust].position = Projectile.Center;
                                     Main.dust[dust].velocity = vector2 * starVelocity * (k * 0.5f + 1f);
                                     Main.dust[dust].noGravity = true;
@@ -162,7 +162,7 @@ namespace CalamityMod.Projectiles.Summon
                     }
 
                     bool canDoLaser = player.HasBuff<ProfanedCrystalWhipBuff>();
-                    
+
                     if (canDoLaser && Projectile.ai[2] <= 0)
                     {
                         SoundEngine.PlaySound(Providence.HolyRaySound, player.Center);
@@ -181,28 +181,28 @@ namespace CalamityMod.Projectiles.Summon
 
                         if (Main.projectile.IndexInRange(projectile))
                             Main.projectile[projectile].originalDamage = holyLaserDamage;
-                        
+
                         // -60 degrees offset
                         projectile = Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center.X, player.Center.Y, -velocity.X, -velocity.Y, ModContent.ProjectileType<MiniGuardianHolyRay>(), holyLaserDamage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, player.whoAmI);
-                        
+
                         if (Main.projectile.IndexInRange(projectile))
                             Main.projectile[projectile].originalDamage = holyLaserDamage;
-                        
+
                         Projectile.ai[2] = laserTimer;
                     }
 
 
                     Projectile.ai[1]--;
-                    if (canDoLaser) 
+                    if (canDoLaser)
                         Projectile.ai[2]--;
                 }
             }
-            
+
             if (target == null)
             {
                 playerDestination.X += Main.rand.NextFloat(-5f, 5f);
-                playerDestination.Y += Main.rand.NextFloat(-10f, 10f);  
-                
+                playerDestination.Y += Main.rand.NextFloat(-10f, 10f);
+
                 float playerDist = playerDestination.Length();
                 float acceleration = 0.5f;
                 float returnSpeed = 28f;
@@ -222,10 +222,10 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 else
                 {
-                    
+
                     if (playerDist < 100f)
                         acceleration = 0.1f;
-                    
+
                     if (playerDist > 300f)
                         acceleration = 1f;
 
@@ -260,7 +260,7 @@ namespace CalamityMod.Projectiles.Summon
                             Projectile.velocity.Y -= acceleration * 2f;
                     }
                 }
-                
+
                 // Direction
                 if (Math.Abs(Projectile.velocity.X) > 0.2f)
                     Projectile.direction = Projectile.spriteDirection = Math.Sign(Projectile.velocity.X);
@@ -277,14 +277,14 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     playerDestination = target.Center;
                     playerDestination.X += Main.rand.NextFloat(-5f, 5f);
-                    playerDestination.Y += Main.rand.NextFloat(-155f, -160f);  
+                    playerDestination.Y += Main.rand.NextFloat(-155f, -160f);
                 }
-                
+
                 float dist = Projectile.Center.Distance(playerDestination);
                 float num543 = playerDestination.X;
                 float num544 = playerDestination.Y;
                 float num550 = 40f;
-                Vector2 vector43 = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 vector43 = Projectile.Center;
                 float num551 = num543 - vector43.X;
                 float num552 = num544 - vector43.Y;
                 float num553 = (float)Math.Sqrt((double)(num551 * num551 + num552 * num552));
@@ -297,10 +297,10 @@ namespace CalamityMod.Projectiles.Summon
                 num552 *= num553;
                 Projectile.velocity.X = (Projectile.velocity.X * 14f + num551) / 13.5f;
                 Projectile.velocity.Y = (Projectile.velocity.Y * 14f + num552) / 13.5f;
-                
+
                 if (Projectile.ai[2] <= 120f)
                     Projectile.velocity *= dist > 10 ? MathHelper.SmoothStep(0.65f, 0.95f, 120f - Utils.GetLerpValue(120, Projectile.ai[2], 60)) : 0.1f;
-                else 
+                else
                     Projectile.velocity *= dist > 10 ? 0.9f : 0.3f;
             }
 
@@ -313,9 +313,9 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     Vector2 spawnPosition = player.Center + Main.rand.NextVector2Unit() * outwardness * Main.rand.NextFloat(0.75f, 1.1f);
                     Vector2 dustVelocity = (player.Center - spawnPosition) * 0.085f + owner.velocity;
-                    
+
                     int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
-                    
+
                     Dust dust = Dust.NewDustPerfect(spawnPosition, ProvUtils.GetDustID(pscState));
                     dust.velocity = dustVelocity;
                     dust.scale = dustScale * Main.rand.NextFloat(0.75f, 1.15f);
@@ -325,7 +325,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
         }
-        
+
         public override bool PreDraw(ref Color lightColor)
         {
             // Has afterimages if maximum empowerment

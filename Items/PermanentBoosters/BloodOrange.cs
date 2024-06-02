@@ -1,4 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -6,8 +8,6 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
@@ -21,8 +21,8 @@ namespace CalamityMod.Items.PermanentBoosters
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/BloodOrangeConsume");
         public override void SetStaticDefaults()
         {
-           	// For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 20; // Life Fruit
+            // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 20; // Life Fruit
         }
 
         public override void SetDefaults()

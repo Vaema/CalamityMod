@@ -2,17 +2,21 @@
 using System.Linq;
 using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Placeables;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.CalPlayer
 {
@@ -21,9 +25,6 @@ namespace CalamityMod.CalPlayer
         #region Update Bad Life Regen
         public override void UpdateBadLifeRegen()
         {
-            if (Player.ownedProjectileCounts[ModContent.ProjectileType<BloodBoilerFire>()] > 0)
-                noLifeRegen = true;
-
             // Universal +25% increase to DoT debuff damage in Death Mode
             float deathNegativeRegenBonus = 0.25f;
             float calamityDebuffMultiplier = 1f + (CalamityWorld.death ? deathNegativeRegenBonus : 0f);
@@ -64,9 +65,9 @@ namespace CalamityMod.CalPlayer
 
                 if (Player.electrified && !purity)
                 {
-                    totalVanillaDoT += 8;
+                    totalVanillaDoT += eleResist ? 4 : 8;
                     if (Player.controlLeft || Player.controlRight)
-                        totalVanillaDoT += 32;
+                        totalVanillaDoT += eleResist ? 16 : 32;
                 }
 
                 // Tally up total current vanilla DoT so it can be added as extra DoT from Death Mode
@@ -92,7 +93,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(wDeath, 0);
 
             ApplyDoTDebuff(irradiated, 4, purity);
-            int sulphurDoT = 6 - (sulfurSet ? 2 : 0) - (sulphurskin ? 2 : 0);
+            int sulphurDoT = 6 - (sulphurSet ? 2 : 0) - (sulphurskin ? 2 : 0);
             ApplyDoTDebuff(sulphurPoison, sulphurDoT, purity);
             ApplyDoTDebuff(rTide, 6, purity);
             ApplyDoTDebuff(weakBrimstoneFlames, 7);
@@ -103,15 +104,15 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(bFlames, abaddon ? 10 : 30, purity);
             ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
             ApplyDoTDebuff(hFlames, reducedHolyFlamesDamage ? 20 : 40, purity);
-            ApplyDoTDebuff(vHex, 30);
+            ApplyDoTDebuff(vHex, 35);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || purity);
-            ApplyDoTDebuff(pFlames, 30, purity);
+            ApplyDoTDebuff(pFlames, alchFlask ? 10 : 30, purity);
             ApplyDoTDebuff(cragsLava, 30);
             ApplyDoTDebuff(shadowflame, 30, purity);
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
             ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 60 : 50);
-            ApplyDoTDebuff(dragonFire, 60);
+            ApplyDoTDebuff(dragonFire, dynamoStemCells ? 30 : 60);
             ApplyDoTDebuff(miracleBlight, 80);
             ApplyDoTDebuff(banishingFire, 60);
 
@@ -123,7 +124,7 @@ namespace CalamityMod.CalPlayer
                 if (Vector2.Distance(Player.Center.ToTileCoordinates().ToVector2(), closestSafeZone.ToVector2()) < SulphuricWaterSafeZoneSystem.NearbySafeTiles[closestSafeZone] * 17f)
                     nearSafeZone = true;
             }
-            
+
             float ASPoisonLevel = 0f;
             if (CalamityGlobalNPC.aquaticScourge >= 0 && Main.zenithWorld)
             {
@@ -142,7 +143,7 @@ namespace CalamityMod.CalPlayer
                     increment *= 4f + (8f * ASPoisonLevel);
                 if (sulphurskin && !ASPoisoning)
                     increment *= 0.5f;
-                if (sulfurSet && !ASPoisoning)
+                if (sulphurSet && !ASPoisoning)
                     increment *= 0.5f;
 
                 SulphWaterPoisoningLevel = MathHelper.Clamp(SulphWaterPoisoningLevel + increment, 0f, 1f);
@@ -264,6 +265,7 @@ namespace CalamityMod.CalPlayer
 
             if (alcoholPoisonLevel > (cirrusDress ? 5 : 3))
             {
+                // Independently of Calamity's nerfs to Nebula life regen, it is disabled entirely by alcohol poisoning.
                 Player.nebulaLevelLife = 0;
 
                 if (Player.whoAmI == Main.myPlayer)
@@ -287,7 +289,7 @@ namespace CalamityMod.CalPlayer
             {
                 Player.manaRegen = 0;
                 Player.manaRegenBonus = 0;
-                Player.manaRegenDelay = (int) Player.maxRegenDelay;
+                Player.manaRegenDelay = (int)Player.maxRegenDelay;
                 if (Player.lifeRegen > 0)
                     Player.lifeRegen = 0;
                 totalNegativeLifeRegen += 42; //the meaning of death
@@ -421,8 +423,8 @@ namespace CalamityMod.CalPlayer
             if (rOoze || aAmpoule || purity)
             {
                 float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / Player.statLifeMax2;
-                //Ambrosial Ampule and ooze give between 2 and 6 hp/s, Purity gives between 3 and 7 hp/s
-                float lifeRegenToGive = MathHelper.Lerp( purity ? 6f : 4f, purity ? 14f : 12f, missingLifeRatio);
+                //Ambrosial Ampule and ooze give between 2 and 6 hp/s
+                float lifeRegenToGive = MathHelper.Lerp(4f, 12f, missingLifeRatio);
                 Player.lifeRegen += (int)lifeRegenToGive;
             }
 
@@ -535,6 +537,8 @@ namespace CalamityMod.CalPlayer
             // 3. Air drowning in the Abyss
             //
 
+            // All forms of overtly disabling life regeneration disable Nebula Life boosters as well.
+
             if (noLifeRegen)
             {
                 Player.nebulaLevelLife = 0;
@@ -581,13 +585,6 @@ namespace CalamityMod.CalPlayer
                         Player.lifeRegen -= (int)(160D * calamityDebuffMultiplier);
                     }
                 }
-            }
-
-            // TODO -- Why is this here?
-            if (weakPetrification)
-            {
-                if (Player.mount.Active)
-                    Player.mount.Dismount(Player);
             }
             #endregion
 
@@ -646,7 +643,6 @@ namespace CalamityMod.CalPlayer
             if (trinketOfChi || chiRegen)
                 Player.lifeRegen += 2;
 
-
             if (ursaSergeant)
             {
                 if (Player.statLife <= (int)(actualMaxLife * 0.15))
@@ -666,12 +662,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (polarisBoost)
-            {
-                Player.lifeRegen += 1;
-                Player.lifeRegenTime += 1;
-            }
-
             if (evolutionLifeRegenCounter > 0)
             {
                 Player.lifeRegenTime += 2;
@@ -689,7 +679,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 2;
                 if (Main.rand.NextBool())
                 {
-                    int regen = Dust.NewDust(Player.position, Player.width, Player.height, 5, 0f, 0f, 200, new Color(99, 54, 84), 2f);
+                    int regen = Dust.NewDust(Player.position, Player.width, Player.height, DustID.Blood, 0f, 0f, 200, new Color(99, 54, 84), 2f);
                     Main.dust[regen].noGravity = true;
                     Main.dust[regen].fadeIn = 1.3f;
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
@@ -746,7 +736,7 @@ namespace CalamityMod.CalPlayer
             if (pinkCandle && !noLifeRegen)
             {
                 // Every frame, add up 1/60th of the healing value (0.4% max HP per second)
-                pinkCandleHealFraction += Player.statLifeMax2 * 0.004 / 60;
+                pinkCandleHealFraction += Player.statLifeMax2 * CirrusPinkCandleBuff.PercentHealthPerSecond / 60;
 
                 if (pinkCandleHealFraction >= 1D)
                 {
@@ -779,7 +769,7 @@ namespace CalamityMod.CalPlayer
             #region Standing Still Life Regen
             // Standing still healing bonuses (all are exclusive with vanilla Shiny Stone, but all function similarly)
             if (!Player.shinyStone && Player.StandingStill() && Player.velocity.Y == 0 && Player.itemAnimation == 0)
-            { 
+            {
                 bool honeyDewWorking = honeyTurboRegen && Player.honeyWet;
                 bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking || photosynthesis || aAmpoule || purity;
                 bool onlyPhotosynthesisAtNight = !shadeRegen && !cFreeze && !honeyDewWorking && photosynthesis && !Main.dayTime;
@@ -787,7 +777,7 @@ namespace CalamityMod.CalPlayer
                 // Divides all negative life regen by two before applying any other effects.
                 if (anyStandingStillLifeRegen && Player.lifeRegen < 0)
                     Player.lifeRegen /= 2;
-                
+
                 // Spawn dust of some flavor while actually regenerating, aAmpule and purity have a slightly different looking style
                 if (Player.lifeRegen > 0 && Player.statLife < actualMaxLife)
                 {
@@ -838,7 +828,7 @@ namespace CalamityMod.CalPlayer
 
                 if (Main.rand.Next(30000) < Player.lifeRegenTime || Main.rand.NextBool())
                 {
-                    int regen = Dust.NewDust(Player.position, Player.width, Player.height, 12, 0f, 0f, 200, Color.OrangeRed, 1f);
+                    int regen = Dust.NewDust(Player.position, Player.width, Player.height, DustID.HeartCrystal, 0f, 0f, 200, Color.OrangeRed, 1f);
                     Main.dust[regen].noGravity = true;
                     Main.dust[regen].fadeIn = 1.3f;
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
@@ -887,6 +877,26 @@ namespace CalamityMod.CalPlayer
                         // Set the player's life regen to the scaled amount.
                         Player.lifeRegen = baseLifeRegenBoost + defLifeRegen;
                     }
+                }
+            }
+
+            if (toxicHeart) // Since it needs to know your life regen, it must be placed here
+            {
+                int auraDamage = (int)Player.GetBestClassDamage().ApplyTo(200);
+                auraDamage = Player.ApplyArmorAccDamageBonusesTo(auraDamage);
+                var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<ToxicHeart>()));
+                pulseRate = Utils.Remap(Player.lifeRegen, -30, 10, 20, 1, true);
+                if (pulseCounter >= 420)
+                {
+                    Projectile.NewProjectileDirect(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
+                    pulseCounter = 0;
+                    float soundVolume = Utils.Remap(Player.lifeRegen, -30, 10, 1f, 0.3f, true);
+                    SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");
+                    SoundEngine.PlaySound(heartbeat with { Volume = soundVolume, PitchVariance = 0.2f }, Player.Center);
+                }
+                else
+                {
+                    pulseCounter += MathHelper.Clamp(pulseRate, 1, 20);
                 }
             }
         }

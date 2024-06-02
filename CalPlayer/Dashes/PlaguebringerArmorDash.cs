@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.CalPlayer.Dashes
@@ -24,7 +25,7 @@ namespace CalamityMod.CalPlayer.Dashes
             // Spawn plague dust around the player's body.
             for (int d = 0; d < 60; d++)
             {
-                Dust dust = Dust.NewDustDirect(player.position, player.width, player.height, 89, 0f, 0f, 100, default, 1.25f);
+                Dust dust = Dust.NewDustDirect(player.position, player.width, player.height, DustID.GemEmerald, 0f, 0f, 100, default, 1.25f);
                 dust.position.X += Main.rand.NextFloat(-5f, 5f);
                 dust.position.Y += Main.rand.NextFloat(-5f, 5f);
                 dust.velocity *= 0.2f;
@@ -40,7 +41,7 @@ namespace CalamityMod.CalPlayer.Dashes
             // Spawn plague dust around the player's body.
             for (int m = 0; m < 24; m++)
             {
-                Dust plagueDashDust = Dust.NewDustDirect(new Vector2(player.position.X, player.position.Y + 4f), player.width, player.height - 8, 89, 0f, 0f, 100, default, 1f);
+                Dust plagueDashDust = Dust.NewDustDirect(new Vector2(player.position.X, player.position.Y + 4f), player.width, player.height - 8, DustID.GemEmerald, 0f, 0f, 100, default, 1f);
                 plagueDashDust.velocity *= 0.1f;
                 plagueDashDust.scale *= Main.rand.NextFloat(1f, 1.2f);
                 plagueDashDust.shader = GameShaders.Armor.GetSecondaryShader(player.ArmorSetDye(), player);

@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item82;

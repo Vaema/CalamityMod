@@ -1,16 +1,16 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Melee;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using static Terraria.ModLoader.ModContent;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6.25f;
             Item.UseSound = null;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 15f;
@@ -89,7 +89,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<ArkoftheAncientsSwungBlade>(), damage, knockback, player.whoAmI, Combo, Charge);
 
             Combo *= -1f;
-            Charge --;
+            Charge--;
             if (Charge < 0)
                 Charge = 0;
 
@@ -132,7 +132,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Rectangle frameCrop = new Rectangle(0, 0, (int)(Charge / 10f * barFG.Width), barFG.Height);
             Color color = Main.hslToRgb((Main.GlobalTimeWrappedHourly * 0.6f) % 1, 1, 0.85f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 0.1f);
 
-            spriteBatch.Draw(barBG, drawPos, null, color , 0f, barOrigin, scale * barScale, 0f, 0f);
+            spriteBatch.Draw(barBG, drawPos, null, color, 0f, barOrigin, scale * barScale, 0f, 0f);
             spriteBatch.Draw(barFG, drawPos, frameCrop, color * 0.8f, 0f, barOrigin, scale * barScale, 0f, 0f);
         }
 

@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -65,16 +65,16 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item62, Projectile.position);
                 for (int i = 0; i < 2; i++)
                 {
-                    int cosmicDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 187, 0f, 0f, 100, new Color(150, 255, 255), 1f);
+                    int cosmicDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, new Color(150, 255, 255), 1f);
                     Main.dust[cosmicDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 }
                 for (int j = 0; j < 3; j++)
                 {
-                    int iceDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 200, new Color(150, 255, 255), 1f);
+                    int iceDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 200, new Color(150, 255, 255), 1f);
                     Main.dust[iceDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                     Main.dust[iceDust].noGravity = true;
                     Main.dust[iceDust].velocity *= 3f;
-                    iceDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, new Color(150, 255, 255), 0.6f);
+                    iceDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, new Color(150, 255, 255), 0.6f);
                     Main.dust[iceDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                     Main.dust[iceDust].velocity *= 2f;
                     Main.dust[iceDust].noGravity = true;
@@ -82,14 +82,14 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 for (int k = 0; k < 2; k++)
                 {
-                    int icyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 0, new Color(150, 255, 255), 1f);
+                    int icyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 0, new Color(150, 255, 255), 1f);
                     Main.dust[icyDust].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 2f;
                     Main.dust[icyDust].noGravity = true;
                     Main.dust[icyDust].velocity *= 3f;
                 }
                 for (int l = 0; l < 3; l++)
                 {
-                    int freezeDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 187, 0f, 0f, 0, new Color(150, 255, 255), 0.6f);
+                    int freezeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 0, new Color(150, 255, 255), 0.6f);
                     Main.dust[freezeDust].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 2f;
                     Main.dust[freezeDust].noGravity = true;
                     Main.dust[freezeDust].velocity *= 3f;
@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 colorArea = Lighting.GetColor((int)mountedCenter.X / 16, (int)(mountedCenter.Y / 16f));
             }
-            Texture2D texture2D33 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D33 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle rectangl = texture2D33.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             return true;
         }

@@ -1,7 +1,9 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
     public class AegisBlast2 : ModProjectile, ILocalizedModType
@@ -70,7 +72,7 @@ namespace CalamityMod.Projectiles.Melee
                 randoAdjuster = rando3 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int goldDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, new Color(255, Main.DiscoG, 53), 1.5f);
+                int goldDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 53), 1.5f);
                 Main.dust[goldDust].noGravity = true;
                 Main.dust[goldDust].position.X = Projectile.Center.X;
                 Main.dust[goldDust].position.Y = Projectile.Center.Y;

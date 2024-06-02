@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Buffs.StatDebuffs;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Magic
                     Vector2 Dpos = Projectile.Center + new Vector2(Main.rand.NextFloat(250f, 270f), Main.rand.NextFloat(250f, 270f)).RotatedBy(MathHelper.ToRadians(Main.rand.Next(1, 360)));
                     Vector2 Dspeed = Projectile.Center - Dpos;
                     Dspeed.Normalize();
-                    Dspeed *= Main.rand.NextFloat(8f,34f);
+                    Dspeed *= Main.rand.NextFloat(8f, 34f);
                     float Dscale = Main.rand.NextFloat(1.5f, 2f);
                     int d1 = Dust.NewDust(Dpos, 1, 1, dtype2, Dspeed.X, Dspeed.Y, 0, default, Dscale);
                     Main.dust[d1].velocity = Dspeed;

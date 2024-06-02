@@ -10,7 +10,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
         public new string LocalizationCategory => "Items.TreasureBags";
         public override void SetStaticDefaults()
         {
-                       Item.ResearchUnlockCount = 10;
+            Item.ResearchUnlockCount = 10;
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SandyAnglingKit>();
         }
 
@@ -23,10 +23,10 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             Item.rare = ItemRarityID.Pink;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
+        }
 
         public override bool CanRightClick() => true;
 

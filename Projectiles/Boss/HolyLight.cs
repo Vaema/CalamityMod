@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D drawTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Color brightGreen = new Color(54, 209, 54, 0);
             Vector2 projDirection = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Vector2 halfTextureSize = drawTexture.Size() / 2f;
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
             for (int i = 0; i < 5; i++)
             {
-                int holyYellow = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 2f);
+                int holyYellow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[holyYellow].velocity *= 3f;
                 Main.dust[holyYellow].noGravity = true;
                 if (Main.rand.NextBool())
@@ -114,10 +114,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int j = 0; j < 8; j++)
             {
-                int holyYellow2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 247, 0f, 0f, 100, default, 3f);
+                int holyYellow2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PlatinumCoin, 0f, 0f, 100, default, 3f);
                 Main.dust[holyYellow2].noGravity = true;
                 Main.dust[holyYellow2].velocity *= 5f;
-                holyYellow2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 2f);
+                holyYellow2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[holyYellow2].velocity *= 2f;
                 Main.dust[holyYellow2].noGravity = true;
             }

@@ -14,15 +14,15 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
-            Item.rare = ItemRarityID.Cyan;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.rare = ItemRarityID.Red;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            player.statLifeMax2 += 70;
+            player.statLifeMax2 += 50;
 
             // bool left in for abyss light purposes and life regen effects
             modPlayer.aAmpoule = true;

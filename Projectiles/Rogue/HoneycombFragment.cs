@@ -1,7 +1,8 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -51,7 +52,7 @@ namespace CalamityMod.Projectiles.Rogue
             int splash = 0;
             while (splash < 4)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 9, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 159, default, 0.9f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Copper, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 159, default, 0.9f);
                 splash += 1;
             }
         }

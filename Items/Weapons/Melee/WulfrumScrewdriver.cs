@@ -1,16 +1,16 @@
-﻿using CalamityMod.Items.Materials;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
+﻿using System;
+using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
-using Terraria.ModLoader;
-using Terraria.Audio;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using static CalamityMod.CalamityUtils;
+using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
-using System.Linq;
+using Terraria.ID;
+using Terraria.ModLoader;
+using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int DefaultTime = 10;
         public static readonly SoundStyle ThrustSound = new("CalamityMod/Sounds/Item/WulfrumScrewdriverThrust") { PitchVariance = 0.4f };
         public static readonly SoundStyle ThudSound = new("CalamityMod/Sounds/Item/WulfrumScrewdriverThud") { PitchVariance = 0.2f, Volume = 0.7f };
-        public static readonly SoundStyle ScrewGetSound = new("CalamityMod/Sounds/Item/WulfrumScrewdriverScrewGet") { PitchVariance = 0.1f};
+        public static readonly SoundStyle ScrewGetSound = new("CalamityMod/Sounds/Item/WulfrumScrewdriverScrewGet") { PitchVariance = 0.1f };
         public static readonly SoundStyle ScrewHitSound = new("CalamityMod/Sounds/Item/WulfrumScrewdriverScrewHit") { Volume = 0.7f };
         public static readonly SoundStyle FunnyUltrablingSound = new("CalamityMod/Sounds/Custom/UltrablingHit");
 
@@ -74,7 +74,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 3.75f;
             Item.UseSound = ThrustSound;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -132,7 +132,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool AltFunctionUse(Player player) => ScrewAvailable;
         public override bool CanUseItem(Player player) => player.altFunctionUse == 2 ? !Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ModContent.ProjectileType<WulfrumScrew>()) : true;
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-        { 
+        {
             if (player.altFunctionUse == 2) damage = (int)(damage * ScrewBaseDamageMult);
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -183,7 +183,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Vector2 realIdealSpot = myPlayer.MountedCenter + myPlayer.gfxOffY * Vector2.UnitY - Main.screenPosition - Vector2.UnitY * 50f - Vector2.Lerp(myPlayer.velocity, PrevOffset, 0.5f);
             realIdealSpot.Y += (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 5f;
             realIdealSpot.X += (float)Math.Sin(Main.GlobalTimeWrappedHourly * 1f) * 7.8f;
-            
+
             ScrewPosition = new Vector3(realIdealSpot, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 0.5f) * MathHelper.PiOver4 * 0.34f);
 
             position = Vector2.Lerp(new Vector2(ScrewPosition.X, ScrewPosition.Y), new Vector2(ScrewStart.X, ScrewStart.Y), ProgressionOfScrew);

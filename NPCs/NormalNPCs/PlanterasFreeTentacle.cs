@@ -22,7 +22,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers(0) { Hide = true };
+            NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
         }
 
@@ -36,7 +36,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 24;
             NPC.height = 24;
             NPC.defense = 20;
-            NPC.lifeMax = 1000;
+
+            NPC.lifeMax = 500;
+            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
+            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+
             NPC.knockBackResist = 0.4f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -45,6 +49,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void FindFrame(int frameHeight)
@@ -64,12 +72,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.TargetClosest();
 
             // Emit light
-            Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.2f, 0.4f, 0.1f);
+            Lighting.AddLight(NPC.Center, 0.2f, 0.4f, 0.1f);
 
             // Spore dust
             if (Main.rand.NextBool(10))
             {
-                Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 44, 0f, 0f, 250, default, 0.4f);
+                Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.JungleSpore, 0f, 0f, 250, default, 0.4f);
                 dust.fadeIn = 0.7f;
             }
 
@@ -93,9 +101,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
 
             // Velocity and acceleration
-            Vector2 idealVelocity = new Vector2(death ? 12f : 9f, death ? 5f : 3.5f);
-            float accelerationX = death ? 0.2f : 0.15f;
-            float accelerationY = death ? 0.15f : 0.12f;
+            Vector2 idealVelocity = new Vector2(death ? 8f : 6f, death ? 6f : 4.5f);
+            float accelerationX = death ? 0.16f : 0.12f;
+            float accelerationY = death ? 0.12f : 0.09f;
 
             if (Main.getGoodWorld)
             {
@@ -163,24 +171,21 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
 
             float pushVelocity = 0.5f;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (var n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active)
+                if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                 {
-                    if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
+                    if (Vector2.Distance(NPC.Center, n.Center) < 40f * NPC.scale)
                     {
-                        if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < 40f * NPC.scale)
-                        {
-                            if (NPC.position.X < Main.npc[i].position.X)
-                                NPC.velocity.X -= pushVelocity;
-                            else
-                                NPC.velocity.X += pushVelocity;
+                        if (NPC.position.X < n.position.X)
+                            NPC.velocity.X -= pushVelocity;
+                        else
+                            NPC.velocity.X += pushVelocity;
 
-                            if (NPC.position.Y < Main.npc[i].position.Y)
-                                NPC.velocity.Y -= pushVelocity;
-                            else
-                                NPC.velocity.Y += pushVelocity;
-                        }
+                        if (NPC.position.Y < n.position.Y)
+                            NPC.velocity.Y -= pushVelocity;
+                        else
+                            NPC.velocity.Y += pushVelocity;
                     }
                 }
             }
@@ -199,13 +204,14 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
+            NPC.lifeMax = (int)(NPC.lifeMax * balance);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Poisoned, 300);
+                target.AddBuff(BuffID.Poisoned, 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -213,13 +219,13 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (NPC.life > 0)
             {
                 for (int i = 0; (double)i < hit.Damage / (double)NPC.lifeMax * 100.0; i++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 167, hit.HitDirection, -1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Plantera_Green, hit.HitDirection, -1f);
 
                 return;
             }
 
             for (int i = 0; i < 150; i++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 167, 2 * hit.HitDirection, -2f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Plantera_Green, 2 * hit.HitDirection, -2f);
 
             if (Main.netMode != NetmodeID.Server)
             {

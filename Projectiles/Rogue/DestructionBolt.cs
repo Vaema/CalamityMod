@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            if (Main.rand.Next(8) == 0)
+            if (Main.rand.NextBool(8))
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, dustType, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
@@ -55,16 +55,16 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     int index = -1;
                     float otherConstant = 300f;
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (Main.npc[i].active && Main.npc[i].CanBeChasedBy(Projectile, false))
+                        if (n.CanBeChasedBy(Projectile, false))
                         {
-                            Vector2 npcCenter = Main.npc[i].Center;
+                            Vector2 npcCenter = n.Center;
                             float targetDist = Vector2.Distance(npcCenter, Projectile.Center);
                             if (targetDist < otherConstant && index == -1 && Collision.CanHitLine(Projectile.Center, 1, 1, npcCenter, 1, 1))
                             {
                                 otherConstant = targetDist;
-                                index = i;
+                                index = n.whoAmI;
                             }
                         }
                     }
@@ -148,7 +148,7 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             for (int j = 0; j < 20; j++)
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, 0f, 0f, 100, default, 2f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
                 Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {

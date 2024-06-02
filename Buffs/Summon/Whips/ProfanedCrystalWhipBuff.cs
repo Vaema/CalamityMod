@@ -1,7 +1,7 @@
-﻿using static CalamityMod.Items.Accessories.ProfanedSoulCrystal;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static CalamityMod.Items.Accessories.ProfanedSoulCrystal;
 
 namespace CalamityMod.Buffs.Summon.Whips
 {
@@ -31,7 +31,7 @@ namespace CalamityMod.Buffs.Summon.Whips
                 player.ClearBuff(Type);
                 return;
             }
-                
+
             var whipBuffs = new int[]
             {
                 BuffID.CoolWhipPlayerBuff, BuffID.ScytheWhipPlayerBuff, BuffID.SwordWhipPlayerBuff,

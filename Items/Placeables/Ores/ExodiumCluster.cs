@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Placeables.Ores
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 101;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 101;
         }
 
         public override void SetDefaults()

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class SandMark : ModProjectile, ILocalizedModType
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Summon
                     dustMovement.X *= -1f;
                     Vector2 dustMovement2 = new Vector2(2f, 10f);
                     Vector2 position4 = Projectile.Center + new Vector2(60f, 200f) * dustMovement * 0.5f + dustMovement2;
-                    Dust dust = Main.dust[Dust.NewDust(position4, 0, 0, 269, 0f, 0f, 0, default, 0.5f)];
+                    Dust dust = Main.dust[Dust.NewDust(position4, 0, 0, DustID.Sandnado, 0f, 0f, 0, default, 0.5f)];
                     dust.position = position4;
                     dust.customData = Projectile.Center + dustMovement2;
                     dust.fadeIn = 1f;
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 dustVel = Vector2.UnitY.RotatedBy((double)((float)j * 3.14159274f), default).RotatedBy((double)Projectile.rotation, default);
-                    Dust dusty = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 269, 0f, 0f, 225, newColor3, 1f)];
+                    Dust dusty = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.Sandnado, 0f, 0f, 225, newColor3, 1f)];
                     dusty.noGravity = true;
                     dusty.noLight = true;
                     dusty.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -114,7 +114,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 dustVel2 = Vector2.UnitY.RotatedBy((double)((float)k * 3.14159274f), default);
-                    Dust dustier = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 269, 0f, 0f, 225, newColor3, 1.5f)];
+                    Dust dustier = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.Sandnado, 0f, 0f, 225, newColor3, 1.5f)];
                     dustier.noGravity = true;
                     dustier.noLight = true;
                     dustier.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -140,10 +140,10 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override bool PreDraw(ref Color lightColor)
-        {            
+        {
             Color originalColor = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
             Vector2 drawPos = Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D27 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D27 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle rectangle = texture2D27.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Color alphaColor = Projectile.GetAlpha(originalColor);
             Vector2 origin7 = rectangle.Size() / 2f;

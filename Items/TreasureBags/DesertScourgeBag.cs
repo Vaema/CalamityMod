@@ -24,7 +24,7 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-			ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Item.type] = true;
             ItemID.Sets.PreHardmodeLikeBossBag[Item.type] = true;
         }
 
@@ -38,14 +38,14 @@ namespace CalamityMod.Items.TreasureBags
             Item.expert = true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+        }
 
         public override bool CanRightClick() => true;
 
-		public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
         public override void PostUpdate() => Item.TreasureBagLightAndDust();
 
@@ -56,8 +56,8 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-			// Money
-			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<DesertScourgeHead>()));
+            // Money
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<DesertScourgeHead>()));
 
             // Materials
             itemLoot.Add(ModContent.ItemType<PearlShard>(), 1, 30, 40);
@@ -77,7 +77,6 @@ namespace CalamityMod.Items.TreasureBags
 
             // Equipment
             itemLoot.Add(ModContent.ItemType<OceanCrest>());
-            itemLoot.Add(ModContent.ItemType<AeroStone>(), DropHelper.BagWeaponDropRateFraction);
             itemLoot.Add(ModContent.ItemType<SandCloak>(), DropHelper.BagWeaponDropRateFraction);
             itemLoot.AddRevBagAccessories();
 

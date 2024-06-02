@@ -63,7 +63,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             {
                 if (!WulfrumHat.HasArmorSet(player))
                 {
-                    Item.type = 0;
+                    Item.type = ItemID.None;
                     Item.SetDefaults(0);
                     Item.stack = 0;
 
@@ -73,7 +73,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
             Item.noUseGraphic = false;
             if (!player.Calamity().cooldowns.TryGetValue(WulfrumBastion.ID, out var cd) || cd.timeLeft > WulfrumHat.BastionCooldown + WulfrumHat.BastionTime - WulfrumHat.BastionBuildTime)
-               Item.noUseGraphic = true;
+                Item.noUseGraphic = true;
 
         }
 
@@ -131,7 +131,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
             //Shakezzz
             itemPosition += Main.rand.NextVector2Circular(2f, 2f) * (1 - animProgress);
-            
+
 
             Vector2 itemSize = new Vector2(38, 18);
             Vector2 itemOrigin = new Vector2(-12, 0);

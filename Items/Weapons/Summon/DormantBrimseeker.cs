@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -26,17 +26,17 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
 
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float totalSlots = 0f;
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].minion && Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI)
+                if (p.minion && p.owner == player.whoAmI)
                 {
-                    totalSlots += Main.projectile[i].minionSlots;
+                    totalSlots += p.minionSlots;
                 }
             }
             if (totalSlots < player.maxMinions)

@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
                     float dustVelX = Projectile.velocity.X / 3f * (float)i;
                     float dustVelY = Projectile.velocity.Y / 3f * (float)i;
                     int four = 4;
-                    int dustID = Dust.NewDust(new Vector2(Projectile.position.X + (float)four, Projectile.position.Y + (float)four), Projectile.width - four * 2, Projectile.height - four * 2, 202, 0f, 0f, 150, new Color(60, Main.DiscoG, 190), 1.2f);
+                    int dustID = Dust.NewDust(new Vector2(Projectile.position.X + (float)four, Projectile.position.Y + (float)four), Projectile.width - four * 2, Projectile.height - four * 2, DustID.GlowingSnail, 0f, 0f, 150, new Color(60, Main.DiscoG, 190), 1.2f);
                     Dust dust = Main.dust[dustID];
                     dust.noGravity = true;
                     dust.velocity *= 0.1f;
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Main.rand.NextBool(10))
                 {
                     int otherFour = 4;
-                    int otherDust = Dust.NewDust(new Vector2(Projectile.position.X + (float)otherFour, Projectile.position.Y + (float)otherFour), Projectile.width - otherFour * 2, Projectile.height - otherFour * 2, 202, 0f, 0f, 150, new Color(60, Main.DiscoG, 190), 0.6f);
+                    int otherDust = Dust.NewDust(new Vector2(Projectile.position.X + (float)otherFour, Projectile.position.Y + (float)otherFour), Projectile.width - otherFour * 2, Projectile.height - otherFour * 2, DustID.GlowingSnail, 0f, 0f, 150, new Color(60, Main.DiscoG, 190), 0.6f);
                     Main.dust[otherDust].velocity *= 0.25f;
                     Main.dust[otherDust].velocity += Projectile.velocity * 0.5f;
                 }
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item96, Projectile.position);
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 202, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, new Color(60, Main.DiscoG, 190));
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GlowingSnail, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, new Color(60, Main.DiscoG, 190));
             }
         }
 

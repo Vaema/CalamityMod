@@ -7,12 +7,12 @@ using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
-using Terraria.ID;
 
 namespace CalamityMod.Tiles.Astral
 {
@@ -69,7 +69,7 @@ namespace CalamityMod.Tiles.Astral
 
             bool usingStarcore = Main.LocalPlayer.HasItem(ModContent.ItemType<Starcore>());
 
-            if (Main.dayTime)
+            if (Main.IsItDay())
             {
                 CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.DeusAltarRejectNightText", FailColor);
                 return false;

@@ -24,10 +24,10 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
             Item.createTile = ModContent.TileType<Tiles.Furniture.CraftingStations.AshenAltar>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
+        }
 
         public override void AddRecipes()
         {

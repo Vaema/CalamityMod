@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -30,14 +30,14 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ignoreWater = true;
             Projectile.netImportant = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 300;
+            Projectile.timeLeft = 150;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
         public override void AI()
         {
-            if (Projectile.Calamity().stealthStrike && Projectile.timeLeft % 5f == 4f) // every 5 frames
-                CalamityUtils.ProjectileRain(Projectile.GetSource_FromThis(), Projectile.Center, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<HeavenfallenEnergy>(), Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);            
+            if (Projectile.Calamity().stealthStrike && Projectile.timeLeft % 20f == 4f) // every 5 frames
+                CalamityUtils.ProjectileRain(Projectile.GetSource_FromThis(), Projectile.Center, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<HeavenfallenEnergy>(), Projectile.damage / 6, Projectile.knockBack * 0.5f, Projectile.owner);
 
             if (Projectile.alpha > 0)
             {
@@ -50,21 +50,18 @@ namespace CalamityMod.Projectiles.Rogue
 
             for (int i = 0; i < 2; i++)
             {
-                int blueDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1f);
+                int blueDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1f);
                 Main.dust[blueDust].noGravity = true;
                 Main.dust[blueDust].velocity *= 0f;
             }
             for (int i = 0; i < 2; i++)
             {
-                int orangeDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                int orangeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                 Main.dust[orangeDust].noGravity = true;
                 Main.dust[orangeDust].velocity *= 0f;
             }
 
             Projectile.rotation += 0.5f;
-
-            if (Owner.position.Y != Owner.oldPosition.Y && Projectile.ai[0] == 0f)
-                Projectile.ai[1]++;            
 
             Projectile.ai[0]++;
 
@@ -147,23 +144,23 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
             for (int i = 0; i < 10; i++)
             {
-                int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
                 Main.dust[dusty].noGravity = true;
                 Main.dust[dusty].velocity *= 0f;
             }
             for (int i = 0; i < 10; i++)
             {
-                int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
                 Main.dust[dusty].noGravity = true;
                 Main.dust[dusty].velocity *= 0f;
             }
-            
-            if (Projectile.owner == Main.myPlayer && Projectile.ai[1] > 0)
+
+            if (Projectile.owner == Main.myPlayer)
             {
                 for (int i = 0; i < 5; i++)
                 {
                     Vector2 velocity = ((MathHelper.TwoPi * i / 5f) - MathHelper.PiOver2).ToRotationVector2() * 4f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HeavenfallenEnergy>(), Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner, 0f, 1f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HeavenfallenEnergy>(), Projectile.damage / 4, Projectile.knockBack * 0.5f, Projectile.owner, 0f, 1f);
                 }
             }
         }

@@ -1,15 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
-using CalamityMod.Particles;
-using CalamityMod.Items.Weapons.Magic;
-using System.Collections.Generic;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -217,9 +217,9 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 scale = Projectile.Size / worleyNoise.Size() * 2f;
             float spinRotation = Main.GlobalTimeWrappedHourly * 2.4f;
-            
+
             GameShaders.Misc["CalamityMod:ExoVortex"].Apply();
-            
+
             // Draw the vortex.
             for (int i = 0; i < CalamityUtils.ExoPalette.Length; i++)
             {

@@ -1,10 +1,10 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
+using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -20,9 +20,9 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 38;
             Item.height = 44;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 12; // we buff Ankh Shield to 12
+            Item.defense = 8; // we buff Ankh Shield to 8
             Item.accessory = true;
         }
 

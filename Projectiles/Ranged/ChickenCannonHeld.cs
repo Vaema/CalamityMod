@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
                 FramesTillNextShot = FireRate;
                 shouldShoot = true;
             }
-            bool canShoot = player.channel && (player.HasAmmo(player.ActiveItem()) || FreeShotLoaded > 0) && !player.noItems && !player.CCed;
+            bool canShoot = !player.CantUseHoldout() && (player.HasAmmo(player.ActiveItem()) || FreeShotLoaded > 0);
             if (Projectile.soundDelay <= 0 && canShoot)
             {
                 Projectile.soundDelay = (int)FireRate;

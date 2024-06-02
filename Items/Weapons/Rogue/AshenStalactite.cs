@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice / 4; // This buy price is intentionally reduced due to how common this item is.
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<AshenStalactiteProj>();
             Item.shootSpeed = 15f;
@@ -30,12 +30,12 @@ namespace CalamityMod.Items.Weapons.Rogue
         }
 
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-		{
+        {
             if (player.Calamity().StealthStrikeAvailable())
-				type = ModContent.ProjectileType<AshenStalagmiteProj>();
-		}
+                type = ModContent.ProjectileType<AshenStalagmiteProj>();
+        }
 
-		public override float StealthDamageMultiplier => 1.15f;
+        public override float StealthDamageMultiplier => 1.15f;
         public override float StealthVelocityMultiplier => 0.6f;
         public override float StealthKnockbackMultiplier => 2.5f;
 

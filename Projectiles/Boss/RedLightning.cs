@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -56,10 +56,10 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.oldPos[0] = Projectile.position;
                 if (Projectile.velocity == Vector2.Zero)
                 {
-                    float dustRotation = Projectile.rotation + MathHelper.PiOver2 + ((Main.rand.Next(2) == 1) ? -1f : 1f) * MathHelper.PiOver2;
+                    float dustRotation = Projectile.rotation + MathHelper.PiOver2 + ((Main.rand.NextBool(2)) ? -1f : 1f) * MathHelper.PiOver2;
                     float randDustRotateMod = (float)Main.rand.NextDouble() * 2f + 2f;
                     Vector2 dustVelocity = new Vector2((float)Math.Cos((double)dustRotation) * randDustRotateMod, (float)Math.Sin((double)dustRotation) * randDustRotateMod);
-                    int redDust = Dust.NewDust(Projectile.oldPos[Projectile.oldPos.Length - 1], 0, 0, 60, dustVelocity.X, dustVelocity.Y, 0, default, 1f);
+                    int redDust = Dust.NewDust(Projectile.oldPos[Projectile.oldPos.Length - 1], 0, 0, DustID.RedTorch, dustVelocity.X, dustVelocity.Y, 0, default, 1f);
                     Main.dust[redDust].noGravity = true;
                     Main.dust[redDust].scale = 1.7f;
                 }
@@ -88,14 +88,14 @@ namespace CalamityMod.Projectiles.Boss
                         return;
                     }
                 }
-                if (Main.rand.Next(Projectile.extraUpdates) == 0)
+                if (Main.rand.NextBool(Projectile.extraUpdates))
                 {
                     for (int k = 0; k < 2; k = inc + 1)
                     {
-                        float extraDustRotate = Projectile.rotation + ((Main.rand.Next(2) == 1) ? -1f : 1f) * MathHelper.PiOver2;
+                        float extraDustRotate = Projectile.rotation + ((Main.rand.NextBool(2)) ? -1f : 1f) * MathHelper.PiOver2;
                         float extraRandRotate = (float)Main.rand.NextDouble() * 0.8f + 1f;
                         Vector2 dustVelocity = new Vector2((float)Math.Cos((double)extraDustRotate) * extraRandRotate, (float)Math.Sin((double)extraDustRotate) * extraRandRotate);
-                        int extraRedDust = Dust.NewDust(Projectile.Center, 0, 0, 60, dustVelocity.X, dustVelocity.Y, 0, default, 1f);
+                        int extraRedDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.RedTorch, dustVelocity.X, dustVelocity.Y, 0, default, 1f);
                         Main.dust[extraRedDust].noGravity = true;
                         Main.dust[extraRedDust].scale = 1.2f;
                         inc = k;
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.Boss
                     if (Main.rand.NextBool(5))
                     {
                         Vector2 moreDustRotation = Projectile.velocity.RotatedBy((double)MathHelper.PiOver2, default(Vector2)) * ((float)Main.rand.NextDouble() - 0.5f) * (float)Projectile.width;
-                        int moreExtraRedDust = Dust.NewDust(Projectile.Center + moreDustRotation - Vector2.One * 4f, 8, 8, 60, 0f, 0f, 100, default, 1.5f);
+                        int moreExtraRedDust = Dust.NewDust(Projectile.Center + moreDustRotation - Vector2.One * 4f, 8, 8, DustID.RedTorch, 0f, 0f, 100, default, 1.5f);
                         Dust dust = Main.dust[moreExtraRedDust];
                         dust.velocity *= 0.5f;
                         Main.dust[moreExtraRedDust].velocity.Y = -Math.Abs(Main.dust[moreExtraRedDust].velocity.Y);
@@ -156,10 +156,10 @@ namespace CalamityMod.Projectiles.Boss
 
                 goto IL_25092;
 
-                IL_25086:
+IL_25086:
                 randomLightningMovement = lightningYRotation;
 
-                IL_25092:
+IL_25092:
                 if (Projectile.velocity != Vector2.Zero)
                 {
                     Projectile.localAI[0] += randomLightningMovement.X * (float)(Projectile.extraUpdates + 1) * 2f * projSpeed;

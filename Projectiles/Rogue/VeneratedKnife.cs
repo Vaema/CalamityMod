@@ -37,16 +37,15 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 float minDist = 999f;
                 int index = 0;
-                for (int i = 0; i < Main.npc.Length; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         float dist = (Projectile.Center - npc.Center).Length();
                         if (dist < minDist)
                         {
                             minDist = dist;
-                            index = i;
+                            index = npc.whoAmI;
                         }
                     }
                 }
@@ -72,7 +71,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.ai[0] == 0f)
             {
-                Texture2D knife1 = ModContent.Request<Texture2D>(Texture).Value;
+                Texture2D knife1 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
                 CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 3, knife1);
             }
             else if (Projectile.ai[0] == 1f)

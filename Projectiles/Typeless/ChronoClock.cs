@@ -1,8 +1,8 @@
-﻿using CalamityMod.Buffs.StatBuffs;
+﻿using System.IO;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
             if (Main.rand.NextBool(5))
             {
-                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 76);
+                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Snow);
                 Main.dust[index2].noGravity = true;
                 Main.dust[index2].noLight = true;
                 Main.dust[index2].scale = 0.7f;
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             for (int index1 = 0; index1 < 3; ++index1)
             {
-                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 76);
+                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Snow);
                 Main.dust[index2].noGravity = true;
                 Main.dust[index2].noLight = true;
                 Main.dust[index2].scale = 0.7f;

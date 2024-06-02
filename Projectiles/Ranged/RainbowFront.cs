@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
@@ -16,6 +16,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.alpha = 255;
             Projectile.ignoreWater = true;
             Projectile.scale = 1.25f;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -54,7 +56,7 @@ namespace CalamityMod.Projectiles.Ranged
             float yVel = y * velocityMult;
             Projectile.velocity.X = xVel;
             Projectile.velocity.Y = yVel;
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) - MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
         }
 
         public override Color? GetAlpha(Color lightColor) => Color.Transparent;

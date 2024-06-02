@@ -1,13 +1,15 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.GemTech;
+using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Armor.GemTech;
-using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.DataStructures
 {
@@ -207,12 +209,17 @@ namespace CalamityMod.DataStructures
         public void PlayerOnHitEffects(int hitDamage)
         {
             // Don't do anything if the player is not wearing the Gem Tech set.
-            if (!Owner.Calamity().GemTechSet)
+            var cgp = Owner.Calamity();
+            if (!cgp.GemTechSet)
                 return;
 
             bool gemWasLost = false;
             int gemDamage = 0;
-            if (hitDamage >= GemTechHeadgear.GemBreakDamageLowerBound)
+            bool largeEnoughRegularHit = hitDamage >= GemTechHeadgear.GemBreakDamageLowerBound;
+            // 09FEB2024: Ozzatron: chalice of the blood god no longer protects you when using gem tech armor.
+            // It is now slightly anti-synergetic, in that taking tiny hits when you're already bleeding will make you keep losing gems.
+            bool largeEnoughChaliceHit = cgp.chaliceOfTheBloodGod && hitDamage == ChaliceOfTheBloodGod.MinAllowedDamage && cgp.chaliceBleedoutBuffer >= GemTechHeadgear.GemBreakDamageLowerBound;
+            if (largeEnoughRegularHit || largeEnoughChaliceHit)
             {
                 // Destroy the rogue gem.
                 if (GemIsActive(GemTechArmorGemType.Rogue) && GemThatShouldBeLost == GemTechArmorGemType.Rogue)

@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -37,15 +37,15 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int i = 0; i < 2; i++)
                 {
                     Vector2 dspeed = -Projectile.velocity * 0.7f;
-                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 5, dspeed.X, dspeed.Y, 100, default, 2f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, dspeed.X, dspeed.Y, 100, default, 2f);
                     Main.dust[dust].noGravity = true;
                 }
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BurningBlood>(), 90);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BurningBlood>(), 240);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<BurningBlood>(), 90);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<BurningBlood>(), 240);
 
         public override bool PreDraw(ref Color lightColor)
         {

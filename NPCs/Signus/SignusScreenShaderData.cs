@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
@@ -20,15 +20,7 @@ namespace CalamityMod.NPCs.Signus
             {
                 return;
             }
-            SignusIndex = -1;
-            for (int i = 0; i < Main.npc.Length; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == SignusType)
-                {
-                    SignusIndex = i;
-                    break;
-                }
-            }
+            SignusIndex = NPC.FindFirstNPC(SignusType);
         }
 
         public override void Apply()

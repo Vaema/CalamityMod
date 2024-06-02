@@ -1,20 +1,20 @@
-﻿using CalamityMod.World;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria;
-using Terraria.ModLoader;
-using CalamityMod.CalPlayer;
-using CalamityMod.Events;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Terraria.Localization;
-using static CalamityMod.CalamityUtils;
-using System;
-using Terraria.ID;
-using ReLogic.Content;
-using Terraria.Audio;
-using Terraria.ModLoader.IO;
+using CalamityMod.CalPlayer;
+using CalamityMod.Events;
 using CalamityMod.Items.Armor.Demonshade;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
+using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Systems
 {
@@ -30,7 +30,7 @@ namespace CalamityMod.Systems
         {
             MostAlternateDifficulties = 1;
             //Initialize base mod difficulties
-            Difficulties = new List<DifficultyMode>() { new NoDifficulty(), new RevengeanceDifficulty(), new DeathDifficulty()};
+            Difficulties = new List<DifficultyMode>() { new NoDifficulty(), new RevengeanceDifficulty(), new DeathDifficulty() };
 
             CalculateDifficultyData();
         }
@@ -59,7 +59,7 @@ namespace CalamityMod.Systems
         public static void CalculateDifficultyData()
         {
             MostAlternateDifficulties = 1;
-            Difficulties.OrderBy(d => d.DifficultyScale);
+            Difficulties = Difficulties.OrderBy(d => d.DifficultyScale).ToList();
 
             //Difficulties are arranged in "tiers". This is done so that multiple mods can add their own alternate difficulties sharing a tier with the base ones
             DifficultyTiers = new List<DifficultyMode[]>();
@@ -91,7 +91,7 @@ namespace CalamityMod.Systems
         public override void SaveWorldData(TagCompound tag)
         {
             //Apparently this is ran after worldgen so it cant always be set to true
-             tag["hasCheckedOutTheCoolDifficultyUI"] = _hasCheckedItOutYet;
+            tag["hasCheckedOutTheCoolDifficultyUI"] = _hasCheckedItOutYet;
         }
 
         public override void OnWorldLoad()
@@ -169,17 +169,17 @@ namespace CalamityMod.Systems
                 return _texture;
             }
         }
-        
+
         public NoDifficulty()
         {
             DifficultyScale = 0;
             Name = CalamityUtils.GetText("UI.NoDifficulty");
             ShortDescription = CalamityUtils.GetText("UI.NoDifficultyInfo");
-            
+
             ActivationTextKey = string.Empty;
             DeactivationTextKey = string.Empty;
 
-            ActivationSound = SoundID.MenuTick with { Volume = 1f};
+            ActivationSound = SoundID.MenuTick with { Volume = 1f };
 
             ChatTextColor = Color.White;
         }
@@ -204,7 +204,7 @@ namespace CalamityMod.Systems
                 return _texture;
             }
         }
-        
+
         public override LocalizedText ExpandedDescription
         {
             get
@@ -249,7 +249,7 @@ namespace CalamityMod.Systems
                 return _texture;
             }
         }
-        
+
         public override LocalizedText ExpandedDescription => CalamityUtils.GetText("UI.DeathExpandedInfo");
 
         public DeathDifficulty()

@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-	    Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Projectile.type] = 5;
         }
 
         public override void SetDefaults()
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.alpha = 0;
             }
 
-	    Projectile.frameCounter++;
+            Projectile.frameCounter++;
             if (Projectile.frameCounter > 6)
             {
                 Projectile.frame++;
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Melee
                 int npcTracker = (int)Projectile.ai[0];
                 if (Main.npc[npcTracker].active)
                 {
-                    Vector2 projDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 projDirection = Projectile.Center;
                     float projXVel = Main.npc[npcTracker].position.X - projDirection.X;
                     float projYVel = Main.npc[npcTracker].position.Y - projDirection.Y;
                     float projVelocity = (float)Math.Sqrt((double)(projXVel * projXVel + projYVel * projYVel));
@@ -73,21 +73,19 @@ namespace CalamityMod.Projectiles.Melee
                 else
                 {
                     float homingRange = 1000f;
-                    int inc;
-                    for (int i = 0; i < Main.maxNPCs; i = inc + 1)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (Main.npc[i].CanBeChasedBy(Projectile, false))
+                        if (n.CanBeChasedBy(Projectile, false))
                         {
-                            float npcX = Main.npc[i].position.X + (float)(Main.npc[i].width / 2);
-                            float npcY = Main.npc[i].position.Y + (float)(Main.npc[i].height / 2);
+                            float npcX = n.position.X + (float)(n.width / 2);
+                            float npcY = n.position.Y + (float)(n.height / 2);
                             float npcDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcY);
-                            if (npcDist < homingRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, Main.npc[i].position, Main.npc[i].width, Main.npc[i].height))
+                            if (npcDist < homingRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, n.position, n.width, n.height))
                             {
                                 homingRange = npcDist;
-                                Projectile.ai[0] = (float)i;
+                                Projectile.ai[0] = (float)n.whoAmI;
                             }
                         }
-                        inc = i;
                     }
                 }
 
@@ -99,7 +97,7 @@ namespace CalamityMod.Projectiles.Melee
                 else
                 {
                     Projectile.spriteDirection = 1;
-                    Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                    Projectile.rotation = Projectile.velocity.ToRotation();
                 }
 
                 for (int j = 0; j < 2; j++)
@@ -135,7 +133,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
             for (int j = 0; j < 5; j++)
             {
-                int deathDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 5, 0f, 0f, 100, default, 2f);
+                int deathDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                 Main.dust[deathDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -145,10 +143,10 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int k = 0; k < 10; k++)
             {
-                int deathDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 3f);
+                int deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
                 Main.dust[deathDust2].noGravity = true;
                 Main.dust[deathDust2].velocity *= 5f;
-                deathDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 2f);
+                deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                 Main.dust[deathDust2].velocity *= 2f;
             }
         }
@@ -158,11 +156,11 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(BuffID.OnFire3, 240);
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int k = 0; k < 2; k++)
+                int maxProjectiles = 2;
+                for (int k = 0; k < maxProjectiles; k++)
                 {
-                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 174, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-35, 36) * 0.2f, Main.rand.Next(-35, 36) * 0.2f, ModContent.ProjectileType<TinyFlare>(),
-                     (int)(Projectile.damage * 0.35), Projectile.knockBack * 0.35f, Main.myPlayer, 0f, 0f);
+                    Vector2 flareVelocity = Main.rand.NextVector2CircularEdge(3.5f, 3.5f) + Projectile.oldVelocity;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, flareVelocity, ModContent.ProjectileType<TinyFlare>(), (int)(Projectile.damage * 0.35), Projectile.knockBack * 0.35f, Main.myPlayer);
                 }
             }
         }

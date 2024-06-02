@@ -1,10 +1,10 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             Projectile.DamageType = DamageClass.Summon;
             Projectile.Calamity().UpdatePriority = 1f;
         }
-        
+
         public override float DetermineLaserLength()
         {
             float[] samples = new float[4];

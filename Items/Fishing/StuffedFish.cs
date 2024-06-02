@@ -61,9 +61,9 @@ namespace CalamityMod.Items.Fishing
             itemLoot.Add(ItemID.PumpkinSeed, 20, seedMin, seedMax);
 
             // Biome grass seeds
-            itemLoot.AddIf(() => !WorldGen.crimson , ItemID.CorruptSeeds, 20, seedMin, seedMax);
-            itemLoot.AddIf(() => WorldGen.crimson , ItemID.CrimsonSeeds, 20, seedMin, seedMax);
-            itemLoot.AddIf(() => Main.hardMode , ItemID.HallowedSeeds, 20, seedMin, seedMax);
+            itemLoot.AddIf(() => !WorldGen.crimson, ItemID.CorruptSeeds, 20, seedMin, seedMax);
+            itemLoot.AddIf(() => WorldGen.crimson, ItemID.CrimsonSeeds, 20, seedMin, seedMax);
+            itemLoot.AddIf(() => Main.hardMode, ItemID.HallowedSeeds, 20, seedMin, seedMax);
 
             // Add Thorium Marine Kelp if Thorium is loaded.
             Mod thorium = CalamityMod.Instance.thorium;

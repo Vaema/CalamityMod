@@ -1,12 +1,12 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ModLoader;
-using CalamityMod.Particles;
-using System;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
@@ -69,14 +69,34 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 int step = 10;
                 while (step < LaserLength)
                 {
-                    Particle pulse = new DirectionalPulseRing(Projectile.Center + MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * step, Vector2.Zero, Color.Red, new Vector2(0.5f, 1f), MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2), 0.1f, 1f, 12);
-                    GeneralParticleHandler.SpawnParticle(pulse);
+                    //Particle pulse = new DirectionalPulseRing(Projectile.Center + MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * step, Vector2.Zero, Color.Red, new Vector2(0.5f, 1f), MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2), 0.1f, 1f, 12);
+                    //GeneralParticleHandler.SpawnParticle(pulse);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Particle pulse2 = new CustomPulse(Projectile.Center + MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * step, Vector2.Zero, Color.Red, "CalamityMod/Particles/SmallBloomRing", new Vector2(0.4f, 1.1f), MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2), 0.1f, 1f, 12);
+                        GeneralParticleHandler.SpawnParticle(pulse2);
+                        Particle pulse3 = new CustomPulse(Projectile.Center + MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * step, Vector2.Zero, Color.White, "CalamityMod/Particles/SmallBloomRing", new Vector2(0.4f, 1.1f), MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2), 0.1f, 0.9f, 12);
+                        GeneralParticleHandler.SpawnParticle(pulse3);
+                    }
                     step += 100;
                 }
             }
 
             else
                 Projectile.frameCounter++;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            for (int i = 0; i <= 8; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(target.Center, 218, (Projectile.velocity * 30).RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(1.2f, 1.6f));
+                dust.noGravity = true;
+            }
+
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.5f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
         }
 
         public override void DetermineScale() => Projectile.scale = 1f;

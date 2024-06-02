@@ -1,5 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Balancing;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -70,32 +71,26 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            float heal = hit.Damage * 0.05f;
-            if ((int)heal == 0)
+            int heal = (int)Math.Round(hit.Damage * 0.05);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (heal > CalamityMod.lifeStealCap)
-                heal = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            float heal = info.Damage * 0.05f;
-            if ((int)heal == 0)
+            int heal = (int)Math.Round(info.Damage * 0.05);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (heal > CalamityMod.lifeStealCap)
-                heal = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
     }
 }

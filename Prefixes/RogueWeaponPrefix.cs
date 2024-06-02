@@ -1,168 +1,185 @@
-﻿using Terraria;
+﻿using System;
+using System.Collections.Generic;
+using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Prefixes
 {
-    public enum RoguePrefixType : byte
+    [LegacyName("PointyWeaponPrefix")]
+    public class Pointy : RogueWeaponPrefix
     {
-        Pointy,
-        Sharp,
-        Feathered,
-        Sleek,
-        Hefty,
-        Mighty,
-        Glorious,
-        Serrated,
-        Vicious,
-        Lethal,
-        Flawless,
-        Radical,
-        Blunt,
-        Flimsy,
-        Unbalanced,
-        Atrocious
+        public override float damageMult => 1.1f;
     }
 
-    public class PointyWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("SharpWeaponPrefix")]
+    public class Sharp : RogueWeaponPrefix
     {
-        public override string Name => "Pointy";
-        public PointyWeaponPrefix() : base(1.1f, 1f, 0, 1f, 1f) { }
+        public override float damageMult => 1.15f;
     }
 
-    public class SharpWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("FeatheredWeaponPrefix")]
+    public class Feathered : RogueWeaponPrefix
     {
-        public override string Name => "Sharp";
-        public SharpWeaponPrefix() : base(1.15f, 1f, 0, 1f, 1f) { }
+        public override float useTimeMult => 0.85f;
+        public override float shootSpeedMult => 1.1f;
     }
 
-    public class FeatheredWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("SleekWeaponPrefix")]
+    public class Sleek : RogueWeaponPrefix
     {
-        public override string Name => "Feathered";
-        public FeatheredWeaponPrefix() : base(1f, 0.85f, 0, 1.1f, 1f) { }
+        public override float damageMult => 1f;
+        public override float useTimeMult => 0.9f;
+        public override float shootSpeedMult => 1.15f;
     }
 
-    public class SleekWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("HeftyWeaponPrefix")]
+    public class Hefty : RogueWeaponPrefix
     {
-        public override string Name => "Sleek";
-        public SleekWeaponPrefix() : base(1f, 0.9f, 0, 1.15f, 1f) { }
+        public override float damageMult => 1.1f;
+        public override float stealthDmgMult => 1.15f;
     }
 
-    public class HeftyWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("MightyWeaponPrefix")]
+    public class Mighty : RogueWeaponPrefix
     {
-        public override string Name => "Hefty";
-        public HeftyWeaponPrefix() : base(1.1f, 1f, 0, 1f, 1.15f) { }
+        public override float damageMult => 1.15f;
+        public override float stealthDmgMult => 1.05f;
     }
 
-    public class MightyWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("GloriousWeaponPrefix")]
+    public class Glorious : RogueWeaponPrefix
     {
-        public override string Name => "Mighty";
-        public MightyWeaponPrefix() : base(1.15f, 1f, 0, 1f, 1.05f) { }
+        public override float damageMult => 1.1f;
+        public override float useTimeMult => 0.95f;
     }
 
-    public class GloriousWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("SerratedWeaponPrefix")]
+    public class Serrated : RogueWeaponPrefix
     {
-        public override string Name => "Glorious";
-        public GloriousWeaponPrefix() : base(1.1f, 0.95f, 0, 1f, 1f) { }
+        public override float damageMult => 1.1f;
+        public override float useTimeMult => 0.9f;
+        public override float shootSpeedMult => 1.05f;
     }
 
-    public class SerratedWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("ViciousWeaponPrefix")]
+    public class Vicious : RogueWeaponPrefix
     {
-        public override string Name => "Serrated";
-        public SerratedWeaponPrefix() : base(1.1f, 0.9f, 0, 1.05f, 1f) { }
+        public override float damageMult => 1.1f;
+        public override float useTimeMult => 0.95f;
+        public override float shootSpeedMult => 1.15f;
     }
 
-    public class ViciousWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("LethalWeaponPrefix")]
+    public class Lethal : RogueWeaponPrefix
     {
-        public override string Name => "Vicious";
-        public ViciousWeaponPrefix() : base(1.1f, 0.95f, 0, 1.15f, 1f) { }
+        public override float damageMult => 1.1f;
+        public override float useTimeMult => 0.95f;
+        public override int critBonus => 2;
+        public override float shootSpeedMult => 1.05f;
+        public override float stealthDmgMult => 1.05f;
     }
 
-    public class LethalWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("FlawlessWeaponPrefix")]
+    public class Flawless : RogueWeaponPrefix
     {
-        public override string Name => "Lethal";
-        public LethalWeaponPrefix() : base(1.1f, 0.95f, 2, 1.05f, 1.05f) { }
+        public override float damageMult => 1.15f;
+        public override float useTimeMult => 0.9f;
+        public override int critBonus => 5;
+        public override float shootSpeedMult => 1.1f;
+        public override float stealthDmgMult => 1.15f;
     }
 
-    public class FlawlessWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("RadicalWeaponPrefix")]
+    public class Radical : RogueWeaponPrefix
     {
-        public override string Name => "Flawless";
-        public FlawlessWeaponPrefix() : base(1.15f, 0.9f, 5, 1.1f, 1.15f) { }
+        public override float damageMult => 1.05f;
+        public override float useTimeMult => 0.95f;
+        public override float shootSpeedMult => 1.05f;
+        public override float stealthDmgMult => 0.9f;
     }
 
-    public class RadicalWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("BluntWeaponPrefix")]
+    public class Blunt : RogueWeaponPrefix
     {
-        public override string Name => "Radical";
-        public RadicalWeaponPrefix() : base(1.05f, 0.95f, 0, 1.05f, 0.9f) { }
+        public override float damageMult => 0.85f;
     }
 
-    public class BluntWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("FlimsyWeaponPrefix")]
+    public class Flimsy : RogueWeaponPrefix
     {
-        public override string Name => "Blunt";
-        public BluntWeaponPrefix() : base(0.85f, 1f, 0, 1f, 1f) { }
+        public override float damageMult => 0.9f;
+        public override float stealthDmgMult => 0.9f;
     }
 
-    public class FlimsyWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("UnbalancedWeaponPrefix")]
+    public class Unbalanced : RogueWeaponPrefix
     {
-        public override string Name => "Flimsy";
-        public FlimsyWeaponPrefix() : base(0.9f, 1f, 0, 1f, 0.9f) { }
+        public override float useTimeMult => 1.15f;
+        public override float shootSpeedMult => 0.95f;
     }
 
-    public class UnbalancedWeaponPrefix : RogueWeaponPrefix
+    [LegacyName("AtrociousWeaponPrefix")]
+    public class Atrocious : RogueWeaponPrefix
     {
-        public override string Name => "Unbalanced";
-        public UnbalancedWeaponPrefix() : base(1f, 1.15f, 0, 0.95f, 1f) { }
+        public override float damageMult => 0.85f;
+        public override float shootSpeedMult => 0.9f;
+        public override float stealthDmgMult => 0.9f;
     }
 
-    public class AtrociousWeaponPrefix : RogueWeaponPrefix
+    public abstract class RogueWeaponPrefix : ModPrefix, ILocalizedModType
     {
-        public override string Name => "Atrocious";
-        public AtrociousWeaponPrefix() : base(0.85f, 1f, 0, 0.9f, 0.9f) { }
-    }
+        public new string LocalizationCategory => "Prefixes.Weapon";
 
-    public class RogueWeaponPrefix : ModPrefix
-    {
-        internal float damageMult = 1f;
-        internal float useTimeMult = 1f;
-        internal int critBonus = 0;
-        internal float shootSpeedMult = 1f;
-        internal float stealthDmgMult = 1f;
+        // Stats
+        public virtual float damageMult => 1f;
+        public virtual float useTimeMult => 1f;
+        public virtual int critBonus => 0;
+        public virtual float shootSpeedMult => 1f;
+        public virtual float stealthDmgMult => 1f;
 
-        // The part where it can only be rolled by rogue weapons is done by CanRoll below
+        // Prefix roll logic -- Can also be rolled by throwing weapons, even if stealth strikes don't exist
         public override PrefixCategory Category => PrefixCategory.AnyWeapon;
-
-        public RogueWeaponPrefix() { }
-
-        public RogueWeaponPrefix(float damageMult = 1f, float useTimeMult = 1f, int critBonus = 0, float shootSpeedMult = 1f, float stealthDmgMult = 1f)
-        {
-            this.damageMult = damageMult;
-            this.useTimeMult = useTimeMult;
-            this.critBonus = critBonus;
-            this.shootSpeedMult = shootSpeedMult;
-            this.stealthDmgMult = stealthDmgMult;
-        }
-
-        public override void Apply(Item item)
-        {
-            if (item.CountsAsClass<RogueDamageClass>())
-                item.Calamity().StealthStrikePrefixBonus = stealthDmgMult;
-        }
-
-        public override void ModifyValue(ref float valueMult)
-        {
-            float extraStealthDamage = stealthDmgMult - 1f;
-            float stealthDamageValueMultiplier = 1f;
-            float extraValue = 1f + stealthDamageValueMultiplier * extraStealthDamage;
-            valueMult *= extraValue;
-        }
-
         public override bool CanRoll(Item item) => item.CountsAsClass<ThrowingDamageClass>() && (item.maxStack == 1 || item.AllowReforgeForStackableItem) && GetType() != typeof(RogueWeaponPrefix);
 
+        // Applying normal weapon stats
         public override void SetStats(ref float damageMult, ref float knockbackMult, ref float useTimeMult, ref float scaleMult, ref float shootSpeedMult, ref float manaMult, ref int critBonus)
         {
             damageMult = this.damageMult;
             useTimeMult = this.useTimeMult;
             critBonus = this.critBonus;
             shootSpeedMult = this.shootSpeedMult;
+        }
+
+        // Applying stealth strike damage
+        public override void Apply(Item item)
+        {
+            if (item.CountsAsClass<RogueDamageClass>())
+                item.Calamity().StealthStrikePrefixBonus = stealthDmgMult;
+        }
+
+        // Changing value based on prefix tier (rarity is set automatically around value multiplier)
+        public override void ModifyValue(ref float valueMult)
+        {
+            float extraStealthDamage = stealthDmgMult - 1f;
+            float stealthDamageValueMultiplier = 1f;
+            float extraValue = 1f + stealthDamageValueMultiplier * extraStealthDamage;
+            valueMult *= extraValue;
+        }        
+
+        // Extra tooltip for new modifier stats
+        public LocalizedText StealthDamageTooltip => CalamityUtils.GetText($"{LocalizationCategory}.StealthDamageTooltip");
+        public override IEnumerable<TooltipLine> GetTooltipLines(Item item)
+        {
+            // Ignore this if there's no mult
+            if (stealthDmgMult == 1f)
+                yield break;
+
+            yield return new TooltipLine(Mod, "PrefixStealthDamageBoost", StealthDamageTooltip.Format((stealthDmgMult >= 1f ? "+" : string.Empty) + ((stealthDmgMult * 100) - 100).ToString("N0")))
+            {
+                IsModifier = true,
+                IsModifierBad = stealthDmgMult < 1f
+            };
         }
     }
 }

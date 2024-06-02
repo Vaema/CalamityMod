@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class IceCluster : ModProjectile, ILocalizedModType
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.localAI[1] == 0f)
             {
                 Projectile.localAI[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item120, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item120, Projectile.Center);
             }
 
             Projectile.ai[0] += 1f;

@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -37,8 +37,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item107, Projectile.position);
-            SoundEngine.PlaySound(SoundID.Item88, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item107, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Item88, Projectile.Center);
 
             if (Main.netMode != NetmodeID.Server)
             {

@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -36,14 +37,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Frogfish")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Frogfish")
             });
         }
 
@@ -88,7 +93,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (NPC.ai[2] == 1f)
             {
                 NPC.chaseable = true;
-                CalamityAI.PassiveSwimmingAI(NPC, Mod, 0, 0f, 0.15f, 0.15f, 3.5f, 1.5f, 0.1f);
+                CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 0, 0f, 0.15f, 0.15f, 3.5f, 1.5f, 0.1f);
             }
         }
 

@@ -1,9 +1,9 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -35,7 +35,6 @@ namespace CalamityMod.NPCs.Ravager
             AIType = -1;
             NPC.netAlways = true;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.alpha = 255;
             NPC.HitSound = RavagerBody.HitSound;
             NPC.DeathSound = RavagerBody.LimbLossSound;
@@ -53,6 +52,10 @@ namespace CalamityMod.NPCs.Ravager
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -81,6 +84,9 @@ namespace CalamityMod.NPCs.Ravager
             }
             if (NPC.ai[0] == 0f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 NPC.noTileCollide = true;
                 Vector2 npcCenter = new Vector2(NPC.Center.X, NPC.Center.Y);
                 float ravBodyXDist = Main.npc[CalamityGlobalNPC.scavenger].Center.X - npcCenter.X;
@@ -135,6 +141,9 @@ namespace CalamityMod.NPCs.Ravager
             }
             else if (NPC.ai[0] == 1f)
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
                 SoundEngine.PlaySound(RavagerBody.FistSound, NPC.Center);
                 NPC.noTileCollide = true;
                 NPC.collideX = false;
@@ -164,6 +173,9 @@ namespace CalamityMod.NPCs.Ravager
             }
             else if (NPC.ai[0] == 2f)
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
                 if (Math.Abs(NPC.velocity.X) > Math.Abs(NPC.velocity.Y))
                 {
                     if (NPC.velocity.X > 0f && NPC.Center.X > Main.player[NPC.target].Center.X)
@@ -196,12 +208,18 @@ namespace CalamityMod.NPCs.Ravager
                 float bodyReturnDistance = (float)Math.Sqrt(bodyReturnXDist * bodyReturnXDist + bodyReturnYDist * bodyReturnYDist);
                 if ((bodyReturnDistance > (death ? 900f : 700f) || NPC.collideX || NPC.collideY) | NPC.justHit)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.noTileCollide = true;
                     NPC.ai[0] = 0f;
                 }
             }
             else if (NPC.ai[0] == 3f)
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
                 NPC.noTileCollide = true;
                 float velocityMult = 0.4f;
                 Vector2 clawCenter = new Vector2(NPC.Center.X, NPC.Center.Y);
@@ -278,9 +296,9 @@ namespace CalamityMod.NPCs.Ravager
                     drawPositionY += 12f;
                     drawPositionX += 28f;
                     Color color = Lighting.GetColor((int)center.X / 16, (int)(center.Y / 16f));
-                    spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
-                        new Rectangle?(new Rectangle(0, 0, ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Width, ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Height)), color, rotation,
-                        new Vector2(ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Width * 0.5f, ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(RavagerBody.ChainTexture.Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
+                        new Rectangle?(new Rectangle(0, 0, RavagerBody.ChainTexture.Value.Width, RavagerBody.ChainTexture.Value.Height)), color, rotation,
+                        new Vector2(RavagerBody.ChainTexture.Value.Width * 0.5f, RavagerBody.ChainTexture.Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
                 }
             }
             return true;

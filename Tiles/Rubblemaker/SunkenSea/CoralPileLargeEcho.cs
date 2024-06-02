@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -11,7 +11,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 {
     public class CoralPileLargeEcho : ModTile
     {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/CoralPileLarge";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/CoralPileLarge";
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;

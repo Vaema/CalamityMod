@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class CosmicViperSplittingRocket : ModProjectile, ILocalizedModType
@@ -171,7 +171,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnKill(int timeLeft)
         {
-			Projectile.ExpandHitboxBy(50);
+            Projectile.ExpandHitboxBy(50);
             for (int i = 0; i < 3; i++)
             {
                 int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 56 : 242, 0f, 0f, 100, default, 2f);

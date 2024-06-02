@@ -1,13 +1,13 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using System.Collections.Generic;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Items.Placeables;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 46;
             Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<PureGreen>();
         }

@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Buffs.Potions;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Fishing.AstralCatches;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<AldebaranAlewife>().
                 AddIngredient<AureusCell>().
                 AddTile(TileID.AlchemyTable).
-				AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
                 Register();
 
             CreateRecipe().

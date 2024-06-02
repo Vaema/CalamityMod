@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public const int FlameSplitCount = 6;
         public override void SetStaticDefaults()
         {
-                       Item.staff[Item.type] = true;
+            Item.staff[Item.type] = true;
         }
 
         public override void SetDefaults()

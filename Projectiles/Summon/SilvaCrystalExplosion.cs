@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 silvaDustVel = Vector2.UnitY.RotatedBy((double)((float)i * 3.14159274f), default).RotatedBy((double)Projectile.rotation, default);
-                    Dust silvaDust = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 225, newColor2, 1.5f)];
+                    Dust silvaDust = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 225, newColor2, 1.5f)];
                     silvaDust.noGravity = true;
                     silvaDust.noLight = true;
                     silvaDust.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 silvaDustVel2 = Vector2.UnitY.RotatedBy((double)((float)j * 3.14159274f), default);
-                    Dust silvaDust2 = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 225, newColor2, 1.5f)];
+                    Dust silvaDust2 = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 225, newColor2, 1.5f)];
                     silvaDust2.noGravity = true;
                     silvaDust2.noLight = true;
                     silvaDust2.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (shouldSpawnDust)
                 {
-                    Dust rainbowDust = Main.dust[Dust.NewDust(dustPos, 0, 0, 267, 0f, 0f, 127, newColor2, 1f)];
+                    Dust rainbowDust = Main.dust[Dust.NewDust(dustPos, 0, 0, DustID.RainbowMk2, 0f, 0f, 127, newColor2, 1f)];
                     rainbowDust.noGravity = true;
                     rainbowDust.position = dustPos;
                     rainbowDust.velocity = -Vector2.UnitY * dustVelMod * (Main.rand.NextFloat() * 0.9f + 1.6f);
@@ -138,7 +138,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Color colorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
             Vector2 projPos = Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D34 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle rectangular = texture2D34.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
             Color colorAlpha = Projectile.GetAlpha(colorArea);
             Vector2 halfRectangle = rectangular.Size() / 2f;
@@ -171,7 +171,7 @@ namespace CalamityMod.Projectiles.Summon
             float dustCount;
             for (float i = 0f; i < rando; i = dustCount + 1f)
             {
-                int dustID = Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 0, newColor, 1f);
+                int dustID = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, newColor, 1f);
                 Main.dust[dustID].position = Projectile.Center;
                 Main.dust[dustID].velocity = spinningpoint.RotatedBy((double)(6.28318548f * i / rando), default) * dustVel * (0.8f + Main.rand.NextFloat() * 0.4f);
                 Main.dust[dustID].noGravity = true;
@@ -187,7 +187,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             for (float j = 0f; j < rando; j = dustCount + 1f)
             {
-                int dustID = Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 0, newColor, 1f);
+                int dustID = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, newColor, 1f);
                 Main.dust[dustID].position = Projectile.Center;
                 Main.dust[dustID].velocity = spinningpoint.RotatedBy((double)(6.28318548f * j / rando), default) * dustVel * (0.8f + Main.rand.NextFloat() * 0.4f);
                 Dust dust = Main.dust[dustID];

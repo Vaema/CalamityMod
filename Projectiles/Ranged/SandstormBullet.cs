@@ -1,9 +1,9 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     Projectile.alpha = 0;
                 }
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 0f;
             }
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 rotate = rotate.RotatedBy((double)((float)(i - (constant / 2 - 1)) * 6.28318548f / (float)constant), default) + Projectile.Center;
                 Vector2 faceDirection = rotate - Projectile.Center;
-                int dusty = Dust.NewDust(rotate + faceDirection, 0, 0, 85, faceDirection.X * 1.5f, faceDirection.Y * 1.5f, 100, default, 1.2f);
+                int dusty = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.UnusedBrown, faceDirection.X * 1.5f, faceDirection.Y * 1.5f, 100, default, 1.2f);
                 Main.dust[dusty].noGravity = true;
                 Main.dust[dusty].noLight = true;
                 Main.dust[dusty].velocity = faceDirection;

@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
     public class TimeBoltKnife : ModProjectile, ILocalizedModType
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Rogue
                     int dust = Dust.NewDust(center + fourVector + Vector2.One * -4f, 8, 8, dustType, 0f, 0f, 100, default, 1f);
                     Dust dust2 = Main.dust[dust];
                     dust2.velocity *= 0.1f;
-                    if (Main.rand.Next(6) != 0)
+                    if (!Main.rand.NextBool(6))
                         dust2.noGravity = true;
                 }
                 float scalar = 0.01f;
@@ -132,9 +132,8 @@ namespace CalamityMod.Projectiles.Rogue
                     int whoAmI = -1;
                     Vector2 targetSpot = Projectile.Center;
                     float detectRange = 1000f;
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[i];
                         if (npc.CanBeChasedBy(Projectile, false))
                         {
                             float targetDist = Vector2.Distance(npc.Center, Projectile.Center);
@@ -142,7 +141,7 @@ namespace CalamityMod.Projectiles.Rogue
                             {
                                 detectRange = targetDist;
                                 targetSpot = npc.Center;
-                                whoAmI = i;
+                                whoAmI = npc.whoAmI;
                             }
                         }
                     }
@@ -295,7 +294,7 @@ namespace CalamityMod.Projectiles.Rogue
                 });
                 int dust = Dust.NewDust(Projectile.Center, 1, 1, dustType);
                 Main.dust[dust].position = Projectile.Center + dustOffset;
-                if (Main.rand.Next(6) != 0)
+                if (!Main.rand.NextBool(6))
                     Main.dust[dust].noGravity = true;
                 Main.dust[dust].fadeIn = 1f;
                 Main.dust[dust].velocity *= 0f;
@@ -304,10 +303,9 @@ namespace CalamityMod.Projectiles.Rogue
 
             int buffType = ModContent.BuffType<TimeDistortion>();
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (npc.active && !npc.dontTakeDamage && !npc.buffImmune[buffType] && Vector2.Distance(Projectile.Center, npc.Center) <= radius)
+                if (!npc.dontTakeDamage && !npc.buffImmune[buffType] && Vector2.Distance(Projectile.Center, npc.Center) <= radius)
                 {
                     if (npc.FindBuffIndex(buffType) == -1)
                         npc.AddBuff(buffType, 60, false);

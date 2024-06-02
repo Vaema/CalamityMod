@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
-    public class SaharaSlicersBlade: BaseShortswordProjectile
+    public class SaharaSlicersBlade : BaseShortswordProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<SaharaSlicers>();
         public override string Texture => "CalamityMod/Projectiles/Melee/SaharaSlicersBlade";

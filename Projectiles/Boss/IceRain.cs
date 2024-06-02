@@ -1,13 +1,13 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
+using CalamityMod.NPCs.Cryogen;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.NPCs.Cryogen;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Boss
 
                 for (int i = 0; i < 2; i++)
                 {
-                    int icyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 92, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
+                    int icyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Frost, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
                     Main.dust[icyDust].noGravity = true;
                     Dust dust = Main.dust[icyDust];
                     dust.velocity *= 0.3f;
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Boss
 
                 for (int i = 0; i < 2; i++)
                 {
-                    int icyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 92, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
+                    int icyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Frost, Projectile.velocity.X, Projectile.velocity.Y, 50, default, 0.6f);
                     Main.dust[icyDust].noGravity = true;
                     Dust dust = Main.dust[icyDust];
                     dust.velocity *= 0.3f;
@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Boss
             //SoundEngine.PlaySound(SoundID.Item27 with { Volume = SoundID.Item27.Volume * 0.25f }, Projectile.Center);
             for (int j = 0; j < 3; j++)
             {
-                int snowDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 76, 0f, 0f, 0, default, 1f);
+                int snowDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Snow, 0f, 0f, 0, default, 1f);
                 Main.dust[snowDust].noGravity = true;
                 Main.dust[snowDust].noLight = true;
                 Main.dust[snowDust].scale = 0.7f;

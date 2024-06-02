@@ -1,11 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,7 +16,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
     public class Phaseslayer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
-        public const int Damage = 980;
         // When below this percentage of charge, the sword is small instead of big.
         public const float SizeChargeThreshold = 0.25f;
         // The small sword barely affects damage on its own because damage is already dropping significantly at low charge.
@@ -32,7 +31,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 26;
             Item.height = 26;
-            Item.damage = Damage;
+            Item.damage = 980;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.useTime = 24;
             Item.useAnimation = 24;
@@ -42,7 +41,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.noUseGraphic = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
 
             Item.UseSound = SoundID.Item1;

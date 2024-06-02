@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Tools.ClimateChange
         // These are "halfway through day" and "halfway through night" respectively.
         private const int NoonCutoff = 27000;
         private const int MidnightCutoff = 16200;
-        
+
         public override void SetDefaults()
         {
             Item.width = 20;

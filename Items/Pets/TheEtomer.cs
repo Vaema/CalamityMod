@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Buffs.Pets;
-using CalamityMod.Projectiles.Pets;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
+using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

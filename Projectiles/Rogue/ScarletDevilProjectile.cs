@@ -1,18 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Balancing;
+using CalamityMod.Graphics.Primitives;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
     public class ScarletDevilProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        internal PrimitiveTrail TrailDrawer;
         public ref float ShootTimer => ref Projectile.ai[0];
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/ScarletDevil";
 
@@ -126,15 +127,18 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Projectile.Calamity().stealthStrike)
                 return;
 
-            if (!Main.player[Projectile.owner].moonLeech)
-            {
-                // Give on-heal effects from stealth strikes.
-                Main.player[Projectile.owner].statLife += 90;
-                Main.player[Projectile.owner].HealEffect(90);
-            }
-
-            // And spawn a bloom of bullets.
+            // Spawn a bloom of bullets.
             SpawnOnStealthStrikeBullets();
+
+            // Give on-heal effects from stealth strikes.
+            int heal = (int)Math.Round(hit.Damage * 0.01);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
+                return;
+
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
@@ -144,12 +148,18 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Projectile.Calamity().stealthStrike)
                 return;
 
-            // Give on-heal effects from stealth strikes.
-            Main.player[Projectile.owner].statLife += 120;
-            Main.player[Projectile.owner].HealEffect(120);
-
-            // And spawn a bloom of bullets.
+            // Spawn a bloom of bullets.
             SpawnOnStealthStrikeBullets();
+
+            // Give on-heal effects from stealth strikes.
+            int heal = (int)Math.Round(info.Damage * 0.01);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
+                return;
+
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
 
         internal float WidthFunction(float completionRatio)
@@ -161,8 +171,11 @@ namespace CalamityMod.Projectiles.Rogue
 
         internal Color ColorFunction(float completionRatio)
         {
+            float colorIncrement = (float)Math.Pow(completionRatio, 1f / 2f);
+            if (colorIncrement is float.NaN)
+                return Color.DarkRed;
             float colorFade = 1f - Utils.GetLerpValue(0.6f, 0.98f, completionRatio, true);
-            Color baseColor = CalamityUtils.MulticolorLerp((float)Math.Pow(completionRatio, 1D / 2D), Color.White, Color.DarkRed, Color.Wheat, Color.IndianRed) * MathHelper.Lerp(0f, 1.4f, colorFade);
+            Color baseColor = CalamityUtils.MulticolorLerp(colorIncrement, Color.White, Color.DarkRed, Color.Wheat, Color.IndianRed) * MathHelper.Lerp(0f, 1.4f, colorFade);
             return Color.Lerp(baseColor, Color.DarkRed, (float)Math.Pow(completionRatio, 3D));
         }
 
@@ -175,13 +188,11 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                if (TrailDrawer is null)
-                    TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, GameShaders.Misc["CalamityMod:OverpoweredTouhouSpearShader"]);
-
                 GameShaders.Misc["CalamityMod:OverpoweredTouhouSpearShader"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-                TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition + Projectile.velocity.SafeNormalize(Vector2.Zero) * 86f, 60);
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * 86f, false,
+                    shader: GameShaders.Misc["CalamityMod:OverpoweredTouhouSpearShader"]), 60);
 
-                Texture2D spearTexture = ModContent.Request<Texture2D>(Texture).Value;
+                Texture2D spearTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
                 for (int i = 0; i < 7; i++)
                 {

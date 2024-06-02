@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Boss;
+﻿using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -31,24 +32,27 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.width = 120;
             NPC.height = 80;
             NPC.defense = 20;
-            NPC.LifeMaxNERB(9375, 11250, 5000); // Old HP - 12000, 15000
+            NPC.LifeMaxNERB(9375, 11250, 5000);
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.15f;
             NPC.lavaImmune = true;
             NPC.noTileCollide = true;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit51;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
         {
-            CalamityAI.Bumblebirb2AI(NPC, Mod, true);
+            BumblebirbAI.VanillaBumblebirb2AI(NPC, Mod, true);
         }
 
         public override void OnKill()
@@ -137,13 +141,13 @@ namespace CalamityMod.NPCs.Bumblebirb
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 244, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CopperCoin, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 50; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 244, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CopperCoin, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

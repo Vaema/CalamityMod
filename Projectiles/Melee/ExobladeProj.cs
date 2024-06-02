@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -24,10 +27,6 @@ namespace CalamityMod.Projectiles.Melee
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Exoblade>();
         public Player Owner => Main.player[Projectile.owner];
-
-        public PrimitiveTrail SlashDrawer = null;
-
-        public PrimitiveTrail PierceAfterimageDrawer = null;
 
         const float BladeLength = 180;
 
@@ -62,7 +61,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 return SwingState.Swinging;
             }
-            
+
             set
             {
                 Projectile.ai[0] = (int)value;
@@ -79,7 +78,7 @@ namespace CalamityMod.Projectiles.Melee
             get => Projectile.ai[1] > 0;
             set => Projectile.ai[1] = value ? 1 : 0;
         }
-        
+
 
         public ref float SwingTime => ref Projectile.localAI[0];
         public ref float SquishFactor => ref Projectile.localAI[1];
@@ -93,9 +92,9 @@ namespace CalamityMod.Projectiles.Melee
 
 
         public static float MaxSwingAngle = MathHelper.PiOver2 * 1.8f;
-        public CurveSegment SlowStart = new (PolyOutEasing, 0f, -1f, 0.3f, 2);
-        public CurveSegment SwingFast = new (PolyInEasing, 0.27f, -0.7f, 1.6f, 4);
-        public CurveSegment EndSwing = new (PolyOutEasing, 0.85f, 0.9f, 0.1f, 2);
+        public CurveSegment SlowStart = new(PolyOutEasing, 0f, -1f, 0.3f, 2);
+        public CurveSegment SwingFast = new(PolyInEasing, 0.27f, -0.7f, 1.6f, 4);
+        public CurveSegment EndSwing = new(PolyOutEasing, 0.85f, 0.9f, 0.1f, 2);
         public float SwingAngleShiftAtProgress(float progress) => State == SwingState.BonkDash ? 0 : MaxSwingAngle * PiecewiseAnimation(progress, new CurveSegment[] { SlowStart, SwingFast, EndSwing });
         public float SwordRotationAtProgress(float progress) => State == SwingState.BonkDash ? BaseRotation : BaseRotation + SwingAngleShiftAtProgress(progress) * Direction;
         public float SquishAtProgress(float progress) => State == SwingState.BonkDash ? 1 : MathHelper.Lerp(SquishVector.X, SquishVector.Y, (float)Math.Abs(Math.Sin(SwingAngleShiftAtProgress(progress))));
@@ -234,7 +233,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.velocity = Owner.MountedCenter.DirectionTo(Owner.Calamity().mouseWorld);
             //Give the sword slash a random squouish
             SquishFactor = Main.rand.NextFloat(0.67f, 1f); //Note higher squishes make the trail look wonky
-            
+
             //If youre doing a slash and this is the first slash you do, you start small so it grows big
             if (startInitialization && State != SwingState.BonkDash)
                 Projectile.scale = 0.02f;
@@ -336,7 +335,7 @@ namespace CalamityMod.Projectiles.Melee
 
             // Create a bunch of homing beams.
             int beamShootStart = (int)(SwingTime * 0.6f);
-            int beamShootPeriod = (int)(SwingTime * 0.35f);
+            int beamShootPeriod = (int)(SwingTime * 0.4f);
             int beamShootEnd = beamShootStart + beamShootPeriod;
             beamShootPeriod /= (Exoblade.BeamsPerSwing - 1);
 
@@ -364,6 +363,10 @@ namespace CalamityMod.Projectiles.Melee
 
                 Projectile.velocity = Owner.MountedCenter.DirectionTo(Owner.Calamity().mouseWorld);
                 Projectile.oldPos = new Vector2[Projectile.oldPos.Length];
+
+                // Prevent zeroed out garbage from messing up the trail rendering.
+                for (int i = 0; i < Projectile.oldPos.Length; ++i)
+                    Projectile.oldPos[i] = Projectile.position;
             }
 
             // Do the dash.
@@ -419,8 +422,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4 * Direction;
         }
 
-
-
         public float SlashWidthFunction(float completionRatio) => SquishAtProgress(RealProgressionAtTrailCompletion(completionRatio)) * Projectile.scale * 60.5f;
 
         public Color SlashColorFunction(float completionRatio) => Color.Lime * Utils.GetLerpValue(0.9f, 0.4f, completionRatio, true) * Projectile.Opacity;
@@ -435,7 +436,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public Color PierceColorFunction(float completionRatio) => Color.Lime * Projectile.Opacity; //The trail color doesnt matter here
 
-        public IEnumerable<Vector2> GenerateSlashPoints()
+        public List<Vector2> GenerateSlashPoints()
         {
             List<Vector2> result = new();
 
@@ -453,10 +454,6 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.Opacity <= 0f || InPostBonkStasis)
                 return false;
-
-            // Initialize the primitives drawers.
-            SlashDrawer ??= new(SlashWidthFunction, SlashColorFunction, null, GameShaders.Misc["CalamityMod:ExobladeSlash"]);
-            PierceAfterimageDrawer ??= new(PierceWidthFunction, PierceColorFunction, null, GameShaders.Misc["CalamityMod:ExobladePierce"]);
 
             DrawSlash();
             DrawPierceTrail();
@@ -480,7 +477,7 @@ namespace CalamityMod.Projectiles.Melee
             GameShaders.Misc["CalamityMod:ExobladeSlash"].Shader.Parameters["flipped"].SetValue(Direction == 1);
             GameShaders.Misc["CalamityMod:ExobladeSlash"].Apply();
 
-            SlashDrawer.Draw(GenerateSlashPoints(), Projectile.Center - Main.screenPosition, 95);
+            PrimitiveRenderer.RenderTrail(GenerateSlashPoints(), new(SlashWidthFunction, SlashColorFunction, (_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 95);
 
             Main.spriteBatch.ExitShaderRegion();
         }
@@ -492,27 +489,32 @@ namespace CalamityMod.Projectiles.Melee
 
             Main.spriteBatch.EnterShaderRegion();
 
-
             Color mainColor = MulticolorLerp((Main.GlobalTimeWrappedHourly * 2f) % 1, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
             Color secondaryColor = MulticolorLerp((Main.GlobalTimeWrappedHourly * 2f + 0.2f) % 1, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
 
             mainColor = Color.Lerp(Color.White, mainColor, 0.4f + 0.6f * (float)Math.Pow(LungeProgression, 0.5f));
             secondaryColor = Color.Lerp(Color.White, secondaryColor, 0.4f + 0.6f * (float)Math.Pow(LungeProgression, 0.5f));
 
-            Vector2 trailOffset = (Projectile.rotation - Direction * MathHelper.PiOver4).ToRotationVector2() * 98f + Projectile.Size * 0.5f - Main.screenPosition;
+            Vector2 trailOffset = (Projectile.rotation - Direction * MathHelper.PiOver4).ToRotationVector2() * 98f + Projectile.Size * 0.5f;
             GameShaders.Misc["CalamityMod:ExobladePierce"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/EternityStreak"));
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseImage2("Images/Extra_189");
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(mainColor);
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(secondaryColor);
             GameShaders.Misc["CalamityMod:ExobladePierce"].Apply();
-            PierceAfterimageDrawer.Draw(Projectile.oldPos.Take(51), trailOffset, 53);
+
+            // Exoblade tracks 120 positions in oldPos.
+            // Provide 60 points for smoothing, but only render 30
+            int numPointsRendered = 30;
+            int numPointsProvided = 60;
+            var positionsToUse = Projectile.oldPos.Take(numPointsProvided).ToArray();
+            PrimitiveRenderer.RenderTrail(positionsToUse, new(PierceWidthFunction, PierceColorFunction, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), numPointsRendered);
 
             Main.spriteBatch.ExitShaderRegion();
         }
 
         public void DrawBlade()
         {
-            var texture = ModContent.Request<Texture2D>(Texture).Value;
+            var texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             SpriteEffects direction = Direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             if (State == SwingState.Swinging)
@@ -598,7 +600,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.netUpdate = true;
 
                 SoundEngine.PlaySound(Exoblade.DashHitSound, target.Center);
-                SoundEngine.PlaySound(Exoblade.BeamHitSound with { Volume = Exoblade.BeamHitSound.Volume * 1.2f}, target.Center);
+                SoundEngine.PlaySound(Exoblade.BeamHitSound with { Volume = Exoblade.BeamHitSound.Volume * 1.2f }, target.Center);
                 if (Main.myPlayer == Projectile.owner)
                 {
                     int lungeHitDamage = (int)(Projectile.damage * Exoblade.LungeDamageFactor);
@@ -622,6 +624,18 @@ namespace CalamityMod.Projectiles.Melee
                     int explosionDamage = (int)(Projectile.damage * Exoblade.ExplosionDamageFactor);
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), target.Center, Vector2.Zero, ModContent.ProjectileType<Exoboom>(), explosionDamage, 0f, Projectile.owner);
                 }
+
+                if (target.lifeMax <= 5 || Owner.lifeSteal <= 0)
+                    return;
+
+                int healAmt = (int)Math.Round(hit.Damage * 0.04);
+                if (healAmt > BalancingConstants.LifeStealCap)
+                    healAmt = BalancingConstants.LifeStealCap;
+
+                if (healAmt <= 0)
+                    return;
+
+                CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Owner, healAmt, ModContent.ProjectileType<ReaverHealOrb>(), BalancingConstants.LifeStealRange);
             }
         }
 

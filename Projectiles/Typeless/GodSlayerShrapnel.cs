@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Typeless
 {
     public class GodSlayerShrapnel : ModProjectile, ILocalizedModType
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.ai[1] = 1f;
                 SoundEngine.PlaySound(SoundID.Item13, Projectile.position);
             }
-            int godDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 0.5f);
+            int godDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 0.5f);
             Dust dust = Main.dust[godDust];
             dust.position.X -= 2f;
             dust.position.Y += 2f;
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Typeless
             dust.velocity.Y -= 2f;
             if (Main.rand.NextBool())
             {
-                int godDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 0.5f);
+                int godDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 0.5f);
                 Dust dust2 = Main.dust[godDust2];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;

@@ -1,7 +1,8 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.ModLoader.Core;
 
 namespace CalamityMod.UI
 {
@@ -25,7 +26,8 @@ namespace CalamityMod.UI
         public static void LoadGUIs()
         {
             // Look through every type in the mod, and check if it's derived from InvasionProgressUI. If it is, create a copy and save it in the static list.
-            foreach (Type type in typeof(CalamityMod).Assembly.GetTypes())
+            Type[] types = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
+            foreach (Type type in types)
             {
                 // Don't load abstract classes since they cannot have instances.
                 if (type.IsAbstract)

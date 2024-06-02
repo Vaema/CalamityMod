@@ -1,4 +1,4 @@
-﻿using CalamityMod.NPCs.VanillaNPCOverrides.Bosses;
+﻿using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

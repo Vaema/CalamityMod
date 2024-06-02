@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.localAI[0] == 0f)
             {
                 Projectile.scale -= 0.01f;
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Rogue
                     Vector2 rotation = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
                     rotation += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
                     rotation = rotation.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
-                    int dusty = Dust.NewDust(Projectile.Center, 0, 0, 173, 0f, 0f, 160, default, 1f);
+                    int dusty = Dust.NewDust(Projectile.Center, 0, 0, DustID.ShadowbeamStaff, 0f, 0f, 160, default, 1f);
                     Main.dust[dusty].scale = 1.1f;
                     Main.dust[dusty].noGravity = true;
                     Main.dust[dusty].position = Projectile.Center + rotation;

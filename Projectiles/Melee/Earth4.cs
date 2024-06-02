@@ -1,10 +1,11 @@
-﻿using CalamityMod.Projectiles.Healing;
+﻿using System;
+using CalamityMod.Balancing;
+using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
     public class Earth4 : ModProjectile, ILocalizedModType
@@ -56,7 +57,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.rand.NextBool(16))
             {
                 Vector2 dustDirection = Vector2.UnitX.RotatedByRandom(1.5707963705062866).RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                int brightGreenDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 74, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
+                int brightGreenDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GreenFairy, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
                 Main.dust[brightGreenDust].velocity = dustDirection * 0.66f;
                 Main.dust[brightGreenDust].position = Projectile.Center + dustDirection * 12f;
             }
@@ -71,7 +72,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.light = 0.9f;
                 if (Main.rand.NextBool(10))
                 {
-                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 74, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
+                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GreenFairy, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
                 }
                 if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
                 {
@@ -86,7 +87,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
             for (int k = 0; k < 15; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 74, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GreenFairy, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
         }
 
@@ -94,17 +95,14 @@ namespace CalamityMod.Projectiles.Melee
         {
             SoundEngine.PlaySound(SoundID.Item4, Projectile.position);
 
-            float healAmt = hit.Damage * 0.075f;
-            if ((int)healAmt == 0)
+            int heal = (int)Math.Round(hit.Damage * 0.075);
+            if (heal > BalancingConstants.LifeStealCap)
+                heal = BalancingConstants.LifeStealCap;
+
+            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (healAmt > CalamityMod.lifeStealCap)
-                healAmt = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], healAmt, ModContent.ProjectileType<EarthHealOrb>(), 1200f, 3f);
+            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<EarthHealOrb>(), BalancingConstants.LifeStealRange);
         }
     }
 }

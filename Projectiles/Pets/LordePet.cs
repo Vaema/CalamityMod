@@ -1,11 +1,11 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.NPCs.Other;
-using Terraria;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Pets
 {
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Pets
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frameUsed = texture.Frame(2, 7, 0, 1);
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), frameUsed, drawColor, Projectile.rotation, new Vector2(texture.Width / 4f, texture.Height / 14f), Projectile.scale, spriteEffects, 0);

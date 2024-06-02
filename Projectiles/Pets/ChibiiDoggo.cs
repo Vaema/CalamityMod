@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Pets
                 spriteEffects = SpriteEffects.FlipHorizontally;
             Color colorArea = Lighting.GetColor((int)(Projectile.Center.X / 16), (int)(Projectile.Center.Y / 16));
             Texture2D texture2D3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/ChibiiDoggoMonochrome").Value;
-            int textureArea = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            int textureArea = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y3 = textureArea * Projectile.frame;
             Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, textureArea);
             Vector2 halfRect = rectangle.Size() / 2f;
@@ -66,10 +66,10 @@ namespace CalamityMod.Projectiles.Pets
                 Color colorAlpha = colorArea;
                 colorAlpha = Projectile.GetAlpha(colorAlpha);
                 goto IL_6899;
-                IL_6881:
+IL_6881:
                 counter += twoConst;
                 continue;
-                IL_6899:
+IL_6899:
                 float trailColorChange = (float)(eightCompare - counter);
                 if (twoConst < 0)
                 {
@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Pets
                 Main.spriteBatch.Draw(texture2D3, oldDrawPos + Projectile.Size / 2f - Main.screenPosition + new Vector2(0, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), colorAlpha, projRotate + Projectile.rotation * 0f * (float)(counter - 1) * Projectile.spriteDirection, halfRect, Projectile.scale, effects, 0f);
                 goto IL_6881;
             }
-            Main.spriteBatch.Draw(ModContent.Request<Texture2D>(Texture).Value, Projectile.position + Projectile.Size / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, halfRect, Projectile.scale, spriteEffects, 0);
+            Main.spriteBatch.Draw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, Projectile.position + Projectile.Size / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, halfRect, Projectile.scale, spriteEffects, 0);
             return false;
         }
 
@@ -129,7 +129,7 @@ namespace CalamityMod.Projectiles.Pets
 
                 for (int i = 0; i < 77; i++) //loop to make lots of dust
                 {
-                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 182, Projectile.velocity.X * 0.7f, Projectile.velocity.Y * 0.7f, 100, default, 2.5f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TheDestroyer, Projectile.velocity.X * 0.7f, Projectile.velocity.Y * 0.7f, 100, default, 2.5f);
 
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].velocity *= 1.5f;
@@ -201,11 +201,11 @@ namespace CalamityMod.Projectiles.Pets
                 {
                     if (Main.rand.NextBool())
                     {
-                        SoundEngine.PlaySound(SoundID.Meowmere with { Volume = SoundID.Meowmere.Volume * 4f}, Projectile.position); //nya
+                        SoundEngine.PlaySound(SoundID.Meowmere with { Volume = SoundID.Meowmere.Volume * 4f }, Projectile.position); //nya
                     }
                     else
                     {
-                        SoundEngine.PlaySound(SoundID.ScaryScream with { Volume = SoundID.ScaryScream.Volume * 2f}, player.position); //REEEEEEE
+                        SoundEngine.PlaySound(SoundID.ScaryScream with { Volume = SoundID.ScaryScream.Volume * 2f }, player.position); //REEEEEEE
                     }
                     notlocalai1 = -600f;
                 }

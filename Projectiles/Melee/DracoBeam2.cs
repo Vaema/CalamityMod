@@ -1,3 +1,4 @@
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -11,48 +12,64 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Projectiles/Melee/DracoBeam";
 
         private int start = 60;
-        private int speedTimer = 120;
+        private int speedTimer = 60;
+        private Vector2 setVel = Vector2.Zero;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 14;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
 
         public override void SetDefaults()
         {
             Projectile.width = 50;
             Projectile.height = 50;
-            Projectile.aiStyle = ProjAIStyleID.Beam;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 240;
+            Projectile.extraUpdates = 1;
+            Projectile.timeLeft = 300;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()
         {
+            Projectile.rotation = Projectile.rotation.AngleLerp(Projectile.velocity.ToRotation() + MathHelper.PiOver4, 0.25f);
+
+            if (setVel == Vector2.Zero)
+                setVel = Projectile.velocity * 3;
+
             start--;
             if (start <= 0)
             {
                 speedTimer--;
-                if (speedTimer > 60)
+                if (speedTimer > 30)
                 {
-                    Projectile.velocity.X = 0f;
-                    Projectile.velocity.Y = 10f;
+                    if (speedTimer == 59)
+                    {
+                        Projectile.velocity.X = 0f;
+                        Projectile.velocity.Y = 2f;
+                    }
+                    Projectile.velocity *= 1.11f;
                 }
-                else if (speedTimer <= 60)
+                else if (speedTimer <= 30)
                 {
-                    Projectile.velocity.X = 0f;
-                    Projectile.velocity.Y = -10f;
+                    if (speedTimer == 30)
+                    {
+                        Projectile.velocity.X = 0f;
+                        Projectile.velocity.Y = -2f;
+                    }
+                    Projectile.velocity *= 1.11f;
                 }
                 if (speedTimer <= 0)
                 {
-                    speedTimer = 120;
+                    speedTimer = 60;
+                    start = 20;
+                    Projectile.velocity = setVel;
                 }
             }
             Lighting.AddLight(Projectile.Center, 0.5f, 0.25f, 0f);
@@ -60,9 +77,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.timeLeft > 235)
-                return false;
-
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
             return false;
         }
@@ -71,13 +85,13 @@ namespace CalamityMod.Projectiles.Melee
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 244, 0f, 0f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f);
             }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Daybreak, 180);
+            target.AddBuff(ModContent.BuffType<Dragonfire>(), 90);
         }
     }
 }

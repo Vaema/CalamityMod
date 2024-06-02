@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -38,20 +38,20 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.scale = Projectile.ai[1];
             Projectile.rotation += Projectile.velocity.X * 2f;
             Vector2 position = Projectile.Center + Vector2.Normalize(Projectile.velocity) * 10f;
-            Dust greenDust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 0, default, 1f)];
+            Dust greenDust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 0, default, 1f)];
             greenDust.position = position;
             greenDust.velocity = Projectile.velocity.RotatedBy(1.5707963705062866, default) * 0.33f + Projectile.velocity / 4f;
             greenDust.position += Projectile.velocity.RotatedBy(1.5707963705062866, default);
             greenDust.fadeIn = 0.5f;
             greenDust.noGravity = true;
-            greenDust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, 0f, 0f, 0, default, 1f)];
+            greenDust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 0, default, 1f)];
             greenDust.position = position;
             greenDust.velocity = Projectile.velocity.RotatedBy(-1.5707963705062866, default) * 0.33f + Projectile.velocity / 4f;
             greenDust.position += Projectile.velocity.RotatedBy(-1.5707963705062866, default);
             greenDust.fadeIn = 0.5f;
             greenDust.noGravity = true;
 
-            int moreGreen = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 0, default, 1f);
+            int moreGreen = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 0, default, 1f);
             Main.dust[moreGreen].velocity *= 0.5f;
             Main.dust[moreGreen].scale *= 1.3f;
             Main.dust[moreGreen].fadeIn = 1f;
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item89, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item89, Projectile.Center);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
             Projectile.width = (int)(128f * Projectile.scale);
@@ -69,14 +69,14 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 4; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 31, 0f, 0f, 100, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 1.5f);
             }
             for (int j = 0; j < 16; j++)
             {
-                int killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, default, 2.5f);
+                int killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, default, 2.5f);
                 Main.dust[killDust].noGravity = true;
                 Main.dust[killDust].velocity *= 3f;
-                killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, default, 1.5f);
+                killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, default, 1.5f);
                 Main.dust[killDust].velocity *= 2f;
                 Main.dust[killDust].noGravity = true;
             }
@@ -110,11 +110,6 @@ namespace CalamityMod.Projectiles.Magic
                 Main.dust[exploding].velocity *= 2.4f;
                 Main.dust[exploding].scale += Main.rand.NextFloat();
             }
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.immune[Projectile.owner] = 2;
         }
 
         public override bool PreDraw(ref Color lightColor)

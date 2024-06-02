@@ -1,8 +1,10 @@
-﻿using CalamityMod.Events;
+﻿using System.IO;
+using CalamityMod.Events;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -12,11 +14,17 @@ namespace CalamityMod.NPCs.Signus
 {
     public class CosmicLantern : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 4;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -35,11 +43,14 @@ namespace CalamityMod.NPCs.Signus
             NPC.noGravity = true;
             NPC.dontTakeDamage = true;
             NPC.chaseable = false;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit53;
             NPC.DeathSound = SoundID.NPCDeath44;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -47,10 +58,10 @@ namespace CalamityMod.NPCs.Signus
             int associatedNPCType = ModContent.NPCType<Signus>();
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
 
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheUnderworld,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CosmicLantern")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CosmicLantern")
             });
         }
 
@@ -89,19 +100,27 @@ namespace CalamityMod.NPCs.Signus
             Lighting.AddLight((int)((NPC.position.X + (float)(NPC.width / 2)) / 16f), (int)((NPC.position.Y + (float)(NPC.height / 2)) / 16f), 0.3f, 0.3f, 0.3f);
 
             NPC.alpha -= 3;
-            if (NPC.alpha < 0)
+            if (NPC.alpha <= 0)
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
                 NPC.alpha = 0;
-                int lightDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 204, 0f, 0f, 0, default, 0.25f);
+                int lightDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TreasureSparkle, 0f, 0f, 0, default, 0.25f);
                 Main.dust[lightDust].velocity *= 0.1f;
                 Main.dust[lightDust].noGravity = true;
+            }
+            else
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
             }
 
             bool revenge = CalamityWorld.revenge;
             float playerDistNormMult = revenge ? 24f : 22f;
             if (BossRushEvent.BossRushActive)
                 playerDistNormMult = 30f;
-            CalamityAI.DungeonSpiritAI(NPC, Mod, playerDistNormMult, 0f, true);
+            CalamityRegularEnemyAI.DungeonSpiritAI(NPC, Mod, playerDistNormMult, 0f, true);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -134,7 +153,7 @@ namespace CalamityMod.NPCs.Signus
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/CosmicLanternGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color cyanLerp = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
             if (CalamityConfig.Instance.Afterimages)
@@ -168,7 +187,7 @@ namespace CalamityMod.NPCs.Signus
             {
                 for (int k = 0; k < 10; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 204, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TreasureSparkle, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

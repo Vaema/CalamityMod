@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Projectile.velocity *= 0.96f;
-            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
 
             if (Projectile.velocity.Length() < 2f)
                 Projectile.Kill();
@@ -40,14 +40,14 @@ namespace CalamityMod.Projectiles.Magic
             int dustOpacity = (int)(200 * (1 - ChargeCompletion));
             float dustScale = Main.rand.NextFloat(1f, 1.4f) * (0.6f + 0.4f * ChargeCompletion);
             Vector2 dustVelocity = Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.PiOver4 * 0.6f) * 4f + Main.rand.NextVector2Circular(4f, 4f);
-            Dust dust = Dust.NewDustPerfect(Projectile.Center, DustPick, dustVelocity, Alpha: dustOpacity, Scale : dustScale);
+            Dust dust = Dust.NewDustPerfect(Projectile.Center, DustPick, dustVelocity, Alpha: dustOpacity, Scale: dustScale);
             dust.noGravity = true;
         }
 
         public override void OnKill(int timeLeft)
         {
             if (timeLeft != 0)
-                SoundEngine.PlaySound(SoundID.Dig with { Volume = SoundID.Dig.Volume * 0.4f}, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.Dig with { Volume = SoundID.Dig.Volume * 0.4f }, Projectile.Center);
 
             for (int i = 0; i < 3; i++)
             {

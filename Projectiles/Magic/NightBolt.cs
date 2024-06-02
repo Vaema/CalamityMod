@@ -1,6 +1,8 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class NightBolt : ModProjectile, ILocalizedModType
@@ -25,7 +27,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Vector2 projPos = Projectile.position;
                 projPos -= Projectile.velocity * ((float)i * 0.25f);
-                int nightDust = Dust.NewDust(projPos, 1, 1, 27, 0f, 0f, 0, default, 1.25f);
+                int nightDust = Dust.NewDust(projPos, 1, 1, DustID.Shadowflame, 0f, 0f, 0, default, 1.25f);
                 Main.dust[nightDust].position = projPos;
                 Main.dust[nightDust].scale = (float)Main.rand.Next(70, 110) * 0.013f;
                 Main.dust[nightDust].velocity *= 0.1f;

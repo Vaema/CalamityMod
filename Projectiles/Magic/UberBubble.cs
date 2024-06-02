@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class UberBubble : ModProjectile, ILocalizedModType
@@ -44,11 +44,11 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item96, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item96, Projectile.Center);
             int randDustAmt = Main.rand.Next(4, 6);
             for (int i = 0; i < randDustAmt; i++)
             {
-                int purpleDust = Dust.NewDust(Projectile.Center, 0, 0, 171, 0f, 0f, 100, default, 1.4f);
+                int purpleDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.Venom, 0f, 0f, 100, default, 1.4f);
                 Main.dust[purpleDust].velocity *= 0.8f;
                 Main.dust[purpleDust].position = Vector2.Lerp(Main.dust[purpleDust].position, Projectile.Center, 0.5f);
                 Main.dust[purpleDust].noGravity = true;

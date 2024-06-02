@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
             Lighting.AddLight(Projectile.Center, 0.35f, 0f, 0.35f);
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
             }
 
             Projectile.ai[0] += 1f;
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (Main.player[Projectile.owner].channel)
                 {
                     float projDelay = 20f;
-                    Vector2 vector10 = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 vector10 = Projectile.Center;
                     float projXDirection = (float)Main.mouseX + Main.screenPosition.X - vector10.X;
                     float projYDirection = (float)Main.mouseY + Main.screenPosition.Y - vector10.Y;
                     if (Main.player[Projectile.owner].gravDir == -1f)
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.Magic
                 else
                 {
                     Projectile.netUpdate = true;
-                    Vector2 projDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 projDirection = Projectile.Center;
                     float projXDir = (float)Main.mouseX + Main.screenPosition.X - projDirection.X;
                     float projYDir = (float)Main.mouseY + Main.screenPosition.Y - projDirection.Y;
                     if (Main.player[Projectile.owner].gravDir == -1f)
@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = 100;
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
@@ -149,18 +149,18 @@ namespace CalamityMod.Projectiles.Magic
             bool isInTile = WorldGen.SolidTile(Framing.GetTileSafely((int)Projectile.position.X / 16, (int)Projectile.position.Y / 16));
             for (int m = 0; m < 4; m++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.5f);
             }
             for (int n = 0; n < 4; n++)
             {
-                int beastial = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 0, default, 2.5f);
+                int beastial = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 0, default, 2.5f);
                 Main.dust[beastial].noGravity = true;
                 Main.dust[beastial].velocity *= 3f;
                 if (isInTile)
                 {
                     Main.dust[beastial].noLight = true;
                 }
-                beastial = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1.5f);
+                beastial = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.5f);
                 Main.dust[beastial].velocity *= 2f;
                 Main.dust[beastial].noGravity = true;
                 if (isInTile)

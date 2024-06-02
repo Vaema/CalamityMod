@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;
@@ -84,14 +84,14 @@ namespace CalamityMod.Items.Weapons.Ranged
             SoundEngine.PlaySound(SoundID.Item14, target.Center);
             for (int i = 0; i < 80; i++)
             {
-                int contactDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 174, 0f, 0f, 200, default, firstDustScale);
+                int contactDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.InfernoFork, 0f, 0f, 200, default, firstDustScale);
                 Dust dust = Main.dust[contactDust];
                 dust.position = target.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * target.width / 2f;
                 dust.noGravity = true;
                 dust.velocity.Y -= 6f;
                 dust.velocity *= 3f;
                 dust.velocity += dustVelocity * Main.rand.NextFloat();
-                contactDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 174, 0f, 0f, 100, default, secondDustScale);
+                contactDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.InfernoFork, 0f, 0f, 100, default, secondDustScale);
                 dust.position = target.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * target.width / 2f;
                 dust.velocity.Y -= 6f;
                 dust.velocity *= 2f;
@@ -102,7 +102,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             for (int j = 0; j < 40; j++)
             {
-                int contactDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 174, 0f, 0f, 0, default, thirdDustScale);
+                int contactDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.InfernoFork, 0f, 0f, 0, default, thirdDustScale);
                 Dust dust = Main.dust[contactDust2];
                 dust.position = target.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(target.velocity.ToRotation()) * target.width / 3f;
                 dust.noGravity = true;

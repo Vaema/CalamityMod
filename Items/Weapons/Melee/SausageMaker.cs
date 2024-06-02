@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<SausageMakerSpear>();
             Item.shootSpeed = 6f;

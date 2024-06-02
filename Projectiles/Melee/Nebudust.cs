@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Melee
                 randoAdjuster = rando5 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int astra = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 269, 0f, 0f, 100, default, 1f);
+                int astra = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Sandnado, 0f, 0f, 100, default, 1f);
                 Main.dust[astra].noGravity = true;
                 Main.dust[astra].position.X = Projectile.Center.X;
                 Main.dust[astra].position.Y = Projectile.Center.Y;

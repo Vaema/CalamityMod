@@ -1,8 +1,8 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,8 +17,8 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 64;
             Item.height = 62;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.defense = 18;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.defense = 12;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<Violet>();
         }
@@ -26,15 +26,22 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.dAmulet = true;
-            player.longInvince = true;
-            player.pStone = true;
-            player.lifeRegen += 1;
 
+            // Directly inherits both Cross Necklace and Deific Amulet iframe boosts
+            player.longInvince = true;
+            modPlayer.dAmulet = true;
+
+            // Large hit iframe effect taken from Seraph Tracers
+            modPlayer.rampartOfDeities = true;
+
+            // Ice Barrier buff inherited from Frozen Turtle Shell
             if (player.statLife <= player.statLifeMax2 * 0.5)
                 player.AddBuff(BuffID.IceBarrier, 5);
 
+            // Knockback immunity inherited from Paladin's Shield
             player.noKnockback = true;
+
+            // Paladin's Shield application
             if (player.statLife > player.statLifeMax2 * 0.25f)
             {
                 player.hasPaladinShield = true;

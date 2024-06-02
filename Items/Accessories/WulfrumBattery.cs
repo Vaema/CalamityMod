@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetStaticDefaults()
         {
-           
+
             ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
         }
 
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Blue;
 

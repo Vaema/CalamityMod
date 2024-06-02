@@ -1,8 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Typeless
 {
     public class BlissfulBombardierDustProjectile : ModProjectile, ILocalizedModType
@@ -19,6 +21,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 15;
         }
 
         public override void AI()
@@ -56,8 +60,7 @@ namespace CalamityMod.Projectiles.Typeless
                 projTimer = 0f;
                 Projectile.Kill();
             }
-            projTimer *= 0.7f;
-            Projectile.ai[0] += 4f;
+            Projectile.ai[0] += (2f + Projectile.ai[1]); // Explosions spawned on hit last shorter
             int timerCounter = 0;
             while ((float)timerCounter < projTimer)
             {
@@ -68,7 +71,7 @@ namespace CalamityMod.Projectiles.Typeless
                 randAdjust = rand3 / randAdjust;
                 rand1 *= randAdjust;
                 rand2 *= randAdjust;
-                int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1.5f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1.5f);
                 Dust dust = Main.dust[dusty];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;
@@ -81,15 +84,8 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.immune[Projectile.owner] = 0;
-            target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
     }
 }

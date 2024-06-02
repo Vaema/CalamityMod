@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Placeables
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 200;
-			ItemID.Sets.SortingPriorityExtractibles[Type] = 1; // Silt Block
+            ItemID.Sets.SortingPriorityExtractibles[Type] = 1; // Silt Block
         }
 
         public override void SetDefaults()
@@ -70,7 +70,7 @@ namespace CalamityMod.Items.Placeables
             }
             else if (val < 58.03f)
             {
-                resultType = ModContent.ItemType<Stardust>();
+                resultType = ModContent.ItemType<StarblightSoot>();
                 resultStack = Main.rand.Next(1, 21);
             }
             else if (val < 61.03f)

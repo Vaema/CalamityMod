@@ -1,15 +1,15 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -169,7 +169,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
         }
 
-    #endregion
+        #endregion
 
         public override void SetDefaults()
         {
@@ -183,7 +183,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Cyan;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 15f;

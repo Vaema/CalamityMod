@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatDebuffs;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -37,13 +37,13 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 85, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.UnusedBrown, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
                 if (Projectile.Calamity().stealthStrike) //stealth strike attack
                 {
-                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 116, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Skyware, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
                 }
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 0.785f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             Projectile.velocity.X *= 1.015f;
             Projectile.velocity.Y *= 1.015f;
             Projectile.velocity.X = Math.Min(16f, Projectile.velocity.X);
@@ -52,19 +52,19 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Poisoned, 180);
+            target.AddBuff(ModContent.BuffType<Irradiated>(), Projectile.Calamity().stealthStrike ? 180 : 90);
             if (Projectile.Calamity().stealthStrike) //stealth strike attack
             {
-                target.AddBuff(BuffID.Venom, 90);
+                target.AddBuff(BuffID.Venom, 180);
             }
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Poisoned, 180);
+            target.AddBuff(ModContent.BuffType<Irradiated>(), Projectile.Calamity().stealthStrike ? 180 : 90);
             if (Projectile.Calamity().stealthStrike) //stealth strike attack
             {
-                target.AddBuff(BuffID.Venom, 90);
+                target.AddBuff(BuffID.Venom, 180);
             }
         }
 
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             for (int dustIndex = 0; dustIndex < 8; dustIndex++)
             {
-                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
                 Main.dust[dusty].velocity *= 1f;
             }
             if (Projectile.owner == Main.myPlayer)

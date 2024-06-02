@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 69; // Hellstone
+            ItemID.Sets.SortingPriorityMaterials[Type] = 69; // Hellstone
         }
 
         public override void SetDefaults()

@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Terraria.Audio;
+﻿using System;
 using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector3 DustLight = new Vector3(0.171f, 0.124f, 0.086f);
             Lighting.AddLight(Projectile.Center, DustLight * 3);
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             if (Projectile.timeLeft == 300)
             {

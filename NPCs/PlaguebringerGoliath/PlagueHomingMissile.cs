@@ -1,26 +1,32 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.PlaguebringerGoliath
 {
     public class PlagueHomingMissile : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 4;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/PlaguebringerGoliath/PlagueHomingMissileGlow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -39,10 +45,13 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -63,22 +72,22 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     dustXOffset = NPC.velocity.X * 0.5f;
                     dustYOffset = NPC.velocity.Y * 0.5f;
                 }
-                int smokyFire = Dust.NewDust(new Vector2(NPC.position.X + 3f + dustXOffset, NPC.position.Y + 3f + dustYOffset) - NPC.velocity * 0.5f, NPC.width - 8, NPC.height - 8, 6, 0f, 0f, 100, default, 0.5f);
+                int smokyFire = Dust.NewDust(new Vector2(NPC.position.X + 3f + dustXOffset, NPC.position.Y + 3f + dustYOffset) - NPC.velocity * 0.5f, NPC.width - 8, NPC.height - 8, DustID.Torch, 0f, 0f, 100, default, 0.5f);
                 Main.dust[smokyFire].scale *= 2f + (float)Main.rand.Next(10) * 0.1f;
                 Main.dust[smokyFire].velocity *= 0.2f;
                 Main.dust[smokyFire].noGravity = true;
-                smokyFire = Dust.NewDust(new Vector2(NPC.position.X + 3f + dustXOffset, NPC.position.Y + 3f + dustYOffset) - NPC.velocity * 0.5f, NPC.width - 8, NPC.height - 8, 31, 0f, 0f, 100, default, 0.25f);
+                smokyFire = Dust.NewDust(new Vector2(NPC.position.X + 3f + dustXOffset, NPC.position.Y + 3f + dustYOffset) - NPC.velocity * 0.5f, NPC.width - 8, NPC.height - 8, DustID.Smoke, 0f, 0f, 100, default, 0.25f);
                 Main.dust[smokyFire].fadeIn = 1f + (float)Main.rand.Next(5) * 0.1f;
                 Main.dust[smokyFire].velocity *= 0.05f;
             }
             else if (Main.rand.NextBool(4))
             {
-                int smokyFire2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 31, 0f, 0f, 100, default, 0.5f);
+                int smokyFire2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Smoke, 0f, 0f, 100, default, 0.5f);
                 Main.dust[smokyFire2].scale = 0.1f + (float)Main.rand.Next(5) * 0.1f;
                 Main.dust[smokyFire2].fadeIn = 1.5f + (float)Main.rand.Next(5) * 0.1f;
                 Main.dust[smokyFire2].noGravity = true;
                 Main.dust[smokyFire2].position = NPC.Center + new Vector2(0f, (float)(-(float)NPC.height / 2)).RotatedBy((double)NPC.rotation, default) * 1.1f;
-                smokyFire2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 6, 0f, 0f, 100, default, 1f);
+                smokyFire2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, 0f, 0f, 100, default, 1f);
                 Main.dust[smokyFire2].scale = 1f + (float)Main.rand.Next(5) * 0.1f;
                 Main.dust[smokyFire2].noGravity = true;
                 Main.dust[smokyFire2].position = NPC.Center + new Vector2(0f, (float)(-(float)NPC.height / 2 - 6)).RotatedBy((double)NPC.rotation, default) * 1.1f;
@@ -140,10 +149,9 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             }
 
             float distanceBeforeExploding = 42f;
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player.active && !player.dead && Vector2.Distance(player.Center, NPC.Center) <= distanceBeforeExploding)
+                if (!player.dead && Vector2.Distance(player.Center, NPC.Center) <= distanceBeforeExploding)
                 {
                     CheckDead();
                     NPC.life = 0;
@@ -182,7 +190,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/PlaguebringerGoliath/PlagueHomingMissileGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color redLerpColor = Color.Lerp(Color.White, Color.Red, 0.5f);
 
             if (CalamityConfig.Instance.Afterimages)
@@ -222,7 +230,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
             for (int i = 0; i < 15; i++)
             {
-                int greenPlague = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 89, 0f, 0f, 100, default, 2f);
+                int greenPlague = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                 Main.dust[greenPlague].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -233,10 +241,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             }
             for (int j = 0; j < 30; j++)
             {
-                int greenPlague2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 89, 0f, 0f, 100, default, 3f);
+                int greenPlague2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GemEmerald, 0f, 0f, 100, default, 3f);
                 Main.dust[greenPlague2].noGravity = true;
                 Main.dust[greenPlague2].velocity *= 5f;
-                greenPlague2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 89, 0f, 0f, 100, default, 2f);
+                greenPlague2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                 Main.dust[greenPlague2].velocity *= 2f;
                 Main.dust[greenPlague2].noGravity = true;
             }

@@ -91,7 +91,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
             if (head.ModItem != null && head.ModItem.IsArmorSet(head, body, legs) && head.ModItem is IDyeableShaderRenderer renderer)
                 MarkAsValid(renderer);
-                
+
 
             if (body.ModItem != null && body.ModItem.IsArmorSet(head, body, legs) && body.ModItem is IDyeableShaderRenderer renderer2)
                 MarkAsValid(renderer2);

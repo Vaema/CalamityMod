@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawOrigin = new(tex.Width * 0.5f, Projectile.height * 0.5f);
             Vector2 vector = new Vector2(Projectile.Center.X, Projectile.Center.Y) - Main.screenPosition + new Vector2(0, Projectile.gfxOffY);
             Rectangle rectangle = new(0, tex.Height / Main.projFrames[Projectile.type] * Projectile.frame, tex.Width, tex.Height / Main.projFrames[Projectile.type]);
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.NPCDeath28, Projectile.position);
+            SoundEngine.PlaySound(SoundID.NPCDeath28, Projectile.Center);
             if (Projectile.owner == Main.myPlayer)
             {
                 int randProjAmt = Main.rand.Next(5, 9);
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 10; i++)
             {
-                int inkDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 54, 0f, 0f, 100, default, 2f);
+                int inkDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Wraith, 0f, 0f, 100, default, 2f);
                 Main.dust[inkDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -83,10 +83,10 @@ namespace CalamityMod.Projectiles.Enemy
             }
             for (int j = 0; j < 15; j++)
             {
-                int inkDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 109, 0f, 0f, 100, default, 3f);
+                int inkDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Asphalt, 0f, 0f, 100, default, 3f);
                 Main.dust[inkDust2].noGravity = true;
                 Main.dust[inkDust2].velocity *= 5f;
-                inkDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 109, 0f, 0f, 100, default, 2f);
+                inkDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Asphalt, 0f, 0f, 100, default, 2f);
                 Main.dust[inkDust2].velocity *= 2f;
             }
         }

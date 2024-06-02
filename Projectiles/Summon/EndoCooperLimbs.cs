@@ -1,13 +1,13 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override void PostDraw(Color lightColor)
-        {            
+        {
             if (Projectile.ai[0] == 2f)
                 return;
 

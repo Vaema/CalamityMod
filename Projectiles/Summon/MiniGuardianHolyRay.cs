@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.tileCollide = false;
             Projectile.timeLeft = 600;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 3; 
+            Projectile.localNPCHitCooldown = 3;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -49,14 +49,14 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
-            
+
             Vector2? vector78 = null;
 
             if (Projectile.velocity.HasNaNs() || Projectile.velocity == Vector2.Zero)
                 Projectile.velocity = -Vector2.UnitY;
 
             Player owner = Main.player[Projectile.owner];
-            
+
             if (owner.active && !owner.dead)
             {
                 Vector2 fireFrom = new Vector2(owner.Center.X, owner.Center.Y);
@@ -66,8 +66,8 @@ namespace CalamityMod.Projectiles.Summon
             }
             else
                 Projectile.Kill();
-            
-            
+
+
             if (Projectile.velocity.HasNaNs() || Projectile.velocity == Vector2.Zero)
                 Projectile.velocity = -Vector2.UnitY;
 
@@ -141,11 +141,11 @@ namespace CalamityMod.Projectiles.Summon
                 return false;
 
             bool dayTime = Main.dayTime;
-            Texture2D texture2D19 = dayTime ? ModContent.Request<Texture2D>(Texture, AssetRequestMode.ImmediateLoad).Value : 
+            Texture2D texture2D19 = dayTime ? ModContent.Request<Texture2D>(Texture, AssetRequestMode.ImmediateLoad).Value :
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ProvidenceHolyRayNight", AssetRequestMode.ImmediateLoad).Value;
-            Texture2D texture2D20 = dayTime ? ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayMid", AssetRequestMode.ImmediateLoad).Value : 
+            Texture2D texture2D20 = dayTime ? ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayMid", AssetRequestMode.ImmediateLoad).Value :
                 ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayMidNight", AssetRequestMode.ImmediateLoad).Value;
-            Texture2D texture2D21 = dayTime ? ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayEnd", AssetRequestMode.ImmediateLoad).Value : 
+            Texture2D texture2D21 = dayTime ? ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayEnd", AssetRequestMode.ImmediateLoad).Value :
                 ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ProvidenceHolyRayEndNight", AssetRequestMode.ImmediateLoad).Value;
 
             float num223 = Projectile.localAI[1]; //length of laser

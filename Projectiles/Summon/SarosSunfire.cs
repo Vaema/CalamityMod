@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Summon
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
-        
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetStaticDefaults()

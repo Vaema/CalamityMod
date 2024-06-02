@@ -1,10 +1,10 @@
-﻿using Terraria.DataStructures;
+﻿using System.Collections.Generic;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.autoReuse = true;
             Item.shootSpeed = 20f;
@@ -35,8 +35,10 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            //CalamityUtils.OnlyOneSentry(player, type);
-            int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI, 120f, 0f);
+            player.FindSentryRestingSpot(type, out int XPosition, out int YPosition, out int YOffset);
+            YOffset -= 6;
+            position = new Vector2((float)XPosition, (float)(YPosition - YOffset));
+            int p = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 120f, 0f);
             if (Main.projectile.IndexInRange(p))
                 Main.projectile[p].originalDamage = Item.damage;
             player.UpdateMaxTurrets();

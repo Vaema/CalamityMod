@@ -1,11 +1,11 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 
 namespace CalamityMod.Projectiles.Melee
@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.tileCollide = true;
 
             Lighting.AddLight(Projectile.Center, 0.75f, 1f, 0.24f);
-            int dustParticle = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 75, 0f, 0f, 100, default, 0.9f);
+            int dustParticle = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CursedTorch, 0f, 0f, 100, default, 0.9f);
             Main.dust[dustParticle].noGravity = true;
             Main.dust[dustParticle].velocity *= 0.5f;
             Main.dust[dustParticle].velocity += Projectile.velocity * 0.1f;
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Melee
             for (int i = 0; i <= 15; i++)
             {
                 Vector2 displace = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * (-0.5f + (i / 15f)) * 88f;
-                int dustParticle = Dust.NewDust(Projectile.Center + displace, Projectile.width, Projectile.height, 75, 0f, 0f, 100, default, 2f);
+                int dustParticle = Dust.NewDust(Projectile.Center + displace, Projectile.width, Projectile.height, DustID.CursedTorch, 0f, 0f, 100, default, 2f);
                 Main.dust[dustParticle].noGravity = true;
                 Main.dust[dustParticle].velocity = Projectile.oldVelocity;
             }

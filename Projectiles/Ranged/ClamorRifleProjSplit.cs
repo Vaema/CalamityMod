@@ -1,6 +1,8 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Ranged
 {
     public class ClamorRifleProjSplit : ModProjectile, ILocalizedModType
@@ -26,11 +28,11 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Projectile.rotation += 0.15f;
 
-            Lighting.AddLight(Projectile.Center, new Vector3(44, 191, 232) * (1.3f/255));
+            Lighting.AddLight(Projectile.Center, new Vector3(44, 191, 232) * (1.3f / 255));
 
             for (int num151 = 0; num151 < 2; num151++)
             {
-                int blueDust = Dust.NewDust(new Vector2(Projectile.Center.X, Projectile.Center.Y), Projectile.width - 28, Projectile.height - 28, 68, 0f, 0f, 100, default, 1f);
+                int blueDust = Dust.NewDust(new Vector2(Projectile.Center.X, Projectile.Center.Y), Projectile.width - 28, Projectile.height - 28, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1f);
                 Main.dust[blueDust].noGravity = true;
                 Main.dust[blueDust].velocity *= 0.1f;
                 Main.dust[blueDust].velocity += Projectile.velocity * 0.5f;

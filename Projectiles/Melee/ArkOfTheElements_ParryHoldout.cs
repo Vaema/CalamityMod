@@ -1,17 +1,17 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
-using CalamityMod.Sounds;
-using CalamityMod.Buffs.DamageOverTime;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -63,11 +63,11 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(CommonCalamitySounds.ScissorGuillotineSnapSound with { Volume = CommonCalamitySounds.ScissorGuillotineSnapSound.Volume * 1.3f }, Projectile.Center);
             CombatText.NewText(Projectile.Hitbox, new Color(111, 247, 200), CalamityUtils.GetTextValue("Misc.ArkParry"), true);
 
-            for (int i = 0; i < 5; i ++) //Don't loose your way
+            for (int i = 0; i < 5; i++) //Don't loose your way
             {
                 Vector2 particleDispalce = Main.rand.NextVector2Circular(Owner.Hitbox.Width * 2f, Owner.Hitbox.Height * 1.2f);
                 float particleScale = Main.rand.NextFloat(0.5f, 1.4f);
-                Particle shine = new FlareShine(Owner.Center + particleDispalce, particleDispalce * 0.01f, Color.White, Color.Red, 0f, new Vector2(0.6f, 1f) * particleScale, new Vector2(1.5f, 2.7f) * particleScale, 20 + Main.rand.Next(6), bloomScale: 3f, spawnDelay : Main.rand.Next(7) * 2);
+                Particle shine = new FlareShine(Owner.Center + particleDispalce, particleDispalce * 0.01f, Color.White, Color.Red, 0f, new Vector2(0.6f, 1f) * particleScale, new Vector2(1.5f, 2.7f) * particleScale, 20 + Main.rand.Next(6), bloomScale: 3f, spawnDelay: Main.rand.Next(7) * 2);
                 GeneralParticleHandler.SpawnParticle(shine);
             }
 
@@ -82,9 +82,13 @@ namespace CalamityMod.Projectiles.Melee
 
             GeneralParryEffects();
 
-            //only get iframes if the enemy has contact damage :)
+            // 17APR2024: Ozzatron: Ark of the Elements is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+            // However, iframes are only granted if the target has contact damage. This means it won't work on Providence. Too bad. I have no sympathy for you if you are using this weapon line.
             if (target.damage > 0)
-                Owner.GiveIFrames(35);
+            {
+                int arkParryIFrames = Owner.ComputeParryIFrames();
+                Owner.GiveUniversalIFrames(arkParryIFrames, false);
+            }
 
             Vector2 particleOrigin = target.Hitbox.Size().Length() < 140 ? target.Center : Projectile.Center + Projectile.rotation.ToRotationVector2() * 60f;
             Particle spark = new GenericSparkle(particleOrigin, Vector2.Zero, Color.White, Color.HotPink, 1.2f, 35, 0.1f, 2);
@@ -115,7 +119,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             //Manage position and rotation
-            Projectile.Center = Owner.Center + DistanceFromPlayer ;
+            Projectile.Center = Owner.Center + DistanceFromPlayer;
             Projectile.scale = 1.4f + ThrustDisplaceRatio() * 0.2f;
 
             if (Timer > ParryTime)

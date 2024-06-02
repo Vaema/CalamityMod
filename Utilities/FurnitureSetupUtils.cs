@@ -829,7 +829,7 @@ namespace CalamityMod
         internal static void SetUpCandelabra(this ModTile mt, int itemDropID, bool lavaImmune = false)
         {
             mt.RegisterItemDrop(itemDropID);
-            
+
             Main.tileLighted[mt.Type] = true;
             Main.tileFrameImportant[mt.Type] = true;
             Main.tileLavaDeath[mt.Type] = !lavaImmune;
@@ -878,7 +878,7 @@ namespace CalamityMod
             mt.AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             if (autoMapEntry)
                 mt.AddMapEntry(new Color(253, 221, 3), Language.GetText("ItemName.Candle"));
-            
+
             mt.AdjTiles = new int[] { TileID.Candles };
         }
 
@@ -1179,7 +1179,8 @@ namespace CalamityMod
         /// <param name="mt">The ModTile which is being initialized.</param>
         /// <param name="itemDropID">The ID of the item this tile drops when broken.</param>
         /// <param name="mapColor">The map color of the tile.</param>
-        internal static void SetUpFountain(this ModTile mt, int itemDropID, Color mapColor)
+        /// <param name="lava">Whether or not the type of fountain is lava.</param>
+        internal static void SetUpFountain(this ModTile mt, int itemDropID, Color mapColor, bool lava = false)
         {
             mt.RegisterItemDrop(itemDropID);
 
@@ -1203,7 +1204,7 @@ namespace CalamityMod
             TileObjectData.newTile.StyleLineSkip = 2;
             TileObjectData.addTile(mt.Type);
 
-            mt.AddMapEntry(mapColor, Language.GetText("MapObject.WaterFountain"));
+            mt.AddMapEntry(mapColor, lava ? CalamityUtils.GetText("Tiles.LavaFountain") : Language.GetText("MapObject.WaterFountain"));
             mt.AnimationFrameHeight = 72;
         }
 
@@ -1256,9 +1257,9 @@ namespace CalamityMod
             TileObjectData.newTile.StyleLineSkip = 2;
             TileObjectData.newTile.DrawYOffset = -2;
             TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
-    		TileObjectData.newAlternate.AnchorTop = new AnchorData(AnchorType.Platform, TileObjectData.newTile.Width, 0);
-	    	TileObjectData.newAlternate.DrawYOffset = -10;
-		    TileObjectData.addAlternate(0);
+            TileObjectData.newAlternate.AnchorTop = new AnchorData(AnchorType.Platform, TileObjectData.newTile.Width, 0);
+            TileObjectData.newAlternate.DrawYOffset = -10;
+            TileObjectData.addAlternate(0);
             TileObjectData.addTile(mt.Type);
 
             // All hanging lanterns count as light sources.
@@ -1292,7 +1293,7 @@ namespace CalamityMod
         internal static void SetUpPiano(this ModTile mt, int itemDropID, bool lavaImmune = false, bool solidTop = true)
         {
             mt.RegisterItemDrop(itemDropID);
-            
+
             Main.tileTable[mt.Type] = solidTop;
             Main.tileSolidTop[mt.Type] = solidTop;
             Main.tileLighted[mt.Type] = true;
@@ -1319,7 +1320,7 @@ namespace CalamityMod
         internal static void SetUpPlatform(this ModTile mt, int itemDropID, bool lavaImmune = false)
         {
             mt.RegisterItemDrop(itemDropID);
-            
+
             Main.tileLighted[mt.Type] = true;
             Main.tileFrameImportant[mt.Type] = true;
             Main.tileSolidTop[mt.Type] = true;
@@ -1395,8 +1396,8 @@ namespace CalamityMod
             Main.tileLavaDeath[mt.Type] = !lavaImmune;
             Main.tileWaterDeath[mt.Type] = false;
             TileID.Sets.CountsAsWaterSource[mt.Type] = water;
-            TileID.Sets.CountsAsHoneySource[mt.Type] = lava;
-            TileID.Sets.CountsAsLavaSource[mt.Type] = honey;
+            TileID.Sets.CountsAsLavaSource[mt.Type] = lava;
+            TileID.Sets.CountsAsHoneySource[mt.Type] = honey;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.LavaDeath = !lavaImmune;
             TileObjectData.newTile.LavaPlacement = lavaImmune ? LiquidPlacement.Allowed : LiquidPlacement.NotAllowed;
@@ -1528,7 +1529,7 @@ namespace CalamityMod
         internal static void SetUpTrophy(this ModTile mt)
         {
             // TODO -- how to force trophy drops correctly? they all have zero code in them
-            
+
             Main.tileFrameImportant[mt.Type] = true;
             Main.tileLavaDeath[mt.Type] = true;
             Main.tileSpelunker[mt.Type] = true;

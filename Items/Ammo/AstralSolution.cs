@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Ammo
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-           	ItemID.Sets.SortingPriorityTerraforming[Type] = 95; // Red Solution
+            ItemID.Sets.SortingPriorityTerraforming[Type] = 95; // Red Solution
         }
 
         public override void SetDefaults()
@@ -27,10 +27,10 @@ namespace CalamityMod.Items.Ammo
             return;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Solutions;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Solutions;
+        }
 
         public override bool CanConsumeAmmo(Item ammo, Player player)
         {

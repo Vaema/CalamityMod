@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -24,8 +25,8 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetDefaults()
         {
-            Item.width = 90;
-            Item.height = 112;
+            Item.width = 140;
+            Item.height = 140;
             Item.damage = 133;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 42;
@@ -36,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 7.5f;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.UseSound = UseSound;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<VividBeam>();
@@ -69,6 +70,11 @@ namespace CalamityMod.Items.Weapons.Magic
             velocityReal = Vector2.Lerp(velocityReal, velocityVariation, 0.25f);
             Projectile.NewProjectile(projSource, source, velocityReal, type, damage, knockback, player.whoAmI, 0f, Main.rand.Next(3));
             return false;
+        }
+
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/VividClarityGlow").Value);
         }
 
         public override void AddRecipes()

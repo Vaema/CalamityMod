@@ -1,11 +1,11 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Melee
                 randAdjuster = rand3 / randAdjuster;
                 rand1 *= randAdjuster;
                 rand2 *= randAdjuster;
-                int brimDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1.5f);
+                int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1.5f);
                 Dust dust = Main.dust[brimDust];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Rogue
                 randomAdjust = random3 / randomAdjust;
                 random1 *= randomAdjust;
                 random2 *= randomAdjust;
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 75, 0, 0, 0, default, size);
+                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.CursedTorch, 0, 0, 0, default, size);
                 Dust dust = Main.dust[d];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

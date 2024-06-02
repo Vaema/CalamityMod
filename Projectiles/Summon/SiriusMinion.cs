@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Summon
         public ref float TimerForShooting => ref Projectile.ai[0];
 
         public bool CheckForSpawning = false;
-        
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public void ShootTarget(NPC target)
-        {            
+        {
             if (target is not null)
             {
                 if (TimerForShooting >= 60f && Projectile.owner == Main.myPlayer)

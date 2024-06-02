@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,13 +26,13 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0.25f / 255f);
-            int aquaDust = Dust.NewDust(Projectile.Center, Projectile.width - 28, Projectile.height - 28, 68, 0f, 0f, 100, default, 1.5f);
+            int aquaDust = Dust.NewDust(Projectile.Center, Projectile.width - 28, Projectile.height - 28, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1.5f);
             Main.dust[aquaDust].noGravity = true;
             Main.dust[aquaDust].velocity *= 0.1f;
             Main.dust[aquaDust].velocity += Projectile.velocity * 0.5f;
             if (Main.rand.NextBool(16))
             {
-                int aquaticDust = Dust.NewDust(Projectile.Center, Projectile.width - 32, Projectile.height - 32, 68, 0f, 0f, 100, default, 1f);
+                int aquaticDust = Dust.NewDust(Projectile.Center, Projectile.width - 32, Projectile.height - 32, DustID.BlueCrystalShard, 0f, 0f, 100, default, 1f);
                 Main.dust[aquaticDust].velocity *= 0.25f;
                 Main.dust[aquaticDust].velocity += Projectile.velocity * 0.5f;
             }

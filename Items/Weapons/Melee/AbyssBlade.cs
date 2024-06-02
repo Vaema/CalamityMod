@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 74;
             Item.height = 74;
-            Item.damage = 70;
+            Item.damage = 140;
             Item.knockBack = 7.5f;
             Item.useTime = 65;
             Item.useAnimation = 65;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = null;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
         }
 

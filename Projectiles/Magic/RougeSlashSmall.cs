@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
                     Vector2 dustRotation = Vector2.UnitX * -Projectile.width / 2f;
                     dustRotation += -Vector2.UnitY.RotatedBy(l * MathHelper.Pi / 6f) * new Vector2(8f, 16f);
                     dustRotation = dustRotation.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
-                    int rougeDust = Dust.NewDust(Projectile.Center, 0, 0, 60, 0f, 0f, 160, default, 1f);
+                    int rougeDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.RedTorch, 0f, 0f, 160, default, 1f);
                     Main.dust[rougeDust].scale = 1.1f;
                     Main.dust[rougeDust].noGravity = true;
                     Main.dust[rougeDust].position = Projectile.Center + dustRotation;

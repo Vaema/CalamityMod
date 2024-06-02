@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 120;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 120;
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 12));
@@ -56,7 +56,7 @@ namespace CalamityMod.Items.Materials
         {
             CalamityUtils.DrawInventoryCustomScale(
                 spriteBatch,
-                texture: TextureAssets.Item[Type].Value, 
+                texture: TextureAssets.Item[Type].Value,
                 position,
                 frame,
                 drawColor,

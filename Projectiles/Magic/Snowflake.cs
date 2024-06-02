@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using System;
-using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Magic
             Player player = Main.player[Projectile.owner];
             if (player == null)
                 return;
-            if (!(player.channel && !player.noItems && !player.CCed))
+            if (player.CantUseHoldout())
                 Projectile.Kill();
             if (Projectile.type != ModContent.ProjectileType<Snowflake>() ||
                 Main.player[Projectile.owner].HeldItem.type != ModContent.ItemType<SnowstormStaff>() || !Main.player[Projectile.owner].channel)
@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 67, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             float pushForce = 0.15f;
             for (int k = 0; k < Main.maxProjectiles; k++)
@@ -172,10 +172,10 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 67, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
             if (Projectile.owner == Main.myPlayer)
             {

@@ -1,4 +1,4 @@
-using CalamityMod.NPCs;
+﻿using CalamityMod.NPCs;
 using CalamityMod.NPCs.Leviathan;
 using Terraria;
 using Terraria.ID;

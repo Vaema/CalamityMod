@@ -1,4 +1,8 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using CalamityMod.Events;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
@@ -6,22 +10,19 @@ using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
+using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.SunkenSea;
-using CalamityMod.Tiles.Crags;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Tiles
 {
@@ -54,6 +55,8 @@ namespace CalamityMod.Tiles
         {
             ModContent.TileType<SeaPrism>(),
             ModContent.TileType<Navystone>(),
+            ModContent.TileType<Shellstone>(),
+            ModContent.TileType<Limestone>(),
             ModContent.TileType<Voidstone>()
         };
 
@@ -61,11 +64,6 @@ namespace CalamityMod.Tiles
         {
             Main.tileSpelunker[TileID.LunarOre] = true;
             Main.tileOreFinderPriority[TileID.LunarOre] = 900;
-        }
-
-        public override bool PreHitWire(int i, int j, int type)
-        {
-            return !BossRushEvent.BossRushActive;
         }
 
         public override bool TileFrame(int i, int j, int type, ref bool resetFrame, ref bool noBreak)
@@ -364,10 +362,10 @@ namespace CalamityMod.Tiles
                     player.breath = player.breathMax;
             }
 
-			// Mining set gives a chance for additional ore. This can be abused for infinite ore but it has a cooldown to prevent too much abuse
+            // Mining set gives a chance for additional ore. This can be abused for infinite ore but it has a cooldown to prevent too much abuse
             if (player.Calamity().miningSet && player.Calamity().miningSetCooldown <= 0 && !fail && TileID.Sets.Ore[tile.TileType])
             {
-				// 25% chance for additional ore
+                // 25% chance for additional ore
                 if (!Main.rand.NextBool(MiningArmorSetChange.BonusOreChance))
                     return;
 

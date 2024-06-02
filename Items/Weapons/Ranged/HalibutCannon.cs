@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.rare = ModContent.RarityType<HotPink>();
             Item.noMelee = true;
             Item.knockBack = 1f;
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.UseSound = null;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.Bullet;
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             SoundEngine.PlaySound(SoundID.Item38, player.Center);
-            
+
             // Really jammed in GFB
             if (Main.zenithWorld)
                 return Main.rand.NextBool(5);

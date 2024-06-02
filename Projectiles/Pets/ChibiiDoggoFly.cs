@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Pets
                 spriteEffects = SpriteEffects.FlipHorizontally;
             Color colorArea = Lighting.GetColor((int)(Projectile.Center.X / 16), (int)(Projectile.Center.Y / 16));
             Texture2D texture2D3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/ChibiiDoggoFlyMonochrome").Value;
-            int textureArea = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            int textureArea = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y3 = textureArea * Projectile.frame;
             Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, textureArea);
             Vector2 origin2 = rectangle.Size() / 2f;
@@ -49,10 +49,10 @@ namespace CalamityMod.Projectiles.Pets
                 Color colorAlpha = colorArea;
                 colorAlpha = Projectile.GetAlpha(colorAlpha);
                 goto IL_6899;
-                IL_6881:
+IL_6881:
                 counter += twoConst;
                 continue;
-                IL_6899:
+IL_6899:
                 float trailColorChange = (float)(twelveCompare - counter);
                 if (twoConst < 0)
                 {
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Pets
                 Main.spriteBatch.Draw(texture2D3, oldDrawPos + Projectile.Size / 2f - Main.screenPosition + new Vector2(0, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), colorAlpha, projRotate + Projectile.rotation * 0f * (float)(counter - 1) * Projectile.spriteDirection, origin2, Projectile.scale, effects, 0f);
                 goto IL_6881;
             }
-            Main.spriteBatch.Draw(ModContent.Request<Texture2D>(Texture).Value, Projectile.position + Projectile.Size / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, origin2, Projectile.scale, spriteEffects, 0);
+            Main.spriteBatch.Draw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, Projectile.position + Projectile.Size / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, origin2, Projectile.scale, spriteEffects, 0);
             return false;
         }
 

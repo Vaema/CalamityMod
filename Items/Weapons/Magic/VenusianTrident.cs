@@ -11,7 +11,6 @@ namespace CalamityMod.Items.Weapons.Magic
     public class VenusianTrident : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        public static int BaseDamage = 256;
 
         public override void SetStaticDefaults()
         {
@@ -22,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 70;
             Item.height = 68;
-            Item.damage = BaseDamage;
+            Item.damage = 256;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 20;
             Item.useTime = 25;
@@ -30,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 9f;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.UseSound = SoundID.Item45;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<VenusianBolt>();

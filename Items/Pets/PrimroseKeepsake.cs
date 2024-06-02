@@ -1,7 +1,7 @@
-﻿using CalamityMod.Buffs.Pets;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.Pets;
 using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Pets
             Item.useAnimation = 20;
             Item.useTime = 20;
             Item.noMelee = true;
-            Item.shoot = ModContent.ProjectileType<PrimroseKeepsakeDisplay>(); 
+            Item.shoot = ModContent.ProjectileType<PrimroseKeepsakeDisplay>();
             Item.buffType = ModContent.BuffType<FurtasticDuoBuff>();
             Item.UseSound = SoundID.Item44;
 
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Pets
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             List<int> pets = new List<int> { ModContent.ProjectileType<Bear>(), ModContent.ProjectileType<KendraPet>() };
-            foreach(int petProjID in pets)
+            foreach (int petProjID in pets)
                 Projectile.NewProjectile(source, position, velocity, petProjID, damage, knockback, player.whoAmI);
             return false;
         }

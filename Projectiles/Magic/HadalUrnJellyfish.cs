@@ -75,17 +75,17 @@ namespace CalamityMod.Projectiles.Magic
             //Detect if any enemies are very close
             int maxDistance = 10;
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].CanBeChasedBy(Projectile, false))
+                if (n.CanBeChasedBy(Projectile, false))
                 {
-                    float extraDistance = (Main.npc[i].width / 2) + (Main.npc[i].height / 2);
+                    float extraDistance = (n.width / 2) + (n.height / 2);
 
                     bool canHit = true;
                     if (extraDistance < maxDistance)
-                        canHit = Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1);
+                        canHit = Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1);
 
-                    if (Projectile.WithinRange(Main.npc[i].Center, maxDistance + extraDistance) && canHit)
+                    if (Projectile.WithinRange(n.Center, maxDistance + extraDistance) && canHit)
                     {
                         neartarget = true;
                     }
@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             int textureheight = tex.Height / Main.projFrames[Projectile.type];
             int y = textureheight * Projectile.frame;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y, tex.Width, textureheight)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)tex.Width / 2f, (float)textureheight / 2f), Projectile.scale, SpriteEffects.None, 0);

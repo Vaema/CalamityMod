@@ -8,7 +8,7 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class AbyssTreasureChest : ModTile
     {
-        public override void SetStaticDefaults() 
+        public override void SetStaticDefaults()
         {
             this.SetUpChest(ModContent.ItemType<Items.Placeables.Furniture.AbyssTreasureChest>());
             AddMapEntry(new Color(71, 49, 41), CalamityUtils.GetItemName<Items.Placeables.Furniture.AbyssTreasureChest>(), CalamityUtils.GetMapChestName);
@@ -32,16 +32,16 @@ namespace CalamityMod.Tiles.Abyss
             return World.Abyss.UnlockChests || NPC.downedBoss3;
         }
 
-        public override bool RightClick(int i, int j) 
+        public override bool RightClick(int i, int j)
         {
             Tile tile = Main.tile[i, j];
 
             int left = i;
             int top = j;
 
-            if (tile.TileFrameX % 36 != 0) 
+            if (tile.TileFrameX % 36 != 0)
                 left--;
-            if (tile.TileFrameY != 0) 
+            if (tile.TileFrameY != 0)
                 top--;
 
             return CalamityUtils.LockedChestRightClick(IsLockedChest(left, top), left, top, i, j);

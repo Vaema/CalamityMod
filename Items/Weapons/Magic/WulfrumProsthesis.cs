@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisShoot") { PitchVariance = 0.1f, Volume = 0.55f };
-        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisHit") { PitchVariance = 0.1f, Volume = 0.75f , MaxInstances = 3};
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisHit") { PitchVariance = 0.1f, Volume = 0.75f, MaxInstances = 3 };
         public static readonly SoundStyle SuckSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisSucc") { Volume = 0.5f };
         public static readonly SoundStyle SuckStopSound = new("CalamityMod/Sounds/Item/WulfrumProsthesisSuccStop") { Volume = 0.5f };
 
@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = ShootSound;
             Item.autoReuse = true;

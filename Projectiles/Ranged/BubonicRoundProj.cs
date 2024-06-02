@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -39,18 +39,20 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.rand.NextBool())
                 {
-                    int greenDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), 1, 1, 107, 0f, 0f, 0, default, 0.5f);
-                    Main.dust[greenDust].alpha = Projectile.alpha;
-                    Main.dust[greenDust].velocity *= 0f;
-                    Main.dust[greenDust].noGravity = true;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 303, -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.01f, 0.15f));
+                    dust.scale = Main.rand.NextFloat(0.7f, 0.85f);
+                    dust.noGravity = true;
+                    if (Main.rand.NextBool(3))
+                        dust.color = Color.LimeGreen;
+                    else
+                        dust.color = Color.Lime;
                 }
             }
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
-            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
+            //Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
             return true;
         }
 
@@ -66,18 +68,27 @@ namespace CalamityMod.Projectiles.Ranged
             return new Color(1f, 1f, 1f, 0f);
         }
 
-        // Ignores 20% of armor
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.ScalingArmorPenetration += 0.2f;
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => modifiers.ScalingArmorPenetration += 0.2f;
+        // Ignores 10% of armor
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.ScalingArmorPenetration += 0.1f;
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => modifiers.ScalingArmorPenetration += 0.1f;
 
         // Inflicts Plague for 0.75 seconds
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 45);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 60);
 
         public override void OnKill(int timeLeft)
         {
-            for (int k = 0; k < 5; k++)
+            for (int k = 0; k < 2; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 107, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                float pulseScale = Main.rand.NextFloat(0.3f, 0.4f);
+                DirectionalPulseRing pulse = new DirectionalPulseRing(Projectile.Center + Main.rand.NextVector2Circular(12, 12), new Vector2(2, 2).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.1f), (Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green) * 0.8f, new Vector2(1, 1), pulseScale - 0.25f, pulseScale, 0f, 15);
+                GeneralParticleHandler.SpawnParticle(pulse);
+            }
+            for (int b = 0; b < 6; b++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, 107, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.5f, 1.1f);
+                dust.alpha = 200;
             }
         }
     }

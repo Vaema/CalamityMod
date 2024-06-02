@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -125,11 +125,6 @@ namespace CalamityMod.Projectiles.Melee
                 baseRotation = MathHelper.WrapAngle(swingCompletion * Direction * MathHelper.Pi * -3f);
                 Owner.fullRotation = baseRotation;
                 Owner.fullRotationOrigin = Owner.Center - Owner.position;
-                Owner.immuneNoBlink = true;
-                Owner.immune = true;
-                Owner.immuneTime = 5;
-                for (int k = 0; k < Owner.hurtCooldowns.Length; k++)
-                    Owner.hurtCooldowns[k] = Owner.immuneTime;
 
                 // Emit fire dust.
                 for (int i = 0; i < 4; i++)
@@ -313,11 +308,26 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
+        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        {
+            if (CurrentState == SwingState.Spinning)
+                hitbox = new Rectangle((int)Owner.position.X - 35, (int)Owner.position.Y - 35, 102, 118);
+        }
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             ItemLoader.OnHitNPC(Owner.ActiveItem(), Owner, target, hit, damageDone);
             NPCLoader.OnHitByItem(target, Owner, Owner.ActiveItem(), hit, damageDone);
             PlayerLoader.OnHitNPC(Owner, target, hit, damageDone);
+
+            if (CurrentState == SwingState.Spinning)
+            {
+                Owner.immuneNoBlink = true;
+                Owner.immune = true;
+                Owner.immuneTime = 12;
+                for (int k = 0; k < Owner.hurtCooldowns.Length; k++)
+                    Owner.hurtCooldowns[k] = Owner.immuneTime;
+            }
         }
 
         public override void OnKill(int timeLeft) => Owner.fullRotation = 0f;

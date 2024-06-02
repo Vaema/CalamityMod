@@ -1,17 +1,18 @@
-﻿using CalamityMod.Balancing;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -19,6 +20,12 @@ namespace CalamityMod.ILEditing
 {
     public partial class ILChanges
     {
+        public static WindGrid Windgrid
+        {
+            get;
+            internal set;
+        }
+
         #region Decrease Sandstorm Wind Speed Requirement
         private static void DecreaseSandstormWindSpeedRequirement(ILContext il)
         {
@@ -136,26 +143,6 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_R4, 0f);
         }
         #endregion
-
-        #region Disabling of Lava Slime Lava Creation
-        private static void RemoveLavaDropsFromExpertLavaSlimes(ILContext il)
-        {
-            // Prevent Lava Slimes from dropping lava.
-            var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<WorldGen>("SquareTileFrame"))) // The only SquareTileFrame call in HitEffect.
-            {
-                LogFailure("Remove Lava Drops From Expert Lava Slimes", "Could not locate the SquareTileFrame function call.");
-                return;
-            }
-            if (!cursor.TryGotoPrev(MoveType.Before, i => i.MatchLdcI4(NPCID.LavaSlime))) // The ID of Lava Slimes.
-            {
-                LogFailure("Remove Lava Drops From Expert Lava Slimes", "Could not locate the Lava Slime ID variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, 0); // Change to an impossible scenario.
-        }
-        #endregion Disabling of Lava Slime Lava Creation
 
         #region Make Meteorite Explodable
         private static void MakeMeteoriteExplodable(ILContext il)
@@ -289,7 +276,7 @@ namespace CalamityMod.ILEditing
 
             // Sync the color changes.
             if (colorWasChanged)
-                NetMessage.SendData(MessageID.ItemTweaker, -1, -1, null, itemID, 1f);
+                NetMessage.SendData(MessageID.ItemTweaker, -1, -1, null, itemIndex, 1f);
         }
         #endregion Color Blighted Gel
 
@@ -918,5 +905,74 @@ namespace CalamityMod.ILEditing
             }
         }
         #endregion
+
+        #region Render Special Map Colors
+        private static void UseVisibleThroughWaterMapTile(ILContext il)
+        {
+            var c = new ILCursor(il);
+
+            if (!c.TryGotoNext(x => x.MatchCall<Tilemap>("get_Item")))
+            {
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not locate call to Terraria.Map.TileMap::get_Item.");
+                return;
+            }
+            
+            int tileIndex = -1;
+            if (!c.TryGotoNext(x => x.MatchStloc(out tileIndex)) || tileIndex == -1)
+            {
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not determine the local variable index tile is pushed to.");
+                return;
+            }
+
+            if (!c.TryGotoNext(x => x.MatchCall<Tile>("liquidType")))
+            {
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not locate call to Terraria.Tile::liquidType.");
+                return;
+            }
+
+            int liquidTypeIndex = -1;
+            if (!c.TryGotoNext(x => x.MatchStloc(out liquidTypeIndex)) || liquidTypeIndex == -1)
+            {
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not determine the local variable index liquidType is pushed to.");
+                return;
+            }
+
+            int relativeMapTypeIndex = -1;
+            if (!c.TryGotoNext(MoveType.After, x => x.MatchStloc(out relativeMapTypeIndex)) || relativeMapTypeIndex == -1)
+            {
+                LogFailure("Use VisibleThroughWater Map Tile", "Could not determine the local variable index of the relative map type.");
+                return;
+            }
+
+            c.Emit(OpCodes.Ldloc_0);
+            c.Emit(OpCodes.Ldloc, relativeMapTypeIndex);
+            c.Emit(OpCodes.Ldloc, liquidTypeIndex);
+            c.EmitDelegate(
+                (Tile tile, int relativeMapType, int liquidType) =>
+                {
+                    if (liquidType != LiquidID.Water)
+                        return relativeMapType;
+
+                    if (WallLoader.GetWall(tile.WallType) is IVisibleThroughWater visibleThroughWater)
+                        return visibleThroughWater.WaterMapEntry;
+
+                    return relativeMapType;
+                }
+            );
+            c.Emit(OpCodes.Stloc, relativeMapTypeIndex);
+        }
+        #endregion
+
+        // 02JUN2024: Ozzatron: The below code is being kept in its initial state for historic value.
+        #region Store The Stupid Fucking Private Wind Map In Public Property
+        private static void StoreWindGrid(On_TileDrawing.orig_Update orig, TileDrawing self)
+        {
+            orig(self);
+
+            // FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK YOU FUCK
+            if (Windgrid is null)
+                Windgrid = typeof(TileDrawing).GetField("_windGrid", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(self) as WindGrid;
+        }
+        #endregion Store The Stupid Fucking Private Wind Map In Public Property
     }
 }

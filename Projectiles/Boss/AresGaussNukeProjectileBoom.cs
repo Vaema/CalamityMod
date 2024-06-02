@@ -1,6 +1,6 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -51,11 +51,11 @@ namespace CalamityMod.Projectiles.Boss
         public override bool CanHitPlayer(Player target) => CalamityUtils.CircularHitboxCollision(Projectile.Center, CurrentRadius * Projectile.scale * 0.4f, target.Hitbox) && Projectile.timeLeft > 6;
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
-		{
-			if (info.Damage <= 0)
-				return;
+        {
+            if (info.Damage <= 0)
+                return;
 
-			target.AddBuff(BuffID.OnFire, 480);
-		}
+            target.AddBuff(BuffID.OnFire, 480);
+        }
     }
 }

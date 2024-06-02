@@ -1,10 +1,11 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -16,11 +17,19 @@ namespace CalamityMod.NPCs.Polterghast
         private int despawnTimer = 300;
         private bool phase2 = false;
 
+        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> ChainTexture;
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 2;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                ChainTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -126,7 +135,7 @@ namespace CalamityMod.NPCs.Polterghast
                 Movement(phase2, expertMode, revenge, death, speedBoost, despawnBoost, lifeRatio, tileEnrageMult, player);
 
                 // Fire projectiles
-                Vector2 hookPosition = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+                Vector2 hookPosition = NPC.Center;
                 float targetX = Main.player[NPC.target].position.X + (Main.player[NPC.target].width / 2) - hookPosition.X;
                 float targetY = Main.player[NPC.target].position.Y + (Main.player[NPC.target].height / 2) - hookPosition.Y;
                 float targetDistance = (float)Math.Sqrt(targetX * targetX + targetY * targetY);
@@ -220,9 +229,9 @@ namespace CalamityMod.NPCs.Polterghast
 
                 if (!despawnBoost && NPC.localAI[0] <= 0f && NPC.ai[0] != 0f)
                 {
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (var n in Main.ActiveNPCs)
                     {
-                        if (i != NPC.whoAmI && Main.npc[i].active && Main.npc[i].type == NPC.type && (Main.npc[i].velocity.X != 0f || Main.npc[i].velocity.Y != 0f))
+                        if (n.whoAmI != NPC.whoAmI && n.type == NPC.type && (n.velocity.X != 0f || n.velocity.Y != 0f))
                             NPC.localAI[0] = 180f;
                     }
                 }
@@ -261,7 +270,8 @@ namespace CalamityMod.NPCs.Polterghast
                                 NPC.localAI[1] = Vector2.Distance(NPC.Center, player.Center) * 0.01f;
                                 NPC.netUpdate = true;
                             }
-                        } catch
+                        }
+                        catch
                         {
                         }
                     }
@@ -351,9 +361,9 @@ namespace CalamityMod.NPCs.Polterghast
                     if (Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)
                         cyanLerpColor = Color.Lerp(cyanLerpColor, lightRed, MathHelper.Clamp((Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
 
-                    Main.spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
-                        new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value.Width, chainWidth)), cyanLerpColor, chainRotation,
-                        new Vector2(ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value.Width * 0.5f, ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
+                    Main.spriteBatch.Draw(ChainTexture.Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
+                        new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, ChainTexture.Value.Width, chainWidth)), cyanLerpColor, chainRotation,
+                        new Vector2(ChainTexture.Value.Width * 0.5f, ChainTexture.Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
                 }
             }
 
@@ -385,7 +395,7 @@ namespace CalamityMod.NPCs.Polterghast
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastHookGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color cyanLerp2 = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
             if (Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)
@@ -466,23 +476,17 @@ namespace CalamityMod.NPCs.Polterghast
             return false;
         }
 
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
-            cooldownSlot = ImmunityCooldownID.Bosses;
-            return true;
-        }
-
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 180, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 180, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

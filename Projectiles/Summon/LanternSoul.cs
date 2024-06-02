@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Summon;
+﻿using System;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -53,9 +53,9 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             int flameCount = 0;
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].type == ModContent.ProjectileType<LanternFlame>())
+                if (p.owner == Main.myPlayer && p.type == ModContent.ProjectileType<LanternFlame>())
                 {
                     flameCount++;
                 }

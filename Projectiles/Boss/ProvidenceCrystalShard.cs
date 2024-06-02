@@ -1,13 +1,13 @@
-﻿using CalamityMod.NPCs;
+﻿using System;
+using System.IO;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Boss
             }
             else
                 Projectile.maxPenetrate = (int)Providence.BossMode.Day;
-            
+
             // Night AI or Guardian Healer
             if (Projectile.maxPenetrate != (int)Providence.BossMode.Day || healerGuardianAlive)
                 Projectile.extraUpdates = 1;
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Boss
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 dustRotation = Vector2.UnitY.RotatedBy(i * MathHelper.Pi).RotatedBy(Projectile.rotation);
-                    Dust crystalDust = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 225, newColor2, 1.5f)];
+                    Dust crystalDust = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 225, newColor2, 1.5f)];
                     crystalDust.noGravity = true;
                     crystalDust.noLight = true;
                     crystalDust.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles.Boss
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 dustRotate = Vector2.UnitY.RotatedBy(j * MathHelper.Pi);
-                    Dust crystalDust2 = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 225, newColor2, 1.5f)];
+                    Dust crystalDust2 = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 225, newColor2, 1.5f)];
                     crystalDust2.noGravity = true;
                     crystalDust2.noLight = true;
                     crystalDust2.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -148,7 +148,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
                 if (shouldSpawn)
                 {
-                    Dust holyDust = Main.dust[Dust.NewDust(dustPos, 0, 0, 267, 0f, 0f, 127, newColor2, 1f)];
+                    Dust holyDust = Main.dust[Dust.NewDust(dustPos, 0, 0, DustID.RainbowMk2, 0f, 0f, 127, newColor2, 1f)];
                     holyDust.noGravity = true;
                     holyDust.position = dustPos;
                     holyDust.velocity = -Vector2.UnitY * dustVelScale * (Main.rand.NextFloat() * 0.9f + 1.6f);
@@ -175,7 +175,7 @@ namespace CalamityMod.Projectiles.Boss
             newColor.A = 255;
             for (float i = 0f; i < dustAmt; i++)
             {
-                int killDust = Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 0, newColor, 1f);
+                int killDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, newColor, 1f);
                 Main.dust[killDust].position = Projectile.Center;
                 Main.dust[killDust].velocity = spinningpoint.RotatedBy(MathHelper.TwoPi * i / dustAmt) * randomDustVelMod * (0.8f + Main.rand.NextFloat() * 0.4f);
                 Main.dust[killDust].noGravity = true;
@@ -190,7 +190,7 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (float j = 0f; j < dustAmt; j++)
             {
-                int killDust2 = Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 0, newColor, 1f);
+                int killDust2 = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, newColor, 1f);
                 Main.dust[killDust2].position = Projectile.Center;
                 Main.dust[killDust2].velocity = spinningpoint.RotatedBy(MathHelper.TwoPi * j / dustAmt) * randomDustVelMod * (0.8f + Main.rand.NextFloat() * 0.4f);
                 Dust dust = Main.dust[killDust2];

@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 dustRotate = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
                     dustRotate += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
                     dustRotate = dustRotate.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
-                    int burntDust = Dust.NewDust(Projectile.Center, 0, 0, 244, 0f, 0f, 160, default, 1f);
+                    int burntDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.CopperCoin, 0f, 0f, 160, default, 1f);
                     Main.dust[burntDust].scale = 1.1f;
                     Main.dust[burntDust].noGravity = true;
                     Main.dust[burntDust].position = Projectile.Center + dustRotate;
@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 244, 0f, 0f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f);
             }
         }
 

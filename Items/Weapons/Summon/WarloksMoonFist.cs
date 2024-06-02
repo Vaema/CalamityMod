@@ -36,6 +36,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<MoonFist>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
+            Item.Calamity().donorItem = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

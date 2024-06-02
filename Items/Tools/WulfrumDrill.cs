@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Typeless;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Typeless;
 
 namespace CalamityMod.Items.Tools
 {
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Tools
             Item.tileBoost += 1;
 
             Item.DamageType = DamageClass.Melee;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item23;
             Item.autoReuse = true;

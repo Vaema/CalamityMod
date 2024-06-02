@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.ai[1] = (float)(soundDelayer - soundDelayMult * aiSoundDelay);
                 isActive = true;
             }
-            bool canUseItem = player.channel && !player.noItems && !player.CCed;
+            bool canUseItem = !player.CantUseHoldout();
             if (Projectile.localAI[0] > 0f)
             {
                 Projectile.localAI[0] -= 1f;
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = soundDelayer - soundDelayMult * aiSoundDelay;
 
                 if (isActive)
-                    SoundEngine.PlaySound(SoundID.Item117, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item117, Projectile.Center);
             }
             else if (Projectile.soundDelay <= 0 && canUseItem)
             {
@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = soundDelayer - soundDelayMult * aiSoundDelay;
                 if (Projectile.ai[0] != 1f && isActive)
                 {
-                    SoundEngine.PlaySound(SoundID.Item117, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item117, Projectile.Center);
                 }
                 Projectile.localAI[0] = 12f;
             }
@@ -203,8 +203,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y6 = framing * Projectile.frame;
             Vector2 origin = new Vector2(13f, 16f);
             SpriteEffects spriteEffects = SpriteEffects.None;

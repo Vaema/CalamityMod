@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class Sunskater : ModNPC
     {
-        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/Sunskater") { Volume = 0.9f};
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/Sunskater") { Volume = 0.9f };
 
         private bool hasBeenHit = false;
 
@@ -47,14 +47,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Sky,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Sunskater")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Sunskater")
             });
         }
 
@@ -224,7 +228,39 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 80, true);
+            {
+                if (Main.zenithWorld)
+                {
+                    target.AddBuff(ModContent.BuffType<HolyInferno>(), 150);
+
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.OnFire, 180);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.OnFire3, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.CursedInferno, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Frostburn, 180);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Frostburn2, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Burning, 60);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 90);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<Dragonfire>(), 90);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 90);
+                }
+                else
+                    target.AddBuff(BuffID.OnFire, 150, true);
+            }
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.AddIf(() => Main.hardMode, ModContent.ItemType<EssenceofSunlight>(), 2);
@@ -233,13 +269,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 64, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.YellowTorch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 25; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 64, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.YellowTorch, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.zenithWorld)
                 {

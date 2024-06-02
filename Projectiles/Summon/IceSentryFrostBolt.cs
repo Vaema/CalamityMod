@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -27,6 +27,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.timeLeft = 480;
             Projectile.coldDamage = true;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -43,7 +45,7 @@ namespace CalamityMod.Projectiles.Summon
                 float slowVelX = Projectile.velocity.X / 3f * (float)i;
                 float slowVelY = Projectile.velocity.Y / 3f * (float)i;
                 int four = 4;
-                int dusty = Dust.NewDust(new Vector2(Projectile.position.X + (float)four, Projectile.position.Y + (float)four), Projectile.width - four * 2, Projectile.height - four * 2, 92, 0f, 0f, 100, default, 1.2f);
+                int dusty = Dust.NewDust(new Vector2(Projectile.position.X + (float)four, Projectile.position.Y + (float)four), Projectile.width - four * 2, Projectile.height - four * 2, DustID.Frost, 0f, 0f, 100, default, 1.2f);
                 Dust dust = Main.dust[dusty];
                 dust.noGravity = true;
                 dust.velocity *= 0.1f;
@@ -54,7 +56,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Main.rand.NextBool(10))
             {
                 int otherFour = 4;
-                int dustier = Dust.NewDust(new Vector2(Projectile.position.X + (float)otherFour, Projectile.position.Y + (float)otherFour), Projectile.width - otherFour * 2, Projectile.height - otherFour * 2, 92, 0f, 0f, 100, default, 0.6f);
+                int dustier = Dust.NewDust(new Vector2(Projectile.position.X + (float)otherFour, Projectile.position.Y + (float)otherFour), Projectile.width - otherFour * 2, Projectile.height - otherFour * 2, DustID.Frost, 0f, 0f, 100, default, 0.6f);
                 Main.dust[dustier].velocity *= 0.25f;
                 Main.dust[dustier].velocity += Projectile.velocity * 0.5f;
             }
@@ -94,7 +96,7 @@ namespace CalamityMod.Projectiles.Summon
             SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 92, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Frost, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
 

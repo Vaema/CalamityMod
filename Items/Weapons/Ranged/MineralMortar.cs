@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.useAmmo = AmmoID.Rocket;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.9f, PitchVariance = 0.1f };
@@ -43,11 +43,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile holdout = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ModContent.ProjectileType<MineralMortarHoldout>(), 0, 0f, player.whoAmI);
-
-            // We set the rotation to the direction to the mouse so the first frame doesn't appear bugged out.
-            holdout.rotation = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero).ToRotation();
-
+            Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
+            Projectile.NewProjectileDirect(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, ModContent.ProjectileType<MineralMortarHoldout>(), 0, 0f, player.whoAmI);
             return false;
         }
 

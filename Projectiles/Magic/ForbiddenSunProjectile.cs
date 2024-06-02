@@ -1,7 +1,7 @@
 ﻿using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Projectile.localAI[0] == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
                 Projectile.localAI[0] += 1f;
             }
             if (Main.rand.NextBool(4))

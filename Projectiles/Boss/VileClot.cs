@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -31,8 +31,8 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.velocity.Length() < 12f)
                 Projectile.velocity *= 1.01f;
 
-            int vileDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y),
-                Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 100, default, 1.5f);
+            int vileDust = Dust.NewDust(Projectile.position,
+                Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 100, default, 1.5f);
             Main.dust[vileDust].noGravity = true;
 
             Projectile.rotation += 0.3f * (float)Projectile.direction;
@@ -51,11 +51,11 @@ namespace CalamityMod.Projectiles.Boss
             SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             for (int i = 0; i < 6; i++)
             {
-                int killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, -Projectile.velocity.X * 0.2f, -Projectile.velocity.Y * 0.2f, 100, default, 2.5f);
+                int killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, -Projectile.velocity.X * 0.2f, -Projectile.velocity.Y * 0.2f, 100, default, 2.5f);
                 Main.dust[killDust].noGravity = true;
                 Dust dust = Main.dust[killDust];
                 dust.velocity *= 2f;
-                killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, -Projectile.velocity.X * 0.2f, -Projectile.velocity.Y * 0.2f, 100, default, 1.2f);
+                killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, -Projectile.velocity.X * 0.2f, -Projectile.velocity.Y * 0.2f, 100, default, 1.2f);
                 dust = Main.dust[killDust];
                 dust.velocity *= 2f;
             }

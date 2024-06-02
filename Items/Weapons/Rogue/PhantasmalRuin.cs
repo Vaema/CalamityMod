@@ -29,11 +29,11 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
         }
 
-		public override float StealthDamageMultiplier => 1.2f;
+        public override float StealthDamageMultiplier => 1.2f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
                 if (stealth.WithinBounds(Main.maxProjectiles))
                     Main.projectile[stealth].Calamity().stealthStrike = true;
-                    Main.projectile[stealth].penetrate = 3;
+                Main.projectile[stealth].penetrate = 3;
                 return false;
             }
             return true;

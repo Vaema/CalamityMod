@@ -1,7 +1,8 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -28,7 +29,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Main.rand.NextBool(12))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 157, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ChlorophyteWeapon, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             //Sticky Behaviour
             Projectile.StickyProjAI(15);

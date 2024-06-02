@@ -1,17 +1,18 @@
-﻿using CalamityMod.Events;
+﻿using System.IO;
+using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
     public class ScavengerLaser : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 5;
@@ -27,7 +28,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
             Projectile.alpha = 255;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 900;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -45,6 +46,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 5)
@@ -61,7 +63,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.alpha < 40)
             {
-                int laserDust = Dust.NewDust(Projectile.Center - Vector2.One * 5f, 10, 10, 244, -Projectile.velocity.X / 3f, -Projectile.velocity.Y / 3f, 150, Color.Transparent, 0.6f);
+                int laserDust = Dust.NewDust(Projectile.Center - Vector2.One * 5f, 10, 10, DustID.CopperCoin, -Projectile.velocity.X / 3f, -Projectile.velocity.Y / 3f, 150, Color.Transparent, 0.6f);
                 Main.dust[laserDust].noGravity = true;
             }
 
@@ -77,10 +79,14 @@ namespace CalamityMod.Projectiles.Boss
                 return;
             }
 
+            Vector2 maxVelocity = new Vector2(death ? 13.2f : 12f, death ? 13.2f : 12f);
+            float maxAcceleration = death ? 0.44f : 0.4f;
+            float timeBeforeHoming = death ? 30f : 45f;
+            float distanceAboveTargetBeforeHomingDownward = death ? 400f : 480f;
             if (Projectile.ai[0] == 0f)
             {
                 Projectile.localAI[0] += 1f;
-                if (Projectile.localAI[0] >= 45f)
+                if (Projectile.localAI[0] >= timeBeforeHoming)
                 {
                     Projectile.localAI[0] = 0f;
                     Projectile.ai[0] = 1f;
@@ -88,77 +94,101 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.netUpdate = true;
                 }
 
-                Projectile.velocity.X = Projectile.velocity.RotatedBy(0.0, default).X;
-                Projectile.velocity.X = MathHelper.Clamp(Projectile.velocity.X, -6f, 6f);
+                Projectile.velocity.X = Projectile.velocity.RotatedBy(0D).X;
+                Projectile.velocity.X = MathHelper.Clamp(Projectile.velocity.X, -maxVelocity.X, maxVelocity.X);
 
-                Projectile.velocity.Y = Projectile.velocity.Y - 0.08f;
+                Projectile.velocity.Y -= maxAcceleration * 0.2f;
                 if (Projectile.velocity.Y > 0f)
-                    Projectile.velocity.Y = Projectile.velocity.Y - 0.2f;
-                if (Projectile.velocity.Y < -7f)
-                    Projectile.velocity.Y = -7f;
+                    Projectile.velocity.Y -= maxAcceleration * 0.5f;
+                if (Projectile.velocity.Y < -maxVelocity.Y)
+                    Projectile.velocity.Y = -maxVelocity.Y;
             }
             else if (Projectile.ai[0] == 1f)
             {
-                if (Main.player[(int)Projectile.ai[1]].Center.Y > Projectile.Center.Y + 90f)
+                if (Main.player[(int)Projectile.ai[1]].Center.Y > Projectile.Center.Y + distanceAboveTargetBeforeHomingDownward)
                 {
                     Projectile.ai[0] = 2f;
                     Projectile.netUpdate = true;
                 }
 
-                Projectile.velocity.X = Projectile.velocity.RotatedBy(0.0, default).X;
-                Projectile.velocity.X = MathHelper.Clamp(Projectile.velocity.X, -6f, 6f);
+                Projectile.velocity.X = Projectile.velocity.RotatedBy(0D).X;
+                Projectile.velocity.X = MathHelper.Clamp(Projectile.velocity.X, -maxVelocity.X, maxVelocity.X);
 
-                Projectile.velocity.Y = Projectile.velocity.Y - 0.08f;
+                Projectile.velocity.Y -= maxAcceleration * 0.2f;
                 if (Projectile.velocity.Y > 0f)
-                    Projectile.velocity.Y = Projectile.velocity.Y - 0.2f;
-                if (Projectile.velocity.Y < -7f)
-                    Projectile.velocity.Y = -7f;
+                    Projectile.velocity.Y -= maxAcceleration * 0.5f;
+                if (Projectile.velocity.Y < -maxVelocity.Y)
+                    Projectile.velocity.Y = -maxVelocity.Y;
             }
             else if (Projectile.ai[0] == 2f)
             {
                 if (Main.player[(int)Projectile.ai[1]].Center.Y < Projectile.Center.Y)
                     Projectile.tileCollide = true;
 
-                float speed = revenge ? 9f : 7.5f;
-
                 Vector2 playerDistance = Main.player[(int)Projectile.ai[1]].Center - Projectile.Center;
-                if (playerDistance.Length() < 20f)
+                if (Projectile.Hitbox.Intersects(Main.player[(int)Projectile.ai[1]].Hitbox))
                 {
                     Projectile.Kill();
                     return;
                 }
 
-                playerDistance.Normalize();
-                playerDistance *= 14f;
-                playerDistance = Vector2.Lerp(Projectile.velocity, playerDistance, 0.6f);
-                if (playerDistance.Y < speed)
-                    playerDistance.Y = speed;
+                Vector2 projectileVelocity = playerDistance.SafeNormalize(Vector2.UnitY);
+                projectileVelocity *= maxVelocity.Length();
+                projectileVelocity = Vector2.Lerp(Projectile.velocity, projectileVelocity, 0.6f);
+                if (projectileVelocity.Y < maxVelocity.Y)
+                    projectileVelocity.Y = maxVelocity.Y;
 
-                float projVelocityMult = 0.4f;
-                if (Projectile.velocity.X < playerDistance.X)
+                if (Projectile.velocity.X < projectileVelocity.X)
                 {
-                    Projectile.velocity.X = Projectile.velocity.X + projVelocityMult;
-                    if (Projectile.velocity.X < 0f && playerDistance.X > 0f)
-                        Projectile.velocity.X = Projectile.velocity.X + projVelocityMult;
+                    Projectile.velocity.X += maxAcceleration;
+                    if (Projectile.velocity.X < 0f && projectileVelocity.X > 0f)
+                        Projectile.velocity.X += maxAcceleration;
                 }
-                else if (Projectile.velocity.X > playerDistance.X)
+                else if (Projectile.velocity.X > projectileVelocity.X)
                 {
-                    Projectile.velocity.X = Projectile.velocity.X - projVelocityMult;
-                    if (Projectile.velocity.X > 0f && playerDistance.X < 0f)
-                        Projectile.velocity.X = Projectile.velocity.X - projVelocityMult;
+                    Projectile.velocity.X -= maxAcceleration;
+                    if (Projectile.velocity.X > 0f && projectileVelocity.X < 0f)
+                        Projectile.velocity.X -= maxAcceleration;
                 }
 
-                if (Projectile.velocity.Y < playerDistance.Y)
+                if (Projectile.velocity.Y < projectileVelocity.Y)
                 {
-                    Projectile.velocity.Y = Projectile.velocity.Y + projVelocityMult;
-                    if (Projectile.velocity.Y < 0f && playerDistance.Y > 0f)
-                        Projectile.velocity.Y = Projectile.velocity.Y + projVelocityMult;
+                    Projectile.velocity.Y += maxAcceleration;
+                    if (Projectile.velocity.Y < 0f && projectileVelocity.Y > 0f)
+                        Projectile.velocity.Y += maxAcceleration;
                 }
-                else if (Projectile.velocity.Y > playerDistance.Y)
+                else if (Projectile.velocity.Y > projectileVelocity.Y)
                 {
-                    Projectile.velocity.Y = Projectile.velocity.Y - projVelocityMult;
-                    if (Projectile.velocity.Y > 0f && playerDistance.Y < 0f)
-                        Projectile.velocity.Y = Projectile.velocity.Y - projVelocityMult;
+                    Projectile.velocity.Y -= maxAcceleration;
+                    if (Projectile.velocity.Y > 0f && projectileVelocity.Y < 0f)
+                        Projectile.velocity.Y -= maxAcceleration;
+                }
+
+                // Fly away from other lasers
+                float pushForce = death ? 0.12f : 0.08f;
+                float pushDistance = death ? 60f : 40f;
+                for (int k = 0; k < Main.maxProjectiles; k++)
+                {
+                    Projectile otherProj = Main.projectile[k];
+                    // Short circuits to make the loop as fast as possible
+                    if (!otherProj.active || k == Projectile.whoAmI)
+                        continue;
+
+                    // If the other projectile is indeed the same owned by the same player and they're too close, nudge them away.
+                    bool sameProjType = otherProj.type == Projectile.type;
+                    float taxicabDist = Vector2.Distance(Projectile.Center, otherProj.Center);
+                    if (sameProjType && taxicabDist < pushDistance)
+                    {
+                        if (Projectile.position.X < otherProj.position.X)
+                            Projectile.velocity.X -= pushForce;
+                        else
+                            Projectile.velocity.X += pushForce;
+
+                        if (Projectile.position.Y < otherProj.position.Y)
+                            Projectile.velocity.Y -= pushForce;
+                        else
+                            Projectile.velocity.Y += pushForce;
+                    }
                 }
             }
         }
@@ -171,10 +201,7 @@ namespace CalamityMod.Projectiles.Boss
             target.AddBuff(BuffID.OnFire, 180);
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(255, 50, 50, Projectile.alpha);
-        }
+        public override Color? GetAlpha(Color lightColor) => new Color(255, 50, 50, Projectile.alpha);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -186,23 +213,22 @@ namespace CalamityMod.Projectiles.Boss
         {
             SoundEngine.PlaySound(SoundID.Zombie103, Projectile.Center);
             Projectile.position = Projectile.Center;
-            Projectile.width = Projectile.height = 64;
+            Projectile.width = Projectile.height = 96;
             Projectile.position.X = Projectile.position.X - (Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
-            for (int i = 0; i < 2; i++)
+
+            for (int i = 0; i < 3; i++)
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 1.5f);
+
+            for (int j = 0; j < 30; j++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 31, 0f, 0f, 100, default, 1.5f);
-            }
-            for (int j = 0; j < 20; j++)
-            {
-                int killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 0, default, 2.5f);
+                int killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 0, default, 2.5f);
                 Main.dust[killDust].noGravity = true;
                 Main.dust[killDust].velocity *= 3f;
-                killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1.5f);
+                killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1.5f);
                 Main.dust[killDust].velocity *= 2f;
                 Main.dust[killDust].noGravity = true;
             }
-            Projectile.Damage();
         }
     }
 }

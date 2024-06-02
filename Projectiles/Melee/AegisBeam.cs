@@ -1,9 +1,9 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item73, Projectile.position);
                 Projectile.localAI[0] += 1f;
             }
-            int goldDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 246, 0f, 0f, 100, new Color(255, Main.DiscoG, 53), 0.8f);
+            int goldDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 53), 0.8f);
             Main.dust[goldDust].noGravity = true;
             Main.dust[goldDust].velocity *= 0.5f;
             Main.dust[goldDust].velocity += Projectile.velocity * 0.1f;
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Melee
                 randoAdjuster = speed / randoAdjuster;
                 rando *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int deathDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, new Color(255, Main.DiscoG, 53), 1.2f);
+                int deathDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, new Color(255, Main.DiscoG, 53), 1.2f);
                 Dust dust = Main.dust[deathDust];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

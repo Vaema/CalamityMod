@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Melee.Spears;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,20 +11,19 @@ namespace CalamityMod.Items.Weapons.Melee
     public class YateveoBloom : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public static int BaseDamage = 30; //Spear is 20 damage, Flail is 30 damage
         public static float ShootSpeed = 12f;
         public static float SpearSpeed = 4.5f;
 
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 62;
-            Item.damage = BaseDamage;
+            Item.damage = 30; // Spear is 20 damage, Flail is 30 damage
             Item.knockBack = 5f;
             Item.useAnimation = Item.useTime = 22;
 
@@ -38,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item1;
 
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.Calamity().donorItem = true;
 

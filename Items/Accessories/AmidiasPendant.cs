@@ -1,9 +1,9 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Items.Potions.Alcohol;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 26;
             Item.height = 46;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.accessory = true;
         }
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories
             }
             if (ShardCountdown > 0)
             {
-                ShardCountdown -= Main.rand.Next(1,4);
+                ShardCountdown -= Main.rand.Next(1, 4);
                 if (ShardCountdown <= 0)
                 {
                     if (player.whoAmI == Main.myPlayer)

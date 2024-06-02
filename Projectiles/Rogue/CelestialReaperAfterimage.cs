@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.tileCollide = false;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.timeLeft = 180;
-            Projectile.Calamity().CannotProc=true;
+            Projectile.Calamity().CannotProc = true;
         }
 
         public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 150 && target.CanBeChasedBy(Projectile);

@@ -1,17 +1,17 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Melee;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class RoxcaliburProj : ModProjectile, ILocalizedModType
     {
-        public string LocalizationCategory => "Projectiles.Melee";
+        public new string LocalizationCategory => "Projectiles.Melee";
 
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Roxcalibur";
 
@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
-	    Projectile.scale = 1.3f;
+            Projectile.scale = 1.3f;
             Projectile.timeLeft = 3600;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 150;
@@ -50,24 +50,24 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 HitboxCenter = Projectile.Center + RockOffset();
                 hitbox = new Rectangle((int)(HitboxCenter.X - HitboxSize.X / 2f), (int)(HitboxCenter.Y - HitboxSize.Y / 2f), (int)HitboxSize.X, (int)HitboxSize.Y);
             }
-            
+
         }
 
         //more precise hitbox. makes the weapon harder to use but looks visually better: use it if you want.
-/*
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (HitTimer <= 0)
-            {
-                float size = Projectile.Size.Length();
-                Vector2 hiltPos = Projectile.Center - Projectile.velocity * size / 2;
-                Vector2 endPos = Projectile.Center + Projectile.velocity * size / 2;
-                float useless = 0f;
-                return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), hiltPos, endPos, size / 2, ref useless);
-            }
-            return base.Colliding(projHitbox, targetHitbox);
-        }
-*/
+        /*
+                public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+                {
+                    if (HitTimer <= 0)
+                    {
+                        float size = Projectile.Size.Length();
+                        Vector2 hiltPos = Projectile.Center - Projectile.velocity * size / 2;
+                        Vector2 endPos = Projectile.Center + Projectile.velocity * size / 2;
+                        float useless = 0f;
+                        return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), hiltPos, endPos, size / 2, ref useless);
+                    }
+                    return base.Colliding(projHitbox, targetHitbox);
+                }
+        */
 
         public override void AI()
         {
@@ -105,9 +105,9 @@ namespace CalamityMod.Projectiles.Melee
                 if (Animation == Plunging)
                 {
                     Projectile.timeLeft = 60 * 2; //maximum 2 second plunge time
-		    chargeModifier = ChargeLevel * 3.5f;
+                    chargeModifier = ChargeLevel * 3.5f;
                 }
-                    
+
                 Projectile.damage = (int)(Projectile.damage * (1 + chargeModifier));
                 Projectile.netUpdate = true;
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/LoudSwingWoosh") with { Pitch = -0.5f }, Projectile.Center);
@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Melee
                         rotation = Utils.SmoothStep(-MathHelper.PiOver2 / 4, MathHelper.PiOver2 / 1.5f, rotModifier);
                         rotation *= direction;
                         Projectile.timeLeft = (int)origAnimMax;
-                        
+
 
                         if (ChargeLevel >= 1 && player.whoAmI == Main.myPlayer && PlayedChargeSound == 0)
                         {
@@ -268,8 +268,8 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle rectangle = texture.Bounds; 
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Rectangle rectangle = texture.Bounds;
             Vector2 origin2 = rectangle.Size() / 2f;
             SpriteEffects effects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 

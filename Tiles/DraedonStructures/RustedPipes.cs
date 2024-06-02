@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.DraedonStructures
 {
@@ -24,7 +24,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
         public override void PlaceInWorld(int i, int j, Item item)
         {
-            SoundEngine.PlaySound(SoundID.Item52 with { Volume = SoundID.Item52.Volume * 0.75f, Pitch = SoundID.Item52.Pitch - 0.5f }, new Vector2( i * 16, j * 16 ));
+            SoundEngine.PlaySound(SoundID.Item52 with { Volume = SoundID.Item52.Volume * 0.75f, Pitch = SoundID.Item52.Pitch - 0.5f }, new Vector2(i * 16, j * 16));
         }
     }
 }

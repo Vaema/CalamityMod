@@ -5,9 +5,9 @@ using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class BlackHawkSummon : ModProjectile, ILocalizedModType
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 direction = Vector2.Normalize(Projectile.velocity) * new Vector2(Projectile.width / 2f, Projectile.height) * 0.75f;
                     direction = direction.RotatedBy((double)((dustIndex - (dustAmt / 2f - 1f)) * MathHelper.TwoPi / dustAmt), default) + Projectile.Center;
                     Vector2 dustVel = direction - Projectile.Center;
-                    int fire = Dust.NewDust(direction + dustVel, 0, 0, 258, dustVel.X * 1.75f, dustVel.Y * 1.75f, 100, default, 1.1f);
+                    int fire = Dust.NewDust(direction + dustVel, 0, 0, DustID.LavaMoss, dustVel.X * 1.75f, dustVel.Y * 1.75f, 100, default, 1.1f);
                     Main.dust[fire].noGravity = true;
                     Main.dust[fire].velocity = dustVel;
                 }
@@ -304,7 +304,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 

@@ -1,6 +1,6 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using System.Collections.Generic;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 28;
             Item.height = 30;
-            Item.damage = 82;
+            Item.damage = 86;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 12;
             Item.useTime = 25;
@@ -28,25 +28,25 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item34;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<AtlantisSpear>();
             Item.shootSpeed = 32f;
-        }      
+        }
 
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
         {
             if (Main.zenithWorld)
             {
                 bool devourer = DownedBossSystem.downedDoG;
-                float damageMult = 1f + (devourer ? (430f / 82f - 1f) : 0f);
+                float damageMult = 1f + (devourer ? (348f / 86f - 1f) : 0f);
                 damage *= damageMult;
             }
         }
         public override float UseSpeedMultiplier(Player player) => (DownedBossSystem.downedDoG && Main.zenithWorld) ? 2.5f : 1f;
-        
+
         public override void ModifyTooltips(List<TooltipLine> list)
         {
             bool devourer = DownedBossSystem.downedDoG;

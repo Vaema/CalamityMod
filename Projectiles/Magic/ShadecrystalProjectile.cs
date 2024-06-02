@@ -1,4 +1,5 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,13 +9,20 @@ namespace CalamityMod.Projectiles.Magic
     public class ShadecrystalProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+        }
+
         public override void SetDefaults()
         {
             Projectile.width = 6;
             Projectile.height = 6;
-            Projectile.scale = 1.5f;
             Projectile.friendly = true;
             Projectile.alpha = 50;
+            Projectile.MaxUpdates = 3;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.DamageType = DamageClass.Magic;
@@ -22,25 +30,43 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Lighting.AddLight(Projectile.Center, 0.15f, 0f, 0.15f);
+            if (Projectile.ai[2] < 255f)
+            {
+                Projectile.ai[2] += 3f;
+                if (Projectile.ai[2] >= 255f)
+                    Projectile.ai[2] = -255f;
+            }
+
+            Lighting.AddLight(Projectile.Center, 0.15f * Projectile.scale, 0f, 0.15f * Projectile.scale);
 
             Projectile.rotation += Projectile.velocity.X * 0.2f;
 
-            if (Main.rand.NextBool(4))
+            if (Main.rand.NextBool(6))
             {
-                int crystalDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 70, 0f, 0f, 0, default, 1f);
+                int crystalDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurpleCrystalShard, 0f, 0f, Projectile.alpha, new Color(Math.Abs(Projectile.ai[2]), 0, 255, Projectile.alpha));
                 Main.dust[crystalDust].noGravity = true;
-                Main.dust[crystalDust].velocity *= 0.2f;
-                Main.dust[crystalDust].scale *= 0.8f;
+                Main.dust[crystalDust].velocity = Projectile.velocity * 0.2f;
+                Main.dust[crystalDust].scale = Projectile.scale;
             }
 
-            Projectile.velocity *= 0.99f;
-
-            Projectile.ai[1] += 1f;
-            if (Projectile.ai[1] > 90f)
+            float maxVelocity = 6f;
+            if (Projectile.velocity.Length() < maxVelocity)
             {
-                Projectile.scale -= 0.05f;
-                if (Projectile.scale <= 0.2)
+                Projectile.velocity *= Projectile.ai[1];
+                if (Projectile.velocity.Length() > maxVelocity)
+                {
+                    Projectile.velocity.Normalize();
+                    Projectile.velocity *= maxVelocity;
+                }
+            }
+            else
+                CalamityUtils.HomeInOnNPC(Projectile, false, 224f, maxVelocity * 1.25f, 30f);
+
+            Projectile.ai[0] += 1f;
+            if (Projectile.ai[0] >= 520f)
+            {
+                Projectile.scale -= 0.01f;
+                if (Projectile.scale <= 0.2f)
                 {
                     Projectile.scale = 0.2f;
                     Projectile.Kill();
@@ -63,18 +89,23 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            for (int k = 0; k < 5; k++)
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 70, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+            for (int k = 0; k < 3; k++)
+            {
+                int dust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.PurpleCrystalShard, 0f, 0f, Projectile.alpha, new Color(Math.Abs(Projectile.ai[2]), 0, 255, Projectile.alpha));
+                Main.dust[dust].noGravity = true;
+                Main.dust[dust].velocity = Projectile.oldVelocity * 0.5f;
+                Main.dust[dust].scale = Projectile.scale;
+            }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.Frostburn2, 120);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn2, 120);
 
-        public override Color? GetAlpha(Color lightColor)
+        public override Color? GetAlpha(Color lightColor) => new Color(Math.Abs(Projectile.ai[2]), 0, 255, Projectile.alpha);
+
+        public override bool PreDraw(ref Color lightColor)
         {
-            return new Color(200, 200, 200, 0);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            return false;
         }
     }
 }

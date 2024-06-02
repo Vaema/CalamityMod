@@ -1,6 +1,8 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Healing
 {
     public class CactusHealOrb : ModProjectile, ILocalizedModType
@@ -17,7 +19,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
-			Projectile.tileCollide = false;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
@@ -25,7 +27,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.velocity.Y *= 0.98f;
 
             Projectile.HealingProjectile(15, Projectile.owner, 12f, 15f, false);
-            int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(0, 200, 0), 1.5f);
+            int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 200, 0), 1.5f);
             Dust dust = Main.dust[dusty];
             dust.noGravity = true;
             dust.position.X -= Projectile.velocity.X * 0.2f;

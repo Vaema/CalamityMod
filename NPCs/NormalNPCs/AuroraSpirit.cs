@@ -1,5 +1,5 @@
-﻿using CalamityMod.Items.Materials;
-using System;
+﻿using System;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -13,7 +13,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 5;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = -1,
                 PortraitPositionYOverride = -20f
@@ -40,11 +40,15 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = false;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AuroraSpirit")
@@ -77,11 +81,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.frameCounter++;
             if (NPC.frameCounter > 4)
             {
-              NPC.frame.Y += currentFrame;
-              NPC.frameCounter = 0;
+                NPC.frame.Y += currentFrame;
+                NPC.frameCounter = 0;
             }
             if (NPC.frame.Y / currentFrame >= Main.npcFrameCount[NPC.type])
-              NPC.frame.Y = 0;
+                NPC.frame.Y = 0;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -105,20 +109,20 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            Lighting.AddLight((int)((NPC.position.X + (float)(NPC.width / 2)) / 16f), (int)((NPC.position.Y + (float)(NPC.height / 2)) / 16f), 0.02f, 0.7f, 0.7f);
+            Lighting.AddLight(NPC.Center, 0.02f, 0.7f, 0.7f);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 67, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.IceRod, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 67, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.IceRod, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

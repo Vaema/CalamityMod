@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -32,11 +32,11 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Projectile.ai[0] % 4 == 0)
                 {
-                    coolDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width - constant * 2, Projectile.height - constant * 2, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
+                    coolDust = Dust.NewDust(Projectile.position, Projectile.width - constant * 2, Projectile.height - constant * 2, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
                 }
                 else
                 {
-                    coolDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width - constant * 2, Projectile.height - constant * 2, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
+                    coolDust = Dust.NewDust(Projectile.position, Projectile.width - constant * 2, Projectile.height - constant * 2, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
                 }
                 Main.dust[coolDust].noGravity = true;
                 Main.dust[coolDust].velocity *= 0.1f;
@@ -50,9 +50,9 @@ namespace CalamityMod.Projectiles.Rogue
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
-        
+
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
-        
+
         public override bool? CanDamage() => Projectile.ai[0] >= 15f || raining;
     }
 }

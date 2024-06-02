@@ -1,13 +1,14 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.IO;
+using System.Linq;
+using CalamityMod.Dusts;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -129,7 +130,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 // In addition to typical channel cancellation criteria, the sword fizzles out if it runs out of charge.
                 Item playerItem = player.ActiveItem();
                 bool hasCharge = modItem.Charge > 0f;
-                if (player.channel && !player.noItems && !player.CCed && playerItem.type == ModContent.ItemType<Phaseslayer>() && hasCharge)
+                if (!player.CantUseHoldout() && playerItem.type == ModContent.ItemType<Phaseslayer>() && hasCharge)
                 {
                     // The distance ratio ranges from 0 (your mouse is directly on the player) to 1 (your mouse is at the max range considered, or any further distance).
                     float mouseDistance = Projectile.Distance(Main.MouseWorld);
@@ -271,7 +272,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
 
-        internal PrimitiveTrail TrailDrawer;
         internal Color ColorFunction(float completionRatio)
         {
             float averageRotation = Projectile.oldRot.Take(20).Average(angle => MathHelper.WrapAngle(angle) + MathHelper.Pi);
@@ -296,7 +296,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D bladeTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PhaseslayerBlade").Value;
-            Texture2D hiltTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D hiltTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             if (IsSmall)
                 bladeTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PhaseslayerBladeSmall").Value;
 
@@ -306,9 +306,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             origin /= IsSmall ? new Vector2(1f, 3f) : new Vector2(3f, 7f);
 
             Rectangle frame = IsSmall ? bladeTexture.Frame(1, 3, 0, BladeFrameY) : bladeTexture.Frame(3, 7, BladeFrameX, BladeFrameY);
-
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]);
 
             GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SwordSlashTexture"));
 
@@ -327,8 +324,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 float angularTurn = i * swingAngularDirection * -0.09f;
                 drawPoints[i] = Projectile.position + perpendicularDirection.RotatedBy(angularTurn) * offsetFactor;
             }
+            PrimitiveRenderer.RenderTrail(drawPoints, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + bladeOffset, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
 
-            TrailDrawer.Draw(drawPoints, Projectile.Size * 0.5f + bladeOffset - Main.screenPosition, 50);
             Main.EntitySpriteDraw(bladeTexture, Projectile.Center + bladeOffset - Main.screenPosition, frame, Color.White, Projectile.rotation + MathHelper.PiOver2, origin, Projectile.scale, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(hiltTexture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver2, hiltTexture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
 

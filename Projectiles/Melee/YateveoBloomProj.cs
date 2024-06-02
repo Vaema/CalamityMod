@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void AI()
         {
             Vector2 projDirection = Main.player[Projectile.owner].MountedCenter - Projectile.Center;
-            Projectile.rotation = projDirection.ToRotation() - 1.57f;
+            Projectile.rotation = projDirection.ToRotation() - MathHelper.PiOver2;
             float distance = projDirection.Length();
 
             if (Main.player[Projectile.owner].dead)
@@ -187,7 +187,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 origin = new Vector2((float)texture2D2.Width * 0.5f, (float)texture2D2.Height * 0.5f);
             float projHeight = (float)texture2D2.Height;
             Vector2 actualCenter = mountedCenter - projCenter;
-            float projRotation = (float)Math.Atan2((double)actualCenter.Y, (double)actualCenter.X) - 1.57f;
+            float projRotation = (float)Math.Atan2((double)actualCenter.Y, (double)actualCenter.X) - MathHelper.PiOver2;
             bool isActive = true;
             if (float.IsNaN(projCenter.X) && float.IsNaN(projCenter.Y))
             {

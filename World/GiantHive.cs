@@ -1,4 +1,9 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Rogue;
@@ -9,21 +14,16 @@ using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.FurnitureAncient;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
-using CalamityMod.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using Terraria.DataStructures;
-using Terraria.GameContent.Generation;
 
 namespace CalamityMod.World
 {
@@ -38,26 +38,26 @@ namespace CalamityMod.World
             while (!validHeightFound && attempts++ < 100000)
             {
                 while (!WorldGen.SolidTile(origin.X, treeHeight))
-				{
-					treeHeight++;
-				}
+                {
+                    treeHeight++;
+                }
 
                 if (Main.tile[origin.X, treeHeight].HasTile || Main.tile[origin.X, treeHeight].WallType > 0)
-				{
+                {
                     validHeightFound = true;
-				}
+                }
             }
 
             int extraWidth = 0;
-            
+
             while (validHeightFound)
             {
                 //place the roots first so the bottom of the hole doesnt look strange
                 for (int k = 0; k < 6; k++)
                 {
                     double angle = (double)k / 3.0 * 2.0 + 0.57075;
-                    WorldUtils.Gen(new Point(origin.X + 2, origin.Y - 30), new ShapeRoot((int)angle, WorldGen.genRand.Next(80, 120)), 
-                    Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87), 
+                    WorldUtils.Gen(new Point(origin.X + 2, origin.Y - 30), new ShapeRoot((int)angle, WorldGen.genRand.Next(80, 120)),
+                    Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87),
                     new Actions.SetTile(TileID.LivingMahogany, setSelfFrames: true)));
                 }
 
@@ -75,28 +75,28 @@ namespace CalamityMod.World
                         //create a list of points for the ends of each branch
                         List<Point> list = new List<Point>();
 
-                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-0.6853981852531433, 
-                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), 
+                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-0.6853981852531433,
+                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237),
                         new Modifiers.SkipWalls(87), new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames(frameNeighbors: true)));
 
-                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-2.45619455575943, 
-                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), 
+                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-2.45619455575943,
+                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237),
                         new Modifiers.SkipWalls(87), new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames(frameNeighbors: true)));
 
                         //place living mahogany leaves at the end of each branch
                         foreach (Point item in list)
                         {
-                            WorldUtils.Gen(item, new Shapes.Circle(WorldGen.genRand.Next(5, 12)), Actions.Chain(new Modifiers.Blotches(WorldGen.genRand.Next(3, 5), WorldGen.genRand.Next(3, 5)), 
+                            WorldUtils.Gen(item, new Shapes.Circle(WorldGen.genRand.Next(5, 12)), Actions.Chain(new Modifiers.Blotches(WorldGen.genRand.Next(3, 5), WorldGen.genRand.Next(3, 5)),
                             new Modifiers.SkipTiles(383, 21, 467, 226, 237), new Modifiers.SkipWalls(78, 87), new Actions.SetTile(TileID.LivingMahoganyLeaves), new Actions.SetFrames(frameNeighbors: true)));
                         }
                     }
 
                     //place the tree itself
-                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1 - extraWidth, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth), 
+                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1 - extraWidth, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth),
                     Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87), new Actions.RemoveWall(),
                     new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames()));
 
-                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth), 
+                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth),
                     Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87), new Actions.RemoveWall(),
                     new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames()));
 
@@ -124,7 +124,7 @@ namespace CalamityMod.World
                     }));
 
                     //chance to place blocks inside the tree for randomness
-                    if (WorldGen.genRand.Next(20) == 0)
+                    if (WorldGen.genRand.NextBool(20))
                     {
                         WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-2, 2), y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
                         {
@@ -145,7 +145,7 @@ namespace CalamityMod.World
 
             return false;
         }
-        
+
         public static bool CanPlaceGiantHive(Point origin, StructureMap structures)
         {
             if (!structures.CanPlace(new Rectangle(origin.X - 50, origin.Y - 50, 100, 100)))
@@ -411,7 +411,7 @@ namespace CalamityMod.World
 
                         if (Main.tile[i, j].WallType == WallID.CrimstoneUnsafe || Main.tile[i, j].WallType == WallID.EbonstoneUnsafe || Main.tile[i, j].WallType == WallID.LihzahrdBrickUnsafe)
                             return true;
-                        if (Main.tile[i,j].LiquidAmount != 0 && Main.tile[i, j].LiquidType == LiquidID.Shimmer)
+                        if (Main.tile[i, j].LiquidAmount != 0 && Main.tile[i, j].LiquidType == LiquidID.Shimmer)
                             return true;
                     }
                 }

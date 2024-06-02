@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.rand.NextBool(16))
             {
                 Vector2 rotation = Vector2.UnitX.RotatedByRandom(MathHelper.PiOver2).RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                int pinkDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 164, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1f);
+                int pinkDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TeleportationPotion, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1f);
                 Main.dust[pinkDust].velocity = rotation * 0.66f;
                 Main.dust[pinkDust].position = Projectile.Center + rotation * 12f;
             }
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.light = 0.5f;
                 if (Main.rand.NextBool(10))
-                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 229, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1f);
+                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1f);
                 if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
                     Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), Main.rand.Next(16, 18), 1f);
             }
@@ -122,14 +122,14 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 4; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 164, 0f, 0f, 50, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TeleportationPotion, 0f, 0f, 50, default, 1.5f);
             }
             for (int j = 0; j < 20; j++)
             {
-                int galaxyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 229, 0f, 0f, 0, default, 2.5f);
+                int galaxyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 0, default, 2.5f);
                 Main.dust[galaxyDust].noGravity = true;
                 Main.dust[galaxyDust].velocity *= 3f;
-                galaxyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 229, 0f, 0f, 50, default, 1.5f);
+                galaxyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, 0f, 0f, 50, default, 1.5f);
                 Main.dust[galaxyDust].velocity *= 2f;
                 Main.dust[galaxyDust].noGravity = true;
             }

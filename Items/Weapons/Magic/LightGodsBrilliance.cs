@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ShadecrystalTome>().
+                AddIngredient<ShadecrystalBarrage>().
                 AddIngredient<AbyssalTome>().
                 AddIngredient(ItemID.HolyWater, 10).
                 AddIngredient(ItemID.SoulofLight, 30).

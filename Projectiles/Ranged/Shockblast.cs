@@ -1,7 +1,9 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Ranged
 {
     public class Shockblast : ModProjectile, ILocalizedModType
@@ -49,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
                 randAdjust = rand3 / randAdjust;
                 rand1 *= randAdjust;
                 rand2 *= randAdjust;
-                int shockDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 185);
+                int shockDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.FrostHydra);
                 Dust dust = Main.dust[shockDust];
                 dust.scale = sizeMultiplier;
                 dust.noGravity = true;

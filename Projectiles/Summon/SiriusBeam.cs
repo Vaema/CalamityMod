@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Summon
                 Vector2 projPos = Projectile.position;
                 projPos -= Projectile.velocity * (d * 0.25f);
                 Projectile.alpha = 255;
-                int trailDust = Dust.NewDust(projPos, 1, 1, 20, 0f, 0f, 0, default, 1f);
+                int trailDust = Dust.NewDust(projPos, 1, 1, DustID.PurificationPowder, 0f, 0f, 0, default, 1f);
                 Main.dust[trailDust].position = projPos;
                 Main.dust[trailDust].scale = Main.rand.Next(70, 110) * 0.013f;
                 Main.dust[trailDust].velocity *= 0.2f;

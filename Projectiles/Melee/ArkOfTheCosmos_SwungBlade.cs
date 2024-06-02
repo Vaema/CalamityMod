@@ -1,16 +1,16 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
-using CalamityMod.Sounds;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Melee
 
         #region Throw variables
         //Only used for the long range throw
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed && Owner.HeldItem.type == ItemType<ArkoftheCosmos>();
+        private bool OwnerCanShoot => !Owner.CantUseHoldout() && Owner.HeldItem.type == ItemType<ArkoftheCosmos>();
         public bool Thrown => Combo == 2 || Combo == 3;
         public const float MaxThrowTime = 140;
         public float ThrowReach;
@@ -141,7 +141,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (!initialized) //Initialization
             {
-                Projectile.timeLeft = Thrown ? (int) MaxThrowTime : (int)MaxSwingTime;
+                Projectile.timeLeft = Thrown ? (int)MaxThrowTime : (int)MaxSwingTime;
                 SoundStyle sound = (Charge > 0 || Thrown) ? CommonCalamitySounds.LouderPhantomPhoenix : SoundID.Item71;
                 SoundEngine.PlaySound(sound, Projectile.Center);
                 direction = Projectile.velocity;
@@ -182,11 +182,11 @@ namespace CalamityMod.Projectiles.Melee
                         //Slightly shift the blasts up so the final close shots don't go BELOW the cursor and instead go right on it.
                         float adjustedBlastRotation = Projectile.rotation - MathHelper.PiOver4 * 1.15f * Owner.direction;
 
-                         var source = Projectile.GetSource_FromThis();
-                         Projectile blast = Projectile.NewProjectileDirect(source, Owner.Center + adjustedBlastRotation.ToRotationVector2() * 10f, adjustedBlastRotation.ToRotationVector2() * 20f, ProjectileType<EonBolt>(), (int)(ArkoftheCosmos.SwirlBoltDamageMultiplier / ArkoftheCosmos.SwirlBoltAmount * Projectile.damage), 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.05f);
-                         {
+                        var source = Projectile.GetSource_FromThis();
+                        Projectile blast = Projectile.NewProjectileDirect(source, Owner.Center + adjustedBlastRotation.ToRotationVector2() * 10f, adjustedBlastRotation.ToRotationVector2() * 20f, ProjectileType<EonBolt>(), (int)(ArkoftheCosmos.SwirlBoltDamageMultiplier / ArkoftheCosmos.SwirlBoltAmount * Projectile.damage), 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.05f);
+                        {
                             blast.timeLeft = 100;
-                         }
+                        }
                     }
                 }
 
@@ -268,7 +268,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Combo == 3f)
                 {
                     //Slow down the projectile's retraction
-                    float curveDownGently = MathHelper.Lerp(1f, 0.8f, 1f - (float)Math.Sqrt(1f - (float)Math.Pow(SnapEndCompletion , 2f)));
+                    float curveDownGently = MathHelper.Lerp(1f, 0.8f, 1f - (float)Math.Sqrt(1f - (float)Math.Pow(SnapEndCompletion, 2f)));
                     Projectile.Center = Owner.Center + direction * curveDownGently;
                     Projectile.scale = 1.5f;
 
@@ -276,7 +276,7 @@ namespace CalamityMod.Projectiles.Melee
 
                     float extraRotations = (direction.ToRotation() + MathHelper.PiOver4 > Projectile.velocity.ToRotation()) ? -MathHelper.TwoPi : 0f;
 
-                    Projectile.rotation = MathHelper.Lerp(Projectile.velocity.ToRotation(), direction.ToRotation()  + extraRotations, orientateProperly);
+                    Projectile.rotation = MathHelper.Lerp(Projectile.velocity.ToRotation(), direction.ToRotation() + extraRotations, orientateProperly);
                 }
 
                 //Sharticles
@@ -325,7 +325,7 @@ namespace CalamityMod.Projectiles.Melee
                     float maxDistance = Projectile.scale * 78f;
                     Vector2 distance = Main.rand.NextVector2Circular(maxDistance, maxDistance);
                     Vector2 angularVelocity = Utils.SafeNormalize(distance.RotatedBy(MathHelper.PiOver2 * Owner.direction), Vector2.Zero) * 2 * (1f + distance.Length() / 15f);
-                    Particle glitter = new CritSpark(Owner.Center + distance, Owner.velocity + angularVelocity, Main.rand.Next(3) == 0 ? Color.Turquoise : Color.Coral, currentColor, 1f + 1 * (distance.Length() / maxDistance), 10, 0.05f, 3f);
+                    Particle glitter = new CritSpark(Owner.Center + distance, Owner.velocity + angularVelocity, Main.rand.NextBool(3)? Color.Turquoise : Color.Coral, currentColor, 1f + 1 * (distance.Length() / maxDistance), 10, 0.05f, 3f);
                     GeneralParticleHandler.SpawnParticle(glitter);
                 }
 
@@ -343,9 +343,9 @@ namespace CalamityMod.Projectiles.Melee
                         Particle smoke = new HeavySmokeParticle(smokepos, smokespeed, Color.Lerp(Color.DodgerBlue, Color.MediumVioletRed, i), 6 + Main.rand.Next(5), scaleFactor * Main.rand.NextFloat(2.8f, 3.1f), Opacity + Main.rand.NextFloat(0f, 0.2f), 0f, false, 0, true);
                         GeneralParticleHandler.SpawnParticle(smoke);
 
-                        if (Main.rand.Next(3) == 0)
+                        if (Main.rand.NextBool(3))
                         {
-                            Particle smokeGlow = new HeavySmokeParticle(smokepos, smokespeed, Main.rand.Next(5) == 0 ? Color.Gold : Color.Chocolate, 5, scaleFactor * Main.rand.NextFloat(2f, 2.4f), Opacity * 2.5f, 0f, true, 0.004f, true);
+                            Particle smokeGlow = new HeavySmokeParticle(smokepos, smokespeed, Main.rand.NextBool(5)? Color.Gold : Color.Chocolate, 5, scaleFactor * Main.rand.NextFloat(2f, 2.4f), Opacity * 2.5f, 0f, true, 0.004f, true);
                             GeneralParticleHandler.SpawnParticle(smokeGlow);
                         }
                     }
@@ -385,7 +385,7 @@ namespace CalamityMod.Projectiles.Melee
                         Vector2 distance = Main.rand.NextVector2Circular(maxDistance, maxDistance);
                         Vector2 angularVelocity = Utils.SafeNormalize(distance.RotatedBy(-MathHelper.PiOver2), Vector2.Zero) * 2 * (1f + distance.Length() / 15f);
                         Color glitterColor = Main.hslToRgb(Main.rand.NextFloat(), 1, 0.5f);
-                        Particle glitter = new CritSpark(Projectile.Center + distance, Owner.velocity + angularVelocity, Color.White , glitterColor, 1f + 1 * (distance.Length() / maxDistance), 10, 0.05f, 3f);
+                        Particle glitter = new CritSpark(Projectile.Center + distance, Owner.velocity + angularVelocity, Color.White, glitterColor, 1f + 1 * (distance.Length() / maxDistance), 10, 0.05f, 3f);
                         GeneralParticleHandler.SpawnParticle(glitter);
                     }
 
@@ -403,9 +403,9 @@ namespace CalamityMod.Projectiles.Melee
                             Particle smoke = new HeavySmokeParticle(smokepos, smokespeed, Color.Lerp(Color.DodgerBlue, Color.MediumVioletRed, i), 10 + Main.rand.Next(5), scaleFactor * Main.rand.NextFloat(2.8f, 3.1f), opacity + Main.rand.NextFloat(0f, 0.2f), 0f, false, 0, true);
                             GeneralParticleHandler.SpawnParticle(smoke);
 
-                            if (Main.rand.Next(3) == 0)
+                            if (Main.rand.NextBool(3))
                             {
-                                Particle smokeGlow = new HeavySmokeParticle(smokepos, smokespeed, Main.rand.Next(5) == 0 ? Color.Gold : Color.Chocolate, 7, scaleFactor * Main.rand.NextFloat(2f, 2.4f), opacity * 2.5f, 0f, true, 0.004f, true);
+                                Particle smokeGlow = new HeavySmokeParticle(smokepos, smokespeed, Main.rand.NextBool(5)? Color.Gold : Color.Chocolate, 7, scaleFactor * Main.rand.NextFloat(2f, 2.4f), opacity * 2.5f, 0f, true, 0.004f, true);
                                 GeneralParticleHandler.SpawnParticle(smokeGlow);
                             }
                         }
@@ -424,14 +424,14 @@ namespace CalamityMod.Projectiles.Melee
         {
             for (int i = 0; i < 5; i++)
             {
-                Vector2 particleSpeed = Utils.SafeNormalize(target.Center - Projectile.Center , Vector2.One).RotatedByRandom(MathHelper.PiOver4 * 0.8f) * Main.rand.NextFloat(3.6f, 8f);
+                Vector2 particleSpeed = Utils.SafeNormalize(target.Center - Projectile.Center, Vector2.One).RotatedByRandom(MathHelper.PiOver4 * 0.8f) * Main.rand.NextFloat(3.6f, 8f);
                 Particle energyLeak = new SquishyLightParticle(target.Center, particleSpeed, Main.rand.NextFloat(0.3f, 0.6f), Color.OrangeRed, 60, 2, 2.5f, hueShift: 0.06f);
                 GeneralParticleHandler.SpawnParticle(energyLeak);
             }
 
             if (Combo == 3f)
             {
-                SoundEngine.PlaySound(CommonCalamitySounds.ScissorGuillotineSnapSound with { Volume =CommonCalamitySounds.ScissorGuillotineSnapSound.Volume * 1.3f }, Projectile.Center);
+                SoundEngine.PlaySound(CommonCalamitySounds.ScissorGuillotineSnapSound with { Volume = CommonCalamitySounds.ScissorGuillotineSnapSound.Volume * 1.3f }, Projectile.Center);
             }
         }
 
@@ -445,7 +445,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item84, Projectile.Center);
 
                 Vector2 sliceDirection = Utils.SafeNormalize(direction, Vector2.One) * 40;
-                Particle SliceLine = new LineVFX(Projectile.Center - sliceDirection, sliceDirection * 2f, 0.2f, Color.Orange * 0.7f, expansion : 250f)
+                Particle SliceLine = new LineVFX(Projectile.Center - sliceDirection, sliceDirection * 2f, 0.2f, Color.Orange * 0.7f, expansion: 250f)
                 {
                     Lifetime = 10
                 };

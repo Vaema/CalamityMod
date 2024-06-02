@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             int proj;
             SoundEngine.PlaySound(SoundID.Item103, Projectile.Center);
-            if(Projectile.Calamity().stealthStrike)
+            if (Projectile.Calamity().stealthStrike)
                 proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ShadowflameExplosionBig>(), (int)(Projectile.damage * 0.33), Projectile.knockBack, Projectile.owner);
             else
                 proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ShadowflameExplosion>(), (int)(Projectile.damage * 0.33), Projectile.knockBack, Projectile.owner);

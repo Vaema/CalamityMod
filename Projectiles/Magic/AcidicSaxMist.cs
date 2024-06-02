@@ -1,5 +1,5 @@
+﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item111, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item111, Projectile.Center);
             }
             if (Projectile.velocity.X < 0f)
             {
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Magic
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] >= 90f)

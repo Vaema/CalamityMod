@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
             for (int i = 0; i < 2; i++)
             {
-                int seaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 1f);
+                int seaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, default, 1f);
                 if (randomDust == 89)
                 {
                     Main.dust[seaDust].scale *= 0.35f;

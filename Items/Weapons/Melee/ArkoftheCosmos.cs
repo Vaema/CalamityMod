@@ -1,13 +1,13 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -86,7 +86,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 9.5f;
             Item.UseSound = null;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 28f;
             Item.rare = ModContent.RarityType<Violet>();

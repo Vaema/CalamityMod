@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -32,7 +33,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Main.rand.NextBool(150))
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, Projectile.velocity.X * 0.4f, Projectile.velocity.Y * 0.4f, 100, default, 2f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, Projectile.velocity.X * 0.4f, Projectile.velocity.Y * 0.4f, 100, default, 2f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 1.2f;
                 Main.dust[dust].velocity.Y -= 0.15f;
@@ -49,7 +50,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, Projectile.velocity.X * 0.4f, Projectile.velocity.Y * 0.4f, 100, default, 3.5f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, Projectile.velocity.X * 0.4f, Projectile.velocity.Y * 0.4f, 100, default, 3.5f);
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].velocity *= 1.2f;
                     Main.dust[dust].velocity.Y -= 0.15f;

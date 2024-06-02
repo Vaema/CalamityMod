@@ -1,7 +1,9 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class EldritchTentacle : ModProjectile, ILocalizedModType
@@ -17,6 +19,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = 2;
             Projectile.MaxUpdates = 3;
             Projectile.DamageType = DamageClass.Magic;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -75,7 +79,7 @@ namespace CalamityMod.Projectiles.Magic
                 int scaleLoopCheck = 0;
                 while ((float)scaleLoopCheck < Projectile.scale * 10f)
                 {
-                    int eldritchRed = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 60, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1.1f);
+                    int eldritchRed = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1.1f);
                     Main.dust[eldritchRed].position = (Main.dust[eldritchRed].position + Projectile.Center) / 2f;
                     Main.dust[eldritchRed].noGravity = true;
                     Main.dust[eldritchRed].velocity *= 0.1f;

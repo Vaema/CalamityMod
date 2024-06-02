@@ -1,8 +1,9 @@
+﻿using System;
+using System.Linq;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -13,8 +14,6 @@ namespace CalamityMod.Projectiles.Ranged
     public class MeowCreature : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-
-        internal PrimitiveTrail TrailDrawer;
 
         public override void SetStaticDefaults()
         {
@@ -63,12 +62,8 @@ namespace CalamityMod.Projectiles.Ranged
         // The creature glows
         public override void PostDraw(Color lightColor)
         {
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction);
-
-            TrailDrawer.Draw(Projectile.oldPos.Where(oldPos => oldPos != Vector2.Zero), Projectile.Size * 0.5f - Main.screenPosition, 30);
-
-            Texture2D glow = ModContent.Request<Texture2D>(Texture).Value;
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f), 30);
+            Texture2D glow = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Main.EntitySpriteDraw(glow, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, glow.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
         }
     }

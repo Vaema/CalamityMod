@@ -1,16 +1,16 @@
-﻿using Terraria.Graphics.Shaders;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -27,7 +27,6 @@ namespace CalamityMod.Projectiles.Melee
         public ref float ChargeSoundCooldown => ref Projectile.localAI[1];
         public Player Owner => Main.player[Projectile.owner];
         public bool CanPogo => Owner.velocity.Y != 0 && PogoCooldown <= 0; //Only pogo when in the air and if the cooldown is zero
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
 
         public const float pogoStrenght = 16f; //How much the player gets pogoed up
         public const float maxShred = 500; //How much shred you get
@@ -36,10 +35,6 @@ namespace CalamityMod.Projectiles.Melee
         public bool Dashing;
         public Vector2 DashStart;
 
-
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -121,13 +116,17 @@ namespace CalamityMod.Projectiles.Melee
                         Dashing = true;
                         DashStart = Owner.Center;
                         Wheel.timeLeft = 60;
-                        Owner.GiveIFrames(OmegaBiomeBlade.SuperPogoAttunement_SlashIFrames);
+
+                        // 17APR2024: Ozzatron: True Biome Blade's pogo gives iframes when striking enemies in a similar manner to a bonk dash.
+                        // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                        Owner.GiveUniversalIFrames(OmegaBiomeBlade.SuperPogoAttunement_SlashIFrames);
+
                         break;
                     }
                 }
             }
 
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;
@@ -194,7 +193,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = direction.ToRotation();
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;
@@ -261,7 +260,11 @@ namespace CalamityMod.Projectiles.Melee
                 Shred += 62; //Augment the shredspeed
                 if (Owner.velocity.Y > 0)
                     Owner.velocity.Y = -2f; //Get "stuck" into the enemy partly
-                Owner.GiveIFrames(OmegaBiomeBlade.SuperPogoAttunement_ShredIFrames); // i framez.
+
+                // 17APR2024: Ozzatron: True Biome Blade's shred pogo gives iframes when striking enemies in a similar manner to a bonk dash.
+                // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                Owner.GiveUniversalIFrames(OmegaBiomeBlade.SuperPogoAttunement_ShredIFrames);
+
                 PogoCooldown = 20;
             }
         }

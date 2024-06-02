@@ -45,6 +45,7 @@ namespace CalamityMod
             // Acidwood is Wood
             RecipeGroup wood = RecipeGroup.recipeGroups[RecipeGroupID.Wood];
             wood.ValidItems.Add(ModContent.ItemType<Acidwood>());
+            wood.ValidItems.Add(ModContent.ItemType<Driftwood>());
             // Astral Monolith is decidedly not wood-like enough to be used as generic wood.
         }
 
@@ -344,7 +345,7 @@ namespace CalamityMod
             });
             AnyGoodBlock = RecipeGroup.RegisterGroup("AnyGoodBlock", group);
         }
-        
+
         private static void AddEquipmentRecipeGroups()
         {
             // Wooden Swords for Broken Biome Blade
@@ -356,7 +357,8 @@ namespace CalamityMod
                 ItemID.PalmWoodSword,
                 ItemID.EbonwoodSword,
                 ItemID.ShadewoodSword,
-                ItemID.PearlwoodSword
+                ItemID.PearlwoodSword,
+                ItemID.AshWoodSword
             });
             AnyWoodenSword = RecipeGroup.RegisterGroup("AnyWoodenSword", group);
 
@@ -426,7 +428,7 @@ namespace CalamityMod
                 ItemID.ArcaneFlower,
                 ItemID.MagnetFlower,
                 ItemID.ManaCloak
-            }); 
+            });
             AnyManaFlower = RecipeGroup.RegisterGroup("AnyManaFlower", group);
 
             // Magic Quiver+ for Elemental Quiver
@@ -519,7 +521,7 @@ namespace CalamityMod
         public static void AddRecipes()
         {
             EditVanillaRecipes();
-            
+
             // Leather from Vertebrae
             Recipe.Create(ItemID.Leather).
                 AddIngredient(ItemID.Vertebrae, 2).
@@ -528,7 +530,7 @@ namespace CalamityMod
 
             // Fallen Stars from Stardust
             Recipe.Create(ItemID.FallenStar).
-                AddIngredient<Stardust>(5).
+                AddIngredient<StarblightSoot>(5).
                 AddTile(TileID.Anvils).
                 Register()
                 .DisableDecraft();
@@ -545,14 +547,14 @@ namespace CalamityMod
                 AddRecipeGroup("IronBar").
                 AddIngredient(ItemID.EmptyBullet, 100).
                 AddIngredient(ItemID.ExplosivePowder, 4).
-                AddTile(TileID.MythrilAnvil).
+                AddTile(TileID.Anvils).
                 Register();
             // and Rocket IIs (requires slightly more explosive powder)
             Recipe.Create(ItemID.RocketII, 100).
                 AddRecipeGroup("IronBar").
                 AddIngredient(ItemID.EmptyBullet, 100).
                 AddIngredient(ItemID.ExplosivePowder, 5).
-                AddTile(TileID.MythrilAnvil).
+                AddTile(TileID.Anvils).
                 Register();
 
             // Life Crystal
@@ -593,6 +595,13 @@ namespace CalamityMod
                 AddIngredient<DemonicBoneAsh>().
                 AddIngredient(ItemID.HellstoneBar, 4).
                 AddTile(TileID.Hellforge).
+                Register();
+
+            // Magic Conch
+            Recipe.Create(ItemID.MagicConch).
+                AddIngredient(ItemID.ShellPileBlock, 20).
+                AddIngredient(ItemID.WhitePearl).
+                AddTile(TileID.Anvils).
                 Register();
 
             // Lava Fishing Hook
@@ -761,7 +770,7 @@ namespace CalamityMod
         internal static void EditVanillaRecipes()
         {
             // Disable warnings for unused stuff as they can continue to be used freely
-            #pragma warning disable CS8321
+#pragma warning disable CS8321
 
             // Predicates for specifying which recipes to edit
             static Func<Recipe, bool> Vanilla(int itemID) => r => r.Mod is null && r.HasResult(itemID);
@@ -805,7 +814,7 @@ namespace CalamityMod
                     return;
                 r.requiredTile[idx] = newTileID;
             };
-            #pragma warning restore CS8321
+#pragma warning restore CS8321
 
             var edits = new Dictionary<Func<Recipe, bool>, Action<Recipe>>(128)
             {
@@ -821,7 +830,7 @@ namespace CalamityMod
                 { Vanilla(ItemID.BloodySpine), BloodySpineRecipeEdit },
                 { Vanilla(ItemID.GoblinBattleStandard), ChangeIngredientStack(ItemID.TatteredCloth, 5) },
                 { Vanilla(ItemID.ChlorophyteBar), ChangeIngredientStack(ItemID.ChlorophyteOre, 4) },
-
+                { Vanilla(ItemID.OrichalcumAnvil), ChangeIngredientStack(ItemID.OrichalcumBar, 10) },
                 { Vanilla(ItemID.ShroomiteBar), ChangeIngredientStack(ItemID.GlowingMushroom, 5) },
                 { Vanilla(ItemID.TrueNightsEdge), TrueNightsEdgeRecipeEdit },
                 { Vanilla(ItemID.TrueExcalibur), ChangeIngredientStack(ItemID.ChlorophyteBar, 12) },
@@ -832,6 +841,7 @@ namespace CalamityMod
                 { r => r.HasResult(ItemID.HorseshoeBundle) && !r.HasIngredient(ItemID.BundleofBalloons), AddIngredient(ModContent.ItemType<AerialiteBar>(), 3) },
                 { Vanilla(ItemID.NightsEdge), AddIngredient(ModContent.ItemType<PurifiedGel>(), 5) },
                 { Vanilla(ItemID.FairyBoots), AddIngredient(ItemID.SoulofLight, 5) },
+                { Vanilla(ItemID.HellfireTreads), AddIngredient(ModContent.ItemType<EssenceofHavoc>(), 4) },
                 { Vanilla(ItemID.SpiritFlame), AddGroup(AnyAdamantiteBar, 2) },
                 { Vanilla(ItemID.TerraBlade), AddIngredient(ModContent.ItemType<LivingShard>(), 12) },
                 { Vanilla(ItemID.FireGauntlet), AddIngredient(ModContent.ItemType<ScoriaBar>(), 5) },
@@ -1586,8 +1596,9 @@ namespace CalamityMod
             // Flame Waker Boots
             r = Recipe.Create(ItemID.FlameWakerBoots);
             r.AddIngredient(ItemID.Silk, 8);
-            r.AddIngredient(ItemID.Obsidian, 2);
-            r.AddTile(TileID.Loom);
+            r.AddIngredient(ItemID.HellstoneBar, 5);
+            r.AddIngredient(ItemID.Obsidian, 4);
+            r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();
 

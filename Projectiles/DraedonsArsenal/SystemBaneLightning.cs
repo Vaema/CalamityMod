@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -113,11 +113,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                 Vector2 start = oldPositions[i] + Projectile.Size * 0.5f - Main.screenPosition;
                 Vector2 end = oldPositions[i + 1] + Projectile.Size * 0.5f - Main.screenPosition;
-                Utils.DrawLaser(Main.spriteBatch, ModContent.Request<Texture2D>(Texture).Value, start, end, new Vector2(OuterLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
+                Utils.DrawLaser(Main.spriteBatch, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, start, end, new Vector2(OuterLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
 
                 DelegateMethods.f_1 = InnerLightningOpacity;
                 DelegateMethods.c_1 = InnerLightningColor;
-                Utils.DrawLaser(Main.spriteBatch, ModContent.Request<Texture2D>(Texture).Value, start, end, new Vector2(InnerLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
+                Utils.DrawLaser(Main.spriteBatch, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, start, end, new Vector2(InnerLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
             }
             return false;
         }

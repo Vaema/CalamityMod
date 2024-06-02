@@ -25,8 +25,8 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 42;
             Item.height = 42;
-            Item.damage = 185;
-            Item.useTime = Item.useAnimation = 30;
+            Item.damage = 142;
+            Item.useTime = Item.useAnimation = 20;
             Item.knockBack = 4f;
             Item.mana = 10;
             Item.shoot = ModContent.ProjectileType<StellarTorusSummon>();
@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item15;
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
             if (Main.projectile.IndexInRange(minion))
                 Main.projectile[minion].originalDamage = Item.OriginalDamage;
-            
+
             return false;
         }
 

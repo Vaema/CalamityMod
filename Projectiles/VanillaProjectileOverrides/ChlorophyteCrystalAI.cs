@@ -1,13 +1,13 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using System;
+using CalamityMod.Items.VanillaArmorChanges;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.GameContent;
-using CalamityMod.Items.VanillaArmorChanges;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.VanillaProjectileOverrides
 {

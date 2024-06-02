@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Summon
                 TargetPosition(minionAI); // The minions position themselves near the invisible minion to seem like they're ramming all together.
             else
                 FollowOrigin(minionAI); // Vibes around their respective invisible minion.
-            
+
             CheckMinionExistance(); // Checks if the decorative herring can still exist, if the invisible minion despawns, so do these ones.
             DoAnimation(); // Does the animation of the minion.
             PointInRightDirection(minionAI, target); // Points in the correct direction.

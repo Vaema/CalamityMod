@@ -42,7 +42,7 @@ namespace CalamityMod.Skies
         {
             if (maxDepth >= 4f && minDepth < 4f)
                 spriteBatch.Draw(CalamityMod.SulphurSeaSky, new Rectangle(0, (int)(-Main.screenPosition.Y / 6f) + 1300, Main.screenWidth, Main.screenHeight), Color.Lerp(Main.ColorOfTheSkies, Color.LightSeaGreen, 0.33f) * 0.2f * opacity);
-            
+
             // Small worlds, default draw height
             int sulphurSeaHeight = (World.SulphurousSea.YStart + (int)Main.worldSurface) / 2;
 

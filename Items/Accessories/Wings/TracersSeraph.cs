@@ -6,10 +6,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
 
 namespace CalamityMod.Items.Accessories.Wings
 {
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             Item.width = 36;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<Violet>();
         }
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Accessories.Wings
                 {
                     dustXOffset = -40;
                 }
-                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, 91, 0f, 0f, 100, default, 2.4f);
+                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, DustID.GemDiamond, 0f, 0f, 100, default, 2.4f);
                 Main.dust[flightDust].noGravity = true;
                 Main.dust[flightDust].velocity *= 0.3f;
                 if (Main.rand.NextBool(10))
@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Accessories.Wings
             player.noFallDmg = true;
             modPlayer.tracersDust = !hideVisual;
             modPlayer.elysianWingsDust = !hideVisual;
-            modPlayer.tracersSeraph = true;
+            modPlayer.tracersSeraph = true; // Grants immunity to Auric Rejection and other walk-on-block effects
         }
 
         public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)

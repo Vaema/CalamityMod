@@ -1,4 +1,7 @@
-﻿using CalamityMod.Tiles.Abyss;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -7,10 +10,10 @@ using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.FurnitureAshen;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Tiles.SunkenSea;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Linq;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -21,11 +24,41 @@ namespace CalamityMod
     // OnModLoad is guaranteed to be run after all content has autoloaded.
     public static class TileFraming
     {
+        public sealed class MergeFrameData
+        {
+            public byte[,] AdjacencyData { get; }
+
+            public int TileID { get; }
+
+            public int FrameOffsetX { get; }
+
+            public int FrameOffsetY { get; }
+
+            public Asset<Texture2D> BlendSheet { get; }
+
+            public MergeFrameData(byte[,] adjacencyData, int tileId, string blendSheetPath, int frameOffsetX = 0, int frameOffsetY = 0)
+            {
+                AdjacencyData = adjacencyData;
+                TileID = tileId;
+                FrameOffsetX = frameOffsetX;
+                FrameOffsetY = frameOffsetY;
+
+                if (!cachedBlendSheets.TryGetValue(blendSheetPath, out var blendSheet))
+                {
+                    blendSheet = cachedBlendSheets[blendSheetPath] = ModContent.Request<Texture2D>(blendSheetPath);
+                }
+                
+                BlendSheet = blendSheet;
+            }
+        }
+        
         private static int[][] PlantCheckAgainst;
         private static Dictionary<ushort, ushort> VineToGrass;
 
         // CONSIDER -- This is a triangle array, but does it need to be? Main.tileMerge is a triangle array as well
         public static bool[][] tileMergeTypes;
+
+        private static Dictionary<string, Asset<Texture2D>> cachedBlendSheets = new();
 
         #region Similarity Enum
         private enum Similarity
@@ -61,7 +94,7 @@ namespace CalamityMod
             PlantCheckAgainst[TileID.JunglePlants2] = new int[1] { TileID.JungleGrass };
             PlantCheckAgainst[TileID.HallowedPlants] = new int[1] { TileID.HallowedGrass };
             PlantCheckAgainst[TileID.HallowedPlants2] = new int[1] { TileID.HallowedGrass };
-            PlantCheckAgainst[TileID.CrimsonPlants] = new int[1] { TileID.CrimsonPlants };
+            PlantCheckAgainst[TileID.CrimsonPlants] = new int[1] { TileID.CrimsonGrass };
             PlantCheckAgainst[ModContent.TileType<AstralShortPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
             PlantCheckAgainst[ModContent.TileType<AstralTallPlants>()] = new int[1] { ModContent.TileType<AstralGrass>() };
             PlantCheckAgainst[ModContent.TileType<CinderBlossomTallPlants>()] = new int[1] { ModContent.TileType<ScorchedRemainsGrass>() };
@@ -302,7 +335,7 @@ namespace CalamityMod
                     return;
                 }
             }
-            
+
             // If the tile above is an identical vine, nothing else needs to be done.
             if (northType == myType)
                 return;
@@ -1195,7 +1228,7 @@ namespace CalamityMod
             #endregion
         }
 
-        internal static void SlopedGlowmask(int i, int j, int type, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset,  bool overrideTileFrame = false)
+        internal static void SlopedGlowmask(int i, int j, int type, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset, bool overrideTileFrame = false)
         {
             Tile tile = Main.tile[i, j];
 
@@ -1897,7 +1930,7 @@ namespace CalamityMod
                 TileID.Sets.ChecksForMerge[myType] = true;
 
                 // Properly frame the adjacent tile given this constraint.
-                CustomMergeFrameExplicit(x + 1, y, east.TileType, myType, out _, out forceSameRight , out _, out _, false, false, false, false, false);
+                CustomMergeFrameExplicit(x + 1, y, east.TileType, myType, out _, out forceSameRight, out _, out _, false, false, false, false, false);
             }
             if (south != null && south.HasTile && tileMergeTypes[myType][south.TileType])
             {
@@ -1927,33 +1960,43 @@ namespace CalamityMod
         /// <summary>
         /// Call this in SetStaticDefaults. Used to set up the adjacency data array with the correct dimensions.
         /// </summary>
-        internal static void SetUpUniversalMerge(int myType, int mergeType, out byte[,] adjacencyData)
+        internal static void SetUpUniversalMerge(int myType, int mergeType, string blendSheetPath, out MergeFrameData adjacencyData)
         {
             CalamityUtils.SetMerge(myType, mergeType, true);
-            adjacencyData = new byte[Main.tile.Width, Main.tile.Height];
+            adjacencyData = new MergeFrameData(new byte[Main.tile.Width, Main.tile.Height], mergeType, blendSheetPath);
         }
 
         /// <summary>
         /// Call this in PostDraw. Uses adjacency data generated by GetAdjacencyData to draw the correct blend state over a given tile, regardless of what tile frame that tile is using
         /// </summary>
-        internal static void DrawUniversalMergeFrames(int x, int y, byte[,] adjacencyData, string blendSheetPath, int frameOffsetX = 0, int frameOffsetY = 0)
+        internal static void DrawUniversalMergeFrames(int x, int y, List<MergeFrameData> mergeFrames)
         {
-            // 02OCT2023: MishiroUsui: The below code resulted in 30 fps drops in sulph sea, and general performance issues across the board in cal biomes
-            // DO NOT RE-ENABLE UNTIL THE ISSUE IS RESOLVED AND VERIFIED.
-            return;
-            #pragma warning disable CS0162 // Disable unreachable code errors while this code is disabled
-
-            Texture2D blendLayer = ModContent.Request<Texture2D>(blendSheetPath).Value;
+            Color shadingColour = Lighting.GetColor(x, y);
+            Tile myTile = Main.tile[x, y];
+            
+            foreach (var frame in mergeFrames)
+            {
+                // If it hasn't yet been initialized somehow... for some reason.
+                if (frame is null)
+                    continue;
+                
+                DrawUniversalMergeFrames(x, y, frame, shadingColour, myTile);
+            }
+        }
+        
+        internal static void DrawUniversalMergeFrames(int x, int y, MergeFrameData mergeFrameData, Color shadingColour, Tile myTile)
+        {
+            byte[,] adjacencyData = mergeFrameData.AdjacencyData;
+            var blendLayer = mergeFrameData.BlendSheet.Value;
+            int frameOffsetX = mergeFrameData.FrameOffsetX;
+            int frameOffsetY = mergeFrameData.FrameOffsetY;
+            
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(x * 16 - Main.screenPosition.X, y * 16 - Main.screenPosition.Y) + zero;
 
             // Used for blending with metatiles/composite tiles (as in the tile being blended with is a metatile, not this tile)
             int subFrameX = frameOffsetX * 270;
             int subFrameY = frameOffsetY * 198;
-
-            Color shadingColour = Lighting.GetColor(x, y);
-
-            Tile myTile = Main.tile[x, y];
 
             byte thisTileData = adjacencyData[x, y];
 
@@ -2301,19 +2344,21 @@ namespace CalamityMod
                 Main.spriteBatch.Draw(blendLayer, drawOffset, new Rectangle?(new Rectangle(18 + randomFrameX36 + subFrameX, 54 + subFrameY, 18, 18)), shadingColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
             }
             #endregion
-            #pragma warning restore CS0162 // Disable unreachable code errors while this code is disabled
         }
 
         /// <summary>
         /// Call this in TileFrame. Used to generate adjacency data used in DrawUniversalMergeFrames. Tiles using this need a 2d byte array
         /// </summary>
-        internal static void GetAdjacencyData(int x, int y, int blendType, out byte adjacencyData)
+        internal static void GetAdjacencyData(int x, int y, MergeFrameData data)
         {
+            int blendType = data.TileID;
+            
             // bit to relative tile pos for reference
             // 4 0 5
             // 3 X 1
             // 7 2 6
             //                01234567
+            ref byte adjacencyData = ref data.AdjacencyData[x, y];
             adjacencyData = 0b00000000;
 
             if (x < 0 || x >= Main.maxTilesX)

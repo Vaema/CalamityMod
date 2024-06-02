@@ -1,12 +1,14 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Placeables.Banners;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Critters;
-using System;
+using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.SunkenSea
 {
     public class SeaMinnow : ModNPC
@@ -40,7 +42,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SeaMinnow")
             });
@@ -48,7 +50,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
-            CalamityAI.PassiveSwimmingAI(NPC, Mod, 3, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
+            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 3, 150f, 0.25f, 0.15f, 6f, 6f, 0.05f);
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             NPC.noGravity = true;
             bool shouldSwimAway = false;
@@ -213,7 +215,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 68, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
     }

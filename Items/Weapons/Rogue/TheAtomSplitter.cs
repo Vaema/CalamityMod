@@ -29,13 +29,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ModContent.RarityType<Violet>();
         }
 
-		public override float StealthDamageMultiplier => 1f;
+        public override float StealthDamageMultiplier => 1f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int javelin = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, -1f);
             if (player.Calamity().StealthStrikeAvailable() && Main.projectile.IndexInRange(javelin))
-			{
+            {
                 Main.projectile[javelin].Calamity().stealthStrike = true;
             }
             return false;

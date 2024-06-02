@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -65,18 +65,18 @@ namespace CalamityMod.Projectiles.Typeless
                 SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
                 for (int dustIndexA = 0; dustIndexA < 4; dustIndexA = incrementer + 1)
                 {
-                    int smoky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, 0f, 0f, 100, default, 1.5f);
+                    int smoky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 1.5f);
                     Main.dust[smoky].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                     incrementer = dustIndexA;
                 }
                 for (int dustIndexB = 0; dustIndexB < 10; dustIndexB = incrementer + 1)
                 {
-                    int fireDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 200, default, 2.7f);
+                    int fireDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 200, default, 2.7f);
                     Dust dust = Main.dust[fireDust];
                     dust.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                     dust.noGravity = true;
                     dust.velocity *= 3f;
-                    fireDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1.5f);
+                    fireDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1.5f);
                     dust.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                     dust.velocity *= 2f;
                     dust.noGravity = true;
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Typeless
                 }
                 for (int dustIndexC = 0; dustIndexC < 5; dustIndexC = incrementer + 1)
                 {
-                    int fireDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 0, default, 2.7f);
+                    int fireDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 0, default, 2.7f);
                     Dust dust = Main.dust[fireDust2];
                     dust.position = Projectile.Center + Vector2.UnitX.RotatedByRandom(Math.PI).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 2f;
                     dust.noGravity = true;
@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Typeless
                 }
                 for (int dustIndexD = 0; dustIndexD < 10; dustIndexD = incrementer + 1)
                 {
-                    int smokier = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, 0f, 0f, 0, default, 1.5f);
+                    int smokier = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 0, default, 1.5f);
                     Dust dust = Main.dust[smokier];
                     dust.position = Projectile.Center + Vector2.UnitX.RotatedByRandom(Math.PI).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 2f;
                     dust.noGravity = true;

@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.Audio;
+﻿using System.IO;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Summon;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.AndromedaUI
 {
@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Summon.AndromedaUI
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, Main.Rasterizer, null, perspective);
 
                 // Draw the background UI
-                Main.spriteBatch.Draw(ModContent.Request<Texture2D>(Texture).Value,
+                Main.spriteBatch.Draw(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value,
                                  Projectile.Center - Main.screenPosition,
                                  null,
                                  Color.White * Projectile.Opacity,

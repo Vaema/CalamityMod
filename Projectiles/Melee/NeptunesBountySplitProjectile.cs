@@ -31,9 +31,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 85;
+            Projectile.timeLeft = 110;
             Projectile.ignoreWater = true;
-            Projectile.extraUpdates = 1;
+            Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Melee
             float playerDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
             Time++;
-            Projectile.velocity *= 0.98f;
+            Projectile.velocity *= 0.988f;
 
             if (Projectile.timeLeft % 2 == 0 && Time > 3f && playerDist < 1400f)
             {
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee
             dust.noGravity = true;
             if (dust.type == dustType1)
                 dust.alpha = 180;
-            
+
             if (Projectile.timeLeft == 20)
             {
                 WaterFlavoredParticle spark = new WaterFlavoredParticle(Projectile.Center, -Projectile.velocity * 0.05f, false, 25, 0.85f + Time * 0.013f, WaterColor * 0.35f);

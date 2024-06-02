@@ -14,7 +14,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Chlorophyte";
 
-        public const int AmountToHealPerPulse = 10;
+        public const int AmountToHealPerPulse = 5;
 
         public const int PulseReleaseRate = 300;
 

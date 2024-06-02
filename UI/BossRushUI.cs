@@ -1,8 +1,8 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -39,14 +39,12 @@ namespace CalamityMod.UI
         {
             int totalLife = 0;
             int totalLifeMax = 0;
-            for (int i = 0; i < Main.npc.Length; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (!Main.npc[i].active)
-                    continue;
-                if (types.Contains(Main.npc[i].type))
+                if (types.Contains(n.type))
                 {
-                    totalLife += Main.npc[i].life;
-                    totalLifeMax += Main.npc[i].lifeMax;
+                    totalLife += n.life;
+                    totalLifeMax += n.lifeMax;
                 }
             }
 

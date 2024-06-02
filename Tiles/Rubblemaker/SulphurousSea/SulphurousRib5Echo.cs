@@ -32,7 +32,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SulphurousSea
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(57, 48, 83), CalamityUtils.GetText("Tiles.Ribs"));
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
 
             RegisterItemDrop(ModContent.ItemType<CorrodedFossil>());
             FlexibleTileWand.RubblePlacementSmall.AddVariations(ModContent.ItemType<CorrodedFossil>(), Type, 0);

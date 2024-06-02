@@ -1,16 +1,22 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent.Shaders;
-using Terraria.Graphics.Effects;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.GameContent.Shaders;
+using Terraria.Graphics.Effects;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Gores
 {
     public class AstralWaterDroplet : ModGore
     {
+        public override void SetStaticDefaults()
+        {
+            ChildSafety.SafeGore[Type] = true;
+        }
+
         public override void OnSpawn(Gore gore, IEntitySource source)
         {
             gore.numFrames = 15;

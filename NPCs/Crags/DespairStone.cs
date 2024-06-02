@@ -1,20 +1,21 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Particles;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ReLogic.Utilities;
-using System;
-using CalamityMod.Items.Placeables;
 
 namespace CalamityMod.NPCs.Crags
 {
@@ -36,7 +37,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.defense = 38;
             NPC.DR_NERD(0.35f);
             NPC.lifeMax = 120;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.1f;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.HitSound = SoundID.NPCHit41;
             NPC.DeathSound = SoundID.NPCDeath14;
@@ -54,11 +55,15 @@ namespace CalamityMod.NPCs.Crags
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BrimstoneCragsBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DespairStone")
             });
@@ -82,7 +87,7 @@ namespace CalamityMod.NPCs.Crags
             else //run regular ai if buzzsaw mode isn't available
             {
                 NPC.ai[2] = 0f;
-                CalamityAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
+                CalamityRegularEnemyAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
             }
             if (NPC.lavaWet) //float on lava 
                 NPC.velocity.Y += -0.8f;
@@ -99,7 +104,7 @@ namespace CalamityMod.NPCs.Crags
                 if (NPC.velocity.X < 0f) //left
                 {
                     NPC.ai[2] = -1f;
-                }   
+                }
                 else if (NPC.velocity.X > 0f) //right
                 {
                     NPC.ai[2] = 1f;
@@ -201,7 +206,7 @@ namespace CalamityMod.NPCs.Crags
             Vector2 splatterDirection;
             if (NPC.velocity.X == 0f)
             {
-                particleSpawnDisplacement = new Vector2 (24f * NPC.ai[2], 20f);
+                particleSpawnDisplacement = new Vector2(24f * NPC.ai[2], 20f);
                 splatterDirection = new Vector2(0f, 1f);
             }
             else
@@ -209,7 +214,7 @@ namespace CalamityMod.NPCs.Crags
                 particleSpawnDisplacement = new Vector2(20f * -NPC.ai[2], 24f);
                 splatterDirection = new Vector2(-NPC.ai[2], 0f);
             }
-            
+
             //Color impactColor = Color.Lerp(Color.Silver, Color.Gold, Main.rand.NextFloat(0.5f));
             Vector2 bloodSpawnPosition = NPC.Center + particleSpawnDisplacement;
 

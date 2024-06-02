@@ -38,14 +38,14 @@ namespace CalamityMod.Items.Armor.Reaver
         {
             var modPlayer = player.Calamity();
             player.thorns += 0.33f;
-            player.moveSpeed -= 0.2f;
+            player.moveSpeed -= 0.3f;
             player.statDefense += 10;
             player.lifeRegen += 3;
             player.aggro += 600;
             modPlayer.reaverDefense = true;
             modPlayer.wearingRogueArmor = true;
             player.setBonus = this.GetLocalizedValue("SetBonus");
-            //Reaver Rage provides 30% damage to offset the helm "bonus", 5 def, and 5% melee speed.
+            // Reaver Rage provides 10% damage, 5 def, and 5% melee speed.
         }
 
         public override void UpdateEquip(Player player)

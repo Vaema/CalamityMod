@@ -71,6 +71,10 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AcidRainBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -184,9 +188,9 @@ namespace CalamityMod.NPCs.AcidRain
                     if (NPC.spriteDirection == -1)
                         spitDirection += MathHelper.PiOver2;
 
-                    int damage = DownedBossSystem.downedPolterghast ? 40 : DownedBossSystem.downedAquaticScourge ? 26 : 18;
-                    if (Main.expertMode)
-                        damage = (int)Math.Round(damage * 0.8);
+                    int damage = DownedBossSystem.downedPolterghast ? (Main.masterMode ? 27 : Main.expertMode ? 32 : 40) :
+                        DownedBossSystem.downedAquaticScourge ? (Main.masterMode ? 17 : Main.expertMode ? 21 : 26) :
+                        (Main.masterMode ? 11 : Main.expertMode ? 14 : 18);
 
                     // Spit two extra streams of acid at the target post-Polterghast.
                     if (DownedBossSystem.downedPolterghast)
@@ -248,7 +252,7 @@ namespace CalamityMod.NPCs.AcidRain
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
                 if (Main.netMode != NetmodeID.Server)

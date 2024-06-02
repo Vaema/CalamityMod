@@ -1,7 +1,7 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -23,6 +23,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
+            Projectile.tileCollide = false;
         }
 
         public override bool? CanDamage() => Projectile.ai[0] >= 120f;
@@ -59,7 +60,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     for (int i = 0; i < 8; i++)
                     {
-                        int icyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 2f);
+                        int icyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
                         Main.dust[icyDust].velocity *= 3f;
                         if (Main.rand.NextBool())
                         {
@@ -69,10 +70,10 @@ namespace CalamityMod.Projectiles.Melee
                     }
                     for (int j = 0; j < 14; j++)
                     {
-                        int icyDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 3f);
+                        int icyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 3f);
                         Main.dust[icyDust2].noGravity = true;
                         Main.dust[icyDust2].velocity *= 5f;
-                        icyDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 2f);
+                        icyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 2f);
                         Main.dust[icyDust2].velocity *= 2f;
                     }
 
@@ -117,7 +118,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             for (int k = 0; k < 3; k++)
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 67, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

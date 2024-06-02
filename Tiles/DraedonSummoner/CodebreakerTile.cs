@@ -1,9 +1,12 @@
 ﻿using CalamityMod.Items.DraedonMisc;
 using CalamityMod.TileEntities;
 using CalamityMod.UI;
+using CalamityMod.UI.DraedonSummoning;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent.ObjectInteractions;
@@ -11,9 +14,6 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
-using ReLogic.Content;
-using CalamityMod.UI.DraedonSummoning;
 
 namespace CalamityMod.Tiles.DraedonSummoner
 {
@@ -99,7 +99,7 @@ namespace CalamityMod.Tiles.DraedonSummoner
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 182);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TheDestroyer);
             return false;
         }
 

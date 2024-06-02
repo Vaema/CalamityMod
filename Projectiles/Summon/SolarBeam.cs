@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 dustPos = Projectile.position;
                     dustPos -= Projectile.velocity * ((float)i * 0.25f);
                     Projectile.alpha = 255;
-                    int dust = Dust.NewDust(dustPos, 1, 1, 246, 0f, 0f, 0, default, 1f);
+                    int dust = Dust.NewDust(dustPos, 1, 1, DustID.GoldCoin, 0f, 0f, 0, default, 1f);
                     Main.dust[dust].position = dustPos;
                     Main.dust[dust].scale = (float)Main.rand.Next(70, 110) * 0.013f;
                     Main.dust[dust].velocity *= 0.2f;

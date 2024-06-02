@@ -19,10 +19,10 @@ namespace CalamityMod.Items.Pets
             Item.value = Item.buyPrice(0, 4, 0, 0);
             Item.damage = 0;
             Item.useTime = Item.useAnimation = 20;
-            Item.useStyle = 1;
+            Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.NPCHit2;
-            Item.rare = 3;
+            Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<MiniHiveMind>();
             Item.buffType = ModContent.BuffType<MiniMindBuff>();
         }

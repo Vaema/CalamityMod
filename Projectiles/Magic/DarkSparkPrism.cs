@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -120,14 +120,13 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = 10;
                 Projectile.soundDelay *= 2;
                 if (Projectile.ai[0] != 1f)
-                    SoundEngine.PlaySound(SoundID.Item15, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item15, Projectile.Center);
             }
 
             if (shouldHitChargedUp && Main.myPlayer == Projectile.owner)
             {
                 bool hasMana = !shouldHitNotCharged || player.CheckMana(player.ActiveItem(), -1, true, false);
-                bool canUseItem = player.channel && hasMana && !player.noItems && !player.CCed;
-                if (canUseItem)
+                if (!player.CantUseHoldout() && hasMana)
                 {
                     if (Projectile.ai[0] == 1f)
                     {
@@ -170,8 +169,8 @@ namespace CalamityMod.Projectiles.Magic
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
-            Texture2D texture2D14 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D14 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int y7 = framing * Projectile.frame;
             Vector2 drawStart = (Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition).Floor();
             if (Main.player[Projectile.owner].shroomiteStealth && Main.player[Projectile.owner].inventory[Main.player[Projectile.owner].selectedItem].CountsAsClass<RangedDamageClass>())

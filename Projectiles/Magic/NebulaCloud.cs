@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Main.rand.NextBool())
             {
-                int purpleDust = Dust.NewDust(Projectile.Center, 8, 8, 86);
+                int purpleDust = Dust.NewDust(Projectile.Center, 8, 8, DustID.GemAmethyst);
                 Main.dust[purpleDust].position = Projectile.Center;
                 Main.dust[purpleDust].velocity = Projectile.velocity;
                 Main.dust[purpleDust].noGravity = true;
@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int i = 0; i < 15; i++)
             {
-                int killDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)Projectile.ai[0], Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 0, default(Color), 0.75f);
+                int killDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)Projectile.ai[0], Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f, 0, default(Color), 0.75f);
                 Dust dust;
                 if (Main.rand.NextBool(3))
                 {

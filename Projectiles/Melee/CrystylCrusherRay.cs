@@ -1,13 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Items.Tools;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Enums;
 using Terraria.GameContent.Achievements;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Tools;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -65,8 +65,8 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 maxLength = Main.MouseWorld - Main.player[Projectile.owner].Center;
 
-                DrawLaser(ModContent.Request<Texture2D>(Texture).Value, Main.player[Projectile.owner].Center,
-                    Projectile.velocity, 15f, Projectile.damage, -1.57f, Projectile.scale, maxLength.Length(), new Color(Main.DiscoR, 0, 255), (int)MOVE_DISTANCE);
+                DrawLaser(Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, Main.player[Projectile.owner].Center,
+                    Projectile.velocity, 15f, Projectile.damage, -MathHelper.PiOver2, Projectile.scale, maxLength.Length(), new Color(Main.DiscoR, 0, 255), (int)MOVE_DISTANCE);
             }
             return false;
         }
@@ -170,7 +170,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 int chargeFact = (int)(Charge / 20f);
                 Vector2 dustVelocity = Vector2.UnitX * 18f;
-                dustVelocity = dustVelocity.RotatedBy(Projectile.rotation - 1.57f);
+                dustVelocity = dustVelocity.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
                 Vector2 spawnPos = Projectile.Center + dustVelocity;
                 for (int k = 0; k < chargeFact + 1; k++)
                 {

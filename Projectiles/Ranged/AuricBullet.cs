@@ -1,5 +1,5 @@
-﻿using CalamityMod.Particles;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Electrified, 300);
-            SoundEngine.PlaySound(HitSound with { PitchVariance = 0.15f}, Projectile.Center);
+            SoundEngine.PlaySound(HitSound with { PitchVariance = 0.15f }, Projectile.Center);
             GenericSparkle sparker = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.Gold, Color.Cyan, Main.rand.NextFloat(1.8f, 2.5f), 5, Main.rand.NextFloat(-0.01f, 0.01f), 1.68f);
             GeneralParticleHandler.SpawnParticle(sparker);
 

@@ -1,11 +1,11 @@
-﻿using CalamityMod.Particles;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Melee
                     Line = new BloomLineVFX(previousStar, AnchorStart + SizeVector * i + offset - previousStar, 0.8f, constellationColor * 0.75f, 20, true, true);
                     BootlegSpawnParticle(Line);
 
-                    if (Main.rand.Next(3) == 0)
+                    if (Main.rand.NextBool(3))
                     {
                         constellationColorHue = (constellationColorHue + 0.16f) % 1;
                         constellationColor = Main.hslToRgb(constellationColorHue, 1, 0.8f);

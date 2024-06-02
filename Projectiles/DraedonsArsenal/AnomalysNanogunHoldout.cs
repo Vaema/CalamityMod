@@ -1,14 +1,14 @@
 ﻿using System;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public const int PlasmaChargeupTimer = 40;
         public const int PlasmaCooldownTimer = 24;
-        public const int PlasmaShotCooldown = 20;
+        public const int PlasmaShotCooldown = 15;
         public const int PlasmaShotCount = 5;
         public static int PlasmaFireTimer
         {
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     int proj = Projectile.NewProjectile(new EntitySource_ItemUse_WithAmmo(Owner, Owner.HeldItem, -1),
                         Projectile.Center + Projectile.rotation.ToRotationVector2() * GunLength,
-                        Projectile.velocity * (1f - i * 0.18f),
+                        Projectile.velocity * (1.5f - i * 0.24f),
                         ModContent.ProjectileType<AnomalysNanogunMPFBDevastator>(),
                         Projectile.damage,
                         Projectile.knockBack,

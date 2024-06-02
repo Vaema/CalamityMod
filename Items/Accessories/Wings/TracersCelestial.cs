@@ -3,10 +3,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
 
 namespace CalamityMod.Items.Accessories.Wings
 {
@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             Item.width = 36;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.accessory = true;
         }
@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Accessories.Wings
                 {
                     dustXOffset = -40;
                 }
-                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, 107, 0f, 0f, 100, default, 2.4f);
+                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, DustID.TerraBlade, 0f, 0f, 100, default, 2.4f);
                 Main.dust[flightDust].noGravity = true;
                 Main.dust[flightDust].velocity *= 0.3f;
                 if (Main.rand.NextBool(10))

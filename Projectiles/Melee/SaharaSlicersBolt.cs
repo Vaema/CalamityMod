@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Melee
                 // Setting the bolt's position on the player's back
                 Projectile.rotation = (21.8f - (Projectile.ai[1] * 0.1f)) * -Owner.direction;
                 Vector2 BoltPos = Owner.MountedCenter + new Vector2((10 + Projectile.ai[1] * 2.5f) * -Owner.direction, 3f - Projectile.ai[1]);
-                
+
                 Projectile.Center = BoltPos;
             }
         }

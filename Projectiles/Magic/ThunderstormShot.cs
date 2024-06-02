@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class ThunderstormShot : ModProjectile, ILocalizedModType
@@ -29,12 +29,12 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    Dust greenDust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 107, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f)];
+                    Dust greenDust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f)];
                     greenDust.velocity = Vector2.Zero;
                     greenDust.position -= Projectile.velocity / 5f * (float)i;
                     greenDust.noGravity = true;
                     greenDust.noLight = true;
-                    Dust lightningDust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 229, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f)];
+                    Dust lightningDust = Main.dust[Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f)];
                     lightningDust.velocity = Vector2.Zero;
                     lightningDust.position -= Projectile.velocity / 5f * (float)i;
                     lightningDust.noGravity = true;
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 dustRotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 1f; //0.75
                 dustRotate = dustRotate.RotatedBy((double)((float)(j - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
                 Vector2 dustDirection = dustRotate - Projectile.Center;
-                int killDust = Dust.NewDust(dustRotate + dustDirection, 0, 0, 229, dustDirection.X, dustDirection.Y, 100, default, 1.2f);
+                int killDust = Dust.NewDust(dustRotate + dustDirection, 0, 0, DustID.Vortex, dustDirection.X, dustDirection.Y, 100, default, 1.2f);
                 Main.dust[killDust].noGravity = true;
                 Main.dust[killDust].noLight = true;
                 Main.dust[killDust].velocity = dustDirection;
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 dustRotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 dustRotate = dustRotate.RotatedBy((double)((float)(j - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
                 Vector2 dustDirection = dustRotate - Projectile.Center;
-                int killDust = Dust.NewDust(dustRotate + dustDirection, 0, 0, 107, dustDirection.X, dustDirection.Y, 100, default, 1.2f);
+                int killDust = Dust.NewDust(dustRotate + dustDirection, 0, 0, DustID.TerraBlade, dustDirection.X, dustDirection.Y, 100, default, 1.2f);
                 Main.dust[killDust].noGravity = true;
                 Main.dust[killDust].noLight = true;
                 Main.dust[killDust].velocity = dustDirection;

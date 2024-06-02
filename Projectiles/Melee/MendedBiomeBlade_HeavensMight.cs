@@ -1,16 +1,16 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
-using Terraria.Graphics.Shaders;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -20,10 +20,9 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Projectiles/Melee/MendedBiomeBlade_HeavensMight";
         private bool initialized = false;
         Vector2 direction = Vector2.Zero;
-        Vector2 oldDirection = Vector2.Zero;
+        Vector2 oldDirection;
         public ref float CurrentState => ref Projectile.ai[0];
         public Player Owner => Main.player[Projectile.owner];
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
         public const float throwOutTime = 90f;
         public const float throwOutDistance = 440f;
 
@@ -85,7 +84,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.rotation = direction.ToRotation(); //Only done for afterimages
 
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 if (CurrentState == 2f || (CurrentState == 0f && Empowerment / maxEmpowerment < 0.5))
                 {
@@ -183,7 +182,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = direction.ToRotation();
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;

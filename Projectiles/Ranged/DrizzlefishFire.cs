@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (splitTimer <= 0)
             {
                 int numProj = 2;
-                float rotation = MathHelper.ToRadians(Main.rand.Next(15,26));
+                float rotation = MathHelper.ToRadians(Main.rand.Next(15, 26));
                 if (Projectile.owner == Main.myPlayer)
                 {
                     if (Projectile.ai[1] == 1f)

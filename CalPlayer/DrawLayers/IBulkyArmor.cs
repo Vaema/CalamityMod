@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Terraria.DataStructures;
 using Terraria;
+using Terraria.DataStructures;
 
 /// <summary>
 /// Interface that can be used by chestplates to appear extra bulky, by drawing partly over the players helmet with an extra layer

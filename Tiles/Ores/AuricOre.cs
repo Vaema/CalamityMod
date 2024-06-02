@@ -1,15 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Tiles.Astral;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.ID;
-using ReLogic.Content;
 using Terraria.ObjectData;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Tiles.Ores
 {
@@ -19,8 +20,7 @@ namespace CalamityMod.Tiles.Ores
         public static bool Animate;
         internal static Texture2D GlowTexture;
 
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
+
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
@@ -44,9 +44,9 @@ namespace CalamityMod.Tiles.Ores
             MineResist = 5f;
             MinPick = 250;
             HitSound = MineSound;
-
-            TileFraming.SetUpUniversalMerge(Type, TileID.Dirt, out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Stone, out secondTileAdjacency);
+            
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
         }
 
         public override bool CanExplode(int i, int j)
@@ -62,7 +62,7 @@ namespace CalamityMod.Tiles.Ores
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             if (!Animate)
-            {return;}
+            { return; }
             r = 0.24f;
             g = 0.40f;
             b = 0.47f;
@@ -70,8 +70,8 @@ namespace CalamityMod.Tiles.Ores
         public override void AnimateTile(ref int frame, ref int frameCounter)
         {
             if (!Animate)
-            {return;}
-                frameCounter++;
+            { return; }
+            frameCounter++;
             if (frameCounter > 4)
             {
                 frameCounter = 0;
@@ -95,16 +95,8 @@ namespace CalamityMod.Tiles.Ores
             Tile trackTile = Main.tile[i, j];
             double num6 = Main.time * 0.08;
             TileFraming.SlopedGlowmask(i, j, 0, glowmask, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+        }
 
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/StoneMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/DirtMerge");
-        }
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.GetAdjacencyData(i, j, TileID.Dirt, out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Stone, out secondTileAdjacency[i, j]);
-            return true;
-        }
         private Color GetDrawColour(int i, int j, Color colour)
         {
             int colType = Main.tile[i, j].TileColor;

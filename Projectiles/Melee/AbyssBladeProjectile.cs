@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Melee
         public int dustType1 = 104;
         public int dustType2 = 29;
         public bool spinMode = true;
-        public Vector2 NPCDestination = new Vector2 (0, 0);
+        public Vector2 NPCDestination = new Vector2(0, 0);
         public float OverallProgress => 1 - Projectile.timeLeft / (float)Lifetime;
         public float ThrowProgress => 1 - Projectile.timeLeft / (float)(Lifetime);
         public float ChargeProgress => 1 - (Projectile.timeLeft - Lifetime) / (float)(ChargeupTime);
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 11;
+            Projectile.localNPCHitCooldown = 15;
         }
 
         public override bool ShouldUpdatePosition()
@@ -155,14 +155,14 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.extraUpdates = 2;
                     Projectile.rotation = 0;
                     spinMode = false;
-                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/CeramicImpact", 2) { Volume = 0.65f, PitchVariance = 0.3f}, Projectile.Center);
+                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/CeramicImpact", 2) { Volume = 0.65f, PitchVariance = 0.3f }, Projectile.Center);
                     for (int i = 0; i < 3; i++)
                     {
                         GenericSparkle sparker = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.DodgerBlue, Color.MediumBlue, Main.rand.NextFloat(2.5f, 2.9f) - i * 0.55f, 14, Main.rand.NextFloat(-0.01f, 0.01f), 2.5f);
                         GeneralParticleHandler.SpawnParticle(sparker);
                     }
                     Projectile.penetrate = 1;
-                    Projectile.damage = startDamage;
+                    Projectile.damage = (int)(startDamage * 2); // Launched blade deals 200% damage
                     Time = 0;
 
                     bool foundTarget = false;
@@ -188,7 +188,7 @@ namespace CalamityMod.Projectiles.Melee
 
                     for (int i = 0; i < 6; i++)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, ((Projectile.velocity).SafeNormalize(Vector2.UnitX * Projectile.direction) * 5).RotatedByRandom(0.75f) * Main.rand.NextFloat(1.4f, 2.2f), ModContent.ProjectileType<AbyssBladeSplitProjectile>(), startDamage / 4, Projectile.knockBack / 4, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, ((Projectile.velocity).SafeNormalize(Vector2.UnitX * Projectile.direction) * 5).RotatedByRandom(0.75f) * Main.rand.NextFloat(1.4f, 2.2f), ModContent.ProjectileType<AbyssBladeSplitProjectile>(), (int)(startDamage * 0.3), Projectile.knockBack / 4, Projectile.owner);
                     }
                 }
             }
@@ -228,13 +228,6 @@ namespace CalamityMod.Projectiles.Melee
                     dust.velocity = new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.7f);
                 }
             }
-        }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.93f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
         }
 
         public override void OnKill(int timeLeft)

@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
-using CalamityMod.Items.Materials;
-using Terraria.DataStructures;
-using ReLogic.Utilities;
-using CalamityMod.Items.Accessories;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -20,7 +21,6 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public Player Owner => Main.player[Projectile.owner];
-        internal PrimitiveTrail TrailRenderer;
 
         public HookState State
         {
@@ -231,18 +231,13 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TrailRenderer is null)
-                TrailRenderer = new PrimitiveTrail(PrimWidthFunction, PrimColorFunction);
-
             Vector2[] segmentPositions = new Vector2[] {Projectile.Center, Owner.Center };
 
             if (State == HookState.Grappling)
                 segmentPositions = Owner.GetModPlayer<WulfrumPackPlayer>().Segments.Select(x => x.position).ToArray();
+            PrimitiveRenderer.RenderTrail(new List<Vector2>(segmentPositions) { Owner.Center }, new(PrimWidthFunction, PrimColorFunction, smoothen: State is HookState.Grappling), 30);
 
-            TrailRenderer.Draw(segmentPositions, -Main.screenPosition, 30);
-
-
-            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, 0, 0);
             return false;

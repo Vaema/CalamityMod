@@ -1,6 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.width = 36;
                 Projectile.height = 36;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+            Projectile.rotation = Projectile.velocity.ToRotation();
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.damage = (int)(Projectile.damage * 0.75f); // 25% damage nerf for every enemy hit
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
-               
+
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using System;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity6BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<NychthemeronProjectile>();
             Item.shootSpeed = 6f;
@@ -32,10 +32,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool AltFunctionUse(Player player)
         {
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                Projectile p = Main.projectile[i];
-                if (p.type == ModContent.ProjectileType<NychthemeronProjectile>() && p.owner == player.whoAmI)
+                if (p.type == Item.shoot && p.owner == player.whoAmI)
                 {
                     p.ai[0] = 1f;
                 }
@@ -43,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             return true;
         }
 
-		public override float StealthDamageMultiplier => 0.3333f;
+        public override float StealthDamageMultiplier => 0.3333f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -93,12 +92,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 
             // Ideally new projectiles will fill in the most recently vacated spots in the pattern
             int[] activeSlots = new int[10] { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-                if (proj.type == ModContent.ProjectileType<NychthemeronOrb>() && proj.owner == player.whoAmI && proj.active && proj.localAI[0] == 0f && activeSlots[(int)proj.localAI[1]] == -1)
+                if (proj.type == ModContent.ProjectileType<NychthemeronOrb>() && proj.owner == player.whoAmI && proj.localAI[0] == 0f && activeSlots[(int)proj.localAI[1]] == -1)
                 {
-                    activeSlots[(int)proj.localAI[1]] = i;
+                    activeSlots[(int)proj.localAI[1]] = proj.whoAmI;
                 }
             }
 

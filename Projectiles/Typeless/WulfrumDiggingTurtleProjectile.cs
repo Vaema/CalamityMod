@@ -1,15 +1,15 @@
 ﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
-using CalamityMod.Items.Materials;
-using Terraria.DataStructures;
-using ReLogic.Utilities;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -91,16 +91,16 @@ namespace CalamityMod.Projectiles.Typeless
                 idleSoundOut.Position = Projectile.Center;
             }
 
-            
+
             //Heavy cutting sound
             if ((!SoundEngine.TryGetActiveSound(CuttingSoundSlot, out var cuttingSoundOut)))
-                CuttingSoundSlot = SoundEngine.PlaySound(CuttingSound with { Volume = CuttingSound.Volume  }, Projectile.Center);
+                CuttingSoundSlot = SoundEngine.PlaySound(CuttingSound with { Volume = CuttingSound.Volume }, Projectile.Center);
             else if (cuttingSoundOut != null)
             {
                 cuttingSoundOut.Volume = CuttingVolume;
                 cuttingSoundOut.Position = Projectile.Center;
             }
-            
+
 
 
             if (Diggging)
@@ -120,14 +120,14 @@ namespace CalamityMod.Projectiles.Typeless
                 CuttingVolume -= 0.1f;
 
                 float fallSpeed = Projectile.velocity.Y;
-                
+
                 if (Projectile.timeLeft < 345)
                     Projectile.velocity += Vector2.UnitY * 0.5f * (1 - Math.Clamp((Projectile.timeLeft - 310f) / 35f, 0f, 1f));
 
                 Projectile.velocity *= 0.98f;
 
                 if (Projectile.velocity.Y > 0)
-                    Projectile.velocity.Y = Math.Clamp(Projectile.velocity.Y, 0,  Math.Max(18f, fallSpeed));
+                    Projectile.velocity.Y = Math.Clamp(Projectile.velocity.Y, 0, Math.Max(18f, fallSpeed));
 
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
@@ -195,7 +195,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (!tile.HasTile)
                 return;
 
-            int pickPower = Math.Min( Owner.GetBestPickPower(), MaxPickPower);
+            int pickPower = Math.Min(Owner.GetBestPickPower(), MaxPickPower);
             int pickaxeRequirement = tile.GetRequiredPickPower(x, y);
 
             bool true_ = true;
@@ -216,7 +216,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             GearTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/WulfrumDiggingTurtle_Gear").Value;
 

@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 playerRotatedPoint = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
             if (Main.myPlayer == Projectile.owner)
             {
-                if (Owner.channel && !Owner.noItems && !Owner.CCed)
+                if (!Owner.CantUseHoldout())
                     HandleChannelMovement(playerRotatedPoint);
                 else
                     Projectile.Kill();
@@ -81,9 +81,9 @@ namespace CalamityMod.Projectiles.Melee
             // Sprite and player directioning.
             Projectile.spriteDirection = Projectile.direction;
             if (Projectile.direction == 1)
-                Projectile.Left = Owner.Center;
+                Projectile.Left = Owner.MountedCenter;
             else
-                Projectile.Right = Owner.Center;
+                Projectile.Right = Owner.MountedCenter;
             Projectile.position.X += Projectile.spriteDirection == -1 ? 26f : -26f;
             Projectile.position.Y -= Projectile.scale * 2f;
             Owner.ChangeDir(Projectile.direction);
@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.frameCounter <= 1)
                 return false;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition + (Projectile.spriteDirection == -1 ? new Vector2(60, 0) : new Vector2(-60, 0));
             Vector2 origin = texture.Size() / new Vector2(2f, 6f) * 0.5f;
             Rectangle frame = texture.Frame(2, 6, frameX, frameY);

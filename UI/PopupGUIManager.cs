@@ -1,8 +1,10 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ModLoader;
+using Terraria.ModLoader.Core;
 
 namespace CalamityMod.UI
 {
@@ -58,13 +60,16 @@ namespace CalamityMod.UI
         public static void LoadGUIs()
         {
             // Look through every type in the mod, and check if it's derived from PopupGUI. If it is, create a copy and save it in the static list.
-            foreach (Type type in typeof(CalamityMod).Assembly.GetTypes())
+            foreach (Mod mod in ModLoader.Mods)
             {
-                // Don't load abstract classes since they cannot have instances.
-                if (type.IsAbstract)
-                    continue;
-                if (type.IsSubclassOf(typeof(PopupGUI)))
-                    gUIs.Add(Activator.CreateInstance(type) as PopupGUI);
+                foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
+                {
+                    // Don't load abstract classes since they cannot have instances.
+                    if (type.IsAbstract)
+                        continue;
+                    if (type.IsSubclassOf(typeof(PopupGUI)))
+                        gUIs.Add(Activator.CreateInstance(type) as PopupGUI);
+                }
             }
         }
         public static void UnloadGUIs() => gUIs.Clear();

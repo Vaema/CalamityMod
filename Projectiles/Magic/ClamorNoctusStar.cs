@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -38,12 +38,12 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = 20 + Main.rand.Next(40);
                 if (Main.rand.NextBool(5))
                 {
-                    SoundEngine.PlaySound(SoundID.Item9, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item9, Projectile.Center);
                 }
             }
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 20, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.PurificationPowder, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
         }
 
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
             Projectile.width = 50;
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.localNPCHitCooldown = 10;
             for (int i = 0; i < 15; i++)
             {
-                int brightDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 20, 0f, 0f, 100, default, 1.2f);
+                int brightDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100, default, 1.2f);
                 Main.dust[brightDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -75,10 +75,10 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int j = 0; j < 30; j++)
             {
-                int brightDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 20, 0f, 0f, 100, default, 1.7f);
+                int brightDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100, default, 1.7f);
                 Main.dust[brightDust2].noGravity = true;
                 Main.dust[brightDust2].velocity *= 5f;
-                brightDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 20, 0f, 0f, 100, default, 1f);
+                brightDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100, default, 1f);
                 Main.dust[brightDust2].velocity *= 2f;
             }
             if (Main.netMode != NetmodeID.Server)

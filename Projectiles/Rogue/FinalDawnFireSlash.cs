@@ -4,8 +4,8 @@ using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -45,14 +45,14 @@ namespace CalamityMod.Projectiles.Rogue
             AdjustPlayerPositionValues(player);
 
             Projectile.ai[0]++;
-            if(Projectile.ai[0] >= 4)
+            if (Projectile.ai[0] >= 4)
             {
                 Projectile.ai[1]++;
                 Projectile.ai[0] = 0;
                 if (Projectile.ai[1] == 5)
                 {
                     Projectile.friendly = true;
-                    SoundEngine.PlaySound(FinalDawn.UseSound, Projectile.Center);
+                    SoundEngine.PlaySound(TheFinalDawn.UseSound, Projectile.Center);
                 }
             }
             if (Projectile.ai[1] >= 11)
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Rogue
             Vector2 drawCenter = Projectile.Center;
             Rectangle frameRectangle = new Rectangle(Projectile.frame / 5 * width, Projectile.frame % 5 * height, width, height);
 
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnFireSlash_Glow").Value;
 
             Main.spriteBatch.Draw(scytheTexture,

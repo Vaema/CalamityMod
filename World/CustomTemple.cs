@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using ReLogic.Utilities;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.WorldBuilding;

@@ -1,13 +1,14 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -18,9 +19,15 @@ namespace CalamityMod.NPCs.Crags
 {
     public class SoulSlurper : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -29,7 +36,7 @@ namespace CalamityMod.NPCs.Crags
             AIType = -1;
             NPC.npcSlots = 1f;
             NPC.damage = 30;
-            NPC.width = 60;
+            NPC.width = 40;
             NPC.height = 40;
             NPC.defense = 30;
             NPC.DR_NERD(0.15f);
@@ -52,13 +59,17 @@ namespace CalamityMod.NPCs.Crags
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BrimstoneCragsBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SoulSlurper")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SoulSlurper")
             });
         }
 
@@ -69,6 +80,9 @@ namespace CalamityMod.NPCs.Crags
 
         public override void AI()
         {
+            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
+            NPC.damage = 0;
+
             bool provy = DownedBossSystem.downedProvidence;
             Player target = Main.player[NPC.target];
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || target.dead)
@@ -159,13 +173,10 @@ namespace CalamityMod.NPCs.Crags
                 NPC.localAI[0] = 0f;
                 if (Collision.CanHit(NPC.position, NPC.width, NPC.height, target.position, target.width, target.height))
                 {
-                    int dmg = 30;
-                    if (Main.expertMode)
-                    {
-                        dmg = 22;
-                    }
+                    int dmg = Main.masterMode ? 19 : Main.expertMode ? 22 : 30;
                     int projType = ModContent.ProjectileType<BrimstoneBarrage>();
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), npcCenter.X, npcCenter.Y, targetX, targetY, projType, dmg + (provy ? 30 : 0), 0f, Main.myPlayer, 1f, 0f);
+                    Vector2 projectileVelocity = new Vector2(targetX, targetY);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 16f, projectileVelocity, projType, dmg + (provy ? 30 : 0), 0f, Main.myPlayer, 1f, 0f, projectileVelocity.Length() * 3f);
                 }
             }
             int npcTileX = (int)NPC.Center.X;
@@ -263,7 +274,7 @@ namespace CalamityMod.NPCs.Crags
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Crags/SoulSlurperGlow").Value;
+            texture = GlowTexture.Value;
             Color redGlow = Color.Lerp(Color.White, Color.Red, 0.5f);
 
             if (CalamityConfig.Instance.Afterimages)
@@ -325,7 +336,7 @@ namespace CalamityMod.NPCs.Crags
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
                 for (int i = 0; i < 10; i++)
                 {
-                    int brimDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    int brimDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -335,10 +346,10 @@ namespace CalamityMod.NPCs.Crags
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
+                    int brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
                     Main.dust[brimDust2].noGravity = true;
                     Main.dust[brimDust2].velocity *= 5f;
-                    brimDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust2].velocity *= 2f;
                 }
             }

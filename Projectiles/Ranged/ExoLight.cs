@@ -66,15 +66,15 @@ namespace CalamityMod.Projectiles.Ranged
                 2 => Color.Orange,
                 _ => Color.LawnGreen,
             };
-            
+
             Lighting.AddLight(Projectile.Center, Color.DarkSlateGray.ToVector3());
             Projectile.scale = MathHelper.Lerp(0.001f, 1f, Utils.GetLerpValue(0f, 25f, Time, true));
             if (Projectile.localAI[0] == 0f)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].CanBeChasedBy(Projectile.GetSource_FromThis(), false))
-                        NPCDestination = Main.npc[i].Center + Main.npc[i].velocity * 5f;
+                    if (n.CanBeChasedBy(Projectile.GetSource_FromThis(), false))
+                        NPCDestination = n.Center + n.velocity * 5f;
                 }
                 InitialCenter = Projectile.Center;
                 Projectile.localAI[0] = 1f;
@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnKill(int timeLeft)
         {
             float scaleBonus = Time >= 120f ? Main.rand.NextFloat(3.4f, 4.2f) : Main.rand.NextFloat(0.8f, 1.6f);
-            SoundEngine.PlaySound(DeadSunsWind.Explosion with { Volume = 0.7f}, Projectile.Center);
+            SoundEngine.PlaySound(DeadSunsWind.Explosion with { Volume = 0.7f }, Projectile.Center);
             float numberOfDusts = Time >= 120f ? 30 : 20;
             float rotFactor = 360f / numberOfDusts;
             for (int i = 0; i < numberOfDusts; i++)

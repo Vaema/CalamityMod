@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.World;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             for (int i = 0; i < 2; i++)
             {
-                int icyFlame = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 135, 0f, 0f, 100, default, 3f);
+                int icyFlame = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceTorch, 0f, 0f, 100, default, 3f);
                 Main.dust[icyFlame].noGravity = true;
                 Main.dust[icyFlame].velocity *= 0f;
             }

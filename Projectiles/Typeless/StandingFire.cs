@@ -2,9 +2,9 @@
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Typeless
 {
     public class StandingFire : ModProjectile, ILocalizedModType
@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
-        
+
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
     }
 }

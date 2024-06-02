@@ -24,13 +24,13 @@ namespace CalamityMod.Buffs.Summon.Whips
                 BuffID.ScytheWhipEnemyDebuff, BuffID.CoolWhipNPCDebuff, BuffID.MaceWhipNPCDebuff,
                 BuffID.RainbowWhipNPCDebuff, BuffID.SwordWhipNPCDebuff, BuffID.ThornWhipNPCDebuff
             };
-            
+
             //kill whip stacking for psc purposes
             // 29SEP2023: Ozzatron: this won't kill stacking with other mod whips. need a generalized system for this
             for (int buff = 0; buff < NPC.maxBuffs; buff++)
             {
                 int buffID = npc.buffType[buff];
-                if(npc.buffTime[buff] > 0 && whipBuffs.Contains(buffID) && npc.buffType[buff] != Type)
+                if (npc.buffTime[buff] > 0 && whipBuffs.Contains(buffID) && npc.buffType[buff] != Type)
                     npc.RequestBuffRemoval(npc.buffType[buff]);
             }
         }

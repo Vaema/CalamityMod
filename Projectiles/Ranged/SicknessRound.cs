@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 dspeed = -Projectile.velocity * 0.5f;
                 float x2 = Projectile.Center.X - Projectile.velocity.X / 10f;
                 float y2 = Projectile.Center.Y - Projectile.velocity.Y / 10f;
-                int dust = Dust.NewDust(new Vector2(x2, y2), 1, 1, 107, dspeed.X, dspeed.Y, 0, default, 1f);
+                int dust = Dust.NewDust(new Vector2(x2, y2), 1, 1, DustID.TerraBlade, dspeed.X, dspeed.Y, 0, default, 1f);
                 Main.dust[dust].alpha = Projectile.alpha;
                 Main.dust[dust].position.X = x2;
                 Main.dust[dust].position.Y = y2;
@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<Sickness>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
                 for (int k = 0; k < 3; k++)
                 {
-                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 107, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.TerraBlade, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Main.rand.Next(-35, 36) * 0.2f, Main.rand.Next(-35, 36) * 0.2f, ModContent.ProjectileType<SicknessRound2>(),
                     (int)(Projectile.damage * 0.66), Projectile.knockBack * 0.5f, Main.myPlayer);
                 }

@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.World;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             Projectile.tileCollide = Projectile.timeLeft < 540;
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Projectile.alpha = 0;
                 }
-                int sandyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1f);
+                int sandyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
                 Main.dust[sandyDust].noGravity = true;
                 Main.dust[sandyDust].velocity *= 0f;
             }
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Boss
                 Vector2 dustRotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 dustRotate = dustRotate.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
                 Vector2 dustDirection = dustRotate - Projectile.Center;
-                int killSand = Dust.NewDust(dustRotate + dustDirection, 0, 0, 85, dustDirection.X * 1.5f, dustDirection.Y * 1.5f, 100, default, 1.2f);
+                int killSand = Dust.NewDust(dustRotate + dustDirection, 0, 0, DustID.UnusedBrown, dustDirection.X * 1.5f, dustDirection.Y * 1.5f, 100, default, 1.2f);
                 Main.dust[killSand].noGravity = true;
                 Main.dust[killSand].noLight = true;
                 Main.dust[killSand].velocity = dustDirection;

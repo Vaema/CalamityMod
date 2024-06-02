@@ -1,5 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Bullet;
             Item.shootSpeed = 15f;
 
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;
@@ -61,12 +61,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<P90>().
                 AddIngredient(ItemID.Uzi).
-                AddIngredient<PearlGod>(). //This should be removed
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.FragmentVortex, 10).
-                AddIngredient<GalacticaSingularity>(6). //This should be removed
-                AddIngredient<CoreofCalamity>(). // This should be removed
-                AddIngredient<Stardust>(25). // This should be removed
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

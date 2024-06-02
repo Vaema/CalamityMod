@@ -1,7 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Particles;
+using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -27,7 +28,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
         public float ChargeupCompletion => MathHelper.Clamp(Time / ChargeupTime, 0f, 1f);
-        public const int ChargeupTime = 240;
+        public const int ChargeupTime = 180;
 
         public override void SetDefaults()
         {
@@ -121,7 +122,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public void DoPrettyDustEffects()
         {
-            int dustSpawnChance = (int)MathHelper.SmoothStep(16f, 4f, ChargeupCompletion);
+            int dustSpawnChance = (int)MathHelper.SmoothStep(20f, 2f, ChargeupCompletion);
             for (int i = 0; i < 2; i++)
             {
                 if (!Main.rand.NextBool(dustSpawnChance))
@@ -140,10 +141,26 @@ namespace CalamityMod.Projectiles.Magic
                 magic.noLight = true;
                 magic.noGravity = true;
             }
+
+            // Light particle effects, which get bigger and turn from white to red as the beam charges.
+            // It then stays at max size and red color as long as the beam is firing.
+            if (Time > 30 && Time % 5 == 0)
+            {
+                Vector2 particleVel = Main.rand.NextVector2CircularEdge(1f, 1f);
+                particleVel.SafeNormalize(Vector2.Zero);
+                particleVel *= Main.rand.NextFloat(5f, 10f);
+
+                Particle chargeParticle = new GenericBloom(Projectile.Center, particleVel, Color.Lerp(Color.White, Color.Red, ChargeupCompletion), MathHelper.Lerp(0.075f, 0.35f, ChargeupCompletion), 30);
+                GeneralParticleHandler.SpawnParticle(chargeParticle);
+            }
         }
 
         public void HandleChargeEffects()
         {
+            // Play charge-up sound.
+            if (Time == 30)
+                SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/MoonLordLaserCharge"), Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
+
             // Create dust that fires parallel to the direction of the circle.
             if (Main.rand.NextBool(3))
             {
@@ -174,7 +191,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D outerCircleTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D outerCircleTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D outerCircleGlowmask = ModContent.Request<Texture2D>(Texture + "Glowmask").Value;
             Texture2D innerCircleTexture = ModContent.Request<Texture2D>(Texture + "Inner").Value;
             Texture2D innerCircleGlowmask = ModContent.Request<Texture2D>(Texture + "InnerGlowmask").Value;

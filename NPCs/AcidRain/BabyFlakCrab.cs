@@ -1,10 +1,10 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Pets;
+using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -62,7 +62,7 @@ namespace CalamityMod.NPCs.AcidRain
             }
             if (Main.rand.NextBool(8) && NPC.catchItem == (short)ModContent.ItemType<GeyserShell>())
             {
-                int dust = Dust.NewDust(NPC.position - new Vector2(2f, 2f), NPC.width + 4, NPC.height + 4, (int)CalamityDusts.SulfurousSeaAcid, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, 200, default, 1f);
+                int dust = Dust.NewDust(NPC.position - new Vector2(2f, 2f), NPC.width + 4, NPC.height + 4, (int)CalamityDusts.SulphurousSeaAcid, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, 200, default, 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 1.1f;
                 Main.dust[dust].velocity.Y += 0.25f;
@@ -141,13 +141,13 @@ namespace CalamityMod.NPCs.AcidRain
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

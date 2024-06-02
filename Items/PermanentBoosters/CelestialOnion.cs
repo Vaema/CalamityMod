@@ -36,10 +36,6 @@ namespace CalamityMod.Items.PermanentBoosters
             {
                 player.itemTime = Item.useTime;
                 modPlayer.extraAccessoryML = true;
-
-                // TODO -- remove "onionMode", it does nothing. It is the old internal name for "Prepare to Cry".
-                if (!CalamityWorld.onionMode)
-                    CalamityWorld.onionMode = true;
             }
             return true;
         }
@@ -54,7 +50,7 @@ namespace CalamityMod.Items.PermanentBoosters
             // We prematurely stop it from getting to that point
             if (!Player.active || Main.masterMode)
                 return false;
-            
+
             return Player.Calamity().extraAccessoryML;
         }
         public override bool IsHidden() => IsEmpty && !IsEnabled();

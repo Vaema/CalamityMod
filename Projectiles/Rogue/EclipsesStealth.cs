@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.width = Projectile.height = 40;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.tileCollide = false;            
+            Projectile.tileCollide = false;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.MaxUpdates = 2;
             Projectile.penetrate = -1;

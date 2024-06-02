@@ -1,4 +1,4 @@
-using CalamityMod.Items.Placeables.Ores;
+﻿using CalamityMod.Items.Placeables.Ores;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
@@ -22,10 +22,10 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
             Item.createTile = ModContent.TileType<Tiles.Furniture.CraftingStations.AncientAltar>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
+        }
 
         public override void AddRecipes()
         {

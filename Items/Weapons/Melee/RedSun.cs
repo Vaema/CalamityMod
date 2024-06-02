@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -19,11 +19,11 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 62;
             Item.height = 62;
-            Item.damage = 500;
+            Item.damage = 350;
             Item.DamageType = DamageClass.Melee;
-            Item.useTime = 5;
-            Item.useAnimation = 30;
-            Item.reuseDelay = 20;
+            Item.useTime = 10;
+            Item.useAnimation = 40;
+            Item.reuseDelay = 0;
             Item.useLimitPerAnimation = 6;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<RSSolarFlare>();
             Item.shootSpeed = 15f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -89,7 +89,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 64);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.YellowTorch);
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)

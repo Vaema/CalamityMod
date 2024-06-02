@@ -35,7 +35,7 @@ namespace CalamityMod.Particles
         {
             Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
             float rot = LineVector.ToRotation() + MathHelper.PiOver2;
-            Vector2 origin = new Vector2(tex.Width/2f, tex.Height);
+            Vector2 origin = new Vector2(tex.Width / 2f, tex.Height);
             Vector2 scale = new Vector2(Scale, LineVector.Length() / tex.Height);
             spriteBatch.Draw(tex, Position - Main.screenPosition, null, Color, rot, origin, scale, SpriteEffects.None, 0);
 

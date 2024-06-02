@@ -2,10 +2,10 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.AstrumAureus;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
 {
@@ -14,7 +14,7 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.SortingPriorityBossSpawns[Type] = 14; // Frost Moon
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 12; // Truffle Worm
         }
 
         public override void SetDefaults()
@@ -56,7 +56,7 @@ namespace CalamityMod.Items.SummonItems
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Stardust>(30).
+                AddIngredient<StarblightSoot>(30).
                 AddIngredient(ItemID.FallenStar, 20).
                 AddTile(TileID.Anvils).
                 Register();

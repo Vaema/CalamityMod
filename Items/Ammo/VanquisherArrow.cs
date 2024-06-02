@@ -16,20 +16,20 @@ namespace CalamityMod.Items.Ammo
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-                   }
+        }
 
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 46;
-            Item.damage = 24;
+            Item.damage = 30;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.knockBack = 3.5f;
             Item.value = Item.sellPrice(copper: 28);
-            Item.shoot = ModContent.ProjectileType<VanquisherArrowMain>();
-            Item.shootSpeed = 10f;
+            Item.shoot = ModContent.ProjectileType<VanquisherArrowProj>();
+            Item.shootSpeed = 0.1f;
             Item.ammo = AmmoID.Arrow;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }

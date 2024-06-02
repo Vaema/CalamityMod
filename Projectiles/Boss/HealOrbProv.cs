@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             int playerTracker = (int)Projectile.ai[0];
-            Vector2 projDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+            Vector2 projDirection = Projectile.Center;
             float playerDistX = Main.player[playerTracker].Center.X - projDirection.X;
             float playerDistY = Main.player[playerTracker].Center.Y - projDirection.Y;
             float playerDistance = (float)Math.Sqrt((double)(playerDistX * playerDistX + playerDistY * playerDistY));
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 float shortXVel = Projectile.velocity.X * 0.2f * (float)i;
                 float shortYVel = -(Projectile.velocity.Y * 0.2f) * (float)i;
-                int holyFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, 1f);
+                int holyFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 1f);
                 Main.dust[holyFire].noGravity = true;
                 Main.dust[holyFire].velocity *= 0f;
                 Dust expr_154F9_cp_0 = Main.dust[holyFire];

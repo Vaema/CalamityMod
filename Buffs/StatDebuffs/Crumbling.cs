@@ -7,9 +7,9 @@ namespace CalamityMod.Buffs.StatDebuffs
     public class Crumbling : ModBuff
     {
         public static int DefenseReduction = 10;
-        public static float MultiplicativeDamageReductionPlayer = 0.55f;
-        //12% dr reduction
-        public static float MultiplicativeDamageReductionEnemy = 0.9f;
+        public static float MultiplicativeDamageReductionPlayer = 0.7f;
+        // 8% DR reduction
+        public static float MultiplicativeDamageReductionEnemy = 0.92f;
 
         public override void SetStaticDefaults()
         {

@@ -1,10 +1,10 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using System.IO;
+using System.Linq;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.scale >= 0.5f;
-        
+
         public override bool PreDraw(ref Color lightColor)
         {
             // This should never happen, but just in case.

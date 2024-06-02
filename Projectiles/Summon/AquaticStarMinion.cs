@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Summon
         public CalamityPlayer moddedOwner => Owner.Calamity();
 
         public ref float CheckForSpawning => ref Projectile.localAI[0];
-        
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;

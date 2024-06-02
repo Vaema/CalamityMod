@@ -1,19 +1,19 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using ReLogic.Content;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Boss
         public override float Lifetime => 180;
         public override Color LaserOverlayColor => new(250, 250, 250, 100);
         public override Color LightCastColor => Color.White;
-        public override Texture2D LaserBeginTexture => ModContent.Request<Texture2D>(Texture).Value;
+        public override Texture2D LaserBeginTexture => Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ThanatosBeamMiddle", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ThanatosBeamEnd", AssetRequestMode.ImmediateLoad).Value;
 
@@ -149,7 +149,7 @@ namespace CalamityMod.Projectiles.Boss
                     float distanceBetweenProjectiles = bossRush ? 160f : death ? 256f : revenge ? 288f : 320f;
                     Vector2 laserFirePosition = Main.npc[OwnerIndex].Center + beamDirection * distanceBetweenProjectiles;
                     int laserCount = (int)(LaserLength / distanceBetweenProjectiles);
-                    int type = ModContent.ProjectileType<ThanatosLaser>();
+                    int type = ModContent.ProjectileType<THanosSideLaser>();
                     int damage = Projectile.GetProjectileDamage(Main.npc[OwnerIndex].type);
                     for (int i = 0; i < laserCount; i++)
                     {
@@ -242,7 +242,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 240);
         }
 
         public override bool CanHitPlayer(Player target) => OwnerIsValid && Projectile.scale >= 0.5f;

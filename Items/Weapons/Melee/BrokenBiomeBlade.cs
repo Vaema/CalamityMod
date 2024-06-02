@@ -1,21 +1,21 @@
-﻿using Terraria.DataStructures;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using Terraria.ModLoader.IO;
-using Terraria.GameContent;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -127,7 +127,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ProjectileID.PurificationPowder;
             Item.knockBack = 5f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shootSpeed = 12f;
         }
@@ -158,7 +158,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SaveData(TagCompound tag)
         {
-            int attunement1 = mainAttunement == null? -1 : (int)mainAttunement.id;
+            int attunement1 = mainAttunement == null ? -1 : (int)mainAttunement.id;
             int attunement2 = secondaryAttunement == null ? -1 : (int)secondaryAttunement.id;
             tag["mainAttunement"] = attunement1;
             tag["secondaryAttunement"] = attunement2;

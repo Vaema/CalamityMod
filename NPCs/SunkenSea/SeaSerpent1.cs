@@ -1,8 +1,8 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -19,7 +19,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/SeaSerpent_Bestiary",
                 PortraitPositionXOverride = 40,
@@ -54,13 +54,17 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SeaSerpent")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SeaSerpent")
             });
         }
 
@@ -73,22 +77,21 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 204, 0f, 0f, 150, default(Color), 0.3f);
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.TreasureSparkle, 0f, 0f, 150, default(Color), 0.3f);
                     dust.fadeIn = 0.75f;
                     dust.velocity *= 0.1f;
                     dust.noLight = true;
                 }
             }
 
-            Lighting.AddLight(NPC.Center, (255 - NPC.alpha) * 0f / 255f, (255 - NPC.alpha) * 0.30f / 255f, (255 - NPC.alpha) * 0.30f / 255f);
+            Lighting.AddLight(NPC.Center, 0f, (255 - NPC.alpha) * 0.3f / 255f, (255 - NPC.alpha) * 0.3f / 255f);
+
             if (NPC.ai[2] > 0f)
-            {
                 NPC.realLife = (int)NPC.ai[2];
-            }
+
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead)
-            {
                 NPC.TargetClosest(true);
-            }
+
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (!TailSpawned && NPC.ai[0] == 0f)
@@ -98,21 +101,14 @@ namespace CalamityMod.NPCs.SunkenSea
                     {
                         int lol = 0;
                         if (segment == 0 || segment == 1 || segment == 4 || segment == 5)
-                        {
                             lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<SeaSerpent2>(), NPC.whoAmI);
-                        }
                         else if (segment == 2 || segment == 3 || segment == 6)
-                        {
                             lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<SeaSerpent3>(), NPC.whoAmI);
-                        }
                         else if (segment == 7)
-                        {
                             lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<SeaSerpent4>(), NPC.whoAmI);
-                        }
                         else if (segment == 8)
-                        {
                             lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<SeaSerpent5>(), NPC.whoAmI);
-                        }
+
                         Main.npc[lol].realLife = NPC.whoAmI;
                         Main.npc[lol].ai[2] = (float)NPC.whoAmI;
                         Main.npc[lol].ai[1] = (float)Previous;
@@ -120,30 +116,30 @@ namespace CalamityMod.NPCs.SunkenSea
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, lol, 0f, 0f, 0f, 0);
                         Previous = lol;
                     }
+
                     TailSpawned = true;
                 }
             }
+
             if (NPC.velocity.X < 0f)
-            {
                 NPC.spriteDirection = -1;
-            }
             else if (NPC.velocity.X > 0f)
-            {
                 NPC.spriteDirection = 1;
-            }
+
             if (Main.player[NPC.target].dead)
-            {
                 NPC.TargetClosest(false);
-            }
+
             NPC.alpha -= 42;
             if (NPC.alpha < 0)
-            {
                 NPC.alpha = 0;
-            }
+
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
             {
-                NPC.active = false;
+                NPC.TargetClosest(false);
+                if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
+                    NPC.active = false;
             }
+
             float currentSpeed = speed;
             float currentTurnSpeed = turnSpeed;
             Vector2 segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
@@ -309,13 +305,13 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 37, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 10; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 37, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

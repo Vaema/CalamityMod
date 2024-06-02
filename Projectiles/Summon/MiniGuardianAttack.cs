@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         private int attackDelay = 0;
-        
+
         public enum MiniOffenseAIState
         {
             Vanity,
@@ -39,8 +39,8 @@ namespace CalamityMod.Projectiles.Summon
             Fireballs
         }
 
-        public MiniOffenseAIState getAiState => SpawnedFromPSC ? 
-            (MiniOffenseAIState)Math.Clamp(Projectile.ai[2], (int)MiniOffenseAIState.Spears, (int)MiniOffenseAIState.Fireballs) : 
+        public MiniOffenseAIState getAiState => SpawnedFromPSC ?
+            (MiniOffenseAIState)Math.Clamp(Projectile.ai[2], (int)MiniOffenseAIState.Spears, (int)MiniOffenseAIState.Fireballs) :
             MiniOffenseAIState.Psa;
 
         public MiniOffenseAIState updateAiState(Player player, MiniOffenseAIState currentAIState)
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             int currentPhase = (int)currentAIState;
-            
+
             if (phaseTimer <= 0)
             {
                 currentPhase++;
@@ -76,11 +76,11 @@ namespace CalamityMod.Projectiles.Summon
                 result = (MiniOffenseAIState)currentPhase;
                 phaseTimer--;
             }
-            
+
             Projectile.ai[2] = (int)result;
             return (MiniOffenseAIState)result;
         }
-        
+
         public bool ForcedVanity => SpawnedFromPSC && !Owner.Calamity().profanedCrystalBuffs;
 
         public override void SetStaticDefaults()
@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     if (playerDist < 100f)
                         acceleration = 0.1f;
-                    
+
                     if (playerDist > 300f)
                         acceleration = 1f;
 
@@ -180,14 +180,14 @@ namespace CalamityMod.Projectiles.Summon
                     if (acceleration > 0.05f && Projectile.velocity.Y > 0f)
                         Projectile.velocity.Y -= acceleration * 2f;
                 }
-                
+
             }
         }
 
         public void AdvancedAI(NPC potentialTarget, Player owner, MiniOffenseAIState aiState)
         {
             bool buffedAi = owner.HasBuff<ProfanedCrystalWhipBuff>();
-                
+
             Vector2 targetDestination = potentialTarget.Center - Projectile.Center;
             if (attackDelay > 0)
                 attackDelay--;
@@ -210,7 +210,7 @@ namespace CalamityMod.Projectiles.Summon
 
                 Projectile.rotation = (float)(Math.Atan(0));
                 float targetDist = targetDestination.Length();
-            
+
                 float baseSpeed = (targetDist < 100f ? 28f : 24f) * 2f;
                 float inertia = 20f;
 
@@ -257,7 +257,7 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         //fire spear
                         SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-                        
+
                         bool shouldShotGun = attackDelay == 0;
                         if (shouldShotGun)
                         {
@@ -316,7 +316,7 @@ namespace CalamityMod.Projectiles.Summon
                         Projectile.velocity = Projectile.SuperhomeTowardsTarget(potentialTarget, 35f, 1f);
                         Projectile.velocity *= 1.369f;
                     }
-                        
+
                 }
                 if (attackDelay <= 0)
                     attackDelay = buffedAi ? 20 : 25;
@@ -350,13 +350,13 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.active = false;
                 return;
             }
-            
+
             var psc = owner.Calamity().profanedCrystal;
             if (psc && !SpawnedFromPSC || !psc && SpawnedFromPSC)
             {
                 Projectile.active = false;
             }
-            
+
             // Dynamically update stats here, originalDamage can be found in MiscEffects
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
             Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
@@ -366,7 +366,7 @@ namespace CalamityMod.Projectiles.Summon
 
             if (owner.Calamity().profanedCrystalAnim != -1)
                 currentAIState = MiniOffenseAIState.Vanity;
-            
+
             var newAIState = updateAiState(owner, currentAIState);
 
             if (newAIState != currentAIState)

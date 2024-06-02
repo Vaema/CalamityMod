@@ -12,12 +12,12 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public static int ShitBaseDamage = 57;
         public static int TornadoBaseDamage = 210;
-        
+
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 34;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.accessory = true;
         }

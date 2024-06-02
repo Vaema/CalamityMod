@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -18,6 +18,11 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.alpha = 255;
             Projectile.timeLeft = 360;
             Projectile.penetrate = 1;
+        }
+
+        public override bool? CanCutTiles()
+        {
+            return false;
         }
 
         public override void AI()
@@ -67,7 +72,7 @@ namespace CalamityMod.Projectiles.Typeless
             for (int i = 0; i < 10; i++)
             {
                 int size = 12;
-                int dustIndex = Dust.NewDust(Projectile.Center - Vector2.One * size, size * 2, size * 2, 212);
+                int dustIndex = Dust.NewDust(Projectile.Center - Vector2.One * size, size * 2, size * 2, DustID.BubbleBurst_White);
                 Dust dust = Main.dust[dustIndex];
                 Vector2 value14 = Vector2.Normalize(dust.position - Projectile.Center);
                 dust.position = Projectile.Center + value14 * size;

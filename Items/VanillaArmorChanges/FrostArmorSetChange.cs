@@ -20,7 +20,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public const float MaxDistance = 800f;
 
         public override void UpdateSetBonusText(ref string setBonusText)
-        {   
+        {
             int PercentBoost = (int)Math.Round(ProximityBoost * 100);
             setBonusText = $"{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(PercentBoost)}";
         }

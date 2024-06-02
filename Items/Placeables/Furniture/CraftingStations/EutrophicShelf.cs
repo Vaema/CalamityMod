@@ -1,6 +1,6 @@
-﻿using Terraria.ID;
+﻿using CalamityMod.Items.Materials;
+using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Materials;
 
 namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
 {
@@ -22,10 +22,10 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
             Item.createTile = ModContent.TileType<Tiles.Furniture.CraftingStations.EutrophicShelf>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
+        }
 
         public override void AddRecipes()
         {

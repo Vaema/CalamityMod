@@ -1,9 +1,9 @@
-﻿using CalamityMod.Graphics;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Graphics;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 
@@ -28,7 +28,7 @@ namespace CalamityMod.Particles
         public Vector2 BottomRight => Center + Vector2.One * Scale * 3.5f;
         public Vector2 BottomLeft => Center + new Vector2(-1f, 1f) * Scale * 3.5f;
 
-        public static HashSet<DeathAshParticle> Ashes = new HashSet<DeathAshParticle>();
+        public static HashSet<DeathAshParticle> Ashes = new();
         public const int PrimitiveBatchSize = 256;
         public const int AshCountLimit = 45000;
         public static BasicEffect BasicShader

@@ -29,13 +29,11 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public override void ApplyHeadPieceEffect(Player player)
         {
             player.statManaMax2 -= 20;
-            player.GetCritChance<MagicDamageClass>() -= 4;
+            player.GetCritChance<MagicDamageClass>() -= 3;
         }
 
-        public override void ApplyBodyPieceEffect(Player player) => player.GetDamage<MagicDamageClass>() -= 0.02f;
+        public override void ApplyLegPieceEffect(Player player) => player.GetCritChance<MagicDamageClass>() -= 3;
 
-        public override void ApplyLegPieceEffect(Player player) => player.GetCritChance<MagicDamageClass>() -= 4;
-
-        public override void ApplyArmorSetBonus(Player player) => player.manaCost *= 1.0714f; // Reduces to -10% mana cost
+        public override void ApplyArmorSetBonus(Player player) => player.manaCost += 0.06f; // Reduces to -10% mana cost
     }
 }

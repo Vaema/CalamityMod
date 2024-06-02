@@ -29,12 +29,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.maxStack = 1;
             Item.shoot = ModContent.ProjectileType<NightsGazeProjectile>();
             Item.shootSpeed = 30f;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 1.22f;
+        public override float StealthDamageMultiplier => 1.22f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -1,5 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,13 +8,13 @@ using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Graphics.Primitives;
 
 namespace CalamityMod.Projectiles.Magic
 {
     public class ExoVortex2 : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public PrimitiveTrail EnergyTrail = null;
 
         public float Hue => Projectile.ai[0];
 
@@ -50,7 +51,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Time++;
-            
+
             // Move sharply towards nearby targets.
             // This is the same movement code that the old Subsuming Vortices used.
             NPC potentialTarget = Projectile.Center.ClosestNPCAt(SubsumingVortex.SmallVortexTargetRange);
@@ -109,6 +110,8 @@ namespace CalamityMod.Projectiles.Magic
             return c * Utils.GetLerpValue(0.04f, 0.2f, completionRatio, true) * velocityOpacityFadeout;
         }
 
+        public Vector2 PrimitiveOffsetFunction(float completionRatio) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * Projectile.scale * 2f;
+
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
@@ -118,12 +121,10 @@ namespace CalamityMod.Projectiles.Magic
             Main.spriteBatch.EnterShaderRegion();
 
             // Draw the streak trail.
-            EnergyTrail ??= new(PrimitiveWidthFunction, PrimitiveTrailColor, null, GameShaders.Misc["CalamityMod:SideStreakTrail"]);
-
             GameShaders.Misc["CalamityMod:SideStreakTrail"].UseImage1("Images/Misc/Perlin");
-            EnergyTrail.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition + Projectile.velocity.SafeNormalize(Vector2.Zero) * Projectile.scale * 2f, 51);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveTrailColor, PrimitiveOffsetFunction, shader: GameShaders.Misc["CalamityMod:SideStreakTrail"]), 51);
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
-            
+
             GameShaders.Misc["CalamityMod:ExoVortex"].Apply();
 
             // Draw the vortex, along with some afterimages.

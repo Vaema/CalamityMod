@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override float InitialSpeed => 5.5f;
         public override float ReelbackSpeed => 2.1f;
-        public override float ForwardSpeed => 1.1f;
+        public override float ForwardSpeed => 1f;
         public override Action<Projectile> EffectBeforeReelback => (proj) =>
         {
             int damage = (int)(Projectile.damage * 0.5f);

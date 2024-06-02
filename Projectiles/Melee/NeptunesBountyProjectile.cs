@@ -1,16 +1,16 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
-using CalamityMod.Buffs.StatBuffs;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 11;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override bool ShouldUpdatePosition()
@@ -138,7 +138,7 @@ namespace CalamityMod.Projectiles.Melee
                 Particle pulse2 = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.DodgerBlue, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.01f, 0.83f, 15);
                 GeneralParticleHandler.SpawnParticle(pulse2);
 
-                Projectile.damage = startDamage;
+                Projectile.damage = (int)(startDamage * 2); // Deals 200% damage after launching
                 Time = 0;
 
                 bool foundTarget = false;
@@ -280,13 +280,6 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(HitSound, Projectile.Center);
                 SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/SwiftSlice") { Volume = 0.65f, Pitch = -0.5f }, Projectile.Center);
             }
-        }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.93f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
         }
 
         public override void OnKill(int timeLeft)

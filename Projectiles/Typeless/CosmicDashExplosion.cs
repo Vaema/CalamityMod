@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Terraria.Graphics.Shaders;
 
 namespace CalamityMod.Projectiles.Typeless
 {

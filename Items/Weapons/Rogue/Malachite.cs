@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,14 +11,14 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 58;
-            Item.damage = 55;
+            Item.damage = 52;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useTime = Item.useAnimation = 14;
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 10f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 
@@ -63,13 +63,11 @@ namespace CalamityMod.Items.Weapons.Rogue
             return 2f;
         }
 
-		public override float StealthDamageMultiplier => 1.3f;
-
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-		{
-			if (player.altFunctionUse == 2 && !player.Calamity().StealthStrikeAvailable())
-				damage = (int)(damage * 1.75f);
-		}
+        {
+            if (player.altFunctionUse == 2 && !player.Calamity().StealthStrikeAvailable())
+                damage = (int)(damage * 1.75f);
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

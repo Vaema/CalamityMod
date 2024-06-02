@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (counter == 1)
             {
                 stealthOrigin = Projectile.ai[0] == 1f;
-                Projectile.alpha += (int) Projectile.ai[1];
+                Projectile.alpha += (int)Projectile.ai[1];
                 Projectile.ai[0] = 0f;
             }
             if (counter == 20 && !Projectile.Calamity().stealthStrike && !stealthOrigin)
@@ -58,13 +58,13 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (counter % 9 == 0 || (counter % 5 == 0 && Projectile.Calamity().stealthStrike))
             {
-                int timesToSpawnDust = Projectile.Calamity().stealthStrike  ? 2 : 1;
+                int timesToSpawnDust = Projectile.Calamity().stealthStrike ? 2 : 1;
                 for (int i = 0; i < timesToSpawnDust; i++)
                 {
-                    int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, Projectile.Calamity().stealthStrike ? 1.8f : 1.3f);
+                    int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, Projectile.Calamity().stealthStrike ? 1.8f : 1.3f);
                     Main.dust[dusty].noGravity = true;
                     Main.dust[dusty].velocity *= 5f;
-                    dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, Projectile.Calamity().stealthStrike ? 1.8f : 1.3f);
+                    dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, Projectile.Calamity().stealthStrike ? 1.8f : 1.3f);
                     Main.dust[dusty].velocity *= 2f;
                 }
             }
@@ -76,9 +76,8 @@ namespace CalamityMod.Projectiles.Rogue
             float targetDistStore;
             Vector2 homingPos = Projectile.position;
             bool isHoming = false;
-            for (int j = 0; j < Main.maxNPCs; j++)
+            foreach (NPC nPC2 in Main.ActiveNPCs)
             {
-                NPC nPC2 = Main.npc[j];
                 if (nPC2.CanBeChasedBy(Projectile, false))
                 {
                     float targetDist = Vector2.Distance(nPC2.Center, Projectile.Center);
@@ -112,30 +111,30 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 float projX = Projectile.Center.X;
                 float projY = Projectile.Center.Y;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
+                    if (n.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
                     {
-                        float npcCenterX = Main.npc[i].position.X + (float)(Main.npc[i].width / 2);
-                        float npcCenterY = Main.npc[i].position.Y + (float)(Main.npc[i].height / 2);
+                        float npcCenterX = n.position.X + (float)(n.width / 2);
+                        float npcCenterY = n.position.Y + (float)(n.height / 2);
                         float targetDistance = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcCenterY);
                         if (targetDistance < 600f)
                         {
-                            if (Main.npc[i].position.X < projX)
+                            if (n.position.X < projX)
                             {
-                                Main.npc[i].velocity.X += 0.25f;
+                                n.velocity.X += 0.25f;
                             }
                             else
                             {
-                                Main.npc[i].velocity.X -= 0.25f;
+                                n.velocity.X -= 0.25f;
                             }
-                            if (Main.npc[i].position.Y < projY)
+                            if (n.position.Y < projY)
                             {
-                                Main.npc[i].velocity.Y += 0.25f;
+                                n.velocity.Y += 0.25f;
                             }
                             else
                             {
-                                Main.npc[i].velocity.Y -= 0.25f;
+                                n.velocity.Y -= 0.25f;
                             }
                         }
                     }
@@ -213,7 +212,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 4; i++)
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -223,10 +222,10 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int j = 0; j < 12; j++)
             {
-                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 3f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 3f);
                 Main.dust[dusty].noGravity = true;
                 Main.dust[dusty].velocity *= 5f;
-                dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[dusty].velocity *= 2f;
             }
 

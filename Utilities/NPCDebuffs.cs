@@ -63,7 +63,7 @@ namespace CalamityMod
             //
             // PART 1: General Immunity Status and applying all data contained in EnemyStats.DebuffImmunities
             //
-            
+
             // Also, can I just say that I hate Sorted Dictionaries and Tuples and want to make something explode? -Ben
             // I mean you can but sorted dicts and dicts in general are pre great -Amber
             // Neither of you are free of sin. In porting, we are all brothers in damnation. -Ozzatron
@@ -168,7 +168,9 @@ namespace CalamityMod
             // Is this sorted... like... at all??
             EnemyStats.DebuffImmunities = new SortedDictionary<int, Tuple<GeneralImmunityStatus, int[]>>
             {
-                { ModContent.NPCType<KingSlimeJewel>(), immuneToEverything },
+                { ModContent.NPCType<KingSlimeJewelRuby>(), immuneToEverything },
+                { ModContent.NPCType<KingSlimeJewelSapphire>(), immuneToEverything },
+                { ModContent.NPCType<KingSlimeJewelEmerald>(), immuneToEverything },
 
                 { NPCID.Deerclops, ice },
 

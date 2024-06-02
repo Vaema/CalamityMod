@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void AI()
         {
             Time++;
-            if (!Owner.channel || Owner.noItems || Owner.CCed)
+            if (Owner.CantUseHoldout())
             {
                 // Reset the boss rush timer to what it would normally be if disabling is done prematurely.
                 if (BossRushEvent.BossRushActive || BossRushEvent.StartTimer > 0)
@@ -161,7 +161,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/Items/SummonItems/Terminus_GFB").Value : ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/Items/SummonItems/Terminus_GFB").Value : Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 baseDrawPosition = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() * 0.5f;
             Color baseColor = Color.Lerp(Projectile.GetAlpha(lightColor), Color.White, Utils.GetLerpValue(40f, 120f, Time, true));

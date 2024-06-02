@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<DarkPlasma>().
                 AddIngredient<GalacticaSingularity>().
                 AddTile(TileID.AlchemyTable).
-				AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
                 Register();
 
             CreateRecipe(4).

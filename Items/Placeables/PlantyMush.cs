@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Placeables
 
         public override void CaughtFishStack(ref int stack)
         {
-            stack = Main.rand.Next(5,16);
+            stack = Main.rand.Next(5, 16);
         }
     }
 }

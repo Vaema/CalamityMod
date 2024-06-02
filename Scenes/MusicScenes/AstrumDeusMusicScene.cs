@@ -1,4 +1,4 @@
-using CalamityMod.NPCs.AstrumDeus;
+﻿using CalamityMod.NPCs.AstrumDeus;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,9 +14,9 @@ namespace CalamityMod.Systems
         public override int VanillaMusic => MusicID.Boss3;
         public override int OtherworldMusic => MusicID.OtherworldlyBoss2;
         public override int[] AdditionalNPCs => new int[]
-		{
-			ModContent.NPCType<AstrumDeusBody>(),
-			ModContent.NPCType<AstrumDeusTail>()
-		};
+        {
+            ModContent.NPCType<AstrumDeusBody>(),
+            ModContent.NPCType<AstrumDeusTail>()
+        };
     }
 }

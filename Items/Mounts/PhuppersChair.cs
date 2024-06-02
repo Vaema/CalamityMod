@@ -1,5 +1,5 @@
+﻿using CalamityMod.Buffs.Mounts;
 using CalamityMod.Dusts;
-using CalamityMod.Buffs.Mounts;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

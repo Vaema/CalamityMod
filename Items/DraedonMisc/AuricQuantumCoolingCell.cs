@@ -1,17 +1,17 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.TileEntities;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System;
 
 namespace CalamityMod.Items.DraedonMisc
 {
@@ -65,7 +65,7 @@ namespace CalamityMod.Items.DraedonMisc
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AuricBar>(2).
+                AddIngredient<AuricBar>(5).
                 AddIngredient<MysteriousCircuitry>(8).
                 AddIngredient<DubiousPlating>(8).
                 AddIngredient<EndothermicEnergy>(40).

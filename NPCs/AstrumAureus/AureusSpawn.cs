@@ -1,29 +1,35 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.AstrumAureus
 {
     public class AureusSpawn : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 4;
             NPCID.Sets.TrailingMode[NPC.type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -43,7 +49,6 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.dontTakeDamage = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
@@ -110,24 +115,21 @@ namespace CalamityMod.NPCs.AstrumAureus
 
             // Push away from each other
             float pushVelocity = 0.5f;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active)
+                if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                 {
-                    if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
+                    if (Vector2.Distance(NPC.Center, n.Center) < (160f + 30f * (NPC.scale - 1f)))
                     {
-                        if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < (160f + 30f * (NPC.scale - 1f)))
-                        {
-                            if (NPC.position.X < Main.npc[i].position.X)
-                                NPC.velocity.X = NPC.velocity.X - pushVelocity;
-                            else
-                                NPC.velocity.X = NPC.velocity.X + pushVelocity;
+                        if (NPC.position.X < n.position.X)
+                            NPC.velocity.X = NPC.velocity.X - pushVelocity;
+                        else
+                            NPC.velocity.X = NPC.velocity.X + pushVelocity;
 
-                            if (NPC.position.Y < Main.npc[i].position.Y)
-                                NPC.velocity.Y = NPC.velocity.Y - pushVelocity;
-                            else
-                                NPC.velocity.Y = NPC.velocity.Y + pushVelocity;
-                        }
+                        if (NPC.position.Y < n.position.Y)
+                            NPC.velocity.Y = NPC.velocity.Y - pushVelocity;
+                        else
+                            NPC.velocity.Y = NPC.velocity.Y + pushVelocity;
                     }
                 }
             }
@@ -136,7 +138,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Phase 2 check
-            bool phase2 = lifeRatio <= 0.5f || Main.dayTime;
+            bool phase2 = lifeRatio <= 0.5f || Main.IsItDay();
 
             // Charge towards the target and explode after some time
             int inertia = 30;
@@ -167,7 +169,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                     for (int j = 0; j < 10; j++)
                     {
-                        int dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                         Main.dust[dust].velocity *= 1.66f;
                         if (Main.rand.NextBool())
                         {
@@ -179,10 +181,10 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                     for (int k = 0; k < 20; k++)
                     {
-                        int dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 173, 0f, 0f, 100, default, 2f);
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].velocity *= 2f;
-                        dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                        dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                         Main.dust[dust].velocity *= 1.33f;
                         Main.dust[dust].noGravity = true;
                     }
@@ -202,7 +204,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                 Point point = NPC.Center.ToTileCoordinates();
                 Tile tileSafely = Framing.GetTileSafely(point);
                 bool explodeOnCollision = tileSafely.HasUnactuatedTile && Main.tileSolid[tileSafely.TileType] && !Main.tileSolidTop[tileSafely.TileType] && !TileID.Sets.Platforms[tileSafely.TileType];
-                bool explodeOnAureus = distanceFromAureus < (180f + 30f * (NPC.scale - 1f)) && !Main.dayTime;
+                bool explodeOnAureus = distanceFromAureus < (180f + 30f * (NPC.scale - 1f)) && !Main.IsItDay();
                 if (vector.Length() < (60f + 30f * (NPC.scale - 1f)) || explodeOnCollision || explodeOnAureus || NPC.Calamity().newAI[0] >= enlargeDuration)
                 {
                     NPC.life = 0;
@@ -264,7 +266,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             drawLocation += originalDrawSize * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, originalDrawSize, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AureusSpawnGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color afterimageColorLerp = Color.Lerp(Color.White, Color.Orange, 0.5f) * NPC.Opacity;
 
             if (CalamityConfig.Instance.Afterimages)
@@ -330,14 +332,14 @@ namespace CalamityMod.NPCs.AstrumAureus
                 return;
 
             // Damage Aureus for a percentage of its HP if the spawn explodes on or near it
-            if (Main.netMode != NetmodeID.MultiplayerClient && (Main.npc[CalamityGlobalNPC.astrumAureus].Center - NPC.Center).Length() < (200f + 30f * (NPC.scale - 1f)) && !Main.dayTime)
+            if (Main.netMode != NetmodeID.MultiplayerClient && (Main.npc[CalamityGlobalNPC.astrumAureus].Center - NPC.Center).Length() < (200f + 30f * (NPC.scale - 1f)) && !Main.IsItDay())
                 Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), Main.npc[CalamityGlobalNPC.astrumAureus].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Main.npc[CalamityGlobalNPC.astrumAureus].lifeMax / 200 * NPC.scale), 0f, Main.myPlayer, Main.npc[CalamityGlobalNPC.astrumAureus].whoAmI);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 173, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.ShadowbeamStaff, hit.HitDirection, -1f, 0, default, 1f);
 
             if (NPC.life <= 0)
             {
@@ -345,14 +347,14 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                 NPC.position.X = NPC.position.X + NPC.width / 2;
                 NPC.position.Y = NPC.position.Y + NPC.height / 2;
-                NPC.damage = (int)(NPC.defDamage * NPC.scale);
+                NPC.damage = (int)Math.Round(NPC.defDamage * (double)NPC.scale);
                 NPC.width = NPC.height = (int)(216 * NPC.scale);
                 NPC.position.X = NPC.position.X - NPC.width / 2;
                 NPC.position.Y = NPC.position.Y - NPC.height / 2;
 
                 for (int r = 0; r < 30; r++)
                 {
-                    int astralDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                    int astralDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                     Main.dust[astralDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -364,10 +366,10 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                 for (int s = 0; s < 60; s++)
                 {
-                    int astralDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 173, 0f, 0f, 100, default, 2f);
+                    int astralDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                     Main.dust[astralDust2].noGravity = true;
                     Main.dust[astralDust2].velocity *= 5f;
-                    astralDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                    astralDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                     Main.dust[astralDust2].velocity *= 2f;
                     Main.dust[astralDust2].noGravity = true;
                 }

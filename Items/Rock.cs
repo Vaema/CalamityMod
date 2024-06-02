@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles;
+﻿using CalamityMod.Items.Placeables.Furniture.Monoliths;
+using CalamityMod.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,6 +12,7 @@ namespace CalamityMod.Items
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 0;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<BossRushMonolith>();
         }
 
         public override void SetDefaults()

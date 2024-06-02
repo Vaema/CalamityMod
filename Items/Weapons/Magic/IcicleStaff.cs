@@ -1,6 +1,6 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using System;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item8;
             Item.autoReuse = true;
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 11f;
         }
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int i = Main.myPlayer;
@@ -63,25 +63,25 @@ namespace CalamityMod.Items.Weapons.Magic
                 mouseDistance = icicleSpeed / mouseDistance;
             }
 
-			realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-			realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-			mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-			mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-			if (mouseYDist < 0f)
-			{
-				mouseYDist *= -1f;
-			}
-			if (mouseYDist < 20f)
-			{
-				mouseYDist = 20f;
-			}
-			mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-			mouseDistance = icicleSpeed / mouseDistance;
-			mouseXDist *= mouseDistance;
-			mouseYDist *= mouseDistance;
-			float speedX4 = mouseXDist;
-			float speedY5 = mouseYDist + (float)Main.rand.Next(-40, 41) * 0.02f;
-			Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, ModContent.ProjectileType<IcicleStaffProj>(), damage, playerKnockback, i, 0f, (float)Main.rand.Next(10));
+            realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
+            realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
+            mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
+            mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
+            if (mouseYDist < 0f)
+            {
+                mouseYDist *= -1f;
+            }
+            if (mouseYDist < 20f)
+            {
+                mouseYDist = 20f;
+            }
+            mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
+            mouseDistance = icicleSpeed / mouseDistance;
+            mouseXDist *= mouseDistance;
+            mouseYDist *= mouseDistance;
+            float speedX4 = mouseXDist;
+            float speedY5 = mouseYDist + (float)Main.rand.Next(-40, 41) * 0.02f;
+            Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, ModContent.ProjectileType<IcicleStaffProj>(), damage, playerKnockback, i, 0f, (float)Main.rand.Next(10));
             return false;
         }
 

@@ -1,16 +1,16 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
-using Terraria.Graphics.Shaders;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -22,7 +22,6 @@ namespace CalamityMod.Projectiles.Melee
         Vector2 direction = Vector2.Zero;
         public ref float CurrentState => ref Projectile.ai[0];
         public Player Owner => Main.player[Projectile.owner];
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
         public const float throwOutTime = 90f;
         public const float throwOutDistance = 440f;
 
@@ -87,7 +86,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.rotation = direction.ToRotation(); //Only done for afterimages
 
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 if (CurrentState == 2f || (CurrentState == 0f && Empowerment / maxEmpowerment < 0.5))
                 {
@@ -152,7 +151,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     Empowerment++; //Charge faster when near the end
 
-                    if (Main.rand.Next(2) == 0)
+                    if (Main.rand.NextBool(2))
 
                     {
 
@@ -167,7 +166,7 @@ namespace CalamityMod.Projectiles.Melee
                             Particle smoke = new HeavySmokeParticle(smokepos, direction.RotatedBy(-MathHelper.PiOver2) * 20f * scaleFactor + Owner.velocity, Color.Lerp(Color.MidnightBlue, Color.Indigo, i), 10 + Main.rand.Next(5), scaleFactor * Main.rand.NextFloat(2.8f, 3.1f), Opacity + Main.rand.NextFloat(0f, 0.2f), 0f, false, 0, true);
                             GeneralParticleHandler.SpawnParticle(smoke);
 
-                            if (Main.rand.Next(3) == 0)
+                            if (Main.rand.NextBool(3))
                             {
                                 Particle smokeGlow = new HeavySmokeParticle(smokepos, direction.RotatedBy(-MathHelper.PiOver2) * 20f * scaleFactor + Owner.velocity, Color.OrangeRed, 7, scaleFactor * Main.rand.NextFloat(2f, 2.4f), Opacity * 2, 0f, true, 0.001f, true);
                                 GeneralParticleHandler.SpawnParticle(smokeGlow);
@@ -221,7 +220,7 @@ namespace CalamityMod.Projectiles.Melee
                         float maxDistance = Projectile.scale * 1.9f * 78f;
                         Vector2 distance = Main.rand.NextVector2Circular(maxDistance, maxDistance);
                         Vector2 angularVelocity = Utils.SafeNormalize(distance.RotatedBy(MathHelper.PiOver2), Vector2.Zero) * 2f * (1f + distance.Length() / 15f);
-                        Particle glitter = new CritSpark(Owner.Center + distance, Owner.velocity + angularVelocity, Main.rand.Next(3) == 0 ? Color.Turquoise : Color.Coral, currentColor, 1f + 1 * (distance.Length() / maxDistance), 10, 0.05f, 3f);
+                        Particle glitter = new CritSpark(Owner.Center + distance, Owner.velocity + angularVelocity, Main.rand.NextBool(3)? Color.Turquoise : Color.Coral, currentColor, 1f + 1 * (distance.Length() / maxDistance), 10, 0.05f, 3f);
                         GeneralParticleHandler.SpawnParticle(glitter);
                     }
                 }
@@ -255,7 +254,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = direction.ToRotation();
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;

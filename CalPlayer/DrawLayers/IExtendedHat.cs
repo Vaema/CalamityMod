@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Terraria.DataStructures;
 using Terraria;
+using Terraria.DataStructures;
 
 public interface IExtendedHat
 {

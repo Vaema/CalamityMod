@@ -1,10 +1,10 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Typeless;
 using static Humanizer.In;
 
 namespace CalamityMod.Items.Weapons.Summon
@@ -23,9 +23,9 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = Knockback;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.UseSound = SoundID.Item44 with { Pitch = 0.5f};
+            Item.UseSound = SoundID.Item44 with { Pitch = 0.5f };
             Item.autoReuse = true;
             Item.shootSpeed = 5;
             Item.shoot = ModContent.ProjectileType<BrittleStarMinion>();
@@ -53,13 +53,13 @@ namespace CalamityMod.Items.Weapons.Summon
                 Item.noUseGraphic = true;
             }
             int bladeIndex = 0;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].type == type && Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI)
+                if (p.type == type && p.owner == player.whoAmI)
                 {
-                    Main.projectile[i].ModProjectile<BrittleStarMinion>().StarIndex = bladeIndex++;
-                    Main.projectile[i].ModProjectile<BrittleStarMinion>().AITimer = 0f;
-                    Main.projectile[i].netUpdate = true;
+                    p.ModProjectile<BrittleStarMinion>().StarIndex = bladeIndex++;
+                    p.ModProjectile<BrittleStarMinion>().AITimer = 0f;
+                    p.netUpdate = true;
                 }
             }
             return false;

@@ -1,17 +1,17 @@
-﻿using CalamityMod.Schematics;
-using static CalamityMod.Schematics.SchematicManager;
-using Terraria;
-using Terraria.IO;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Terraria.WorldBuilding;
-using Terraria.Utilities;
-using Terraria.GameContent.Generation;
-using Microsoft.Xna.Framework;
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Schematics;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent.Generation;
+using Terraria.ID;
+using Terraria.IO;
+using Terraria.ModLoader;
+using Terraria.Utilities;
+using Terraria.WorldBuilding;
+using static CalamityMod.Schematics.SchematicManager;
 
 namespace CalamityMod.World
 {
@@ -75,7 +75,7 @@ namespace CalamityMod.World
                             dungeonArchiveColor = 1;
                         else if (tile.TileType == TileID.PinkDungeonBrick)
                             dungeonArchiveColor = 2;
-                        
+
                         placedArchive = true;
 
                         break;
@@ -93,12 +93,12 @@ namespace CalamityMod.World
                     }
                     if (dungeonArchiveColor == 1)
                     {
-                        SchematicManager.PlaceSchematic(SchematicManager.GreenArchiveKey, new Point(i, j), SchematicAnchor.TopCenter, 
+                        SchematicManager.PlaceSchematic(SchematicManager.GreenArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
                         ref firstItem, new Action<Chest, int, bool>(FillArchiveChests));
                     }
                     if (dungeonArchiveColor == 2)
                     {
-                        SchematicManager.PlaceSchematic(SchematicManager.PinkArchiveKey, new Point(i, j), SchematicAnchor.TopCenter, 
+                        SchematicManager.PlaceSchematic(SchematicManager.PinkArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
                         ref firstItem, new Action<Chest, int, bool>(FillArchiveChests));
                     }
 
@@ -130,7 +130,7 @@ namespace CalamityMod.World
                 new ChestItem(potionType2, WorldGen.genRand.Next(4, 8)),
                 new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(5, 10)),
             };
-            
+
             //this is normally not a good idea with separate items lists, but both lists are the same size so it is fine here
             for (int i = 0; i < contents1.Count; i++)
             {

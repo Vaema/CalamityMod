@@ -13,8 +13,8 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class TheSevensStriker : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        public static readonly SoundStyle RouletteSound = new("CalamityMod/Sounds/Item/SevensStrikerRoulette") { Volume = 0.6f, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest};
-        public static readonly SoundStyle RouletteTickSound = new("CalamityMod/Sounds/Item/SevensStrikerRouletteTick") { Volume = 0.5f};
+        public static readonly SoundStyle RouletteSound = new("CalamityMod/Sounds/Item/SevensStrikerRoulette") { Volume = 0.6f, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
+        public static readonly SoundStyle RouletteTickSound = new("CalamityMod/Sounds/Item/SevensStrikerRouletteTick") { Volume = 0.5f };
         public static readonly SoundStyle BustSound = new("CalamityMod/Sounds/Item/SevensStrikerBust");
         public static readonly SoundStyle DoublesSound = new("CalamityMod/Sounds/Item/SevensStrikerDoubles");
         public static readonly SoundStyle TriplesSound = new("CalamityMod/Sounds/Item/SevensStrikerTriples");
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static int ShotCoin = 0; // projectile ID to use for right click, affects damage multiplier
         public static readonly float RightClickCopperMultiplier = 0.04f;
         public static readonly float RightClickSilverMultiplier = 0.08f;
-        public static readonly float RightClickGoldMultiplier   = 0.16f;
+        public static readonly float RightClickGoldMultiplier = 0.16f;
 
         public static readonly float DoublesMultiplier = 1f; // Unfortunately doubles can't be doubles. Balancing!
         public static readonly float TriplesCherryMultiplier = 1f;
@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Coin;
             Item.shootSpeed = 24f;
             Item.shoot = ProjectileID.PlatinumCoin;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }

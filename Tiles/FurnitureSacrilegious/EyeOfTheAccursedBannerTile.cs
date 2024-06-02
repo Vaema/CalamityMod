@@ -1,4 +1,4 @@
-using CalamityMod.Items.Placeables.FurnitureSacrilegious;
+﻿using CalamityMod.Items.Placeables.FurnitureSacrilegious;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -19,10 +19,10 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = false;
 
-			TileObjectData.newTile.CopyFrom(TileObjectData.Style2xX);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style2xX);
             TileObjectData.newTile.LavaDeath = false;
-			TileObjectData.newTile.Height = 3;
-			TileObjectData.newTile.Origin = new Point16(0, 0);
+            TileObjectData.newTile.Height = 3;
+            TileObjectData.newTile.Origin = new Point16(0, 0);
             TileObjectData.newTile.AnchorBottom = default(AnchorData);
             TileObjectData.newTile.AnchorTop = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide | AnchorType.SolidBottom | AnchorType.PlanterBox, TileObjectData.newTile.Width, 0);
             TileObjectData.newTile.DrawYOffset = -2;

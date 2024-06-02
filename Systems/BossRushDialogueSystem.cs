@@ -10,10 +10,10 @@ namespace CalamityMod.Systems
     {
         public static bool GottaGoFast = false;
         public static int GottaGoFastSpeed = 5;
-        
+
         public static BossRushDialoguePhase Phase = BossRushDialoguePhase.None;
         private static BossRushDialogueEvent[] currentSequence = null;
-        private static int currentSequenceIndex = 0;
+        public static int currentSequenceIndex = 0;
 
         public static int CurrentDialogueDelay = 0;
 
@@ -54,85 +54,86 @@ namespace CalamityMod.Systems
 
         internal static Dictionary<BossRushDialoguePhase, BossRushDialogueEvent[]> BossRushDialogue;
 
-        
+
         public override void Load()
         {
             //
             // Dialogue times were timed by Ozzatron reading them aloud with a stopwatch.
+            // CIT 11MAY2024: I decided to decrease all of these dialogue delays by 30 frames, in an attempt to cut down on unnecessary waiting around.
             //
-            
+
             // Dialogue that occurs the first time you start Boss Rush
             BossRushDialogueEvent[] startDialogues = new BossRushDialogueEvent[]
             {
-                new("Mods.CalamityMod.Events.BossRushStartText_1", 360),
-                new("Mods.CalamityMod.Events.BossRushStartText_2", 435),
-                new("Mods.CalamityMod.Events.BossRushStartText_3", 240),
-                new("Mods.CalamityMod.Events.BossRushStartText_4", 435),
-                new("Mods.CalamityMod.Events.BossRushStartText_5", 480),
-                new("Mods.CalamityMod.Events.BossRushStartText_6", 270),
-                new("Mods.CalamityMod.Events.BossRushStartText_7", 465),
-                new("Mods.CalamityMod.Events.BossRushStartText_8", 480),
-                new("Mods.CalamityMod.Events.BossRushStartText_9", 330),
-                new("Mods.CalamityMod.Events.BossRushStartText_DoG", 180, skipFunc: () => !DownedBossSystem.downedDoG),
-                new("Mods.CalamityMod.Events.BossRushStartText_Yharon", 240, skipFunc: () => !DownedBossSystem.downedYharon),
-                new("Mods.CalamityMod.Events.BossRushStartText_DraedonSCal", 315, skipFunc: () => !DownedBossSystem.downedExoMechs || !DownedBossSystem.downedCalamitas),
-                new("Mods.CalamityMod.Events.BossRushStartText_10", 420),
-                new("Mods.CalamityMod.Events.BossRushStartText_11", 420),
-                new("Mods.CalamityMod.Events.BossRushStartText_12", 270),
+                new("Mods.CalamityMod.Events.BossRushStartText_1", 330),
+                new("Mods.CalamityMod.Events.BossRushStartText_2", 405),
+                new("Mods.CalamityMod.Events.BossRushStartText_3", 210),
+                new("Mods.CalamityMod.Events.BossRushStartText_4", 405),
+                new("Mods.CalamityMod.Events.BossRushStartText_5", 450),
+                new("Mods.CalamityMod.Events.BossRushStartText_6", 240),
+                new("Mods.CalamityMod.Events.BossRushStartText_7", 435),
+                new("Mods.CalamityMod.Events.BossRushStartText_8", 450),
+                new("Mods.CalamityMod.Events.BossRushStartText_9", 300),
+                new("Mods.CalamityMod.Events.BossRushStartText_DoG", 150, skipFunc: () => !DownedBossSystem.downedDoG),
+                new("Mods.CalamityMod.Events.BossRushStartText_Yharon", 210, skipFunc: () => !DownedBossSystem.downedYharon),
+                new("Mods.CalamityMod.Events.BossRushStartText_DraedonSCal", 285, skipFunc: () => !DownedBossSystem.downedExoMechs || !DownedBossSystem.downedCalamitas),
+                new("Mods.CalamityMod.Events.BossRushStartText_10", 390),
+                new("Mods.CalamityMod.Events.BossRushStartText_11", 390),
+                new("Mods.CalamityMod.Events.BossRushStartText_12", 240),
             };
 
             // Dialogue that occurs when starting Boss Rush on repeat attempts
             BossRushDialogueEvent[] startDialoguesShort = new BossRushDialogueEvent[]
             {
-                new("Mods.CalamityMod.Events.BossRushStartText_Repeat", 120),
+                new("Mods.CalamityMod.Events.BossRushStartText_Repeat", 90),
             };
 
             // Dialogue that occurs when beating Tier 1 of Boss Rush
             BossRushDialogueEvent[] tierOneDialogues = new BossRushDialogueEvent[]
             {
-                new("Mods.CalamityMod.Events.BossRushTierOneEndText_1", 360),
-                new("Mods.CalamityMod.Events.BossRushTierOneEndText_2", 255),
+                new("Mods.CalamityMod.Events.BossRushTierOneEndText_1", 330),
+                new("Mods.CalamityMod.Events.BossRushTierOneEndText_2", 225),
             };
 
             // Dialogue that occurs when beating Tier 2 of Boss Rush
             BossRushDialogueEvent[] tierTwoDialogues = new BossRushDialogueEvent[]
             {
-                new("Mods.CalamityMod.Events.BossRushTierTwoEndText_1", 255),
-                new("Mods.CalamityMod.Events.BossRushTierTwoEndText_2", 300),
+                new("Mods.CalamityMod.Events.BossRushTierTwoEndText_1", 225),
+                new("Mods.CalamityMod.Events.BossRushTierTwoEndText_2", 270),
             };
 
             // Dialogue that occurs when beating Tier 3 of Boss Rush
             BossRushDialogueEvent[] tierThreeDialogues = new BossRushDialogueEvent[]
             {
-                new("Mods.CalamityMod.Events.BossRushTierThreeEndText_1", 465),
-                new("Mods.CalamityMod.Events.BossRushTierThreeEndText_2", 330),
+                new("Mods.CalamityMod.Events.BossRushTierThreeEndText_1", 435),
+                new("Mods.CalamityMod.Events.BossRushTierThreeEndText_2", 300),
             };
 
             // Dialogue that occurs when beating Tier 4 of Boss Rush
             BossRushDialogueEvent[] tierFourDialogues = new BossRushDialogueEvent[]
             {
-                new("Mods.CalamityMod.Events.BossRushTierFourEndText_1", 165),
-                new("Mods.CalamityMod.Events.BossRushTierFourEndText_2", 330),
-                new("Mods.CalamityMod.Events.BossRushTierFourEndText_3", 300),
+                new("Mods.CalamityMod.Events.BossRushTierFourEndText_1", 135),
+                new("Mods.CalamityMod.Events.BossRushTierFourEndText_2", 300),
+                new("Mods.CalamityMod.Events.BossRushTierFourEndText_3", 270),
             };
 
             // Dialogue that occurs the first time you beat Boss Rush
             BossRushDialogueEvent[] endDialogues = new BossRushDialogueEvent[]
             {
-                new("Mods.CalamityMod.Events.BossRushEndText_1", 540),
-                new("Mods.CalamityMod.Events.BossRushEndText_2", 465),
-                new("Mods.CalamityMod.Events.BossRushEndText_3", 360),
-                new("Mods.CalamityMod.Events.BossRushEndText_4", 285),
-                new("Mods.CalamityMod.Events.BossRushEndText_5", 420),
-                new("Mods.CalamityMod.Events.BossRushEndText_6", 420),
-                new("Mods.CalamityMod.Events.BossRushEndText_7", 225),
-                new("Mods.CalamityMod.Events.BossRushEndText_8", 135),
+                new("Mods.CalamityMod.Events.BossRushEndText_1", 510),
+                new("Mods.CalamityMod.Events.BossRushEndText_2", 435),
+                new("Mods.CalamityMod.Events.BossRushEndText_3", 330),
+                new("Mods.CalamityMod.Events.BossRushEndText_4", 255),
+                new("Mods.CalamityMod.Events.BossRushEndText_5", 390),
+                new("Mods.CalamityMod.Events.BossRushEndText_6", 390),
+                new("Mods.CalamityMod.Events.BossRushEndText_7", 195),
+                new("Mods.CalamityMod.Events.BossRushEndText_8", 105),
             };
 
-            // Dialogue that occurs the first time you beat Boss Rush
+            // Dialogue that occurs on subsequent times you beat Boss Rush
             BossRushDialogueEvent[] endDialoguesShort = new BossRushDialogueEvent[]
             {
-                new("Mods.CalamityMod.Events.BossRushEndText_Repeat", 510),
+                new("Mods.CalamityMod.Events.BossRushEndText_Repeat", 480),
             };
 
             BossRushDialogue = new Dictionary<BossRushDialoguePhase, BossRushDialogueEvent[]>()
@@ -171,7 +172,7 @@ namespace CalamityMod.Systems
             // If the phase isn't defined properly, don't do anything.
             if (Phase == BossRushDialoguePhase.None)
                 return;
-            
+
             if (currentSequenceIndex < currentSequence.Length)
             {
                 // If it's time to display dialogue, do so.
@@ -207,6 +208,10 @@ namespace CalamityMod.Systems
                 if (GottaGoFast && CurrentDialogueDelay > GottaGoFastSpeed)
                     CurrentDialogueDelay = GottaGoFastSpeed;
             }
+            else
+            {
+                CurrentDialogueDelay = 0;
+            }
 
             // If the end of a sequence has been reached, stay in this state indefinitely.
             // Allow the boss spawn countdown to hit zero and the next boss to appear without showing any dialogue or causing any delays.
@@ -224,7 +229,7 @@ namespace CalamityMod.Systems
         private static bool GetNextUnskippedDialogue(BossRushDialogueEvent[] sequence, int index, out int newIndex)
         {
             int tryIndex = index;
-            while(tryIndex < sequence.Length)
+            while (tryIndex < sequence.Length)
             {
                 BossRushDialogueEvent lineToTry = currentSequence[tryIndex];
                 if (lineToTry.skipCondition is not null && lineToTry.skipCondition.Invoke())

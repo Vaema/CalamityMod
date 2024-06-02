@@ -72,7 +72,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<DragonsBreath>(),
                 ModContent.ItemType<PhoenixFlameBarrage>(),
                 ModContent.ItemType<YharonsKindleStaff>(),
-                ModContent.ItemType<FinalDawn>(),
+                ModContent.ItemType<TheFinalDawn>(),
                 ModContent.ItemType<Wrathwing>(),
             }));
             itemLoot.Add(ModContent.ItemType<YharimsCrystal>(), 10);

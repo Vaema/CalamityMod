@@ -1,17 +1,17 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityMod.Items.Placeables;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Graphics.Shaders;
-using Microsoft.Xna.Framework;
-using CalamityMod.Items.Placeables;
-using ReLogic.Content;
 
 namespace CalamityMod.Items.Dyes
 {
     public class BrimflameDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/BrimflameDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/BrimflameDyeShader"), "DyePass").
             UseColor(new Color(252, 147, 34)).UseSecondaryColor(new Color(216, 41, 26)).UseImage("Images/Misc/Perlin");
         public override void SafeSetStaticDefaults()
         {

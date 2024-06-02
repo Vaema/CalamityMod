@@ -22,13 +22,13 @@ namespace CalamityMod.Items.Accessories
         // Dying to this sudden last few points of health loss has a special death message.
         internal static readonly int MinAllowedDamage = 5;
 
-        // Drinking a healing potion clears 50% of the bleedout buffer.
-        internal const float HealingPotionBufferClear = 0.5f;
+        // Drinking a healing potion helps clear your bleedout buffer.
+        internal const float HealingPotionRatioForBufferClear = 0.5f;
 
         // This is per frame. The ideal is 50% per second, so it's 0.83% per frame.
         internal static readonly double BleedoutExponentialDecay = 0.0083333333333;
         internal static readonly Color BleedoutBufferDamageTextColor = new(230, 40, 100);
-        
+
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = Item.height = 32;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
         }
 
@@ -48,8 +48,12 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
 
+            player.pStone = true;
+            player.lifeRegen += 4;
+
             // This applies the +25% health boost and the bleedout buffer effect.
             // Health boost intentionally stacks with Blood Pact.
+            // This accessory's bleedout buffer clearing effect intentionally stacks with Blood Pact's healing potion boost.
             modPlayer.chaliceOfTheBloodGod = true;
         }
 
@@ -57,6 +61,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<BloodPact>().
+                AddIngredient(ItemID.CharmofMyths).
                 AddIngredient<BloodstoneCore>(5).
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
@@ -87,7 +92,7 @@ namespace CalamityMod.Items.Accessories
                     // If this reduces the player's health to zero, make sure they actually die.
                     if (player.statLife <= 0)
                     {
-                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChaliceOfTheBloodGod" + Main.rand.Next(1, 4 + 1)).Format(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
+                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChaliceOfTheBloodGod" + Main.rand.Next(1, 18 + 1)).Format(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
                     }
                 }
 

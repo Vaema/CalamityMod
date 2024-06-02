@@ -1,11 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Core;
 
@@ -15,6 +16,7 @@ namespace CalamityMod.Particles
     public static class GeneralParticleHandler
     {
         private static List<Particle> particles;
+        private static Queue<Particle> particlesToSpawnNextFrame;
         //List containing the particles to delete
         private static List<Particle> particlesToKill;
         //Static list for details concerning every particle type
@@ -26,23 +28,26 @@ namespace CalamityMod.Particles
         private static List<Particle> batchedNonPremultipliedParticles;
         private static List<Particle> batchedAdditiveBlendParticles;
 
-        public static void LoadModParticleInstances(Mod mod)
+        public static void LoadModParticleInstances()
         {
             Type baseParticleType = typeof(Particle);
-            foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
+            foreach (Mod mod in ModLoader.Mods)
             {
-                if (type.IsSubclassOf(baseParticleType) && !type.IsAbstract && type != baseParticleType)
+                foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
                 {
-                    int ID = particleTypes.Count; //Get the ID of the particle
-                    particleTypes[type] = ID;
+                    if (type.IsSubclassOf(baseParticleType) && !type.IsAbstract && type != baseParticleType)
+                    {
+                        int ID = particleTypes.Count; //Get the ID of the particle
+                        particleTypes[type] = ID;
 
-                    Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
-                    particleInstances.Add(instance);
+                        Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
+                        particleInstances.Add(instance);
 
-                    string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
-                    if (instance.Texture != "")
-                        texturePath = instance.Texture;
-                    particleTextures[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
+                        string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
+                        if (instance.Texture != "")
+                            texturePath = instance.Texture;
+                        particleTextures[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
+                    }
                 }
             }
         }
@@ -50,6 +55,7 @@ namespace CalamityMod.Particles
         internal static void Load()
         {
             particles = new List<Particle>();
+            particlesToSpawnNextFrame = new Queue<Particle>();
             particlesToKill = new List<Particle>();
             particleTypes = new Dictionary<Type, int>();
             particleTextures = new Dictionary<int, Texture2D>();
@@ -58,13 +64,12 @@ namespace CalamityMod.Particles
             batchedAlphaBlendParticles = new List<Particle>();
             batchedNonPremultipliedParticles = new List<Particle>();
             batchedAdditiveBlendParticles = new List<Particle>();
-
-            LoadModParticleInstances(CalamityMod.Instance);
         }
 
         internal static void Unload()
         {
             particles = null;
+            particlesToSpawnNextFrame = null;
             particlesToKill = null;
             particleTypes = null;
             particleTextures = null;
@@ -81,8 +86,8 @@ namespace CalamityMod.Particles
         {
             // Don't queue particles if the game is paused.
             // This precedent is established with how Dust instances are created.
-            //Don't spawn particles if on the server side either, or if the particles dict is somehow null
-            if (Main.gamePaused || Main.dedServ || particles == null)
+            // Don't spawn particles if on the server either, or if the particles dictionary is somehow null.
+            if (Main.gamePaused || Main.netMode == NetmodeID.Server || particles == null)
                 return;
 
             if (particles.Count >= CalamityConfig.Instance.ParticleLimit && !particle.Important)
@@ -92,8 +97,22 @@ namespace CalamityMod.Particles
             particle.Type = particleTypes[particle.GetType()];
         }
 
+        public static void QueueParticleForNextFrame(Particle particle)
+        {
+            // Don't queue particles if the game is paused.
+            // This precedent is established with how Dust instances are created.
+            // Don't spawn particles if on the server side, or if the particles dictionary is somehow null.
+            if (Main.gamePaused || Main.netMode == NetmodeID.Server || particles == null)
+                return;
+
+            particlesToSpawnNextFrame.Enqueue(particle);
+        }
+
         public static void Update()
         {
+            while (particlesToSpawnNextFrame.Count > 0)
+                SpawnParticle(particlesToSpawnNextFrame.Dequeue());
+
             foreach (Particle particle in particles)
             {
                 if (particle == null)
@@ -116,13 +135,13 @@ namespace CalamityMod.Particles
         {
             if (particles.Count == 0)
                 return;
-            
+
             sb.End();
             var rasterizer = Main.Rasterizer;
             rasterizer.ScissorTestEnable = true;
             Main.instance.GraphicsDevice.RasterizerState.ScissorTestEnable = true;
             Main.instance.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, Main.screenWidth, Main.screenHeight);
-            
+
             //Batch the particles to avoid constant restarting of the spritebatch
             foreach (Particle particle in particles)
             {
@@ -147,7 +166,7 @@ namespace CalamityMod.Particles
                     else
                     {
                         Rectangle frame = particleTextures[particle.Type].Frame(1, particle.FrameVariants, 0, particle.Variant);
-                        sb.Draw(particleTextures[particle.Type], particle.Position - Main.screenPosition, frame, particle.Color, particle.Rotation, frame.Size() * 0.5f, 
+                        sb.Draw(particleTextures[particle.Type], particle.Position - Main.screenPosition, frame, particle.Color, particle.Rotation, frame.Size() * 0.5f,
                             particle.Scale, SpriteEffects.None, 0f);
                     }
                 }
@@ -222,8 +241,8 @@ namespace CalamityMod.Particles
         /// </summary>
         public static Texture2D GetTexture(int type) => particleTextures[type];
 
-        #pragma warning disable CS0414
+#pragma warning disable CS0414
         private static string noteToEveryone = "This particle system was inspired by spirit mod's own particle system, with permission granted by Yuyutsu. Love you spirit mod! -Iban";
-        #pragma warning restore CS0414
+#pragma warning restore CS0414
     }
 }

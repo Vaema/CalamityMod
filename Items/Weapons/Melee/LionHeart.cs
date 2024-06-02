@@ -18,9 +18,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 60;
             Item.height = 62;
 
-            Item.damage = 323;
+            Item.damage = 960;
             Item.knockBack = 5.5f;
-            Item.scale = 1.5f;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useAnimation = 15;
             Item.useTime = 15;
@@ -31,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item1;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
         }
@@ -83,7 +82,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 132);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Firework_Blue);
         }
     }
 }

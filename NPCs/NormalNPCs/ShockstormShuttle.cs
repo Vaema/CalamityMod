@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
-using System;
-using CalamityMod.Items.Accessories.Vanity;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 150;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.5f;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath14;
@@ -41,19 +41,26 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<ShockstormShuttleBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Sky,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ShockstormShuttle")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ShockstormShuttle")
             });
         }
 
         public override void AI()
         {
+            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
+            NPC.damage = 0;
+
             if (NPC.justHit)
                 NPC.localAI[0] = 0f;
 
@@ -75,16 +82,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                         targetDist = projSpeed / targetDist;
                         velocity.X *= targetDist;
                         velocity.Y *= targetDist;
-                        int projDmg = 30;
-                        if (Main.expertMode)
-                        {
-                            projDmg = 22;
-                        }
+
+                        // These are already nerfed in Master Mode via global scaling code
+                        int projDmg = Main.expertMode ? 22 : 30;
                         int projType = ProjectileID.MartianTurretBolt;
                         if (Main.rand.NextBool(8))
-                        {
                             projType = ProjectileID.SaucerLaser;
-                        }
+
                         npcPos.X += velocity.X;
                         npcPos.Y += velocity.Y;
                         int spread = Main.getGoodWorld ? 100 : 20;
@@ -383,13 +387,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 234, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BoneTorch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 234, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BoneTorch, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {
@@ -408,7 +412,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
             return SpawnCondition.Sky.Chance * (Main.getGoodWorld ? 0.5f : 0.1f);
         }
-        
+
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.AddIf(() => NPC.downedGolemBoss, ItemID.MartianConduitPlating, 1, 10, 30);

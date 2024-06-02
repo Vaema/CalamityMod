@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Armor.GemTech
             Item.width = 40;
             Item.height = 32;
             Item.defense = 14;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.Calamity().donorItem = true;
         }

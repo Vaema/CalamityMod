@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 using Terraria.Utilities;
-using CalamityMod.Items.Weapons.Rogue;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -30,10 +30,10 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            if (Projectile.scale < (Projectile.ai[1]==1 ? DuststormInABottle.MaxSizeStealth : DuststormInABottle.MaxSize))
+            if (Projectile.scale < (Projectile.ai[1] == 1 ? DuststormInABottle.MaxSizeStealth : DuststormInABottle.MaxSize))
             {
                 Projectile.scale += (Projectile.ai[1] == 1 ? DuststormInABottle.StealthGrowhRate : DuststormInABottle.GrowthRate);
-                Projectile.ExpandHitboxBy(1+ (Projectile.ai[1] == 1 ? DuststormInABottle.StealthGrowhRate : DuststormInABottle.GrowthRate));
+                Projectile.ExpandHitboxBy(1 + (Projectile.ai[1] == 1 ? DuststormInABottle.StealthGrowhRate : DuststormInABottle.GrowthRate));
             }
         }
 

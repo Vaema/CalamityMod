@@ -163,10 +163,10 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 dustSpawn = Projectile.Center + Projectile.velocity * (Projectile.localAI[1] - 14.5f * Projectile.scale);
                 for (int j = 0; j < 2; j++)
                 {
-                    float dustRotate = Projectile.velocity.ToRotation() + ((Main.rand.Next(2) == 1) ? -1f : 1f) * MathHelper.PiOver2;
+                    float dustRotate = Projectile.velocity.ToRotation() + ((Main.rand.NextBool(2)) ? -1f : 1f) * MathHelper.PiOver2;
                     float dustRandom = (float)Main.rand.NextDouble() * 0.8f + 1f;
                     Vector2 randomRotate = new Vector2((float)Math.Cos(dustRotate) * dustRandom, (float)Math.Sin(dustRotate) * dustRandom);
-                    int rainbowDust = Dust.NewDust(dustSpawn, 0, 0, 267, randomRotate.X, randomRotate.Y, 0, color, 3.3f);
+                    int rainbowDust = Dust.NewDust(dustSpawn, 0, 0, DustID.RainbowMk2, randomRotate.X, randomRotate.Y, 0, color, 3.3f);
                     Main.dust[rainbowDust].color = color;
                     Main.dust[rainbowDust].scale = 1.2f;
                     if (Projectile.scale > 1f)
@@ -188,7 +188,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (Main.rand.NextBool(5))
                 {
                     Vector2 extraDustSpawn = Projectile.velocity.RotatedBy(MathHelper.PiOver2) * ((float)Main.rand.NextDouble() - 0.5f) * Projectile.width;
-                    int extraRainbows = Dust.NewDust(dustSpawn + extraDustSpawn - Vector2.One * 4f, 8, 8, 267, 0f, 0f, 100, color, 5f);
+                    int extraRainbows = Dust.NewDust(dustSpawn + extraDustSpawn - Vector2.One * 4f, 8, 8, DustID.RainbowMk2, 0f, 0f, 100, color, 5f);
                     Main.dust[extraRainbows].velocity *= 0.5f;
                     Main.dust[extraRainbows].noGravity = true;
                     Main.dust[extraRainbows].velocity.Y = -Math.Abs(Main.dust[extraRainbows].velocity.Y);
@@ -209,7 +209,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             float drawArea = Projectile.localAI[1];
             Projectile projectile2 = Main.projectile[(int)Projectile.ai[1]];
             Color color = new Color(1, 1, 1, 127);

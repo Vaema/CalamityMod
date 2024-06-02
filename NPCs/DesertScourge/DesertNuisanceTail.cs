@@ -11,22 +11,27 @@ namespace CalamityMod.NPCs.DesertScourge
     public class DesertNuisanceTail : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.DesertNuisanceHead.DisplayName");
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            NPCID.Sets.CantTakeLunchMoney[Type] = true;
         }
 
         public override void SetDefaults()
         {
             NPC.GetNPCDamage();
-            NPC.width = 32;
-            NPC.height = 32;
+            NPC.width = 88;
+            NPC.height = 88;
 
-            NPC.defense = 7;
+            NPC.defense = 8;
             if (Main.getGoodWorld)
-                NPC.defense += 33;
+                NPC.defense += 34;
 
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 35000 : (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 4000 : 1300;
+            NPC.LifeMaxNERB(1500, 1800, 40000);
+            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                NPC.lifeMax = 4800;
+
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
@@ -36,7 +41,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.netAlways = true;
@@ -46,28 +50,27 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToWater = true;
         }
 
-        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
-        {
-            return false;
-        }
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
 
         public override void AI()
         {
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || bossRush;
+            bool masterMode = Main.masterMode || bossRush;
+
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
+
+            if (NPC.life > Main.npc[(int)NPC.ai[1]].life)
+                NPC.life = Main.npc[(int)NPC.ai[1]].life;
+
+            // Percent life remaining
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            bool shouldDespawn = true;
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<DesertNuisanceHead>())
-                {
-                    shouldDespawn = false;
-                    break;
-                }
-            }
+            bool shouldDespawn = !NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>());
             if (!shouldDespawn)
             {
                 if (NPC.ai[1] <= 0f)
@@ -93,9 +96,9 @@ namespace CalamityMod.NPCs.DesertScourge
             if (Main.player[NPC.target].dead)
                 NPC.TargetClosest(false);
 
-            Vector2 segmentTilePos = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-            float playerXPos = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2);
-            float playerYPos = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2);
+            Vector2 segmentTilePos = NPC.Center;
+            float playerXPos = Main.player[NPC.target].Center.X;
+            float playerYPos = Main.player[NPC.target].Center.Y;
             playerXPos = (float)((int)(playerXPos / 16f) * 16);
             playerYPos = (float)((int)(playerYPos / 16f) * 16);
             segmentTilePos.X = (float)((int)(segmentTilePos.X / 16f) * 16);
@@ -107,16 +110,18 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 try
                 {
-                    segmentTilePos = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-                    playerXPos = Main.npc[(int)NPC.ai[1]].position.X + (float)(Main.npc[(int)NPC.ai[1]].width / 2) - segmentTilePos.X;
-                    playerYPos = Main.npc[(int)NPC.ai[1]].position.Y + (float)(Main.npc[(int)NPC.ai[1]].height / 2) - segmentTilePos.Y;
+                    segmentTilePos = NPC.Center;
+                    playerXPos = Main.npc[(int)NPC.ai[1]].Center.X - segmentTilePos.X;
+                    playerYPos = Main.npc[(int)NPC.ai[1]].Center.Y - segmentTilePos.Y;
                 }
                 catch
                 {
                 }
-                NPC.rotation = (float)System.Math.Atan2((double)playerYPos, (double)playerXPos) + 1.57f;
+                NPC.rotation = (float)System.Math.Atan2((double)playerYPos, (double)playerXPos) + MathHelper.PiOver2;
                 playerDistance = (float)System.Math.Sqrt((double)(playerXPos * playerXPos + playerYPos * playerYPos));
-                playerDistance = (playerDistance - (float)(NPC.width)) / playerDistance;
+
+                int segmentOffset = 62;
+                playerDistance = (playerDistance - segmentOffset) / playerDistance;
                 playerXPos *= playerDistance;
                 playerYPos *= playerDistance;
                 NPC.velocity = Vector2.Zero;
@@ -128,31 +133,66 @@ namespace CalamityMod.NPCs.DesertScourge
                 else if (playerXPos > 0f)
                     NPC.spriteDirection = -1;
             }
+
+            // Calculate contact damage based on velocity
+            float maxChaseSpeed = Main.zenithWorld ? DesertNuisanceHead.SegmentVelocity_ZenithSeed :
+                Main.getGoodWorld ? DesertNuisanceHead.SegmentVelocity_GoodWorld :
+                masterMode ? DesertNuisanceHead.SegmentVelocity_Master :
+                DesertNuisanceHead.SegmentVelocity_Expert;
+            maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
+            if (masterMode)
+                maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
+
+            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
+            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
+            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            {
+                NPC.damage = 0;
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
+            }
+        }
+
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+        {
+            Rectangle targetHitbox = target.Hitbox;
+
+            float hitboxTopLeft = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
+            float hitboxTopRight = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
+            float hitboxBotLeft = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
+            float hitboxBotRight = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
+
+            float minDist = hitboxTopLeft;
+            if (hitboxTopRight < minDist)
+                minDist = hitboxTopRight;
+            if (hitboxBotLeft < minDist)
+                minDist = hitboxBotLeft;
+            if (hitboxBotRight < minDist)
+                minDist = hitboxBotRight;
+
+            return minDist <= 30f * NPC.scale;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
-            {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
-            }
+
             if (NPC.life <= 0)
             {
                 if (Main.netMode != NetmodeID.Server)
-                {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeTail").Type, 0.65f);
-                }
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeNuisanceTail").Type, NPC.scale);
+
                 for (int k = 0; k < 10; k++)
-                {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
-                }
             }
         }
 
-        public override bool CheckActive()
-        {
-            return false;
-        }
+        public override bool CheckActive() => false;
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {

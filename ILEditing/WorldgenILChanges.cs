@@ -1,14 +1,14 @@
-﻿using CalamityMod.World;
+﻿using System;
+using System.Linq;
+using CalamityMod.Systems;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using System;
 using Terraria;
 using Terraria.GameContent.UI.States;
 using Terraria.ID;
 using Terraria.WorldBuilding;
-using CalamityMod.Systems;
-using System.Linq;
 
 namespace CalamityMod.ILEditing
 {
@@ -118,16 +118,16 @@ namespace CalamityMod.ILEditing
             // Objective 1: Pop value '0' off the stack and emit value '2'. This changes the enum used for setting the default world size.
             // Objective 2: Invoke UpdatePreviewPlate at the end of the method and set _optionSize to Large.
             var c = new ILCursor(il);
-            
+
             // OBJECTIVE 1
-            
+
             // Find and anchor ourselves at roughly the start of the first for loop of this method.
             if (!c.TryGotoNext(x => x.MatchBr(out _)))
             {
                 LogFailure("Change Default World Size", "Could not match start of branched for loop.");
                 return;
             }
-            
+
             // Position ourselves directly after where '0' is pushed.
             if (!c.TryGotoNext(MoveType.After, x => x.MatchLdcI4(0)))
             {
@@ -137,10 +137,10 @@ namespace CalamityMod.ILEditing
 
             // Pop original value off.
             c.Emit(OpCodes.Pop);
-            
+
             // Push '2' to the stack.
             c.Emit(OpCodes.Ldc_I4_2);
-            
+
             // OBJECTIVE 2
 
             // Match right before the method returns.
@@ -149,7 +149,7 @@ namespace CalamityMod.ILEditing
                 LogFailure("Change Default World Size", "Could not match end of method.");
                 return;
             }
-            
+
             // Set _optionSize to Large.
             c.Emit(OpCodes.Ldarg_0); // this
             c.Emit(OpCodes.Ldc_I4_2); // '2'
@@ -178,7 +178,7 @@ namespace CalamityMod.ILEditing
             }
             // Pop original value off.
             c.Emit(OpCodes.Pop);
-            
+
             // Emit our new string "Mods.CalamityMod.UI.SmallWorldWarning".
             c.Emit(OpCodes.Ldstr, "Mods.CalamityMod.UI.SmallWorldWarning");
         }

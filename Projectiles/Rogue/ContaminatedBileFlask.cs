@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 24;
+            Projectile.width = Projectile.height = 28;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 300;

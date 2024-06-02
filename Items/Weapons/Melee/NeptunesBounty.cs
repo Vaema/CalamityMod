@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 122;
             Item.height = 122;
-            Item.damage = 455;
+            Item.damage = 444;
             Item.knockBack = 9f;
             Item.useTime = 65;
             Item.useAnimation = 65;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = null;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
         public override void AddRecipes()

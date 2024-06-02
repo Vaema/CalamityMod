@@ -1,8 +1,8 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.DataStructures;
 using CalamityMod.World.Planets;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.WorldBuilding;
@@ -284,7 +284,7 @@ namespace CalamityMod.World
             byte wall = (byte)(genCorruptHouse ? 35 : 174); //wall
             Vector2 vector = new Vector2((float)i, (float)j);
             int houseDirection = 1;
-            if (WorldGen.genRand.Next(2) == 0)
+            if (WorldGen.genRand.NextBool(2))
             {
                 houseDirection = -1;
             }

@@ -1,7 +1,7 @@
-﻿using CalamityMod.Projectiles.Turret;
+﻿using System.IO;
+using CalamityMod.Projectiles.Turret;
 using CalamityMod.Tiles.PlayerTurrets;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -88,10 +88,9 @@ namespace CalamityMod.TileEntities
             Vector2 ret = InvalidTarget;
             float distSQToBeat = MaxRange * MaxRange;
 
-            for (int i = 0; i < Main.maxNPCs; ++i)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (!npc.active || npc.friendly || npc.CountsAsACritter)
+                if (npc.friendly || npc.CountsAsACritter)
                     continue;
 
                 float distSQ = npc.DistanceSQ(targetingCenter);
@@ -99,7 +98,7 @@ namespace CalamityMod.TileEntities
                 {
                     distSQToBeat = distSQ;
                     ret = npc.Center;
-                    indexToSet = i;
+                    indexToSet = npc.whoAmI;
                 }
             }
 

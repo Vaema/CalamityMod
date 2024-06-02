@@ -1,6 +1,6 @@
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
 namespace CalamityMod.Projectiles.Typeless
 {
     public class SabatonBoom : ModProjectile, ILocalizedModType

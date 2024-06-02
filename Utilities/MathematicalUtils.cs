@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria;
 
 namespace CalamityMod
@@ -181,7 +181,7 @@ namespace CalamityMod
 
             Vector2 perpendicular = (lineEnd - lineStart).RotatedBy(MathHelper.PiOver2).SafeNormalize(Vector2.Zero);
             float distanceToLine = point.ShortestDistanceToLine(lineStart, lineEnd);
-            float lineSide = Math.Sign((point.X - lineStart.X) * ( -lineEnd.Y + lineStart.Y) + (point.Y - lineStart.Y) * (lineEnd.X - lineStart.X));
+            float lineSide = Math.Sign((point.X - lineStart.X) * (-lineEnd.Y + lineStart.Y) + (point.Y - lineStart.Y) * (lineEnd.X - lineStart.X));
 
             return point + distanceToLine * lineSide * perpendicular;
         }
@@ -257,7 +257,7 @@ namespace CalamityMod
             CircIn, CircOut, CircInOut
         }
 
-        private static readonly EasingFunction[] EasingTypeToFunction = new EasingFunction[] { LinearEasing, SineInEasing, SineOutEasing, SineInOutEasing, SineBumpEasing, PolyInEasing, PolyOutEasing, PolyInOutEasing, ExpInEasing, ExpOutEasing, ExpInOutEasing, CircInEasing, CircOutEasing, CircInOutEasing};
+        private static readonly EasingFunction[] EasingTypeToFunction = new EasingFunction[] { LinearEasing, SineInEasing, SineOutEasing, SineInOutEasing, SineBumpEasing, PolyInEasing, PolyOutEasing, PolyInOutEasing, ExpInEasing, ExpOutEasing, ExpInOutEasing, CircInEasing, CircOutEasing, CircInOutEasing };
 
         /// <summary>
         /// This represents a part of a piecewise function.

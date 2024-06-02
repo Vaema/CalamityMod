@@ -1,8 +1,9 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -15,7 +16,6 @@ namespace CalamityMod.Projectiles.Melee
     public class ViolenceThrownProjectile : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Violence>();
-        internal PrimitiveTrail StreakDrawer = null;
         internal Player Owner => Main.player[Projectile.owner];
         internal ref float Time => ref Projectile.ai[0];
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Violence";
@@ -197,12 +197,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (StreakDrawer is null)
-                StreakDrawer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
 
-            Texture2D spearProjectile = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D spearProjectile = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             // Not cloning the points causes the below operations to be applied to the original oldPos value by reference
             // and thus causes it to be consistently added over and over, which is not intended behavior.
@@ -218,7 +215,12 @@ namespace CalamityMod.Projectiles.Melee
                 drawPoints[i] -= (Projectile.oldRot[i] + MathHelper.PiOver4).ToRotationVector2() * Projectile.height * 0.5f;
 
             if (Time > Projectile.oldPos.Length)
-                StreakDrawer.Draw(drawPoints, Projectile.Size * 0.5f - Main.screenPosition, 88);
+            {
+                // Violence trakcs 36 positions in oldPos.
+                // Provide all 36 points for smoothing, but only render 24.
+                int numPointsRendered = 24;
+                PrimitiveRenderer.RenderTrail(drawPoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"], smoothen: true), numPointsRendered);
+            }
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             for (int i = 0; i < 6; i++)

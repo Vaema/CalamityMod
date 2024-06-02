@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.knockBack = 6f;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<NebulousCataclysm_Held>();

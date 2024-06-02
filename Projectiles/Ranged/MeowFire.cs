@@ -1,6 +1,6 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.scale = 1.5f * Utils.GetLerpValue(6f, 30f, Time, true);
             else
                 return; // Helps position it at the tip
-            
+
             // Main smokes composing of blue or pink
             float smokeRot = MathHelper.ToRadians(3f); // *Rate of rotation per frame, not a constant rotation
             Color smokeColor = Color.Lerp(PinkFire ? Color.DeepPink : Color.DodgerBlue, PinkFire ? Color.Pink : Color.PowderBlue, 0.5f + 0.3f * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f));

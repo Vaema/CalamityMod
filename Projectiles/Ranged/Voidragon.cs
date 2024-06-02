@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 dustVel = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
                     dustVel += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
                     dustVel = dustVel.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
-                    int shadowDust = Dust.NewDust(Projectile.Center, 0, 0, 173, 0f, 0f, 160, default, 1f);
+                    int shadowDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.ShadowbeamStaff, 0f, 0f, 160, default, 1f);
                     Main.dust[shadowDust].scale = 1.1f;
                     Main.dust[shadowDust].noGravity = true;
                     Main.dust[shadowDust].position = Projectile.Center + dustVel;
@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.rand.NextBool(16))
             {
                 Vector2 value3 = Vector2.UnitX.RotatedByRandom(1.5707963705062866).RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                int extraDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
+                int extraDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
                 Main.dust[extraDust].velocity = value3 * 0.66f;
                 Main.dust[extraDust].position = Projectile.Center + value3 * 12f;
             }
@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.light = 0.9f;
                 if (Main.rand.NextBool(10))
                 {
-                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
+                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, default, 1.2f);
                 }
                 if (Main.rand.NextBool(20) && Main.netMode != NetmodeID.Server)
                 {
@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
         }
     }

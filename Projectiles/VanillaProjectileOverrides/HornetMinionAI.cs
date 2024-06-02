@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
     {
         // Shorter range when the minion has no target yet: 40 tiles
         private const float MinEnemyDistanceDetection = 640f;
-        
+
         // Longer range when a target is already acquired: 75 tiles
         private const float MaxEnemyDistanceDetection = 1200f;
 
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
                             shootDust.noLight = true;
                             shootDust.noLightEmittence = true;
                         }
-                        
+
                         SoundEngine.PlaySound(SoundID.Item17, proj.Center);
                     }
 

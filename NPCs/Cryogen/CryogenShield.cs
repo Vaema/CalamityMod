@@ -25,7 +25,6 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.coldDamage = true;
             NPC.GetNPCDamage();
@@ -62,9 +61,14 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.HitSound = Main.zenithWorld ? SoundID.NPCHit41 : Cryogen.HitSound;
             NPC.DeathSound = Main.zenithWorld ? SoundID.NPCDeath14 : BreakSound;
 
-            NPC.Opacity += 0.012f;
-            if (NPC.Opacity > 1f)
+            NPC.Opacity += 0.01f;
+            if (NPC.Opacity >= 1f)
+            {
+                NPC.damage = NPC.defDamage;
                 NPC.Opacity = 1f;
+            }
+            else
+                NPC.damage = 0;
 
             NPC.rotation += 0.15f;
 
@@ -82,6 +86,7 @@ namespace CalamityMod.NPCs.Cryogen
                     NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                     return;
                 }
+
                 NPC.life = 0;
                 NPC.HitEffect();
                 NPC.active = false;
@@ -107,7 +112,7 @@ namespace CalamityMod.NPCs.Cryogen
             if (hitboxBotRight < minDist)
                 minDist = hitboxBotRight;
 
-            return minDist <= (100f * NPC.scale) && NPC.Opacity == 1f;
+            return minDist <= (100f * NPC.scale) && NPC.Opacity >= 1f;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
@@ -169,7 +174,7 @@ namespace CalamityMod.NPCs.Cryogen
             {
                 for (int i = 0; i < 25; i++)
                 {
-                    int icyDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
+                    int icyDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
                     Main.dust[icyDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -180,10 +185,10 @@ namespace CalamityMod.NPCs.Cryogen
 
                 for (int j = 0; j < 50; j++)
                 {
-                    int icyDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 3f);
+                    int icyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 3f);
                     Main.dust[icyDust2].noGravity = true;
                     Main.dust[icyDust2].velocity *= 5f;
-                    icyDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
+                    icyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
                     Main.dust[icyDust2].velocity *= 2f;
                 }
 

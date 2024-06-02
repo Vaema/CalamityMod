@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 58;
             Item.height = 54;
-            Item.damage = 17;
+            Item.damage = 20;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
             Item.useTime = 20;
@@ -27,14 +27,14 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.25f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item72;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<NightsRayBeam>();
             Item.shootSpeed = 6f;
         }
-        
+
         public override void AddRecipes()
         {
             CreateRecipe().

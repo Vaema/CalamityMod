@@ -13,7 +13,7 @@ namespace CalamityMod.Systems
         public override bool IsSceneEffectActive(Player player)
         {
             CryogenSky.UpdateDrawEligibility();
-            bool result = NPC.AnyNPCs(ModContent.NPCType<Cryogen>()) || CryogenSky.ShouldDrawRegularly;
+            bool result = NPC.AnyNPCs(ModContent.NPCType<Cryogen>()) || CryogenSky.ShouldDrawRegularly || Main.LocalPlayer.Calamity().monolithCryogenShader > 0;
             CryogenSky.UpdateDrawEligibility();
             return result;
         }

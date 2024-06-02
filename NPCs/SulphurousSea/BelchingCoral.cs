@@ -1,13 +1,14 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
-using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,10 +17,12 @@ namespace CalamityMod.NPCs.SulphurousSea
 {
     public class BelchingCoral : ModNPC
     {
+        public static readonly SoundStyle SAXOPHONE = new("CalamityMod/Sounds/Item/Saxophone/Sax", 6);
+
         public const float CheckDistance = 480f;
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 4;
             value.PortraitPositionYOverride = 24f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
@@ -45,18 +48,25 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SulphurousSeaBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BelchingCoral")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BelchingCoral")
             });
         }
 
         public override void AI()
         {
+            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
+            NPC.damage = 0;
+
             NPC.velocity.Y += 0.25f;
             NPC.TargetClosest(false);
             Player player = Main.player[NPC.target];
@@ -64,8 +74,19 @@ namespace CalamityMod.NPCs.SulphurousSea
             {
                 if (NPC.ai[0]++ % 35f == 34f && Main.netMode != NetmodeID.MultiplayerClient)
                 {
+                    int damage = Main.masterMode ? 17 : Main.expertMode ? 20 : 27;
                     Vector2 velocity = new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-11f, -6f));
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Top + new Vector2(0f, 6f), velocity, ModContent.ProjectileType<BelchingCoralSpike>(), 27, 3f);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Top + new Vector2(0f, 6f), velocity, ModContent.ProjectileType<BelchingCoralSpike>(), damage, 3f);
+                }
+            }
+
+            if (Main.zenithWorld)
+            {
+                NPC.ai[1]++;
+                if (NPC.ai[1] > 27)
+                {
+                    SoundEngine.PlaySound(SAXOPHONE, NPC.Center);
+                    NPC.ai[1] = 0;
                 }
             }
         }
@@ -98,7 +119,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             {
                 for (int k = 0; k < 10; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

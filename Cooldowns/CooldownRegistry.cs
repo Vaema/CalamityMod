@@ -23,9 +23,6 @@ namespace CalamityMod.Cooldowns
             registry = new Cooldown[defaultSize];
             nameToNetID = new Dictionary<string, ushort>(defaultSize);
 
-            // TODO -- CooldownHandlers should be ILoadable in 1.4
-            RegisterModCooldowns(CalamityMod.Instance);
-
             #region Unused manual registration left here as backup
             // Vanilla cooldowns represented by the interface
             //var potionSickness = Register<PotionSickness>(PotionSickness.ID);
@@ -63,26 +60,29 @@ namespace CalamityMod.Cooldowns
             #endregion
         }
 
-        public static void RegisterModCooldowns(Mod mod)
+        public static void RegisterModCooldowns()
         {
             Type baseHandlerType = typeof(CooldownHandler);
-            foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
+            foreach (Mod mod in ModLoader.Mods)
             {
-                if (type.IsSubclassOf(baseHandlerType) && !type.IsAbstract && type != baseHandlerType)
+                foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
                 {
-                    //Get the static property ID of the handler
-                    string handlerID = (string)type.GetProperty("ID").GetValue(null);
+                    if (type.IsSubclassOf(baseHandlerType) && !type.IsAbstract && type != baseHandlerType)
+                    {
+                        //Get the static property ID of the handler
+                        string handlerID = (string)type.GetProperty("ID").GetValue(null);
 
-                    //If for whatever reason the ID is not set, create an ID from the mod and handler name
-                    if (handlerID == null)
-                        handlerID = mod.Name + "_" + type.Name;
+                        //If for whatever reason the ID is not set, create an ID from the mod and handler name
+                        if (handlerID == null)
+                            handlerID = mod.Name + "_" + type.Name;
 
-                    //Use reflection to call the method. You can't use the type as the generic type argument of register here
-                    MethodInfo methodInfo = typeof(CooldownRegistry).GetMethod("Register", BindingFlags.Public | BindingFlags.Static);
-                    Type[] genericArguments = new Type[] { type };
+                        //Use reflection to call the method. You can't use the type as the generic type argument of register here
+                        MethodInfo methodInfo = typeof(CooldownRegistry).GetMethod("Register", BindingFlags.Public | BindingFlags.Static);
+                        Type[] genericArguments = new Type[] { type };
 
-                    MethodInfo genericRegister = methodInfo.MakeGenericMethod(genericArguments);
-                    genericRegister.Invoke(null, new object[] { handlerID });
+                        MethodInfo genericRegister = methodInfo.MakeGenericMethod(genericArguments);
+                        genericRegister.Invoke(null, new object[] { handlerID });
+                    }
                 }
             }
         }

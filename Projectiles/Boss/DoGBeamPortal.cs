@@ -1,14 +1,14 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Boss
 
                 for (int i = 0; i < 15; i++)
                 {
-                    int ectoDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1.2f);
+                    int ectoDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1.2f);
                     Main.dust[ectoDust].velocity *= 3f;
                     Main.dust[ectoDust].noGravity = true;
                     if (Main.rand.NextBool())
@@ -71,10 +71,10 @@ namespace CalamityMod.Projectiles.Boss
                 }
                 for (int j = 0; j < 30; j++)
                 {
-                    int ectoDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1.7f);
+                    int ectoDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1.7f);
                     Main.dust[ectoDust2].noGravity = true;
                     Main.dust[ectoDust2].velocity *= 5f;
-                    ectoDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1f);
+                    ectoDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1f);
                     Main.dust[ectoDust2].noGravity = true;
                     Main.dust[ectoDust2].velocity *= 2f;
                 }

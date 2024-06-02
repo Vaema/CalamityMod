@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -83,10 +83,10 @@ namespace CalamityMod.Projectiles.Rogue
                     Vector2 shardVelocity = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
                     shardVelocity.Normalize();
                     shardVelocity *= 5f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shardVelocity, ModContent.ProjectileType<EquanimityLightShard>(),  (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shardVelocity, ModContent.ProjectileType<EquanimityLightShard>(), (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
                     if (Projectile.Calamity().stealthStrike)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shardVelocity, ModContent.ProjectileType<EquanimityDarkShard>(),  (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shardVelocity, ModContent.ProjectileType<EquanimityDarkShard>(), (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
                     }
                 }
             }
@@ -104,10 +104,10 @@ namespace CalamityMod.Projectiles.Rogue
                     Vector2 shardVelocity = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
                     shardVelocity.Normalize();
                     shardVelocity *= 5f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shardVelocity, ModContent.ProjectileType<EquanimityLightShard>(),  (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shardVelocity, ModContent.ProjectileType<EquanimityLightShard>(), (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
                     if (Projectile.Calamity().stealthStrike)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shardVelocity, ModContent.ProjectileType<EquanimityDarkShard>(),  (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shardVelocity, ModContent.ProjectileType<EquanimityDarkShard>(), (int)(Projectile.damage * 0.8f), 0f, Projectile.owner);
                     }
                 }
             }

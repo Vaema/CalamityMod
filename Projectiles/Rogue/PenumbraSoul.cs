@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 int dustID = 54; //Used by Wraiths and other shadowy stuff
 
-                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, Projectile.width, Projectile.height, dustID,0f,0f, 0, new Color(38, 30, 43));
+                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, Projectile.width, Projectile.height, dustID, 0f, 0f, 0, new Color(38, 30, 43));
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity += Projectile.velocity * 0.8f;
             }
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Rogue
             for (int i = 0; i < onHitDust; ++i)
             {
                 int dustID = 54;
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, 0f, 0f,0, new Color(38, 30, 43));
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, 0f, 0f, 0, new Color(38, 30, 43));
 
                 Main.dust[idx].noGravity = true;
                 float speed = Main.rand.NextFloat(1.4f, 2.6f);

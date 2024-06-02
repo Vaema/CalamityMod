@@ -9,6 +9,11 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class SulphuricAcidCannon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+        }
         public override void SetDefaults()
         {
             Item.width = 90;

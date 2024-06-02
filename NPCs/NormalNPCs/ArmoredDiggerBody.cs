@@ -1,8 +1,8 @@
-﻿using CalamityMod.Items.Placeables.Banners;
+﻿using System;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -40,6 +40,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<ArmoredDiggerBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
@@ -77,10 +81,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                 else
                 {
                     // find a new npc to attatch to in gfb, it's not a bug, it's a feature:tm:
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC host in Main.ActiveNPCs)
                     {
-                        NPC host = Main.npc[i];
-                        if (host.active && !host.friendly && !host.dontTakeDamage && host.type != ModContent.NPCType<ArmoredDiggerHead>() && host.type != ModContent.NPCType<ArmoredDiggerBody>() && host.type != ModContent.NPCType<ArmoredDiggerTail>())
+                        if (!host.friendly && !host.dontTakeDamage && host.type != ModContent.NPCType<ArmoredDiggerHead>() && host.type != ModContent.NPCType<ArmoredDiggerBody>() && host.type != ModContent.NPCType<ArmoredDiggerTail>())
                         {
                             NPC.ai[1] = host.whoAmI;
                             NPC.ai[3] = host.whoAmI;
@@ -114,7 +117,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         projTargetDist = speed / projTargetDist;
                         projTargetX *= projTargetDist;
                         projTargetY *= projTargetDist;
-                        int projType = Main.zenithWorld ? ModContent.ProjectileType<ProvidenceCrystalShard>() : ProjectileID.SaucerScrap; 
+                        int projType = Main.zenithWorld ? ModContent.ProjectileType<ProvidenceCrystalShard>() : ProjectileID.SaucerScrap;
                         projFirePosition.X += projTargetX * 5f;
                         projFirePosition.Y += projTargetY * 5f;
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), projFirePosition.X, projFirePosition.Y, projTargetX, projTargetY, projType, 30, 0f, Main.myPlayer, 0f, 0f);
@@ -139,7 +142,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
                     targetXDist = Main.npc[(int)NPC.ai[1]].position.X + (float)(Main.npc[(int)NPC.ai[1]].width / 2) - segmentPosition.X;
                     targetYDist = Main.npc[(int)NPC.ai[1]].position.Y + (float)(Main.npc[(int)NPC.ai[1]].height / 2) - segmentPosition.Y;
-                } catch
+                }
+                catch
                 {
                 }
                 NPC.rotation = (float)Math.Atan2((double)targetYDist, (double)targetXDist) + 1.57f;
@@ -152,19 +156,34 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.position.X = NPC.position.X + targetXDist;
                 NPC.position.Y = NPC.position.Y + targetYDist;
             }
+
+            // Calculate contact damage based on velocity
+            float maxChaseSpeed = CalamityWorld.death ? 13.5f : 10f;
+            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
+            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
+            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
+            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            {
+                NPC.damage = 0;
+            }
+            else
+            {
+                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
+                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
+            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 6, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 10; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 6, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.netMode != NetmodeID.Server)
                 {

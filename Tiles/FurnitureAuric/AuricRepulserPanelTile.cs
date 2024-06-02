@@ -1,11 +1,10 @@
-﻿
+﻿using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Tiles.Ores;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureAuric
 {

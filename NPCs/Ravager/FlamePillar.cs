@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -14,10 +15,16 @@ namespace CalamityMod.NPCs.Ravager
     public class FlamePillar : ModNPC
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/RavagerRockPillarHit", 3);
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
             Main.npcFrameCount[NPC.type] = 4;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -28,7 +35,6 @@ namespace CalamityMod.NPCs.Ravager
             NPC.defense = 35;
             NPC.DR_NERD(0.2f);
             NPC.chaseable = false;
-            NPC.canGhostHeal = false;
             NPC.lifeMax = DownedBossSystem.downedProvidence ? 14000 : 3500;
             double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
             NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
@@ -40,6 +46,10 @@ namespace CalamityMod.NPCs.Ravager
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void FindFrame(int frameHeight)
@@ -52,6 +62,9 @@ namespace CalamityMod.NPCs.Ravager
 
         public override void AI()
         {
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             bool provy = DownedBossSystem.downedProvidence;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
@@ -70,18 +83,9 @@ namespace CalamityMod.NPCs.Ravager
 
             if (NPC.alpha > 0)
             {
-                NPC.damage = 0;
-
                 NPC.alpha -= 5;
                 if (NPC.alpha < 0)
                     NPC.alpha = 0;
-            }
-            else
-            {
-                if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
-                    NPC.damage = (int)(NPC.defDamage * 1.5);
-                else
-                    NPC.damage = NPC.defDamage;
             }
 
             if (NPC.ai[0] == 0f)
@@ -156,7 +160,7 @@ namespace CalamityMod.NPCs.Ravager
 
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/FlamePillarGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color flameBlue = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, flameBlue, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
@@ -178,7 +182,7 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 30; i++)
                 {
-                    int iceFlame = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 135, 0f, 0f, 100, default, 2f);
+                    int iceFlame = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.IceTorch, 0f, 0f, 100, default, 2f);
                     Main.dust[iceFlame].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -188,10 +192,10 @@ namespace CalamityMod.NPCs.Ravager
                 }
                 for (int j = 0; j < 30; j++)
                 {
-                    int rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
+                    int rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
                     Main.dust[rockDust].noGravity = true;
                     Main.dust[rockDust].velocity *= 5f;
-                    rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[rockDust].velocity *= 2f;
                 }
             }
@@ -199,7 +203,7 @@ namespace CalamityMod.NPCs.Ravager
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int iceFlame = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    int iceFlame = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[iceFlame].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -209,10 +213,10 @@ namespace CalamityMod.NPCs.Ravager
                 }
                 for (int j = 0; j < 2; j++)
                 {
-                    int rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
+                    int rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
                     Main.dust[rockDust].noGravity = true;
                     Main.dust[rockDust].velocity *= 5f;
-                    rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[rockDust].velocity *= 2f;
                 }
             }

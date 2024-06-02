@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Armor.Aerospec
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.defense = 2; //13
         }
@@ -64,7 +64,7 @@ namespace CalamityMod.Items.Armor.Aerospec
         public override void UpdateEquip(Player player)
         {
             player.moveSpeed += 0.05f;
-            player.GetDamage<SummonDamageClass>() += 0.05f;
+            player.GetDamage<SummonDamageClass>() += 0.1f;
         }
 
         public override void AddRecipes()

@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<TimeBoltKnife>();
@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 0.68f;
+        public override float StealthDamageMultiplier => 0.68f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<CosmicKunai>().
                 AddIngredient(ItemID.FastClock).
                 AddIngredient<RuinousSoul>(5).
-                AddIngredient<Polterplasm>(20).
+                AddIngredient<Necroplasm>(20).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

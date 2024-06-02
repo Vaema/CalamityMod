@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,17 +22,17 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 15;
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<CraniumSmasherProj>();
             Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 1.75f;
+        public override float StealthDamageMultiplier => 1.75f;
 
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-		{
+        {
             if (player.Calamity().StealthStrikeAvailable())
             {
                 type = ModContent.ProjectileType<CraniumSmasherStealth>();
@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             {
                 type = ModContent.ProjectileType<CraniumSmasherProj>();
             }
-		}
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

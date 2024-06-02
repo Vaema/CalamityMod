@@ -1,9 +1,10 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Placeables;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -24,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<SeafoamBombProj>();
             Item.shootSpeed = 8f;
@@ -42,6 +43,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
             return true;
         }
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
 
         public override void AddRecipes()
         {

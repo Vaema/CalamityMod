@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.localAI[0] > 4f)
             {
                 Vector2 dspeed = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.6f);
-                int whiteDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 31, 0f, 0f, 100, new Color(237, 242, 242, 200), 1.2f);
+                int whiteDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, new Color(237, 242, 242, 200), 1.2f);
                 Main.dust[whiteDust].noGravity = true;
                 Main.dust[whiteDust].velocity = dspeed;
             }
@@ -67,14 +67,24 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 31, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 100, new Color(237, 242, 242, 200), 1f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Smoke, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 100, new Color(237, 242, 242, 200), 1f);
+            }
+
+            int mistAmt = 2;
+            for (int m = 0; m < mistAmt; m++)
+            {
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    int frostMist = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, 4f)), ModContent.ProjectileType<MistArrowFrostMist>(), (int)(Projectile.damage * 0.35f), (int)(Projectile.knockBack * 0.5f), Main.myPlayer, Main.rand.Next(3));
+                    Main.projectile[frostMist].rotation = Main.rand.NextFloat(-MathHelper.Pi, MathHelper.Pi);
+                }
             }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Frostburn2, 180);
-            target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
+            target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
         }
     }
 }

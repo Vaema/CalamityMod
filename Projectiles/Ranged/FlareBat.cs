@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.velocity *= 1.02f;
                 }
             }
-            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 0, default, 1f);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 0, default, 1f);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity *= 0.2f;
             Main.dust[dust].position = (Main.dust[dust].position + Projectile.Center) / 2f;
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.localAI[0] > 0f)
                 Projectile.localAI[0]--;
-            
+
             // Makes the bat home onto enemies after piercing once
             if (Projectile.penetrate == 1 && Projectile.localAI[0] <= 0f)
                 CalamityUtils.HomeInOnNPC(Projectile, false, 550f, 12f, 20f);
@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int k = 0; k < 10; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 6, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Torch, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
     }

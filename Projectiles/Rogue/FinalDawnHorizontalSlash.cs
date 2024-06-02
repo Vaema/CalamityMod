@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.ai[1] == 3)
                 {
                     Projectile.friendly = true;
-                    SoundEngine.PlaySound(FinalDawn.UseSound, Projectile.position);
+                    SoundEngine.PlaySound(TheFinalDawn.UseSound, Projectile.position);
 
                     if (Projectile.owner == Main.myPlayer)
                     {
@@ -72,9 +72,9 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D scytheGlowTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnHorizontalSlash_Glow").Value;
-            int height = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            int height = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
             int yStart = height * Projectile.frame;
             Main.spriteBatch.Draw(scytheTexture,
                                   Projectile.Center - Main.screenPosition + Projectile.gfxOffY * Vector2.UnitY,

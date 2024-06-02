@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee
 {
@@ -43,23 +43,24 @@ namespace CalamityMod.Projectiles.Melee
                     }
                 }
             }
+
             Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] >= 10f)
+            if (Projectile.localAI[0] >= 20f)
             {
                 Projectile.localAI[0] = 0f;
                 int projTimer = 0;
                 int incTracker = 0;
                 float aiTracker = 0f;
                 int theProjectile = Projectile.type;
-                for (int j = 0; j < 1000; j++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[j].active && Main.projectile[j].owner == Projectile.owner && Main.projectile[j].type == theProjectile && Main.projectile[j].ai[1] < 3600f)
+                    if (p.owner == Projectile.owner && p.type == theProjectile && p.ai[1] < 3600f)
                     {
                         projTimer++;
-                        if (Main.projectile[j].ai[1] > aiTracker)
+                        if (p.ai[1] > aiTracker)
                         {
-                            incTracker = j;
-                            aiTracker = Main.projectile[j].ai[1];
+                            incTracker = p.whoAmI;
+                            aiTracker = p.ai[1];
                         }
                     }
                 }
@@ -70,5 +71,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
         }
+
+        public override bool? CanDamage() => false;
     }
 }

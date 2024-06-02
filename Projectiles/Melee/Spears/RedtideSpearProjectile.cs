@@ -1,8 +1,8 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -84,13 +84,13 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
                 //Mirror the angle if facing left.
                 return MathHelper.Pi - rotation - MathHelper.TwoPi;
-            } 
+            }
         }
 
         //Properly wrap the angle. Indeed, the angles on the left suddenly go from Pi to -Pi
         public float ProjectileRotationButWrappedForTransition
         {
-            get 
+            get
             {
                 if (ChargeDirection < 0 && Projectile.rotation > 0)
                     return Projectile.rotation - MathHelper.TwoPi;
@@ -307,9 +307,13 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
             target.AddBuff(BuffID.Poisoned, 180);
 
-            //Give a sliver of iframes to the player so its safer to ram into hordes (which is fun and should be encouraged)
             if (CurrentAttackState == AttackState.RunAttack)
-                Owner.GiveIFrames(5);
+            {
+                // 17APR2024: Ozzatron: Redtide Spear's charge gives iframes when striking enemies in a similar manner to a ram dash.
+                // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                int redtideRamIFrames = 5;
+                Owner.GiveUniversalIFrames(redtideRamIFrames);
+            }
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -321,7 +325,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, AppropriateRotation + MathHelper.PiOver2 * 1.5f - MathHelper.ToRadians(12), texture.Size() / 2f, Projectile.scale, 0, 0);
             return false;

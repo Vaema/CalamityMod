@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Placeables.Ores
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 90; // Chlorophyte Ore
+            ItemID.Sets.SortingPriorityMaterials[Type] = 90; // Chlorophyte Ore
         }
 
         public override void SetDefaults()

@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.Pets;
+﻿using CalamityMod.Buffs.Pets;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;

@@ -1,11 +1,11 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using System;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 10f;
             Item.knockBack = 10f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = null; //does so in Shoot
             Item.Calamity().canFirePointBlankShots = true;
@@ -68,11 +68,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             else if (player.ActiveItem().type != Item.type || player.dead || !player.active)
             {
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
                     //Destroy all heads
-                    if (Main.projectile[i].type == HeadID && Main.projectile[i].owner == player.whoAmI && Main.projectile[i].active)
-                        Main.projectile[i].Kill();
+                    if (p.type == HeadID && p.owner == player.whoAmI)
+                        p.Kill();
                 }
                 HeadSpawnTimer = 0;
             }
@@ -85,9 +85,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                 return false;
 
             //Otherwise, launch the guns
+            SoundEngine.PlaySound(LaunchSound, player.Center);
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
-                SoundEngine.PlaySound(LaunchSound, player.Center);
                 if (Main.projectile[i].type == HeadID && Main.projectile[i].owner == player.whoAmI && Main.projectile[i].active)
                     Main.projectile[i].ai[1] = -1f;
             }
@@ -111,11 +111,11 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Projectile.NewProjectile(source, newPos, spreadVelocity * spreadDirection, Item.shoot, damage, knockback, player.whoAmI);
             }
 
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
                 //Force all heads to shoot
-                if (Main.projectile[i].type == HeadID && Main.projectile[i].owner == player.whoAmI && Main.projectile[i].active)
-                    Main.projectile[i].ai[1] = 1f;
+                if (p.type == HeadID && p.owner == player.whoAmI)
+                    p.ai[1] = 1f;
             }
             return false;
         }

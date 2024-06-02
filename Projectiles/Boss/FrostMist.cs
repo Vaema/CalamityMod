@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    int mistDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 187, 0f, 0f, 100, default, 2f);
+                    int mistDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, default, 2f);
                     Main.dust[mistDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Boss
                     Vector2 dustRotation = Vector2.UnitX * -Projectile.width / 2f;
                     dustRotation += -Vector2.UnitY.RotatedBy(l * MathHelper.Pi / 6f) * new Vector2(8f, 16f);
                     dustRotation = dustRotation.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
-                    int extraMistDust = Dust.NewDust(Projectile.Center, 0, 0, 187, 0f, 0f, 160, default, 1f);
+                    int extraMistDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.Flare_Blue, 0f, 0f, 160, default, 1f);
                     Main.dust[extraMistDust].scale = 1.1f;
                     Main.dust[extraMistDust].noGravity = true;
                     Main.dust[extraMistDust].position = Projectile.Center + dustRotation;

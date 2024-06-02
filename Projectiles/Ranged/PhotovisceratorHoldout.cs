@@ -2,6 +2,7 @@
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
@@ -139,7 +140,7 @@ namespace CalamityMod.Projectiles.Ranged
             var source = Projectile.GetSource_FromThis();
             Vector2 position = armPosition + Projectile.velocity * 55f - verticalOffset * 10f;
             Vector2 velocity = Projectile.velocity * shootSpeed;
-            
+
             if (PhotoTimer == 1)
             {
                 for (int i = 0; i < 30; i++)
@@ -154,7 +155,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SquishyLightParticle exoEnergy = new(position, (Projectile.velocity * 3).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.3f, 1.6f), 0.9f, sparkColor, 60);
                     GeneralParticleHandler.SpawnParticle(exoEnergy);
                 }
-                SoundEngine.PlaySound(DeadSunsWind.Shoot with { Volume = 1.9f}, Owner.MountedCenter);
+                SoundEngine.PlaySound(DeadSunsWind.ShootSound with { Volume = 1.9f }, Owner.MountedCenter);
             }
 
             Dust dust = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
@@ -223,9 +224,9 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.scale = Main.rand.NextFloat(1.3f, 1.8f);
                 dust.color = sparkColor;
             }
-            SoundEngine.PlaySound(HalleysInferno.Shoot with { Volume = 0.4f } , Owner.MountedCenter);
+            SoundEngine.PlaySound(HalleysInferno.ShootSound with { Volume = 0.4f }, Owner.MountedCenter);
 
-            int rightClickDamage = (int)(0.5f * damage);
+            int rightClickDamage = (int)(0.70f * damage);
             Projectile.NewProjectile(source, position, velocity, ProjectileType<ExoFlareCluster>(), rightClickDamage, knockback, Projectile.owner);
         }
 
@@ -268,6 +269,17 @@ namespace CalamityMod.Projectiles.Ranged
             if (SoundEngine.TryGetActiveSound(PhotoUseSound, out var Sound))
                 Sound?.Stop();
             PhotoTimer = 90;
+        }
+
+        public override void PostDraw(Color lightColor)
+        {
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Vector2 origin = new Vector2(85f, 33f);
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (Projectile.spriteDirection == -1)
+                spriteEffects = SpriteEffects.FlipHorizontally;
+
+            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/PhotovisceratorHoldoutGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Color.White, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
         }
     }
 }

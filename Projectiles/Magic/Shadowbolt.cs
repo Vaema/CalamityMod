@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -61,7 +62,7 @@ namespace CalamityMod.Projectiles.Magic
                     Vector2 projPos = Projectile.position;
                     projPos -= Projectile.velocity * ((float)i * 0.25f);
                     Projectile.alpha = 255;
-                    int shadowDust = Dust.NewDust(projPos, 1, 1, 173, 0f, 0f, 0, default, 1f);
+                    int shadowDust = Dust.NewDust(projPos, 1, 1, DustID.ShadowbeamStaff, 0f, 0f, 0, default, 1f);
                     Main.dust[shadowDust].position = projPos;
                     Main.dust[shadowDust].scale = (float)Main.rand.Next(70, 110) * 0.013f;
                     Main.dust[shadowDust].velocity *= 0.2f;

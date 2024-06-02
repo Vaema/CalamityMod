@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.Calamity().donorItem = true;
 
@@ -43,6 +43,7 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 yDist = Main.screenPosition.Y + Main.screenHeight - Main.mouseY - playerPos.Y;
             }
+
             Vector2 vector = new Vector2(xDist, yDist);
             float speedMult = vector.Length();
             if ((float.IsNaN(xDist) && float.IsNaN(yDist)) || (xDist == 0f && yDist == 0f))
@@ -55,25 +56,11 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 speedMult = speed / speedMult;
             }
+
             xDist *= speedMult;
             yDist *= speedMult;
-            int knifeAmt = 3;
-            if (Main.rand.NextBool())
-            {
-                knifeAmt++;
-            }
-            if (Main.rand.NextBool(4))
-            {
-                knifeAmt++;
-            }
-            if (Main.rand.NextBool(8))
-            {
-                knifeAmt++;
-            }
-            if (Main.rand.NextBool(16))
-            {
-                knifeAmt++;
-            }
+
+            int knifeAmt = Main.rand.Next(4, 7);
             for (int i = 0; i < knifeAmt; i++)
             {
                 float xVec = xDist;
@@ -87,8 +74,9 @@ namespace CalamityMod.Items.Weapons.Melee
                 xVec *= speedMult;
                 yVec *= speedMult;
                 directionToShoot = new Vector2(xVec, yVec);
-                Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI);
             }
+
             return false;
         }
 

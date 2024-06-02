@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.Summon;
+using CalamityMod.Cooldowns;
 using CalamityMod.Events;
 using CalamityMod.Items;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
@@ -17,6 +19,7 @@ using CalamityMod.Items.SummonItems.Invasion;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.AcidRain;
@@ -55,13 +58,17 @@ using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.NPCs.Yharon;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Summon.Umbrella;
+using CalamityMod.Systems;
+using CalamityMod.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
+using Terraria.IO;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using static CalamityMod.Downed;
@@ -189,6 +196,14 @@ namespace CalamityMod
             DialogueTweakSupport();
             SummonersAssociationSupport();
             ColoredDamageTypesSupport();
+            LuminanceSupport();
+            // done here to assure that all other mods have already loaded so that Calamity can automatically grab any of these types they may have
+            if (!Main.dedServ)
+            {
+                GeneralParticleHandler.LoadModParticleInstances();
+                CooldownRegistry.RegisterModCooldowns();
+                PopupGUIManager.LoadGUIs();
+            }
         }
 
         #region WikiThis
@@ -281,7 +296,9 @@ namespace CalamityMod
 
             // Enemies
             EnemyRedirect(NPCType<HiveEnemy>(), "Hive (enemy)");
-            EnemyRedirect(NPCType<KingSlimeJewel>(), "Crown Jewel (enemy)");
+            EnemyRedirect(NPCType<KingSlimeJewelRuby>(), "Crown Jewels");
+            EnemyRedirect(NPCType<KingSlimeJewelSapphire>(), "Crown Jewels");
+            EnemyRedirect(NPCType<KingSlimeJewelEmerald>(), "Crown Jewels");
             EnemyRedirect(NPCType<OldDukeToothBall>(), "Tooth Ball (Old Duke)");
             EnemyRedirect(NPCType<CalamitasEnchantDemon>(), "Enchantment");
             EnemyRedirect(NPCType<LeviathanStart>(), "%3F%3F%3F");
@@ -352,7 +369,8 @@ namespace CalamityMod
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 List<int> segments = new List<int>() { NPCType<DesertScourgeHead>(), NPCType<DesertScourgeBody>(), NPCType<DesertScourgeTail>() };
                 List<int> collection = new List<int>() { ItemType<DesertScourgeRelic>(), ItemType<DesertScourgeTrophy>(), ItemType<DesertScourgeMask>(), ItemType<LoreDesertScourge>(), ItemType<ThankYouPainting>() };
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/DesertScourge/DesertScourge_BossChecklist").Value;
                     Vector2 centered = new Vector2(rect.Center.X - (texture.Width / 2), rect.Center.Y - (texture.Height / 2));
                     sb.Draw(texture, centered, color);
@@ -468,7 +486,8 @@ namespace CalamityMod
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 List<int> segments = new List<int>() { NPCType<AquaticScourgeHead>(), NPCType<AquaticScourgeBody>(), NPCType<AquaticScourgeBodyAlt>(), NPCType<AquaticScourgeTail>() };
                 List<int> collection = new List<int>() { ItemType<AquaticScourgeRelic>(), ItemType<AquaticScourgeTrophy>(), ItemType<AquaticScourgeMask>(), ItemType<LoreAquaticScourge>(), ItemType<LoreSulphurSea>(), ItemType<ThankYouPainting>() };
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/AquaticScourge/AquaticScourge_BossChecklist").Value;
                     Vector2 centered = new Vector2(rect.Center.X - (texture.Width / 2), rect.Center.Y - (texture.Height / 2));
                     sb.Draw(texture, centered, color);
@@ -551,7 +570,8 @@ namespace CalamityMod
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 List<int> bosses = new List<int>() { NPCType<Leviathan>(), NPCType<Anahita>() };
                 List<int> collection = new List<int>() { ItemType<LeviathanAnahitaRelic>(), ItemType<LeviathanTrophy>(), ItemType<AnahitaTrophy>(), ItemType<LeviathanMask>(), ItemType<AnahitaMask>(), ItemType<LoreAbyss>(), ItemType<LoreLeviathanAnahita>(), ItemType<ThankYouPainting>() };
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/Leviathan/AnahitaLevi_BossChecklist").Value;
                     Vector2 centered = new Vector2(rect.Center.X - (texture.Width / 2), rect.Center.Y - (texture.Height / 2));
                     sb.Draw(texture, centered, color);
@@ -587,7 +607,8 @@ namespace CalamityMod
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 int type = NPCType<PlaguebringerGoliath>();
                 List<int> collection = new List<int>() { ItemType<PlaguebringerGoliathRelic>(), ItemType<PlaguebringerGoliathTrophy>(), ItemType<PlaguebringerGoliathMask>(), ItemType<LorePlaguebringerGoliath>(), ItemType<PlagueCaller>(), ItemType<ThankYouPainting>() };
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/PlaguebringerGoliath/PlaguebringerGoliath_BossChecklist").Value;
                     Vector2 centered = new Vector2(rect.Center.X - (texture.Width / 2), rect.Center.Y - (texture.Height / 2));
                     sb.Draw(texture, centered, color);
@@ -608,7 +629,8 @@ namespace CalamityMod
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 List<int> segments = new List<int>() { NPCType<RavagerBody>(), NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerHead>(), NPCType<RavagerLegLeft>(), NPCType<RavagerLegRight>() };
                 List<int> collection = new List<int>() { ItemType<RavagerRelic>(), ItemType<RavagerTrophy>(), ItemType<RavagerMask>(), ItemType<LoreRavager>(), ItemType<ThankYouPainting>() };
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/Ravager/Ravager_BossChecklist").Value;
                     Vector2 centered = new Vector2(rect.Center.X - (texture.Width / 2), rect.Center.Y - (texture.Height / 2));
                     sb.Draw(texture, centered, color);
@@ -631,7 +653,8 @@ namespace CalamityMod
                 List<int> segments = new List<int>() { NPCType<AstrumDeusHead>(), NPCType<AstrumDeusBody>(), NPCType<AstrumDeusTail>() };
                 List<int> summons = new List<int>() { ItemType<TitanHeart>(), ItemType<Starcore>() };
                 List<int> collection = new List<int>() { ItemType<AstrumDeusRelic>(), ItemType<AstrumDeusTrophy>(), ItemType<AstrumDeusMask>(), ItemType<LoreAstrumDeus>(), ItemType<LoreAstralInfection>(), ItemType<ChromaticOrb>(), ItemType<ThankYouPainting>() };
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/AstrumDeus/AstrumDeus_BossChecklist").Value;
                     Vector2 centered = new Vector2(rect.Center.X - (texture.Width / 2), rect.Center.Y - (texture.Height / 2));
                     sb.Draw(texture, centered, color);
@@ -654,7 +677,8 @@ namespace CalamityMod
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 int type = NPCType<ProfanedGuardianCommander>();
                 List<int> collection = new List<int>() { ItemType<ProfanedGuardiansRelic>(), ItemType<ProfanedGuardianTrophy>(), ItemType<ProfanedGuardianMask>(), ItemType<LoreProfanedGuardians>(), ItemType<ThankYouPainting>() };
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedGuardians_BossChecklist").Value;
                     float scale = 0.7f;
                     Vector2 centered = new Vector2(rect.Center.X - texture.Width * scale / 2, rect.Center.Y - texture.Height * scale / 2);
@@ -693,7 +717,8 @@ namespace CalamityMod
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 int type = NPCType<Providence>();
                 List<int> collection = new List<int>() { ItemType<ProvidenceRelic>(), ItemType<ProvidenceTrophy>(), ItemType<ProvidenceMask>(), ItemType<LoreProvidence>(), ItemType<ThankYouPainting>() };
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/Providence/Providence_BossChecklist").Value;
                     Vector2 centered = new Vector2(rect.Center.X - (texture.Width / 2), rect.Center.Y - (texture.Height / 2));
                     sb.Draw(texture, centered, color);
@@ -730,7 +755,8 @@ namespace CalamityMod
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 List<int> segments = new List<int>() { NPCType<StormWeaverHead>(), NPCType<StormWeaverBody>(), NPCType<StormWeaverTail>() };
                 List<int> collection = new List<int>() { ItemType<WeaverTrophy>(), ItemType<StormWeaverMask>(), ItemType<AncientGodSlayerHelm>(), ItemType<AncientGodSlayerChestplate>(), ItemType<AncientGodSlayerLeggings>(), ItemType<LoreStormWeaver>(), ItemType<LittleLight>(), ItemType<ThankYouPainting>() };
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/StormWeaver/StormWeaver_BossChecklist").Value;
                     Vector2 centered = new Vector2(rect.Center.X - (texture.Width / 2), rect.Center.Y - (texture.Height / 2));
                     sb.Draw(texture, centered, color);
@@ -833,7 +859,8 @@ namespace CalamityMod
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 int type = NPCType<DevourerofGodsHead>();
                 List<int> collection = new List<int>() { ItemType<DevourerOfGodsRelic>(), ItemType<DevourerofGodsTrophy>(), ItemType<DevourerofGodsMask>(), ItemType<LoreDevourerofGods>(), ItemType<ThankYouPainting>() };
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGods_BossChecklist").Value;
                     Vector2 centered = new Vector2(rect.Center.X - (texture.Width / 2), rect.Center.Y - (texture.Height / 2));
                     sb.Draw(texture, centered, color);
@@ -872,7 +899,8 @@ namespace CalamityMod
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 List<int> bosses = new List<int>() { NPCType<Apollo>(), NPCType<AresBody>(), NPCType<Artemis>(), NPCType<ThanatosHead>() };
                 List<int> collection = new List<int>() { ItemType<DraedonRelic>(), ItemType<AresTrophy>(), ItemType<ThanatosTrophy>(), ItemType<ArtemisTrophy>(), ItemType<ApolloTrophy>(), ItemType<DraedonMask>(), ItemType<AresMask>(), ItemType<ThanatosMask>(), ItemType<ArtemisMask>(), ItemType<ApolloMask>(), ItemType<LoreExoMechs>(), ItemType<LoreCynosure>(), ItemType<ThankYouPainting>() };
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/ExoMechs/ExoMechs_BossChecklist").Value;
                     float scale = 0.7f;
                     Vector2 centered = new Vector2(rect.Center.X - texture.Width * scale / 2, rect.Center.Y - texture.Height * scale / 2);
@@ -917,7 +945,8 @@ namespace CalamityMod
                 string entryName = "AcidRainT1";
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 List<int> enemies = AcidRainEvent.PossibleEnemiesPreHM.Select(enemy => enemy.Key).ToList();
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/Events/AcidRainT1_BossChecklist").Value;
                     float scale = 1f;
                     Vector2 centered = new Vector2(rect.Center.X - texture.Width * scale / 2, rect.Center.Y - texture.Height * scale / 2);
@@ -938,8 +967,9 @@ namespace CalamityMod
                 List<int> enemies = AcidRainEvent.PossibleEnemiesAS.Select(enemy => enemy.Key).ToList();
                 enemies.Add(NPCType<IrradiatedSlime>());
                 enemies.AddRange(AcidRainEvent.PossibleMinibossesAS.Select(miniboss => miniboss.Key));
-                List<int> collection = new List<int>() { ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>(), ItemType<RadiatingCrystal>()};
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                List<int> collection = new List<int>() { ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>(), ItemType<RadiatingCrystal>() };
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/Events/AcidRainT2_BossChecklist").Value;
                     float scale = 0.9f;
                     Vector2 centered = new Vector2(rect.Center.X - texture.Width * scale / 2, rect.Center.Y - texture.Height * scale / 2);
@@ -960,8 +990,9 @@ namespace CalamityMod
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 List<int> enemies = AcidRainEvent.PossibleEnemiesPolter.Select(enemy => enemy.Key).ToList();
                 enemies.AddRange(AcidRainEvent.PossibleMinibossesPolter.Select(miniboss => miniboss.Key));
-                List<int> collection = new List<int>() { ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>(), ItemType<MaulerRelic>(), ItemType<MaulerTrophy>(), ItemType<NuclearTerrorRelic>(), ItemType<NuclearTerrorTrophy>(), ItemType<RadiatingCrystal>()};
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                List<int> collection = new List<int>() { ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>(), ItemType<MaulerRelic>(), ItemType<MaulerTrophy>(), ItemType<NuclearTerrorRelic>(), ItemType<NuclearTerrorTrophy>(), ItemType<RadiatingCrystal>() };
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/Events/AcidRainT3_BossChecklist").Value;
                     float scale = 0.9f;
                     Vector2 centered = new Vector2(rect.Center.X - texture.Width * scale / 2, rect.Center.Y - texture.Height * scale / 2);
@@ -981,7 +1012,8 @@ namespace CalamityMod
                 string entryName = "BossRush";
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 List<int> enemies = new List<int>() { NPCID.None }; // This is for loot purposes, which no bosses give during the event
-                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) => {
+                Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                {
                     Texture2D texture = Request<Texture2D>("CalamityMod/Skies/XerocEye").Value;
                     float scale = 0.5f;
                     Vector2 centered = new Vector2(rect.Center.X - texture.Width * scale / 2, rect.Center.Y - texture.Height * scale / 2);
@@ -1046,7 +1078,7 @@ namespace CalamityMod
             double Damage(DamageClass damageClass) => Math.Round(Main.LocalPlayer.GetTotalDamage(damageClass).Additive * Main.LocalPlayer.GetTotalDamage(damageClass).Multiplicative * 100 - 100);
             int Crit(DamageClass damageClass) => (int)Main.LocalPlayer.GetTotalCritChance(damageClass);
 
-            int rogueItem = ModContent.ItemType<WulfrumKnife>(); 
+            int rogueItem = ModContent.ItemType<WulfrumKnife>();
             DamageClass rogueDamageClass = ModContent.GetInstance<RogueDamageClass>();
             Func<string> rogueDamage = () => $"Rogue Damage: {Damage(rogueDamageClass)}%";
             Func<string> rogueCrit = () => $"Rogue Critical: {Crit(rogueDamageClass)}%";
@@ -1152,7 +1184,7 @@ namespace CalamityMod
             RegisterSummon(ItemType<CosmicImmaterializer>(), BuffType<CosmicEnergy>(), ProjectileType<CosmicEnergySpiral>());
             RegisterSummon(ItemType<TemporalUmbrella>(), BuffType<MagicHatBuff>(), ProjectileType<MagicHat>());
             RegisterSummon(ItemType<Endogenesis>(), BuffType<EndoCooperBuff>(), ProjectileType<EndoCooperBody>());
-            
+
             sAssociation.Call("AddMinionInfo", ItemType<EntropysVigil>(), BuffType<EntropysVigilBuff>(), new List<Dictionary<string, object>>
             {
                 new Dictionary<string, object>()
@@ -1232,6 +1264,37 @@ namespace CalamityMod
             // They would be hued towards magenta, but that would make them collide with Nebula-colored Magic in Colored Damage Types config.
             coloredDamageTypes.Call("AddDamageType", RogueDamageClass.Instance, RogueTooltipColor, RogueDamageColor, RogueCritColor);
             coloredDamageTypes.Call("AddDamageType", StealthDamageClass.Instance, StealthTooltipColor, StealthDamageColor, StealthCritColor);
+        }
+        #endregion
+
+        #region Luminance
+        private static void RegisterWorldInfoIcon(Mod luminance, string texturePath, string hoverTextKey, Func<WorldFileData, bool> shouldAppear, byte priority)
+            => luminance.Call("RegisterWorldInfoIcon", texturePath, hoverTextKey, shouldAppear, priority);
+        
+        public static void LuminanceSupport()
+        {
+            Mod luminance = GetInstance<CalamityMod>().luminance;
+            if (luminance is null)
+                return;
+
+            Func<WorldFileData, bool> deathEnabled = data =>
+            {
+                if (!data.TryGetHeaderData<WorldSelectionDifficultySystem>(out var tagData))
+                    return false;
+
+                return tagData.ContainsKey("DeathMode") && tagData.GetBool("DeathMode");
+            };
+            
+            Func<WorldFileData, bool> revengeanceEnabled = data =>
+            {
+                if (!data.TryGetHeaderData<WorldSelectionDifficultySystem>(out var tagData))
+                    return false;
+
+                return tagData.ContainsKey("RevengeanceMode") && tagData.GetBool("RevengeanceMode") && !(tagData.ContainsKey("DeathMode") && tagData.GetBool("DeathMode"));
+            };
+            
+            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Death", "Mods.CalamityMod.UI.DeathEnabled", deathEnabled, 50);
+            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Rev", "Mods.CalamityMod.UI.RevengeanceEnabled", revengeanceEnabled, 50);
         }
         #endregion
     }

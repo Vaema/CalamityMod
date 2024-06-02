@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.UseSound = SoundID.Item60;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.damage = 230;
+            Item.damage = 232;
             Item.knockBack = 3f;
             Item.autoReuse = true;
             Item.useTime = Item.useAnimation = 10;
@@ -39,11 +39,11 @@ namespace CalamityMod.Items.Weapons.Summon
             {
                 bool bodyExists = false;
                 int bodyIndex = -1;
-                for (int i = 0; i < Main.projectile.Length; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].active && Main.projectile[i].type == type && Main.projectile[i].owner == player.whoAmI)
+                    if (p.type == type && p.owner == player.whoAmI)
                     {
-                        bodyIndex = i;
+                        bodyIndex = p.whoAmI;
                         bodyExists = true;
                         break;
                     }

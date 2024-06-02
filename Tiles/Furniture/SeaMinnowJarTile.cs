@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -23,7 +24,7 @@ namespace CalamityMod.Tiles.Furniture
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 13, 0f, 0f, 0, new Color(), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Glass, 0f, 0f, 0, new Color(), 1f);
             return false;
         }
 

@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             //Rotation
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
-            Projectile.rotation = (Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi)) + MathHelper.ToRadians(90) *Projectile.direction;
+            Projectile.rotation = (Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi)) + MathHelper.ToRadians(90) * Projectile.direction;
 
             if (Projectile.ai[1] == 0f)
             {

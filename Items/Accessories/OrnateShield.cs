@@ -18,9 +18,9 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 36;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.defense = 8;
+            Item.defense = 4; // This has a ram dash, it should give a bit less defense due to how good it is
             Item.accessory = true;
         }
 

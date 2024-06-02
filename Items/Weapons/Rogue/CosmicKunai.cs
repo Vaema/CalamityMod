@@ -26,21 +26,22 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<CosmicKunaiProj>();
             Item.shootSpeed = 28f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-	public override float StealthDamageMultiplier => 2f;
+        public override float StealthDamageMultiplier => 1.5f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable() && stealth.WithinBounds(Main.maxProjectiles))
+            if (player.Calamity().StealthStrikeAvailable())
             {
                 Main.projectile[stealth].Calamity().stealthStrike = true;
+                Main.projectile[stealth].penetrate = 3;
                 SoundEngine.PlaySound(SoundID.Item73, player.Center);
                 for (float i = 0; i < 5; i++)
                 {

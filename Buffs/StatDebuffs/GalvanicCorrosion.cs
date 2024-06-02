@@ -1,4 +1,4 @@
-using CalamityMod.NPCs;
+﻿using CalamityMod.NPCs;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Magic
             //Dust
             if (Main.rand.NextBool(4))
             {
-                int venusDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 100, default, 1f);
+                int venusDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[venusDust];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Main.rand.NextBool(10))
             {
-                int venusDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 100, default, 1f);
+                int venusDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 1f);
                 Dust dust2 = Main.dust[venusDust2];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;

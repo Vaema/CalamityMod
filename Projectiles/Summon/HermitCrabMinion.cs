@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 33, 0f, 0f, 0, default, 1f);
+                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.Water, 0f, 0f, 0, default, 1f);
                     Main.dust[dust].velocity *= 2f;
                     Main.dust[dust].scale *= 1.15f;
                 }
@@ -117,9 +117,8 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (!chaseNPC)
                 {
-                    for (int j = 0; j < Main.maxNPCs; j++)
+                    foreach (NPC npcTarget in Main.ActiveNPCs)
                     {
-                        NPC npcTarget = Main.npc[j];
                         if (npcTarget.CanBeChasedBy(Projectile, false))
                         {
                             float targetDist = Vector2.Distance(npcTarget.Center, Projectile.Center);
