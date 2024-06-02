@@ -62,7 +62,8 @@ namespace CalamityMod.Systems
             tasks.Insert(JungleTempleIndex + 1, new PassLegacy("FloralParadise", (progress, config) =>
             {
                 progress.Message = "Growing a floral paradise underground";
-                FloralParadiseMinibiome.GenerateInstances();
+                if (FloralParadiseMinibiome.SHOULD_GENERATE)
+                    FloralParadiseMinibiome.GenerateInstances();
             }));
 
             // Improved Golem arena

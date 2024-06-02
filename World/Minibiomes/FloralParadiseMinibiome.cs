@@ -1,10 +1,9 @@
-﻿using CalamityMod.Tiles;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FloralParadise;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,6 +15,9 @@ namespace CalamityMod.World.Minibiomes
 {
     public class FloralParadiseMinibiome
     {
+        // 02JUN2024: Ozzatron: Disable generation of the Floral Paradise biome on the assumption that it will break horribly until tested.
+        internal static readonly bool SHOULD_GENERATE = false;
+        
         // Constants pertaining to the more important details of the world-gen, to allow for ease-of-change.
         // Certain numbers are hardcoded and not present here, but they tend to be in regards to things that either really shouldn't need changing or 
         // are extremely subtle details.
