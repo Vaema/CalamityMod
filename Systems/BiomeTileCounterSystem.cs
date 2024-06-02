@@ -4,6 +4,7 @@ using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Crags;
+using CalamityMod.Tiles.FloralParadise;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Tiles.SunkenSea;
@@ -16,7 +17,6 @@ namespace CalamityMod.Systems
     {
         public static int BrimstoneCragTiles = 0;
         public static int SulphurTiles = 0;
-        public static int AbyssTiles = 0;
         public static int AstralTiles = 0;
         public static int SunkenSeaTiles = 0;
         public static int SunkenSeaShoresTiles = 0;
@@ -24,6 +24,8 @@ namespace CalamityMod.Systems
         public static int SunkenSeaReefsTiles = 0;
         public static int SunkenSeaBurrowsTiles = 0;
         public static int ArsenalLabTiles = 0;
+        public static int AbyssTiles = 0;
+        public static int FloralParadiseTiles = 0;
 
         public static int Layer1Tiles = 0;
         public static int Layer2Tiles = 0;
@@ -47,6 +49,7 @@ namespace CalamityMod.Systems
             Layer2Tiles = 0;
             Layer3Tiles = 0;
             Layer4Tiles = 0;
+            FloralParadiseTiles = 0;
         }
 
         public override void TileCountsAvailable(ReadOnlySpan<int> tileCounts)
@@ -59,6 +62,7 @@ namespace CalamityMod.Systems
             SunkenSeaBurrowsTiles = tileCounts[ModContent.TileType<Navystone>()] + tileCounts[ModContent.TileType<HardenedEutrophicSand>()];
             AbyssTiles = tileCounts[ModContent.TileType<AbyssGravel>()] + tileCounts[ModContent.TileType<Voidstone>()];
             SulphurTiles = tileCounts[ModContent.TileType<SulphurousSand>()] + tileCounts[ModContent.TileType<SulphurousSandstone>()] + tileCounts[ModContent.TileType<HardenedSulphurousSandstone>()];
+            FloralParadiseTiles = tileCounts[ModContent.TileType<AlgalSlate>()] + tileCounts[ModContent.TileType<PeatMoss>()] + tileCounts[ModContent.TileType<Peat>()];
             ArsenalLabTiles = tileCounts[ModContent.TileType<LaboratoryPanels>()] + tileCounts[ModContent.TileType<LaboratoryPlating>()] + tileCounts[ModContent.TileType<HazardChevronPanels>()];
 
             Layer1Tiles = tileCounts[ModContent.TileType<SulphurousShale>()];

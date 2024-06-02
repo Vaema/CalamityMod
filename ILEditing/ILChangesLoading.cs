@@ -40,6 +40,7 @@ namespace CalamityMod.ILEditing
 
             // Graphics
             IL_Main.DoDraw += AdditiveDrawing;
+            IL_Main.DoDraw += DrawFloralParadiseFog;
             On_Main.DrawGore += DrawForegroundStuff;
             On_Main.DrawCursor += UseCoolFireCursorEffect;
             On_Main.SortDrawCacheWorms += DrawFusableParticles;

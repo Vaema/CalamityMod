@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.World;
+using CalamityMod.World.Minibiomes;
 using CalamityMod.World.Planets;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -56,6 +57,14 @@ namespace CalamityMod.Systems
                 progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterJungleTemple").Value;
                 CustomTemple.NewJungleTemple();
             });
+
+            // Floral Paradise Biome
+            tasks.Insert(JungleTempleIndex + 1, new PassLegacy("FloralParadise", (progress, config) =>
+            {
+                progress.Message = "Growing a floral paradise underground";
+                if (FloralParadiseMinibiome.SHOULD_GENERATE)
+                    FloralParadiseMinibiome.GenerateInstances();
+            }));
 
             // Improved Golem arena
             int JungleTempleIndex2 = tasks.FindIndex(genpass => genpass.Name.Equals("Temple"));
