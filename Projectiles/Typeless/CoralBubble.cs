@@ -20,6 +20,11 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.penetrate = 1;
         }
 
+        public override bool? CanCutTiles()
+        {
+            return false;
+        }
+
         public override void AI()
         {
             if (Projectile.localAI[0] > 2f)

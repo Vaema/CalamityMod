@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Backgrounds
 {
+    //this is just a blank background, so each custom background will draw over it
     public class AstralSurfaceBGStyle : ModSurfaceBackgroundStyle
     {
         internal static readonly FieldInfo screenOffField = typeof(Main).GetField("screenOff", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -25,13 +26,17 @@ namespace CalamityMod.Backgrounds
                 {
                     fades[i] += transitionSpeed;
                     if (fades[i] > 1f)
+                    {
                         fades[i] = 1f;
+                    }
                 }
                 else
                 {
                     fades[i] -= transitionSpeed;
                     if (fades[i] < 0f)
+                    {
                         fades[i] = 0f;
+                    }
                 }
             }
         }

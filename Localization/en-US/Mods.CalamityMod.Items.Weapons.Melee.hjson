@@ -1435,3 +1435,18 @@ YinYo: {
 		A very agile yoyo
 		'''
 }
+
+AcidwoodSword: {
+	DisplayName: Acidwood Sword
+	Tooltip: ""
+}
+
+DriftwoodSword: {
+	DisplayName: Driftwood Sword
+	Tooltip: This sword is stronger while you are wet
+}
+
+MonolithSword: {
+	DisplayName: Monolith Sword
+	Tooltip: ""
+}
