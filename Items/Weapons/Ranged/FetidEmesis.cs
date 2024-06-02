@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 76;
             Item.height = 46;
-            Item.damage = 187;
+            Item.damage = 239;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 6;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.autoReuse = true;
-            Item.shoot = ProjectileID.PurificationPowder;
+            Item.shoot = ModContent.ProjectileType<FetidEmesisHoldout>();
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Bullet;
 

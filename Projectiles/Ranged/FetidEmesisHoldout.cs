@@ -46,9 +46,8 @@ namespace CalamityMod.Projectiles.Ranged
             revSpeed = Utils.Remap(revFrames, 0, 200, 1, 20, true);
             if (shootingTimer >= 60)
             {
-                int bulletAMMO = ProjectileID.Bullet;
-                Owner.PickAmmo(Owner.ActiveItem(), out bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, Main.rand.NextBool(4));
-
+                Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
+                
                 SoundStyle fire = new("CalamityMod/Sounds/Item/StrongGunShot");
                 SoundEngine.PlaySound(fire with { Volume = 0.7f }, Projectile.Center);
 
@@ -80,17 +79,17 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(bigShot with { Pitch = -0.2f, Volume = 0.6f }, Projectile.Center);
                 SoundEngine.PlaySound(bigShotGun with { Volume = 0.6f }, Projectile.Center);
 
-                int chunkDamage = (int)(Projectile.damage * 1.3f);
+                int chunkDamage = (int)(Projectile.damage * 2.5f);
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 13;
-                for (int i = 0; i <= 4; i++)
+                for (int i = 0; i <= 5; i++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(-0.025f * i) * (1 - i * 0.05f), ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(-0.03f * i) * (1 - i * 0.08f), ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, -i);
                 }
-                for (int j = 0; j <= 4; j++)
+                for (int j = 0; j <= 5; j++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(0.025f * j) * (1 - j * 0.05f), ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(0.03f * j) * (1 - j * 0.08f), ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, j);
                 }
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, 20);
                 
                 for (int i = 0; i <= 18; i++)
                 {
