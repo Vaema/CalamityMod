@@ -3488,12 +3488,16 @@ namespace CalamityMod.NPCs
             {
                 if (Main.expertMode || BossRushEvent.BossRushActive)
                 {
-                    if (npc.ai[1] == 69f)
+                    if (npc.ai[1] >= 69f)
                     {
                         if (npc.target == Main.maxPlayers)
                         {
                             npc.TargetClosest();
+
                             float velocity = Main.getGoodWorld ? 10f : (Main.masterMode || BossRushEvent.BossRushActive) ? 8f : 6f;
+                            if (npc.ai[1] == 70f)
+                                velocity *= 0.6f;
+
                             npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                         }
 
