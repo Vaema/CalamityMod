@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
-using CalamityMod.Projectiles.Environment;
+﻿using CalamityMod.Projectiles.Environment;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -32,7 +31,6 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.MergeWithFloralParadise(Type);
 
             DustType = 39;
-            ItemDrop = ModContent.ItemType<PeatMossItem>();
             HitSound = MineSound;
 
             AddMapEntry(new Color(65, 142, 101));

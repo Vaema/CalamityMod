@@ -39,22 +39,21 @@ namespace CalamityMod.ILEditing
             exoDoorClosed = ModContent.TileType<ExoDoorClosed>();
 
             // Graphics
-            IL.Terraria.Main.DoDraw += AdditiveDrawing;
-            IL.Terraria.Main.DoDraw += DrawFloralParadiseFog;
-            On.Terraria.Main.DrawGore += DrawForegroundStuff;
-            On.Terraria.Main.DrawCursor += UseCoolFireCursorEffect;
-            On.Terraria.Main.SetDisplayMode += ResetRenderTargetSizes;
-            On.Terraria.Main.SortDrawCacheWorms += DrawFusableParticles;
-            On.Terraria.Main.DrawInfernoRings += DrawForegroundParticles;
-            IL.Terraria.Main.DrawInterface_40_InteractItemIcon += MakeMouseHoverItemsSupportAnimations;
-            On.Terraria.GameContent.Drawing.TileDrawing.DrawPartialLiquid += DrawCustomLava;
-            IL.Terraria.WaterfallManager.DrawWaterfall += DrawCustomLavafalls;
-            IL.Terraria.GameContent.Liquid.LiquidRenderer.InternalDraw += ChangeWaterQuadColors;
-            IL.Terraria.Main.oldDrawWater += DrawCustomLava3;
-            On.Terraria.Graphics.Light.TileLightScanner.GetTileLight += MakeSulphSeaWaterBetter;
-            On.Terraria.GameContent.Drawing.TileDrawing.PreDrawTiles += ClearForegroundStuff;
-            On.Terraria.GameContent.Drawing.TileDrawing.Draw += ClearTilePings;
-            On.Terraria.GameContent.ItemDropRules.CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
+            IL_Main.DoDraw += AdditiveDrawing;
+            IL_Main.DoDraw += DrawFloralParadiseFog;
+            On_Main.DrawGore += DrawForegroundStuff;
+            On_Main.DrawCursor += UseCoolFireCursorEffect;
+            On_Main.SortDrawCacheWorms += DrawFusableParticles;
+            On_Main.DrawInfernoRings += DrawForegroundParticles;
+            On_TileDrawing.DrawPartialLiquid += DrawCustomLava;
+            On_WaterfallManager.DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects += DrawCustomLavafalls;
+            On_Main.RenderWater += CacheLavaStyle;
+            IL_LiquidRenderer.DrawNormalLiquids += ChangeWaterQuadColors;
+            IL_Main.oldDrawWater += DrawCustomLava3;
+            On_TileLightScanner.GetTileLight += MakeSulphSeaWaterBetter;
+            On_TileDrawing.PreDrawTiles += ClearForegroundStuff;
+            On_TileDrawing.Draw += ClearTilePings;
+            On_CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
 
             // Graphics (dyeable shader stuff)
             On_Player.UpdateItemDye += DyeableShadersRenderer.FindDyesDetour;

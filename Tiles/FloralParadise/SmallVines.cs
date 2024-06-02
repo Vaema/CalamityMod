@@ -15,9 +15,7 @@ namespace CalamityMod.Tiles.FloralParadise
             Main.tileLavaDeath[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
-            ModTranslation name = CreateMapEntryName();
-            name.SetDefault("Vines");
-            AddMapEntry(new Color(100, 151, 31), name);
+            AddMapEntry(new Color(100, 151, 31));
             HitSound = SoundID.Grass;
             DustType = 2;
         }

@@ -50,7 +50,9 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            ILChanges.Windgrid.GetWindTime(i, j, WindPushLifetime, out int windTimeLeft, out int direction);
+            // 02JUN2024: Ozzatron: directionY did not exist at the time of the creation of this content. As such, it is ignored here.
+            ILChanges.Windgrid.GetWindTime(i, j, WindPushLifetime, out int windTimeLeft, out int direction, out _);
+
             float windInterpolant = windTimeLeft / (float)WindPushLifetime;
             float windRotation = Utils.GetLerpValue(0f, 0.5f, windInterpolant, true) * Utils.GetLerpValue(1f, 0.5f, windInterpolant, true) * direction * 0.34f;
 
@@ -76,7 +78,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<PinkFlowerItem>());
+            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<ScintillatingBloom>());
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

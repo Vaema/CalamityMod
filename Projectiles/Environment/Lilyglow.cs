@@ -11,8 +11,6 @@ namespace CalamityMod.Projectiles.Environment
 
         public override string Texture => "CalamityMod/Particles/Metaballs/FusableParticleBase";
 
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Lilyglow");
-
         public override void SetDefaults()
         {
             Projectile.width = 360;

@@ -5,13 +5,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    // TODO -- Come up with a better name for this.
-    public class PinkFlowerItem : ModItem
+    public class ScintillatingBloom : ModItem
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pink Flower");
-            SacrificeTotal = 10;
+            Item.ResearchUnlockCount = 10;
         }
 
         public override void SetDefaults()

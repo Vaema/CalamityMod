@@ -10,7 +10,6 @@ namespace CalamityMod.Projectiles.Environment
         public ref float Direction => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Algae");
             Main.projFrames[Projectile.type] = 3;
             ProjectileID.Sets.CanDistortWater[Projectile.type] = false;
         }

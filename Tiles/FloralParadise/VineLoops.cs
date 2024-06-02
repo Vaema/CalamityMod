@@ -26,8 +26,7 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.newTile.RandomStyleRange = Variants;
             TileObjectData.addTile(Type);
 
-            ModTranslation name = CreateMapEntryName();
-            AddMapEntry(new Color(47, 75, 32), name);
+            AddMapEntry(new Color(47, 75, 32));
             HitSound = SoundID.Grass;
             DustType = 2;
         }

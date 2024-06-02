@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,7 +21,6 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.MergeWithFloralParadise(Type);
 
             DustType = 78;
-            ItemDrop = ModContent.ItemType<AlgalSlateItem>();
 
             HitSound = SoundID.Tink;
 
